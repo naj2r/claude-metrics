@@ -238,11 +238,13 @@ run "$MyProject/scripts/programs/_config.do"
     gen double vine_per_1000_1894 = (vineyard_1894 / pop_1900) * 1000
     label var vine_per_1000_1894 "Vineyard ha per 1000 pop (1894)"
 
-    * Log of vineyard area + 1 (to handle zero-vineyard cantons)
-    gen double ln_vineyard      = ln(vineyard_1905 + 1)
-    gen double ln_vineyard_1894 = ln(vineyard_1894 + 1)
-    label var ln_vineyard      "Log vineyard area 1905 (+1)"
-    label var ln_vineyard_1894 "Log vineyard area 1894 (+1)"
+    * NOTE: log(vineyard+1) intentionally NOT constructed. Per Chen & Roth
+    * (2023, QJE) "Logs with Zeros? Some Problems and Solutions", the +1 is
+    * arbitrary (could equally be +0.001 or +1000) and the resulting coefficient
+    * has no scale-invariant semi-elasticity interpretation when ~32% of cantons
+    * have zero vineyards. Use `wine_canton` (binary >1000 ha) for the extensive
+    * margin and `vine_share_agland` / `vine_per_km2` for intensity. ln_pop is
+    * fine because population has no zeros — the +1 problem doesn't apply.
 
     * Vineyard CHANGE 1877->1905 (level and percent). Tests "desperation
     * hypothesis": cantons with shrinking vineyards may have voted yes more
@@ -328,7 +330,7 @@ run "$MyProject/scripts/programs/_config.do"
                  ln_pop pop_1900 pop_density_1900 ///
                  absinthe_dummy absinthe_dummy_broad absinthe_dummy_any ///
                  vote67_yes_pct agland_1000ha vine_share_agland margin ///
-                 vine_per_1000 vineyard_per_cap_1894 ln_vineyard area_km2 ///
+                 vine_per_1000 vineyard_per_cap_1894 area_km2 ///
                  lang_french lang_french_broad lang_italian wine_canton {
         cap assert !missing(`v')
         if _rc {
@@ -357,7 +359,7 @@ run "$MyProject/scripts/programs/_config.do"
           vote67_yes_pct margin yes_eligible ///
           vineyard_ha vineyard_per_cap vine_per_1000 ///
           vineyard_1877 vineyard_1884 vineyard_1894 vineyard_1905 vineyard_1913 ///
-          vineyard_per_cap_1894 vine_per_1000_1894 ln_vineyard ln_vineyard_1894 ///
+          vineyard_per_cap_1894 vine_per_1000_1894 ///
           vine_change_1877_1905 vine_change_pct ///
           wine_canton vine_per_km2 vine_share_agland ///
           french_share french_share_total catholic_share catholic_share_total ///

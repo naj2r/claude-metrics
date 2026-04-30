@@ -11,39 +11,37 @@
 
 \caption{Alternative vineyard operationalizations: which measure matters?}
 \label{tab:alt_vineyard}
-\begin{tabularx}{\linewidth}{@{}lCCCCCCC@{}}
+\begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
 
 \toprule
-&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)} \tabularnewline \midrule
-{Variable}&{}&{}&{}&{}&{}&{}&{} \tabularnewline
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{}&{} \tabularnewline
 \midrule \addlinespace[\belowrulesep]
-ln\_vineyard\_coef&&&&1.02&&&
-ln\_vineyard\_stderr&&&&(0.730)&&&
-vine\_per\_1000\_coef&&0.484**&&&&&
-vine\_per\_1000\_stderr&&(0.200)&&&&&
-vine\_per\_km2\_coef&&&&&&0.249&
-vine\_per\_km2\_stderr&&&&&&(3.71)&
-vineyard\_1905\_coef&&&0.00277**&&&&
-vineyard\_1905\_stderr&&&(0.000990)&&&&
-vineyard\_per\_cap\_1894\_coef&385*&&&&&&
-vineyard\_per\_cap\_1894\_stderr&(209)&&&&&&
-wine\_canton\_coef&&&&&3.63&&
-wine\_canton\_stderr&&&&&(4.18)&&
-vine\_share\_agland\_coef&&&&&&&0.560
-vine\_share\_agland\_stderr&&&&&&&(2)
-french\_share\_coef&--26.7***&--28.3***&--28.8***&--26.4***&--24.8***&--22.9**&--23.8**
-french\_share\_stderr&(7.07)&(7.11)&(6.22)&(7.92)&(7.97)&(9.08)&(9.03)
-catholic\_share\_coef&8.40*&8.43*&9.56*&10.1*&7.53&6.65&7.50
-catholic\_share\_stderr&(4.82)&(4.59)&(4.78)&(5.54)&(5.19)&(7.88)&(6.92)
-\_cons\_coef&61.6***&61.6***&61.2***&58.5***&63.1***&64.4***&63.5***
-\_cons\_stderr&(3.83)&(3.52)&(3.84)&(5.47)&(4.15)&(6.83)&(5.96)
-N&25&25&25&25&25&25&25
-r2&0.517&0.538&0.549&0.497&0.472&0.456&0.463
-spec&predetermined\_1894&alt\_per\_1000&alt\_raw\_ha&alt\_log&alt\_binary&alt\_per\_km2&alt\_agshare
-model&ols&ols&ols&ols&ols&ols&ols
+vine\_per\_1000\_coef&&0.484**&&&&
+vine\_per\_1000\_stderr&&(0.200)&&&&
+vine\_per\_km2\_coef&&&&&0.249&
+vine\_per\_km2\_stderr&&&&&(3.71)&
+vineyard\_1905\_coef&&&0.00277**&&&
+vineyard\_1905\_stderr&&&(0.000990)&&&
+vineyard\_per\_cap\_1894\_coef&385*&&&&&
+vineyard\_per\_cap\_1894\_stderr&(209)&&&&&
+wine\_canton\_coef&&&&3.63&&
+wine\_canton\_stderr&&&&(4.18)&&
+vine\_share\_agland\_coef&&&&&&0.560
+vine\_share\_agland\_stderr&&&&&&(2)
+french\_share\_coef&--26.7***&--28.3***&--28.8***&--24.8***&--22.9**&--23.8**
+french\_share\_stderr&(7.07)&(7.11)&(6.22)&(7.97)&(9.08)&(9.03)
+catholic\_share\_coef&8.40*&8.43*&9.56*&7.53&6.65&7.50
+catholic\_share\_stderr&(4.82)&(4.59)&(4.78)&(5.19)&(7.88)&(6.92)
+\_cons\_coef&61.6***&61.6***&61.2***&63.1***&64.4***&63.5***
+\_cons\_stderr&(3.83)&(3.52)&(3.84)&(4.15)&(6.83)&(5.96)
+N&25&25&25&25&25&25
+r2&0.517&0.538&0.549&0.472&0.456&0.463
+spec&predetermined\_1894&alt\_per\_1000&alt\_raw\_ha&alt\_binary&alt\_per\_km2&alt\_agshare
+model&ols&ols&ols&ols&ols&ols
 \bottomrule \addlinespace[\belowrulesep]
 
 \end{tabularx}
-\\ \parbox{\linewidth}{\footnotesize Notes: Each column substitutes a different vineyard measure into the KEY spec. (1) Pre-determined 1894 per capita; (2) per 1000 pop; (3) raw hectares; (4) log(ha+1); (5) binary >1000 ha; (6) per km\^{}2; (7) \% of agricultural land. All include french\_share + catholic\_share. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
+\\ \parbox{\linewidth}{\footnotesize Notes: Each column substitutes a different vineyard measure into the KEY spec. (1) Pre-determined 1894 per capita; (2) per 1000 pop; (3) raw hectares; (4) binary >1000 ha; (5) per km\^{}2; (6) \% of agricultural land. The log(ha+1) spec is intentionally omitted: with \~32\% of cantons at zero vineyards, the +1 is arbitrary and the resulting coefficient has no scale-invariant interpretation (Chen \& Roth 2023, QJE). All include french\_share + catholic\_share. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
 \end{table}
 \end{document}

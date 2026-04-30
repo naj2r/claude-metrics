@@ -207,10 +207,9 @@ run "$MyProject/scripts/programs/_config.do"
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "alt_raw_ha", model, "ols")
 
-    * Log(vineyard + 1)
-    reg yes_pct ln_vineyard french_share catholic_share, vce(hc3)
-    regsave using "`results_exp'", t p autoid append ///
-        addlabel(spec, "alt_log", model, "ols")
+    * NOTE: alt_log spec intentionally OMITTED. log(vineyard+1) is unsound
+    * with ~32% zero-vineyard cantons (Chen & Roth 2023). Extensive margin is
+    * captured by wine_canton (binary, below); intensity by per_km2 / agshare.
 
     * Wine-canton binary (>1000 ha)
     reg yes_pct wine_canton french_share catholic_share, vce(hc3)
@@ -499,7 +498,7 @@ run "$MyProject/scripts/programs/_config.do"
 {
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
     keep if model == "ols" & inlist(spec, "predetermined_1894", "alt_per_1000", ///
-                                          "alt_raw_ha", "alt_log", "alt_binary", ///
+                                          "alt_raw_ha", "alt_binary", ///
                                           "alt_per_km2", "alt_agshare")
     tempfile av
     regsave_tbl using "`av'" if spec == "predetermined_1894", ///
@@ -508,20 +507,18 @@ run "$MyProject/scripts/programs/_config.do"
         name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`av'" if spec == "alt_raw_ha", ///
         name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
-    regsave_tbl using "`av'" if spec == "alt_log", ///
-        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`av'" if spec == "alt_binary", ///
-        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`av'" if spec == "alt_per_km2", ///
-        name(col6) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`av'" if spec == "alt_agshare", ///
-        name(col7) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+        name(col6) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     use "`av'", clear
     drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
     clean_vars var
     label var var "Variable"
-    local fn "Notes: Each column substitutes a different vineyard measure into the KEY spec. (1) Pre-determined 1894 per capita; (2) per 1000 pop; (3) raw hectares; (4) log(ha+1); (5) binary >1000 ha; (6) per km^2; (7) % of agricultural land. All include french_share + catholic_share. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
-    texsave var col1 col2 col3 col4 col5 col6 col7 using "$MyProject/results/tables/t07_alt_vineyard.tex", ///
+    local fn "Notes: Each column substitutes a different vineyard measure into the KEY spec. (1) Pre-determined 1894 per capita; (2) per 1000 pop; (3) raw hectares; (4) binary >1000 ha; (5) per km^2; (6) % of agricultural land. The log(ha+1) spec is intentionally omitted: with ~32% of cantons at zero vineyards, the +1 is arbitrary and the resulting coefficient has no scale-invariant interpretation (Chen & Roth 2023, QJE). All include french_share + catholic_share. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 col6 using "$MyProject/results/tables/t07_alt_vineyard.tex", ///
         replace autonumber varlabels marker(tab:alt_vineyard) ///
         title("Alternative vineyard operationalizations: which measure matters?") ///
         footnote("`fn'")

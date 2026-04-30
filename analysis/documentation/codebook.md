@@ -56,10 +56,22 @@ _Auto-updated by _codebook_update.ado_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
 ### processed/intermediate/canton_crosswalk.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -73,7 +85,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
 ### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 7**
 
@@ -92,7 +104,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
 ### processed/intermediate/vote67_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -106,7 +118,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
 ### processed/intermediate/vineyard_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 125, vars = 3**
 
@@ -121,7 +133,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
 ### processed/intermediate/agland_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -135,7 +147,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
 ### processed/intermediate/population_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -149,7 +161,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
 ### processed/intermediate/pop_density_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -163,7 +175,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
 ### processed/intermediate/religion_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -178,7 +190,7 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
 ### processed/intermediate/language_uncleaned.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 01_import.do_
+_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -193,9 +205,9 @@ _Updated: 30 Apr 2026 16:28:19 by 01_import.do_
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated: 30 Apr 2026 16:28:19 by 02_clean.do_
+_Updated: 30 Apr 2026 17:27:08 by 02_clean.do_
 
-**N = 25, vars = 48**
+**N = 25, vars = 46**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
@@ -221,8 +233,6 @@ _Updated: 30 Apr 2026 16:28:19 by 02_clean.do_
 | vineyard_1913 | int | %10.0g | Vineyard area 1913 (hectares) |
 | vineyard_per_cap_1894 | double | %10.0g | Vineyard per capita 1894 (pre-determined) |
 | vine_per_1000_1894 | double | %10.0g | Vineyard ha per 1000 pop (1894) |
-| ln_vineyard | double | %10.0g | Log vineyard area 1905 (+1) |
-| ln_vineyard_1894 | double | %10.0g | Log vineyard area 1894 (+1) |
 | vine_change_1877_1905 | int | %10.0g | Vineyard area change 1877-1905 (ha) |
 | vine_change_pct | double | %10.0g | Vineyard area change 1877-1905 (%) |
 | wine_canton | byte | %8.0g | Wine canton (>1000 ha vineyard, 1905) |
@@ -253,7 +263,7 @@ _Updated: 30 Apr 2026 16:28:19 by 02_clean.do_
 <!-- codebook:results/intermediate/regressions.dta:start -->
 ### results/intermediate/regressions.dta
 
-_Updated: 30 Apr 2026 16:29:22 by 03_regress.do_
+_Updated: 30 Apr 2026 17:28:07 by 03_regress.do_
 
 **N = 140, vars = 11**
 
@@ -276,9 +286,9 @@ _Updated: 30 Apr 2026 16:29:22 by 03_regress.do_
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 30 Apr 2026 16:29:27 by 05_expansion.do_
+_Updated: 30 Apr 2026 17:28:11 by 05_expansion.do_
 
-**N = 122, vars = 10**
+**N = 118, vars = 10**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
