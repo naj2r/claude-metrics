@@ -24,6 +24,7 @@ program define clean_vars, nclass
 	replace `varlist' = "Vineyard per 1000 pop."            if `varlist'=="vine_per_1000"
 	replace `varlist' = "Vineyard area 1905 (ha)"           if `varlist'=="vineyard_1905"
 	replace `varlist' = "Log vineyard 1905 (+1)"            if `varlist'=="ln_vineyard"
+	replace `varlist' = "Log vineyard 1894 (+1)"            if `varlist'=="ln_vineyard_1894"
 	replace `varlist' = "Wine canton (>1000 ha)"            if `varlist'=="wine_canton"
 	replace `varlist' = "Vineyard per km^2"                 if `varlist'=="vine_per_km2"
 	replace `varlist' = "Vineyard share of ag land (\\%)"   if `varlist'=="vine_share_agland"

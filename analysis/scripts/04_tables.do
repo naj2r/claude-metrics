@@ -114,7 +114,7 @@ run "$MyProject/scripts/programs/_config.do"
                                           "french_catholic", "french_catholic_total", ///
                                           "ln_pop", "absinthe_dummy")
 
-    * 7 columns: 4 progressive specs + KEY (subset) + KEY (total-pop) + +ln_pop + +absinthe
+    * 7 columns: 3 progressive specs (biv, +cath, +french) + KEY (subset) + KEY (total-pop) + +ln_pop + +absinthe
     tempfile tbl
     regsave_tbl using "`tbl'" if spec == "bivariate", ///
         name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
