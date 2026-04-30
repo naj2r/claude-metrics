@@ -1,38 +1,61 @@
-************
-* SCRIPT: 2_clean_data.do
-* PURPOSE: processes the main dataset in preparation for analysis
-************
+/*==============================================================================
+ 2_clean_data.do
+ Purpose:  Clean the imported data — handle missingness, outliers, recodes
+ Input:    analysis/processed/intermediate/<dataset>_uncleaned.dta
+ Output:   analysis/processed/<dataset>.dta
+ Author:   [Author name]
+ Date:     [YYYY-MM-DD]
+ Version:  1.0
+==============================================================================*/
+
+version 19
 
 * Preamble (unnecessary when executing run.do)
 run "$MyProject/scripts/programs/_config.do"
 
-************
-* Code begins
-************
 
-use "$MyProject/processed/intermediate/auto_uncleaned.dta", clear
-local n_initial = c(N)
-
-* Replace missing values with median for that variable
-foreach v of varlist * {
-	cap confirm numeric var `v'
-	if _rc continue
-
-	gen imp_`v' = mi(`v')
-	label var imp_`v' "Imputed value for `v'"
-	summ `v', detail
-	replace `v' = r(p50) if mi(`v')
+**# 0. Load
+*------------------------------------------------------------------------------*
+{
+    * use "$MyProject/processed/intermediate/<dataset>_uncleaned.dta", clear
+    * local n_initial = c(N)
 }
 
-compress
-save "$MyProject/processed/auto.dta", replace
 
-************
-* Post-credits: codebook + inventory + pipeline updates
-************
-_codebook_update using "$MyProject/processed/auto.dta", script("2_clean_data.do")
-_inventory_append, sheet("datasets") row("created|processed/auto.dta|`=c(N)'|`=c(k)'|.|2_clean_data.do")
-_inventory_append, sheet("scripts") row("2_clean_data.do|.|imputes missing values to median, generates imp_* indicators|.")
-_inventory_append, sheet("pipeline") row("1|Median imputation of missing numeric values (no rows excluded)|`=c(N)'|0|0.0|2_clean_data.do")
+**# 1. Sample restrictions
+*------------------------------------------------------------------------------*
+{
+    * Document each restriction with an inventory pipeline entry:
+    *   drop if <condition>
+    *   _inventory_append, sheet("pipeline") row("1|<description>|`=c(N)'|`=`n_initial' - c(N)''|`=string((c(N)/`n_initial')*100, "%9.2f")'|2_clean_data.do")
+}
+
+
+**# 2. Variable cleaning
+*------------------------------------------------------------------------------*
+{
+    * Recoding, label fixes, type conversions, etc.
+    * Use Ouellet/Toffel suffix conventions:
+    *   gen <var>_ln = log(<var>) if <var> > 0 & !missing(<var>)
+    *   gen <var>_mz = cond(missing(<var>), 0, <var>)
+    *   gen <var>_miss = missing(<var>)
+}
+
+
+**# 3. Save cleaned dataset
+*------------------------------------------------------------------------------*
+{
+    * compress
+    * save "$MyProject/processed/<dataset>.dta", replace
+}
+
+
+**# 4. Post-credits: codebook + inventory
+*------------------------------------------------------------------------------*
+{
+    * _codebook_update using "$MyProject/processed/<dataset>.dta", script("2_clean_data.do")
+    * _inventory_append, sheet("datasets") row("created|processed/<dataset>.dta|`=c(N)'|`=c(k)'|.|2_clean_data.do")
+    * _inventory_append, sheet("scripts") row("2_clean_data.do|.|cleans and applies sample restrictions|.")
+}
 
 ** EOF

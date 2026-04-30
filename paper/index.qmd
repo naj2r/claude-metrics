@@ -6,29 +6,27 @@ date: today
 
 # Introduction
 
-[Project narrative goes here. Reads tables and figures from `../analysis/results/` rather than re-running code.]
+[Project narrative goes here.]
 
 # Results
 
 The main descriptive statistics are reported in @tbl-summary.
 
-```{r}
-#| label: tbl-summary
-#| tbl-cap: "Summary statistics"
-#| eval: false
-# This block is illustrative — actual import is via LaTeX \input{} below.
-```
-
-\input{../analysis/results/tables/my_summary_stats.tex}
+<!-- Once analysis/results/tables/summary_stats.tex exists, uncomment: -->
+<!-- \input{../analysis/results/tables/summary_stats.tex} -->
 
 The main regression estimates are reported in @tbl-regressions.
 
-\input{../analysis/results/tables/my_regressions.tex}
+<!-- \input{../analysis/results/tables/regressions.tex} -->
 
-A histogram of the outcome variable appears in @fig-histogram.
+The main outcome distribution appears in @fig-histogram.
 
-![Price histogram](../analysis/results/figures/price_histogram.pdf){#fig-histogram}
+<!-- ![Outcome distribution](../analysis/results/figures/<filename>.pdf){#fig-histogram} -->
 
 # Conclusion
 
 [Conclusion here.]
+
+---
+
+_This is a starter skeleton. Once `4_make_tables_figures.do` produces tables and figures into `analysis/results/`, replace the commented-out includes above with actual file references. Render with `quarto render`._
