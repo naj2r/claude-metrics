@@ -1,0 +1,21 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "[PROJECT TITLE]"
+  author: "[AUTHORS]"
+  date: today
+  chapters:
+    - index.qmd
+
+execute:
+  eval: false  # Read outputs from analysis/results/, do not re-run code
+
+format:
+  pdf:
+    documentclass: article
+    geometry:
+      - margin=1in
+  html:
+    theme: cosmo

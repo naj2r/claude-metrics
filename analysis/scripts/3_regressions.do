@@ -33,4 +33,11 @@ save "$MyProject/results/intermediate/my_regressions.dta", replace
 * R regressions. First argument: input file. Second argument: output file.
 if "$DisableR"!="1" rscript using "$MyProject/scripts/programs/regressions.R", args("$MyProject/processed/auto.dta" "$MyProject/results/intermediate/my_lm_regressions.dta")
 
+************
+* Post-credits: codebook + inventory updates
+************
+_codebook_update using "$MyProject/results/intermediate/my_regressions.dta", script("3_regressions.do")
+_inventory_append, sheet("datasets") row("created|results/intermediate/my_regressions.dta|`=c(N)'|`=c(k)'|.|3_regressions.do")
+_inventory_append, sheet("scripts") row("3_regressions.do|.|estimates 4 OLS regressions (Domestic/Foreign x mpg/mpg+weight) and saves coefs|.")
+
 ** EOF

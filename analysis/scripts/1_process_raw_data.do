@@ -15,4 +15,11 @@ insheet using "$MyProject/data/auto.csv", comma clear
 compress
 save "$MyProject/processed/intermediate/auto_uncleaned.dta", replace
 
+************
+* Post-credits: codebook + inventory updates
+************
+_codebook_update using "$MyProject/processed/intermediate/auto_uncleaned.dta", script("1_process_raw_data.do")
+_inventory_append, sheet("datasets") row("created|processed/intermediate/auto_uncleaned.dta|`=c(N)'|`=c(k)'|.|1_process_raw_data.do")
+_inventory_append, sheet("scripts") row("1_process_raw_data.do|.|imports raw auto.csv and saves uncleaned dta|.")
+
 ** EOF

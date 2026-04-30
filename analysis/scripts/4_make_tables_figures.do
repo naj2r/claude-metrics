@@ -167,4 +167,15 @@ texsave using "$MyProject/results/tables/my_regressions_with_r.tex", autonumber 
 }
 
 
+************
+* Post-credits: inventory updates for outputs
+************
+_inventory_append, sheet("outputs") row("generated|results/figures/price_histogram.pdf|figure|4_make_tables_figures.do")
+_inventory_append, sheet("outputs") row("generated|results/tables/my_summary_stats.tex|table|4_make_tables_figures.do")
+_inventory_append, sheet("outputs") row("generated|results/tables/my_regressions.tex|table|4_make_tables_figures.do")
+if "$DisableR"!="1" {
+    _inventory_append, sheet("outputs") row("generated|results/tables/my_regressions_with_r.tex|table|4_make_tables_figures.do")
+}
+_inventory_append, sheet("scripts") row("4_make_tables_figures.do|.|generates LaTeX tables and PDF figures for the paper|.")
+
 ** EOF

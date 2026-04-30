@@ -40,6 +40,11 @@ log using "`logfile'", text
 * Configure Stata's library environment and record system parameters
 run "`ProjectDir'/scripts/programs/_config.do"
 
+* Inventory: log run start
+local hostname : env HOSTNAME
+if "`hostname'" == "" local hostname "unknown"
+_inventory_append, sheet("runs") row("start|run.do|.|`c(stata_version)'|`c(os)'|`hostname'")
+
 * R packages can be installed manually (see README) or installed automatically by uncommenting the following line
 * if "$DisableR"!="1" rscript using "$MyProject/scripts/programs/_install_R_packages.R"
 
@@ -54,7 +59,12 @@ do "`ProjectDir'/scripts/4_make_tables_figures.do"
 
 * Display runtime and end the script
 local datetime2 = clock("$S_DATE $S_TIME", "DMYhms")
-di "Runtime (hours): " %-12.2fc (`datetime2' - `datetime1')/(1000*60*60)
+local duration_sec = (`datetime2' - `datetime1') / 1000
+di "Runtime (hours): " %-12.2fc `duration_sec' / 3600
+
+* Inventory: log run end
+_inventory_append, sheet("runs") row("end|run.do|`=string(`duration_sec',"%9.2f")'|`c(stata_version)'|`c(os)'|`hostname'")
+
 log close
 
 ** EOF

@@ -1,0 +1,34 @@
+---
+title: "[PROJECT TITLE]"
+author: "[AUTHORS]"
+date: today
+---
+
+# Introduction
+
+[Project narrative goes here. Reads tables and figures from `../analysis/results/` rather than re-running code.]
+
+# Results
+
+The main descriptive statistics are reported in @tbl-summary.
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: "Summary statistics"
+#| eval: false
+# This block is illustrative — actual import is via LaTeX \input{} below.
+```
+
+\input{../analysis/results/tables/my_summary_stats.tex}
+
+The main regression estimates are reported in @tbl-regressions.
+
+\input{../analysis/results/tables/my_regressions.tex}
+
+A histogram of the outcome variable appears in @fig-histogram.
+
+![Price histogram](../analysis/results/figures/price_histogram.pdf){#fig-histogram}
+
+# Conclusion
+
+[Conclusion here.]
