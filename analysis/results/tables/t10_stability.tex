@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Coefficient stability: sequential addition of controls (Oster 2019)}
+\label{tab:stability}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vineyard\_per\_cap\_coef&--179&--88.3&396*&484**&471*
+vineyard\_per\_cap\_stderr&(328)&(340)&(211)&(200)&(235)
+french\_share\_coef&&&--28.3***&--28.3***&--29.0***
+french\_share\_stderr&&&(7.88)&(7.11)&(7.43)
+catholic\_share\_coef&&8.55&&8.43*&9.63*
+catholic\_share\_stderr&&(6.36)&&(4.59)&(5.54)
+ln\_pop\_coef&&&&&0.940
+ln\_pop\_stderr&&&&&(2.11)
+\_cons\_coef&65.4***&60.0***&66.9***&61.6***&50.4*
+\_cons\_stderr&(2.64)&(5.08)&(2.38)&(3.52)&(25.5)
+N&25&25&25&25&25
+r2&0.0160&0.0774&0.478&0.538&0.543
+spec&bivariate&catholic&french&french\_catholic&ln\_pop
+model&ols&ols&ols&ols&ols
+dropped&&&&&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Sequential addition of controls (Oster 2019 framework). Vineyard coefficient sign-flips between cols. 2 and 3 (Simpson's paradox). Standard Oster monotonicity assumption is violated; the delta statistic is not interpretable here in the usual way. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

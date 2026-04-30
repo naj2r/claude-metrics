@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Subsample analysis (binary cuts) and continuous-language weighting}
+\label{tab:subsample}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+french\_share\_coef&&&--32.0**&&
+french\_share\_stderr&&&(13)&&
+vineyard\_per\_cap\_coef&302&424&631*&195&308
+vineyard\_per\_cap\_stderr&(247)&(317)&(343)&(362)&(826)
+catholic\_share\_coef&&7.42&&6.16&16.7
+catholic\_share\_stderr&&(6.22)&&(5.59)&(19.3)
+\_cons\_coef&66.5***&61.7***&63.8***&62.5***&38.4***
+\_cons\_stderr&(2.52)&(4.81)&(4.19)&(4.42)&(12.4)
+N&20&20&12&25&25
+r2&0.0514&0.125&0.586&0.0535&0.338
+spec&german\_bivariate&german\_catholic&protestant\_only&german\_lean\_continuous&french\_lean\_continuous
+model&ols&ols&ols&ols&ols
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: OLS with HC3 robust SEs in parentheses. Cols. 1-2: BINARY subsample of German-speaking cantons (french\_share < 0.5; N=20). Col. 3: Protestant-only (catholic\_share < 0.5; N=18). Cols. 4-5: CONTINUOUS weighting alternative (all 25 cantons). Col. 4 weights by (1 - french\_share\_total): German-dominant cantons get more influence. Col. 5 weights by french\_share\_total: French-dominant cantons get more influence. Continuous weighting avoids the arbitrary 0.5 cutoff and uses the full sample. Significance: * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

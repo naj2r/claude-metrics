@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Fractional logit (average marginal effects): yes-vote share on vineyard per capita}
+\label{tab:fracreg}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{Variable}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vineyard\_per\_cap\_coef&--1.77&4.78***&4.07**
+vineyard\_per\_cap\_stderr&(2.61)&(1.62)&(1.64)
+french\_share\_coef&&--0.267***&--0.240***
+french\_share\_stderr&&(0.0482)&(0.0573)
+catholic\_share\_coef&&0.0813**&0.0742*
+catholic\_share\_stderr&&(0.0389)&(0.0446)
+ln\_pop\_coef&&&0.00522
+ln\_pop\_stderr&&&(0.0179)
+absinthe\_dummy\_coef&&&--0.0914**
+absinthe\_dummy\_stderr&&&(0.0464)
+N&25&25&25
+r2&.&.&.
+spec&bivariate&french\_catholic&absinthe\_dummy
+model&fracreg\_ame&fracreg\_ame&fracreg\_ame
+dropped&&&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Average marginal effects from fractional logit (Papke and Wooldridge 1996). Dependent variable is yes-vote share on the [0,1] interval. Robust standard errors in parentheses. N=25 Swiss cantons. Significance: * p<0.10, ** p<0.05, *** p<0.01. Marginal effects are on the [0,1] scale; multiply by 100 to compare with OLS percentage-point coefficients.}
+\end{table}
+\end{document}

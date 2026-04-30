@@ -1,0 +1,668 @@
+/*==============================================================================
+ 05_expansion.do
+ Purpose:  Expansion analyses (ported from prior Brainstorm-Absinthe analysis):
+           1. Same-day placebo (vote #67 commerce, also July 5 1908)
+           2. German-only subsample (eliminates Simpson confound)
+           3. Pre-determined vineyard (1894 measure)
+           4. Vineyard-change ("desperation hypothesis")
+           5. Weighted regressions (pop, votes, French/German pop)
+           6. Alternative vineyard operationalizations
+           7. Heterogeneity interactions (vine x french/catholic/lnpop)
+           8. Additional outcomes (margin, turnout, yes/eligible)
+           9. NE prediction-gap (absinthe-industry effect estimate)
+          10. Coefficient stability + Oster delta (with Simpson caveat)
+ Input:    $MyProject/processed/absinthe_analysis.dta
+ Output:   $MyProject/results/intermediate/regressions_expansion.dta
+           $MyProject/results/tables/t04_placebo.tex
+           $MyProject/results/tables/t05_subsample.tex
+           $MyProject/results/tables/t06_weighted.tex
+           $MyProject/results/tables/t07_alt_vineyard.tex
+           $MyProject/results/tables/t08_interactions.tex
+           $MyProject/results/tables/t09_outcomes.tex
+           $MyProject/results/tables/t10_stability.tex
+ Author:   Nicholas A Jensen
+ Date:     2026-04-30
+ Version:  1.0
+==============================================================================*/
+
+version 19
+
+* Preamble (unnecessary when executing run.do)
+run "$MyProject/scripts/programs/_config.do"
+
+
+**# 0. Load
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+    assert c(N) == 25
+    isid canton_code
+    tempfile results_exp
+}
+
+
+**# 1. Same-day placebo: vote #67 (commerce) vs vote #68 (absinthe ban)
+*------------------------------------------------------------------------------*
+{
+    * If vineyard_per_cap predicts the absinthe vote but NOT the commerce vote
+    * (same voters, same day, different issue), the wine-protection mechanism
+    * is issue-specific rather than a general "wine canton" attitude.
+
+    * Absinthe vote (KEY spec): expect positive
+    reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    estimates store placebo_absinthe
+    regsave using "`results_exp'", t p autoid replace ///
+        addlabel(spec, "placebo_absinthe", model, "ols")
+
+    * Commerce vote (vote #67) — placebo: expect null
+    reg vote67_yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    estimates store placebo_commerce
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "placebo_commerce", model, "ols")
+
+    * Difference test: vineyard's effect on absinthe minus its effect on commerce
+    di _n "*** PLACEBO TEST ***"
+    di "vineyard_per_cap on yes_pct (absinthe):    " %8.2f _b[vineyard_per_cap]
+    di "vineyard_per_cap on vote67 (commerce):     [see saved estimates]"
+
+    estimates restore placebo_absinthe
+    local b_abs = _b[vineyard_per_cap]
+    estimates restore placebo_commerce
+    local b_com = _b[vineyard_per_cap]
+    di "Difference (absinthe − commerce):         " %8.2f `b_abs' - `b_com'
+}
+
+
+**# 2. Subsample / continuous-language analyses (no Simpson confound)
+*------------------------------------------------------------------------------*
+{
+    * Two complementary approaches to handle the language confound without
+    * controlling for it post-hoc:
+    *   (a) BINARY SUBSAMPLE — drop French-majority cantons (arbitrary 0.5
+    *       threshold; small N=20)
+    *   (b) CONTINUOUS WEIGHTING — keep all cantons, weight by (1 - french_share)
+    *       so German-dominant cantons get more influence (no arbitrary cutoff)
+    *
+    * (a) is in the prior Brainstorm-Absinthe analysis. (b) is preferable because
+    * it avoids losing 5 cantons to an arbitrary threshold.
+
+    * --- Binary subsample (a): German-only ---
+    qui count if french_share < 0.5
+    di _n "German-speaking cantons (french_share<0.5): N = " r(N)
+
+    reg yes_pct vineyard_per_cap if french_share < 0.5, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "german_bivariate", model, "ols")
+
+    reg yes_pct vineyard_per_cap catholic_share if french_share < 0.5, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "german_catholic", model, "ols")
+
+    * Protestant cantons only (analogous binary cut on religion)
+    qui count if catholic_share < 0.5
+    di "Protestant cantons (catholic_share<0.5):   N = " r(N)
+    reg yes_pct vineyard_per_cap french_share if catholic_share < 0.5, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "protestant_only", model, "ols")
+
+    * --- Continuous weighting (b): inverse-French-share ---
+    * Each canton's weight = (1 - french_share). Most German-dominant cantons
+    * (french_share ~ 0) get weight ~1.0; French-dominant (NE, GE) get weight
+    * ~0.15. This is the continuous analog of dropping French-majority cantons,
+    * but uses ALL 25 observations and avoids the 0.5 cutoff.
+    gen double w_german_lean = 1 - french_share_total
+    label var w_german_lean "Continuous German-lean weight (1 - french_share_total)"
+    reg yes_pct vineyard_per_cap catholic_share ///
+        [aweight = w_german_lean], vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "german_lean_continuous", model, "ols")
+
+    * Symmetric: French-lean weighting (= french_share). If wine effect persists
+    * here, the result isn't just driven by German-dominant cantons.
+    gen double w_french_lean = french_share_total
+    label var w_french_lean "Continuous French-lean weight (= french_share_total)"
+    reg yes_pct vineyard_per_cap catholic_share ///
+        [aweight = w_french_lean] if w_french_lean > 0, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "french_lean_continuous", model, "ols")
+}
+
+
+**# 3. Pre-determined vineyard (1894 measure)
+*------------------------------------------------------------------------------*
+{
+    * Using vineyard_per_cap_1894 (vineyard area 14 years before the vote)
+    * addresses reverse-causality concerns: the 1908 vote could not have
+    * caused vineyard area in 1894.
+    reg yes_pct vineyard_per_cap_1894 french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "predetermined_1894", model, "ols")
+}
+
+
+**# 4. Vineyard change 1877-1905 ("desperation hypothesis")
+*------------------------------------------------------------------------------*
+{
+    * Did cantons whose vineyards SHRANK 1877-1905 vote yes more strongly
+    * (defensive response to wine-industry decline)? Or did GROWING vineyard
+    * cantons drive the result (offensive market protection)?
+    reg yes_pct vine_change_pct french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "vine_change", model, "ols")
+
+    * Level + change horse race
+    reg yes_pct vineyard_per_cap vine_change_pct french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "level_plus_change", model, "ols")
+}
+
+
+**# 5. Weighted regressions
+*------------------------------------------------------------------------------*
+{
+    * Population weighting: larger cantons count more
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        [aweight = pop_1900], vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "weighted_pop", model, "ols")
+
+    * Vote-weighted: weight by total ballots cast
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        [aweight = total_votes], vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "weighted_votes", model, "ols")
+
+    * Eligible-voter weighted
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        [aweight = eligible], vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "weighted_eligible", model, "ols")
+
+    * French-population weighted: upweights cantons with many French speakers
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        [aweight = french_1900] if french_1900 > 0, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "weighted_french", model, "ols")
+
+    * German-population weighted: upweights cantons with many German speakers.
+    * If result survives downweighting French cantons, the effect isn't just
+    * a French-canton phenomenon.
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        [aweight = german_1900] if german_1900 > 0, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "weighted_german", model, "ols")
+}
+
+
+**# 6. Alternative vineyard operationalizations
+*------------------------------------------------------------------------------*
+{
+    * Per 1000 population (rescaled per_cap, more interpretable)
+    reg yes_pct vine_per_1000 french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "alt_per_1000", model, "ols")
+
+    * Raw vineyard area (hectares) — tests absolute size
+    reg yes_pct vineyard_1905 french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "alt_raw_ha", model, "ols")
+
+    * Log(vineyard + 1)
+    reg yes_pct ln_vineyard french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "alt_log", model, "ols")
+
+    * Wine-canton binary (>1000 ha)
+    reg yes_pct wine_canton french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "alt_binary", model, "ols")
+
+    * Vineyard per km^2 (intensity, not per-capita)
+    reg yes_pct vine_per_km2 french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "alt_per_km2", model, "ols")
+
+    * Vineyard share of agricultural land (%) — wine importance within agriculture
+    reg yes_pct vine_share_agland french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "alt_agshare", model, "ols")
+}
+
+
+**# 6.5 Absinthe-canton tiering (NE only vs NE+VD vs NE+VD+GE)
+*------------------------------------------------------------------------------*
+{
+    * Test whether broadening the absinthe-canton definition changes the
+    * vineyard coefficient. NE was the heartland (Pernod, 1797 onwards), VD
+    * housed Kübler & Wyss in Yverdon, GE had minor production. Three tiers:
+    reg yes_pct vineyard_per_cap french_share catholic_share absinthe_dummy, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "absinthe_tier_ne", model, "ols")
+
+    reg yes_pct vineyard_per_cap french_share catholic_share absinthe_dummy_broad, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "absinthe_tier_ne_vd", model, "ols")
+
+    reg yes_pct vineyard_per_cap french_share catholic_share absinthe_dummy_any, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "absinthe_tier_ne_vd_ge", model, "ols")
+}
+
+
+**# 7. Heterogeneity interactions (N=25 → noisy but signs informative)
+*------------------------------------------------------------------------------*
+{
+    gen double vine_x_french   = vineyard_per_cap * french_share
+    gen double vine_x_catholic = vineyard_per_cap * catholic_share
+    gen double vine_x_lnpop    = vineyard_per_cap * ln_pop
+    label var vine_x_french   "vineyard_per_cap x french_share"
+    label var vine_x_catholic "vineyard_per_cap x catholic_share"
+    label var vine_x_lnpop    "vineyard_per_cap x ln_pop"
+
+    * vine x french: does wine effect strengthen in French cantons?
+    reg yes_pct vineyard_per_cap french_share catholic_share vine_x_french, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_french", model, "ols")
+
+    * vine x catholic
+    reg yes_pct vineyard_per_cap french_share catholic_share vine_x_catholic, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_catholic", model, "ols")
+
+    * vine x lnpop
+    reg yes_pct vineyard_per_cap french_share catholic_share ln_pop vine_x_lnpop, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_lnpop", model, "ols")
+}
+
+
+**# 8. Additional outcomes (margin, yes/eligible, turnout)
+*------------------------------------------------------------------------------*
+{
+    * Margin of victory: more sensitive to landslide cantons
+    reg margin vineyard_per_cap french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "outcome_margin", model, "ols")
+
+    * Yes votes / eligible voters (combines yes-share and turnout)
+    reg yes_eligible vineyard_per_cap french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "outcome_yes_elig", model, "ols")
+
+    * Turnout — does wine-canton status predict who showed up?
+    reg turnout vineyard_per_cap french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "outcome_turnout", model, "ols")
+}
+
+
+**# 9. NE prediction-gap (absinthe-industry effect estimate)
+*------------------------------------------------------------------------------*
+{
+    * Fit KEY spec EXCLUDING NE; predict what NE would have voted as a "normal"
+    * wine canton; compare to actual NE vote. The gap (actual − predicted)
+    * estimates the net effect of NE's absinthe-production employment on its vote.
+    qui reg yes_pct vineyard_per_cap french_share catholic_share ///
+        if canton_code != "NE", vce(hc3)
+    predict double yhat_no_ne
+    qui sum yhat_no_ne if canton_code == "NE"
+    local pred_NE = r(mean)
+    qui sum yes_pct if canton_code == "NE"
+    local actual_NE = r(mean)
+    local ne_gap = `actual_NE' - `pred_NE'
+    di _n "*** NE PREDICTION-GAP ANALYSIS ***"
+    di "Predicted NE yes_pct (model fit without NE):  " %6.2f `pred_NE'
+    di "Actual NE yes_pct:                            " %6.2f `actual_NE'
+    di "Gap (actual − predicted):                     " %6.2f `ne_gap'
+    di "Interpretation: NE voted " %4.1f abs(`ne_gap') " pp " ///
+       cond(`ne_gap' < 0, "BELOW", "ABOVE") " what wine alone predicts."
+    di "If gap is large negative, absinthe-industry employment plausibly"
+    di "outweighed any wine-protection motive in NE specifically."
+    drop yhat_no_ne
+}
+
+
+**# 10. Coefficient stability + Oster (2019) delta
+*------------------------------------------------------------------------------*
+{
+    * Sequential addition of controls: track beta(vineyard) and R2.
+    * Oster (2019) delta = how strong unobservables would need to be (relative
+    * to observables) to drive beta to zero.
+    qui reg yes_pct vineyard_per_cap, vce(hc3)
+    local b1   = _b[vineyard_per_cap]
+    local r2_1 = e(r2)
+
+    qui reg yes_pct vineyard_per_cap catholic_share, vce(hc3)
+    local b2   = _b[vineyard_per_cap]
+    local r2_2 = e(r2)
+
+    qui reg yes_pct vineyard_per_cap french_share, vce(hc3)
+    local b3   = _b[vineyard_per_cap]
+    local r2_3 = e(r2)
+
+    qui reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    local b4   = _b[vineyard_per_cap]
+    local r2_4 = e(r2)
+
+    qui reg yes_pct vineyard_per_cap french_share catholic_share ln_pop, vce(hc3)
+    local b5   = _b[vineyard_per_cap]
+    local r2_5 = e(r2)
+
+    * Oster delta: bivariate vs full (KEY spec)
+    local R2_max = min(1.3 * `r2_4', 1.0)
+    local denom  = (`b1' - `b4') * (`r2_4' - `r2_1')
+    local delta  = cond(abs(`denom') > 1e-10, ///
+                        `b4' * (`R2_max' - `r2_4') / `denom', .)
+
+    di _n "*** COEFFICIENT STABILITY ***"
+    di "  Bivariate:        beta = " %9.2f `b1' "  R2 = " %5.3f `r2_1'
+    di "  +catholic:        beta = " %9.2f `b2' "  R2 = " %5.3f `r2_2'
+    di "  +french:          beta = " %9.2f `b3' "  R2 = " %5.3f `r2_3'
+    di "  +french+catholic: beta = " %9.2f `b4' "  R2 = " %5.3f `r2_4'
+    di "  +ln_pop:          beta = " %9.2f `b5' "  R2 = " %5.3f `r2_5'
+    di _n "  Oster (2019) delta = " %6.2f `delta'
+    di "  CAVEAT: The Simpson-paradox sign-flip violates Oster's monotonicity"
+    di "  assumption. Standard interpretation does not apply cleanly."
+}
+
+
+**# 11. Save expansion regression results
+*------------------------------------------------------------------------------*
+{
+    use "`results_exp'", clear
+    compress
+    save "$MyProject/results/intermediate/regressions_expansion.dta", replace
+    local nobs_e  = c(N)
+    local nvars_e = c(k)
+    di "Saved regressions_expansion.dta: N=`nobs_e' rows, K=`nvars_e' vars"
+}
+
+
+**# 12. Build expansion tables (LaTeX via texsave + regsave_tbl)
+*------------------------------------------------------------------------------*
+
+**# 12.1 t04_placebo: same-day placebo (absinthe vs commerce)
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "placebo_absinthe", "placebo_commerce")
+    tempfile pb
+    regsave_tbl using "`pb'" if spec == "placebo_absinthe", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`pb'" if spec == "placebo_commerce", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`pb'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn1 "Notes: Both votes held July 5, 1908. OLS, HC3 robust SEs in parentheses. "
+    local fn2 "Col. 1: yes-vote share on absinthe ban (vote #68). Col. 2: yes-vote share on commerce article (vote #67, same day, different issue) -- placebo. "
+    local fn3 "If vineyard predicts col. 1 but not col. 2, the wine-protection mechanism is issue-specific. Significance: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 using "$MyProject/results/tables/t04_placebo.tex", ///
+        replace autonumber varlabels marker(tab:placebo) ///
+        title("Same-day placebo: absinthe ban (vote #68) vs commerce article (vote #67)") ///
+        footnote("`fn1'`fn2'`fn3'")
+}
+
+
+**# 12.2 t05_subsample: subsamples + continuous-language weighting
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "german_bivariate", "german_catholic", ///
+                                          "protestant_only", "german_lean_continuous", ///
+                                          "french_lean_continuous")
+    tempfile sub
+    regsave_tbl using "`sub'" if spec == "german_bivariate", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`sub'" if spec == "german_catholic", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`sub'" if spec == "protestant_only", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`sub'" if spec == "german_lean_continuous", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`sub'" if spec == "french_lean_continuous", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`sub'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn1 "Notes: OLS with HC3 robust SEs in parentheses. "
+    local fn2 "Cols. 1-2: BINARY subsample of German-speaking cantons (french_share < 0.5; N=20). Col. 3: Protestant-only (catholic_share < 0.5; N=18). "
+    local fn3 "Cols. 4-5: CONTINUOUS weighting alternative (all 25 cantons). Col. 4 weights by (1 - french_share_total): German-dominant cantons get more influence. Col. 5 weights by french_share_total: French-dominant cantons get more influence. "
+    local fn4 "Continuous weighting avoids the arbitrary 0.5 cutoff and uses the full sample. Significance: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 using "$MyProject/results/tables/t05_subsample.tex", ///
+        replace autonumber varlabels marker(tab:subsample) ///
+        title("Subsample analysis (binary cuts) and continuous-language weighting") ///
+        footnote("`fn1'`fn2'`fn3'`fn4'")
+}
+
+
+**# 12.2b t12_absinthe_tier: absinthe-canton tiering robustness
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "absinthe_tier_ne", "absinthe_tier_ne_vd", ///
+                                          "absinthe_tier_ne_vd_ge")
+    tempfile at
+    regsave_tbl using "`at'" if spec == "absinthe_tier_ne", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`at'" if spec == "absinthe_tier_ne_vd", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`at'" if spec == "absinthe_tier_ne_vd_ge", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`at'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn1 "Notes: KEY spec with tiered absinthe-canton dummies. "
+    local fn2 "Col. 1: NE only (Val-de-Travers heartland; Pernod 1797). Col. 2: NE + VD (incl. Yverdon Kübler & Wyss). Col. 3: NE + VD + GE (any documented production). "
+    local fn3 "Vineyard coefficient should be stable across tiering choices if the wine-protection mechanism is distinct from absinthe-employment effects. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 using "$MyProject/results/tables/t12_absinthe_tier.tex", ///
+        replace autonumber varlabels marker(tab:absinthe_tier) ///
+        title("Absinthe-canton tiering: how does broadening the dummy change the vineyard effect?") ///
+        footnote("`fn1'`fn2'`fn3'")
+}
+
+
+**# 12.3 t06_weighted: weighted regressions
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "weighted_pop", "weighted_votes", ///
+                                          "weighted_eligible", "weighted_french", "weighted_german")
+    tempfile wt
+    regsave_tbl using "`wt'" if spec == "weighted_pop", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`wt'" if spec == "weighted_votes", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`wt'" if spec == "weighted_eligible", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`wt'" if spec == "weighted_french", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`wt'" if spec == "weighted_german", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`wt'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: KEY spec, weighted by 1900 population (1), 1908 ballots cast (2), eligible voters (3), French-speaking pop (4), German-speaking pop (5). HC3 robust SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 using "$MyProject/results/tables/t06_weighted.tex", ///
+        replace autonumber varlabels marker(tab:weighted) ///
+        title("Weighted regressions: KEY spec under alternative weighting schemes") ///
+        footnote("`fn'")
+}
+
+
+**# 12.4 t07_alt_vineyard: alternative vineyard operationalizations
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "predetermined_1894", "alt_per_1000", ///
+                                          "alt_raw_ha", "alt_log", "alt_binary", ///
+                                          "alt_per_km2", "alt_agshare")
+    tempfile av
+    regsave_tbl using "`av'" if spec == "predetermined_1894", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`av'" if spec == "alt_per_1000", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`av'" if spec == "alt_raw_ha", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`av'" if spec == "alt_log", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`av'" if spec == "alt_binary", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`av'" if spec == "alt_per_km2", ///
+        name(col6) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`av'" if spec == "alt_agshare", ///
+        name(col7) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`av'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: Each column substitutes a different vineyard measure into the KEY spec. (1) Pre-determined 1894 per capita; (2) per 1000 pop; (3) raw hectares; (4) log(ha+1); (5) binary >1000 ha; (6) per km^2; (7) % of agricultural land. All include french_share + catholic_share. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 col6 col7 using "$MyProject/results/tables/t07_alt_vineyard.tex", ///
+        replace autonumber varlabels marker(tab:alt_vineyard) ///
+        title("Alternative vineyard operationalizations: which measure matters?") ///
+        footnote("`fn'")
+}
+
+
+**# 12.5 t08_interactions: heterogeneity
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "interact_french", "interact_catholic", "interact_lnpop")
+    tempfile ix
+    regsave_tbl using "`ix'" if spec == "interact_french", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`ix'" if spec == "interact_catholic", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`ix'" if spec == "interact_lnpop", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`ix'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: KEY spec + one interaction term per column. (1) vineyard x french_share; (2) vineyard x catholic_share; (3) vineyard x ln_pop. N=25 makes interactions noisy but signs are informative. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 using "$MyProject/results/tables/t08_interactions.tex", ///
+        replace autonumber varlabels marker(tab:interactions) ///
+        title("Heterogeneity: vineyard interactions with French, Catholic, log pop") ///
+        footnote("`fn'")
+}
+
+
+**# 12.6 t09_outcomes: alternative outcomes
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "outcome_margin", "outcome_yes_elig", "outcome_turnout")
+    tempfile oc
+    regsave_tbl using "`oc'" if spec == "outcome_margin", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`oc'" if spec == "outcome_yes_elig", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`oc'" if spec == "outcome_turnout", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`oc'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: KEY spec with alternative dependent variables. (1) Margin = (yes-no)/total x 100; (2) yes votes / eligible voters x 100; (3) turnout (%). HC3 SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 using "$MyProject/results/tables/t09_outcomes.tex", ///
+        replace autonumber varlabels marker(tab:outcomes) ///
+        title("Alternative outcomes: margin, yes-per-eligible, turnout") ///
+        footnote("`fn'")
+}
+
+
+**# 12.7 t10_stability: coefficient stability table
+*------------------------------------------------------------------------------*
+{
+    * Build manually since the bivariate is in regressions.dta (script 03)
+    use "$MyProject/results/intermediate/regressions.dta", clear
+    keep if model == "ols" & inlist(spec, "bivariate", "catholic", "french", ///
+                                          "french_catholic", "ln_pop")
+    tempfile st
+    regsave_tbl using "`st'" if spec == "bivariate", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`st'" if spec == "catholic", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`st'" if spec == "french", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`st'" if spec == "french_catholic", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`st'" if spec == "ln_pop", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`st'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: Sequential addition of controls (Oster 2019 framework). Vineyard coefficient sign-flips between cols. 2 and 3 (Simpson's paradox). Standard Oster monotonicity assumption is violated; the delta statistic is not interpretable here in the usual way. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 using "$MyProject/results/tables/t10_stability.tex", ///
+        replace autonumber varlabels marker(tab:stability) ///
+        title("Coefficient stability: sequential addition of controls (Oster 2019)") ///
+        footnote("`fn'")
+}
+
+
+**# 13. Sanity-check assertions for the expansion analyses
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+
+    * Placebo: vineyard coef on commerce (vote #67) should be SMALLER in
+    * absolute value than on absinthe (vote #68). If the wine effect were
+    * generic "wine canton attitude," it would show up on the commerce vote too.
+    qui sum coef if var == "vineyard_per_cap" & spec == "placebo_absinthe"
+    local b_abs = r(mean)
+    qui sum coef if var == "vineyard_per_cap" & spec == "placebo_commerce"
+    local b_com = r(mean)
+    di _n "Placebo check: |b_absinthe|=" %6.1f abs(`b_abs') ///
+       "  |b_commerce|=" %6.1f abs(`b_com')
+    assert abs(`b_com') < abs(`b_abs')
+
+    * German subsample: vineyard coef should still be POSITIVE (no Simpson)
+    qui sum coef if var == "vineyard_per_cap" & spec == "german_catholic"
+    di "German subsample (+catholic): vineyard coef = " %6.1f r(mean)
+    assert r(mean) > 0
+
+    * Pre-determined 1894 measure: vineyard coef should still be POSITIVE
+    qui sum coef if var == "vineyard_per_cap_1894" & spec == "predetermined_1894"
+    di "Pre-determined 1894 measure: vineyard coef = " %6.1f r(mean)
+    assert r(mean) > 0
+
+    * Weighted regressions: vineyard coef positive in at least 4 of 5 weighting schemes
+    local pos_count = 0
+    foreach s in weighted_pop weighted_votes weighted_eligible weighted_french weighted_german {
+        qui sum coef if var == "vineyard_per_cap" & spec == "`s'"
+        if r(mean) > 0 local ++pos_count
+    }
+    di "Weighted regressions: vineyard coef positive in `pos_count' of 5 schemes"
+    assert `pos_count' >= 4
+
+    di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
+}
+
+
+**# 14. Post-credits: codebook + inventory
+*------------------------------------------------------------------------------*
+{
+    _codebook_update using "$MyProject/results/intermediate/regressions_expansion.dta", ///
+        script("05_expansion.do")
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    local nobs  = c(N)
+    local nvars = c(k)
+    _inventory_append, sheet("datasets") ///
+        row("created|results/intermediate/regressions_expansion.dta|`nobs'|`nvars'|.|05_expansion.do")
+
+    foreach t in t04_placebo t05_subsample t06_weighted t07_alt_vineyard ///
+                 t08_interactions t09_outcomes t10_stability t12_absinthe_tier {
+        _inventory_append, sheet("outputs") ///
+            row("generated|results/tables/`t'.tex|table|05_expansion.do")
+    }
+    _inventory_append, sheet("scripts") ///
+        row("05_expansion.do|.|expansion analyses: placebo, subsamples, weighting, alt measures, interactions, outcomes, NE gap, Oster stability|.")
+}
+
+** EOF

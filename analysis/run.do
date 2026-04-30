@@ -1,25 +1,25 @@
 **********************
 * OVERVIEW
 *   This script generates tables and figures for the paper:
-*       "My Project" (by Julian Reif)
-*   All raw data are stored in /data
+*       "Absinthe, Vineyards, and the 1908 Swiss Ban" (by Nicholas A Jensen)
+*   Raw data are stored at $Absinthe1Data (external Dropbox)
 *   All tables are outputted to /results/tables
 *   All figures are outputted to /results/figures
 *
 * SOFTWARE REQUIREMENTS
-*   Analyses run on Windows using Stata version 15 and R-3.6.0
+*   Analyses run on Windows using Stata version 19
 *
 * TO PERFORM A CLEAN RUN, DELETE THE FOLLOWING TWO FOLDERS:
 *   /processed
 *   /results
 **********************
 
-* User must uncomment the following line ("global ...") and set the filepath equal to the folder containing this run.do file 
-* global MyProject "C:/Users/jdoe/MyProject"
+* $Absinthe1 is set in the user's Stata profile (stata_profile.do)
+global MyProject "$Absinthe1"
 local ProjectDir "$MyProject"
 
-* To disable the R portion of the analysis, set the following flag to 1
-global DisableR = 0
+* R is not used in this project
+global DisableR = 1
 
 * Confirm that the globals for the project root directory have been defined
 cap assert !mi("`ProjectDir'")
@@ -52,10 +52,11 @@ _inventory_append, sheet("runs") row("start|run.do|.|`c(stata_version)'|`c(os)'|
 if "$DisableR"!="1" rscript, rversion(3.6) require(tidyverse estimatr)
 
 * Run project analysis
-do "`ProjectDir'/scripts/1_process_raw_data.do"
-do "`ProjectDir'/scripts/2_clean_data.do"
-do "`ProjectDir'/scripts/3_regressions.do"
-do "`ProjectDir'/scripts/4_make_tables_figures.do"
+do "`ProjectDir'/scripts/01_import.do"
+do "`ProjectDir'/scripts/02_clean.do"
+do "`ProjectDir'/scripts/03_regress.do"
+do "`ProjectDir'/scripts/04_tables.do"
+do "`ProjectDir'/scripts/05_expansion.do"
 
 * Display runtime and end the script
 local datetime2 = clock("$S_DATE $S_TIME", "DMYhms")

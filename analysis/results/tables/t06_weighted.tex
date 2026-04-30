@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Weighted regressions: KEY spec under alternative weighting schemes}
+\label{tab:weighted}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vineyard\_per\_cap\_coef&629&677*&613&751&690
+vineyard\_per\_cap\_stderr&(383)&(364)&(391)&(1,344)&(445)
+french\_share\_coef&--29.7***&--30.6***&--29.2***&--28.9&--31.9**
+french\_share\_stderr&(9.55)&(9.47)&(9.88)&(26.5)&(11.4)
+catholic\_share\_coef&8.13&6.71&7.72&9.65&10.8
+catholic\_share\_stderr&(7.25)&(7.64)&(7.37)&(29.1)&(7.80)
+\_cons\_coef&61.8***&62.1***&62.1***&59.2***&60.6***
+\_cons\_stderr&(4.76)&(4.42)&(4.92)&(8.24)&(5.02)
+N&25&25&25&25&25
+r2&0.604&0.593&0.594&0.522&0.484
+spec&weighted\_pop&weighted\_votes&weighted\_eligible&weighted\_french&weighted\_german
+model&ols&ols&ols&ols&ols
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec, weighted by 1900 population (1), 1908 ballots cast (2), eligible voters (3), French-speaking pop (4), German-speaking pop (5). HC3 robust SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

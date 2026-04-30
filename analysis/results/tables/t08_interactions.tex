@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Heterogeneity: vineyard interactions with French, Catholic, log pop}
+\label{tab:interactions}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{Variable}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vine\_x\_catholic\_coef&&--458&
+vine\_x\_catholic\_stderr&&(579)&
+vine\_x\_french\_coef&173&&
+vine\_x\_french\_stderr&(1,416)&&
+vineyard\_per\_cap\_coef&442&724**&--943
+vineyard\_per\_cap\_stderr&(278)&(293)&(8,162)
+french\_share\_coef&--30.3&--28.0***&--29.9***
+french\_share\_stderr&(23.5)&(6.96)&(9.25)
+catholic\_share\_coef&8.24&11.5*&9.28
+catholic\_share\_stderr&(5.97)&(5.91)&(7.08)
+ln\_pop\_coef&&&0.518
+ln\_pop\_stderr&&&(2.66)
+vine\_x\_lnpop\_coef&&&125
+vine\_x\_lnpop\_stderr&&&(680)
+\_cons\_coef&61.9***&59.6***&55.3
+\_cons\_stderr&(4.70)&(4.32)&(32)
+N&25&25&25
+r2&0.539&0.553&0.547
+spec&interact\_french&interact\_catholic&interact\_lnpop
+model&ols&ols&ols
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec + one interaction term per column. (1) vineyard x french\_share; (2) vineyard x catholic\_share; (3) vineyard x ln\_pop. N=25 makes interactions noisy but signs are informative. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

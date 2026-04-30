@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Alternative outcomes: margin, yes-per-eligible, turnout}
+\label{tab:outcomes}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{Variable}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vineyard\_per\_cap\_coef&919**&557&429
+vineyard\_per\_cap\_stderr&(409)&(340)&(441)
+french\_share\_coef&--55.2***&--21.7***&--9.88
+french\_share\_stderr&(13.8)&(6.85)&(9.51)
+catholic\_share\_coef&16.9*&--11.2&--23.0**
+catholic\_share\_stderr&(8.96)&(6.92)&(10.6)
+\_cons\_coef&22.7***&36.5***&60.2***
+\_cons\_stderr&(6.89)&(5.22)&(8.18)
+N&25&25&25
+r2&0.533&0.349&0.234
+spec&outcome\_margin&outcome\_yes\_elig&outcome\_turnout
+model&ols&ols&ols
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec with alternative dependent variables. (1) Margin = (yes-no)/total x 100; (2) yes votes / eligible voters x 100; (3) turnout (\%). HC3 SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

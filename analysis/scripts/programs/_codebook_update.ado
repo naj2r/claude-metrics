@@ -75,9 +75,11 @@ program define _codebook_update
     }
     file close `rh'
 
-    * Append the new section
+    * Append the new section. Use **bold** instead of backticks for the path
+    * because file_read on subsequent invocations chokes on lines containing
+    * backticks (Stata interprets them as macro references even inside macval).
     file write `wh' "`marker_start'" _n
-    file write `wh' "### \``rel_using'\`" _n _n
+    file write `wh' "### `rel_using'" _n _n
     file write `wh' "_Updated: `c(current_date)' `c(current_time)' by `script'_" _n _n
 
     * Open the dataset (preserve current data)

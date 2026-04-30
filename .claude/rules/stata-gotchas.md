@@ -22,6 +22,13 @@ When writing or editing `.do` files, ALWAYS follow these rules. They are loaded 
 - Use `i.` prefix for categorical variables in regressions — bare numeric vars are treated as continuous.
 - Use `///` for line continuation, not `\`.
 
+## File I/O and macro safety
+
+- **NEVER write literal backticks (`` ` ``) into files that another Stata script will later `file read`.** Stata's macro substitution treats any `` `...' `` pattern as a macro reference, even inside `macval()` and compound quotes (`` `"..."' ``). When you read back a line containing backticks (e.g., markdown code-quoted text from a previously generated `codebook.md`), Stata fails with `r(132) too few quotes`.
+  - **Symptom**: `_codebook_update` (or any program that round-trips a markdown file) crashes on the second invocation, succeeding only the first time.
+  - **Fix**: in markdown output, use bold (`**path**`) or HTML `<code>path</code>` instead of backtick code-quotes. Reserve backticks for human-only docs that no Stata program will read back.
+  - **Symmetric rule for input**: when reading user-provided text via `file read`, sanitize backticks before passing through `macval()` or compound quotes.
+
 ## Project-specific
 
 - All paths reference `$MyProject` (defined in `run.do`). Never hardcode.

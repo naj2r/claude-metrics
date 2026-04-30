@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Same-day placebo: absinthe ban (vote \#68) vs commerce article (vote \#67)}
+\label{tab:placebo}
+\begin{tabularx}{\linewidth}{@{}lCC@{}}
+
+\toprule
+&{(1)}&{(2)} \tabularnewline \midrule
+{Variable}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vineyard\_per\_cap\_coef&484**&76.0
+vineyard\_per\_cap\_stderr&(200)&(445)
+french\_share\_coef&--28.3***&--5.76
+french\_share\_stderr&(7.11)&(12.4)
+catholic\_share\_coef&8.43*&--3.64
+catholic\_share\_stderr&(4.59)&(6.14)
+\_cons\_coef&61.6***&74.7***
+\_cons\_stderr&(3.52)&(4.05)
+N&25&25
+r2&0.538&0.0347
+spec&placebo\_absinthe&placebo\_commerce
+model&ols&ols
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Both votes held July 5, 1908. OLS, HC3 robust SEs in parentheses. Col. 1: yes-vote share on absinthe ban (vote \#68). Col. 2: yes-vote share on commerce article (vote \#67, same day, different issue) -- placebo. If vineyard predicts col. 1 but not col. 2, the wine-protection mechanism is issue-specific. Significance: * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}
