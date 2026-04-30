@@ -1,15 +1,27 @@
 /*==============================================================================
  02_clean.do
- Purpose:  Merge 6 uncleaned sources into a single 25-canton analysis dataset.
-           Construct derived variables (vineyard_per_cap, french_share,
-           catholic_share, ln_pop, yes_frac, absinthe_dummy).
+ Purpose:  Merge swissvotes (vote #68 + #67 placebo + 15-vote 1900-1910 panel)
+           plus 8 HSSO uncleaned sources into a single 25-canton analysis
+           dataset, plus a 375-row placebo panel (25 cantons x 15 votes).
+           Construct ~30 derived variables: vineyard measures (per-cap, per-1000,
+           per-km2, ag-share, alt operationalizations), share variables (subset
+           and total-pop denominators for french/german/catholic), absinthe-tier
+           dummies (NE / NE+VD / NE+VD+GE), strategist 2026-04-30 controls
+           (net_migration_pre_vote, net_migration_per_cap, parcels_per_farm_1905),
+           additional outcomes (margin, yes_eligible).
  Input:    $MyProject/processed/intermediate/swissvotes_uncleaned.dta
+           $MyProject/processed/intermediate/vote67_uncleaned.dta
+           $MyProject/processed/intermediate/placebo_votes_uncleaned.dta
            $MyProject/processed/intermediate/vineyard_uncleaned.dta
+           $MyProject/processed/intermediate/agland_uncleaned.dta
            $MyProject/processed/intermediate/population_uncleaned.dta
            $MyProject/processed/intermediate/pop_density_uncleaned.dta
            $MyProject/processed/intermediate/religion_uncleaned.dta
            $MyProject/processed/intermediate/language_uncleaned.dta
+           $MyProject/processed/intermediate/migration_uncleaned.dta
+           $MyProject/processed/intermediate/farm_concentration_uncleaned.dta
  Output:   $MyProject/processed/absinthe_analysis.dta  (N=25)
+           $MyProject/processed/placebo_panel.dta      (N=375)
  Author:   Nicholas A Jensen
  Date:     2026-04-30
  Version:  1.0
@@ -118,6 +130,24 @@ run "$MyProject/scripts/programs/_config.do"
 *------------------------------------------------------------------------------*
 {
     merge 1:1 canton_code using "$MyProject/processed/intermediate/agland_uncleaned.dta", ///
+        assert(match) nogenerate
+    assert c(N) == 25
+}
+
+
+**# 1.8 Net migration 1900/10 (econ-vitality control, per strategist 2026-04-30)
+*------------------------------------------------------------------------------*
+{
+    merge 1:1 canton_code using "$MyProject/processed/intermediate/migration_uncleaned.dta", ///
+        assert(match) nogenerate
+    assert c(N) == 25
+}
+
+
+**# 1.9 Farm concentration 1905 (Olson organizational-capacity proxy)
+*------------------------------------------------------------------------------*
+{
+    merge 1:1 canton_code using "$MyProject/processed/intermediate/farm_concentration_uncleaned.dta", ///
         assert(match) nogenerate
     assert c(N) == 25
 }
@@ -267,6 +297,30 @@ run "$MyProject/scripts/programs/_config.do"
     * Vineyard share of agricultural land (%) — uses 1912 ag-land (closest to 1908)
     gen double vine_share_agland = (vineyard_1905 / (agland_1000ha * 1000)) * 100
     label var vine_share_agland "Vineyard share of ag land (%, 1905/1912)"
+
+    * --- New controls per strategist 2026-04-30 (see strategist_migration_note) ---
+    * Net migration: alias the imported variable to the strategist's
+    * preferred name. 1900/10 average annual net migration (positive = net
+    * in-migration). Controls for "wine cantons were just declining anyway"
+    * alternative explanation.
+    gen double net_migration_pre_vote = net_migration_1900_10
+    label var net_migration_pre_vote "Net migration 1900/10, avg/yr (persons)"
+
+    * Per-capita version (more comparable across canton sizes)
+    gen double net_migration_per_cap = net_migration_1900_10 / pop_1900
+    label var net_migration_per_cap "Net migration 1900/10 per 1900 capita"
+
+    * --- German-language share (the "other side" of french_share) ---
+    * Per user 2026-04-30: french_share and german_share are two sides of the
+    * same coin in the binary subset, but for cantons with significant
+    * Italian/Romansh populations they're not exact complements. Construct
+    * both subset and total-pop denominator versions for symmetry.
+    gen double german_share       = german_1900 / (german_1900 + french_1900)
+    gen double german_share_total = german_1900 / pop_1900
+    label var german_share       "German share (Ger.+Fr. denom.)"
+    label var german_share_total "German share (total pop. denom.)"
+    assert inrange(german_share,       0, 1)
+    assert inrange(german_share_total, 0, 1)
 }
 
 
@@ -327,11 +381,13 @@ run "$MyProject/scripts/programs/_config.do"
     * No missing values in any analysis variable. (vine_change_pct intentionally
     * missing for cantons with vineyard_1877==0; not asserted.)
     foreach v in yes_pct yes_frac vineyard_per_cap french_share catholic_share ///
+                 german_share german_share_total ///
                  ln_pop pop_1900 pop_density_1900 ///
                  absinthe_dummy absinthe_dummy_broad absinthe_dummy_any ///
                  vote67_yes_pct agland_1000ha vine_share_agland margin ///
                  vine_per_1000 vineyard_per_cap_1894 area_km2 ///
-                 lang_french lang_french_broad lang_italian wine_canton {
+                 lang_french lang_french_broad lang_italian wine_canton ///
+                 net_migration_pre_vote net_migration_per_cap parcels_per_farm_1905 {
         cap assert !missing(`v')
         if _rc {
             di as error "MISSING VALUE in `v' — aborting"
@@ -363,7 +419,10 @@ run "$MyProject/scripts/programs/_config.do"
           vine_change_1877_1905 vine_change_pct ///
           wine_canton vine_per_km2 vine_share_agland ///
           french_share french_share_total catholic_share catholic_share_total ///
+          german_share german_share_total ///
           ln_pop pop_1900 pop_density_1900 area_km2 agland_1000ha ///
+          net_migration_pre_vote net_migration_per_cap net_migration_1900_10 ///
+          parcels_per_farm_1905 ///
           absinthe_dummy lang_french lang_french_broad lang_italian ///
           german_1900 french_1900 protestant_1900 catholic_1900
 

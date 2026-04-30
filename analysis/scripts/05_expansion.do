@@ -1,25 +1,46 @@
 /*==============================================================================
  05_expansion.do
- Purpose:  Expansion analyses (ported from prior Brainstorm-Absinthe analysis):
-           1. Same-day placebo (vote #67 commerce, also July 5 1908)
-           2. German-only subsample (eliminates Simpson confound)
-           3. Pre-determined vineyard (1894 measure)
-           4. Vineyard-change ("desperation hypothesis")
-           5. Weighted regressions (pop, votes, French/German pop)
-           6. Alternative vineyard operationalizations
-           7. Heterogeneity interactions (vine x french/catholic/lnpop)
-           8. Additional outcomes (margin, turnout, yes/eligible)
-           9. NE prediction-gap (absinthe-industry effect estimate)
-          10. Coefficient stability + Oster delta (with Simpson caveat)
+ Purpose:  Expansion analyses. Originally ported from prior Brainstorm-Absinthe
+           replication; extended 2026-04-30 with cross-referendum panel,
+           strategist new-controls, German-share interaction, Olson 1965
+           concentration test, and Gelbach (2016) decomposition.
+            1. Same-day placebo (vote #67 commerce, also July 5 1908)
+            2. German-only subsample (eliminates Simpson confound)
+            3. Pre-determined vineyard (1894 measure)
+            4. Vineyard-change ("desperation hypothesis")
+            5. Weighted regressions (pop, votes, French/German pop)
+            6. Alternative vineyard operationalizations
+            6.5 Absinthe-canton tiering (NE / NE+VD / NE+VD+GE)
+            7. Heterogeneity interactions (vine x french/german/catholic/lnpop/parcels)
+            8. Additional outcomes (margin, turnout, yes/eligible)
+            9. NE prediction-gap (absinthe-industry effect estimate)
+           10. Coefficient stability + Oster delta (with Simpson caveat)
+           10.5 Cross-referendum falsification panel (15 votes 1900-1910)
+           10.6 Strategist new-control specs (migration, parcels) [2026-04-30]
+           10.7 vine x german_share interaction [2026-04-30]
+           10.8 vine x parcels_per_farm interaction (Olson 1965) [2026-04-30]
+           10.9 Gelbach (2016) decomposition of Simpson sign-flip [2026-04-30]
+                IMPORTANT: read analysis/documentation/methods/gelbach_decomposition.md
+                before modifying section 10.9. The methods-doc-reminder hook
+                (.claude/hooks/methods-doc-reminder.sh) auto-surfaces this.
  Input:    $MyProject/processed/absinthe_analysis.dta
+           $MyProject/processed/placebo_panel.dta
+           $MyProject/results/intermediate/regressions.dta (for stability table)
  Output:   $MyProject/results/intermediate/regressions_expansion.dta
+           $MyProject/results/intermediate/gelbach_decomp.dta
            $MyProject/results/tables/t04_placebo.tex
            $MyProject/results/tables/t05_subsample.tex
            $MyProject/results/tables/t06_weighted.tex
            $MyProject/results/tables/t07_alt_vineyard.tex
-           $MyProject/results/tables/t08_interactions.tex
+           $MyProject/results/tables/t08_interactions.tex (5 cols)
            $MyProject/results/tables/t09_outcomes.tex
            $MyProject/results/tables/t10_stability.tex
+           $MyProject/results/tables/t12_absinthe_tier.tex
+           $MyProject/results/tables/t13_placebo_panel.tex
+           $MyProject/results/tables/t14_new_controls.tex
+           $MyProject/results/tables/t15_gelbach.tex
+           $MyProject/results/figures/f03_placebo_distribution.pdf
+           $MyProject/results/figures/f04_marginsplot_french.pdf
  Author:   Nicholas A Jensen
  Date:     2026-04-30
  Version:  1.0
@@ -397,6 +418,176 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.6 Strategist new controls (per 2026-04-30 handoff): KEY + each
+*------------------------------------------------------------------------------*
+{
+    * KEY + net_migration_pre_vote (econ-vitality control). Tests "wine cantons
+    * were just declining anyway" alternative. If vineyard coef survives,
+    * the absinthe story isn't a generic decline-canton effect.
+    reg yes_pct vineyard_per_cap french_share catholic_share net_migration_pre_vote, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "ctrl_migration", model, "ols")
+
+    * KEY + net_migration_per_cap (per-capita variant; same logic, scale-invariant)
+    reg yes_pct vineyard_per_cap french_share catholic_share net_migration_per_cap, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "ctrl_migration_pc", model, "ols")
+
+    * KEY + parcels_per_farm_1905 (Olson 1965 organizational-capacity control).
+    * Imperfect concentration proxy: lower parcels/farm = consolidated holdings;
+    * higher = fragmented. Mountain cantons confound this with topography. Used
+    * because avg-parcel-area data starts at 1929 in I.39c (not 1905).
+    reg yes_pct vineyard_per_cap french_share catholic_share parcels_per_farm_1905, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "ctrl_parcels", model, "ols")
+
+    * KEY + BOTH new controls together (migration LEVEL + parcels; per-capita
+    * migration omitted because it's collinear with the level + ln_pop)
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        net_migration_pre_vote parcels_per_farm_1905, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "ctrl_all_new", model, "ols")
+}
+
+
+**# 10.7 vine x german_share interaction (the "other side" of vine x french)
+*------------------------------------------------------------------------------*
+{
+    * Per user 2026-04-30: french_share and german_share are two sides of the
+    * same coin in the binary subset. With Italian/Romansh present in some
+    * cantons, they're not exact complements. Run both interactions for symmetry.
+    cap drop vine_x_german
+    gen double vine_x_german = vineyard_per_cap * german_share
+    label var vine_x_german "vineyard_per_cap x german_share"
+
+    reg yes_pct vineyard_per_cap german_share catholic_share vine_x_german, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_german", model, "ols")
+}
+
+
+**# 10.8 vine x parcels_per_farm interaction (Olson 1965 organizational test)
+*------------------------------------------------------------------------------*
+{
+    * Substantive prediction: in concentrated wine industries, the wine effect
+    * on the absinthe vote should be STRONGER (Olson: small concentrated groups
+    * mobilize politically more easily than large dispersed ones). Concentration
+    * proxy: low parcels_per_farm. Interaction sign expectation: NEGATIVE
+    * (vineyard effect attenuates as parcels_per_farm rises = farms more
+    * fragmented = less concentrated). N=25 makes this noisy.
+    cap drop vine_x_parcels
+    gen double vine_x_parcels = vineyard_per_cap * parcels_per_farm_1905
+    label var vine_x_parcels "vineyard_per_cap x parcels_per_farm"
+
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        parcels_per_farm_1905 vine_x_parcels, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_parcels", model, "ols")
+}
+
+
+**# 10.9 Gelbach (2016) decomposition: which controls drive the sign-flip?
+*------------------------------------------------------------------------------*
+{
+    * METHODS: read analysis/documentation/methods/gelbach_decomposition.md
+    * before modifying this section. b1x2 is Gelbach's official package
+    * (vendored at libraries/stata/b/b1x2.ado, v4.1.0). Sign convention:
+    * b1x2 reports b1base - b1full, so in our Simpson sign-flip case the
+    * delta values will be NEGATIVE.
+    *
+    * Decomposes the change in vineyard_per_cap coefficient from the bivariate
+    * spec to the KEY spec (adding french_share + catholic_share) into
+    * contributions of language vs religion.
+    *
+    * Hand-validation block runs first to verify the b1x2 identity. Then we
+    * call b1x2 with x2delta() grouping, save coefficients via regsave,
+    * and use them to build t15_gelbach.tex.
+
+    * --- Hand-validation block ---
+    qui reg french_share vineyard_per_cap, vce(hc3)
+    local pi_french = _b[vineyard_per_cap]
+
+    qui reg catholic_share vineyard_per_cap, vce(hc3)
+    local pi_catholic = _b[vineyard_per_cap]
+
+    qui reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    local g_french   = _b[french_share]
+    local g_catholic = _b[catholic_share]
+    local b_full     = _b[vineyard_per_cap]
+
+    qui reg yes_pct vineyard_per_cap, vce(hc3)
+    local b_base = _b[vineyard_per_cap]
+
+    local d_french   = `pi_french'   * `g_french'
+    local d_catholic = `pi_catholic' * `g_catholic'
+    local d_total    = `d_french' + `d_catholic'
+    local check_diff = (`b_base' - `b_full') - `d_total'
+
+    di _n "*** GELBACH DECOMPOSITION (HAND-COMPUTED) ***"
+    di "  b1base (bivariate vineyard coef):   " %9.2f `b_base'
+    di "  b1full (KEY spec vineyard coef):    " %9.2f `b_full'
+    di "  b1base - b1full:                    " %9.2f (`b_base' - `b_full')
+    di "  delta_french   = pi_fr  * g_fr:     " %9.2f `d_french'
+    di "  delta_catholic = pi_cat * g_cat:    " %9.2f `d_catholic'
+    di "  Sum of deltas:                      " %9.2f `d_total'
+    di "  Identity check (should be ~0):      " %9.6f `check_diff'
+    assert abs(`check_diff') < 1e-4
+
+    * --- Run the official b1x2 package ---
+    * x2delta groups: LANG (french_share) and RELIG (catholic_share)
+    b1x2 yes_pct, x1all(vineyard_per_cap) ///
+        x2all(french_share catholic_share) ///
+        x2delta("LANG = french_share : RELIG = catholic_share") ///
+        robust
+    matrix gelbach_b = e(b)
+    matrix gelbach_V = e(V)
+
+    * Extract the LANG and RELIG deltas (b1x2 stores in matrix; element
+    * names like "vineyard_per_cap:LANG", "vineyard_per_cap:RELIG", "vineyard_per_cap:__TC")
+    local b_lang  = gelbach_b[1, "vineyard_per_cap:LANG"]
+    local b_relig = gelbach_b[1, "vineyard_per_cap:RELIG"]
+    local b_tc    = gelbach_b[1, "vineyard_per_cap:__TC"]
+    local se_lang  = sqrt(gelbach_V["vineyard_per_cap:LANG", "vineyard_per_cap:LANG"])
+    local se_relig = sqrt(gelbach_V["vineyard_per_cap:RELIG", "vineyard_per_cap:RELIG"])
+    local se_tc    = sqrt(gelbach_V["vineyard_per_cap:__TC", "vineyard_per_cap:__TC"])
+
+    di _n "*** GELBACH DECOMPOSITION (b1x2 package) ***"
+    di "  delta_LANG  (french_share):  " %9.2f `b_lang'  "  SE=" %6.2f `se_lang'
+    di "  delta_RELIG (catholic_share):" %9.2f `b_relig' "  SE=" %6.2f `se_relig'
+    di "  __TC (sum):                  " %9.2f `b_tc'    "  SE=" %6.2f `se_tc'
+    di "  (Identity: __TC = b1base - b1full = " %9.2f (`b_base' - `b_full') ")"
+
+    * Cross-check b1x2 vs hand-calc (point estimates should be identical to
+    * within numerical precision)
+    assert abs(`b_lang'  - `d_french')   < 1e-3
+    assert abs(`b_relig' - `d_catholic') < 1e-3
+
+    * Save Gelbach point estimates + SEs as a synthetic regsave-style row for
+    * t15_gelbach.tex builder. Use a tempfile so we don't pollute the main
+    * regsave structure.
+    preserve
+    clear
+    set obs 3
+    gen str20 component = ""
+    gen double coef = .
+    gen double stderr = .
+    replace component = "LANG"   in 1
+    replace component = "RELIG"  in 2
+    replace component = "TOTAL"  in 3
+    replace coef   = `b_lang'  in 1
+    replace coef   = `b_relig' in 2
+    replace coef   = `b_tc'    in 3
+    replace stderr = `se_lang'  in 1
+    replace stderr = `se_relig' in 2
+    replace stderr = `se_tc'    in 3
+    gen double pval = 2 * (1 - normal(abs(coef / stderr))) if !missing(stderr)
+    gen double base_coef = `b_base'
+    gen double full_coef = `b_full'
+    save "$MyProject/results/intermediate/gelbach_decomp.dta", replace
+    restore
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -557,26 +748,31 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
-**# 12.5 t08_interactions: heterogeneity
+**# 12.5 t08_interactions: heterogeneity (extended 2026-04-30: +german, +parcels)
 *------------------------------------------------------------------------------*
 {
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
-    keep if model == "ols" & inlist(spec, "interact_french", "interact_catholic", "interact_lnpop")
+    keep if model == "ols" & inlist(spec, "interact_french", "interact_catholic", ///
+                                          "interact_lnpop", "interact_german", "interact_parcels")
     tempfile ix
     regsave_tbl using "`ix'" if spec == "interact_french", ///
         name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
-    regsave_tbl using "`ix'" if spec == "interact_catholic", ///
+    regsave_tbl using "`ix'" if spec == "interact_german", ///
         name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
-    regsave_tbl using "`ix'" if spec == "interact_lnpop", ///
+    regsave_tbl using "`ix'" if spec == "interact_catholic", ///
         name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`ix'" if spec == "interact_lnpop", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`ix'" if spec == "interact_parcels", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     use "`ix'", clear
     drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
     clean_vars var
     label var var "Variable"
-    local fn "Notes: KEY spec + one interaction term per column. (1) vineyard x french_share; (2) vineyard x catholic_share; (3) vineyard x ln_pop. N=25 makes interactions noisy but signs are informative. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
-    texsave var col1 col2 col3 using "$MyProject/results/tables/t08_interactions.tex", ///
+    local fn "Notes: KEY spec + one interaction term per column. (1) vineyard x french_share; (2) vineyard x german_share (the 'other side of the coin'); (3) vineyard x catholic_share; (4) vineyard x ln_pop; (5) vineyard x parcels_per_farm_1905 (Olson 1965 organizational-capacity test). N=25 makes interactions noisy but signs are informative. The french_share/german_share pair are not exact complements because of Italian/Romansh populations. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 using "$MyProject/results/tables/t08_interactions.tex", ///
         replace autonumber varlabels marker(tab:interactions) ///
-        title("Heterogeneity: vineyard interactions with French, Catholic, log pop") ///
+        title("Heterogeneity: vineyard interactions with language, religion, size, concentration") ///
         footnote("`fn'")
 }
 
@@ -731,6 +927,133 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.10 t14_new_controls: KEY + each strategist 2026-04-30 control
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "ctrl_migration", "ctrl_migration_pc", ///
+                                          "ctrl_parcels", "ctrl_all_new")
+    tempfile nc
+    regsave_tbl using "`nc'" if spec == "ctrl_migration", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`nc'" if spec == "ctrl_migration_pc", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`nc'" if spec == "ctrl_parcels", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`nc'" if spec == "ctrl_all_new", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`nc'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: KEY spec (vineyard_per_cap + french_share + catholic_share) plus one new control per column. (1) net migration 1900/10 (level); (2) net migration 1900/10 per capita; (3) parcels per farm 1905 (Olson 1965 organizational-capacity proxy; imperfect because mountainous geography also raises fragmentation); (4) migration-level + parcels jointly (per-capita migration omitted, collinear). Tests strategist-suggested alternative explanations (econ-vitality, agricultural-canton confound, organizational-capacity). I.04a fruit-tree-density NOT included: pre-vote-year data has fewer than 3 cantons populated; first fully populated year 1951 is 43 years post-vote. HC3 SEs. Significance: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 using "$MyProject/results/tables/t14_new_controls.tex", ///
+        replace autonumber varlabels marker(tab:new_controls) ///
+        title("Robustness to additional controls (per strategist 2026-04-30)") ///
+        footnote("`fn'")
+}
+
+
+**# 12.11 t15_gelbach: decomposition of bivariate-to-KEY coefficient change
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/gelbach_decomp.dta", clear
+
+    * Format coefficient with significance stars
+    gen str20 coef_str = ""
+    replace coef_str = string(coef, "%9.1f") + "***" if pval < 0.01  & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f") + "**"  if pval >= 0.01 & pval < 0.05 & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f") + "*"   if pval >= 0.05 & pval < 0.10 & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f")          if pval >= 0.10 & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f")          if missing(stderr)
+    gen str20 se_str = "(" + string(stderr, "%6.1f") + ")" if !missing(stderr)
+    replace se_str = "" if missing(stderr)
+    gen str8  p_str  = string(pval, "%5.3f") if !missing(stderr)
+    replace p_str = "" if missing(stderr)
+
+    gen str30 component_label = ""
+    replace component_label = "Language (french\_share)"  if component == "LANG"
+    replace component_label = "Religion (catholic\_share)" if component == "RELIG"
+    replace component_label = "Total (sum = b1base minus b1full)" if component == "TOTAL"
+
+    keep component_label coef_str se_str p_str
+    order component_label coef_str se_str p_str
+    rename component_label component
+    label var component "Contribution to coefficient change"
+    label var coef_str  "Delta"
+    label var se_str    "(SE)"
+    label var p_str     "p"
+
+    * Pull base/full vineyard coefficients for the table notes
+    use "$MyProject/results/intermediate/gelbach_decomp.dta", clear
+    summ base_coef in 1, meanonly
+    local b_base_disp = r(mean)
+    summ full_coef in 1, meanonly
+    local b_full_disp = r(mean)
+    local sum_check : di %5.1f (`b_base_disp' - `b_full_disp')
+
+    * Re-load formatted table
+    use "$MyProject/results/intermediate/gelbach_decomp.dta", clear
+    gen str20 coef_str = ""
+    replace coef_str = string(coef, "%9.1f") + "***" if pval < 0.01  & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f") + "**"  if pval >= 0.01 & pval < 0.05 & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f") + "*"   if pval >= 0.05 & pval < 0.10 & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f")          if pval >= 0.10 & !missing(stderr)
+    replace coef_str = string(coef, "%9.1f")          if missing(stderr)
+    gen str20 se_str = "(" + string(stderr, "%6.1f") + ")" if !missing(stderr)
+    replace se_str = "" if missing(stderr)
+    gen str8  p_str  = string(pval, "%5.3f") if !missing(stderr)
+    replace p_str = "" if missing(stderr)
+    gen str30 component_label = ""
+    replace component_label = "Language (french\_share)"  if component == "LANG"
+    replace component_label = "Religion (catholic\_share)" if component == "RELIG"
+    replace component_label = "Total (sum)" if component == "TOTAL"
+    keep component_label coef_str se_str p_str
+    order component_label coef_str se_str p_str
+    rename component_label component
+    label var component "Contribution to vineyard coef. change (b1base - b1full)"
+    label var coef_str  "Delta"
+    label var se_str    "(SE)"
+    label var p_str     "p"
+
+    local b_base_str : di %6.1f `b_base_disp'
+    local b_full_str : di %6.1f `b_full_disp'
+    local diff_str   : di %6.1f (`b_base_disp' - `b_full_disp')
+    local fn "Notes: Gelbach (2016) conditional decomposition of the change in the vineyard_per_cap coefficient between the bivariate spec (b1base = `b_base_str') and the KEY spec adding french_share + catholic_share (b1full = `b_full_str'). Delta is the contribution of each x2 group to b1base minus b1full (= `diff_str'). The Simpson sign-flip means deltas are NEGATIVE (the controls move the coefficient UP from negative to positive). Implementation: official b1x2 package by Gelbach (2014), v4.1.0, vendored at libraries/stata/b/. Hand-validated against the b1x2 identity (assertion in 05_expansion.do sec 10.9). Robust SEs (HC1; b1x2 does not support HC3). Methods reference: analysis/documentation/methods/gelbach_decomposition.md. Significance: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave component coef_str se_str p_str ///
+        using "$MyProject/results/tables/t15_gelbach.tex", ///
+        replace autonumber varlabels marker(tab:gelbach) ///
+        title("Gelbach (2016) decomposition: which controls drive the Simpson sign-flip?") ///
+        footnote("`fn'")
+}
+
+
+**# 12.12 f04_marginsplot_french: vineyard effect across (1 - french_share)
+*------------------------------------------------------------------------------*
+{
+    * Per strategist 2026-04-30: marginal-effects plot of vine effect across
+    * non-French intensity. Uses the existing vine x french_share interaction.
+    * Marginal effect dy/dx(vineyard_per_cap) at french_share in (0, 0.25, 0.5, 0.75, 1).
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+
+    qui reg yes_pct c.vineyard_per_cap##c.french_share catholic_share, vce(hc3)
+    margins, dydx(vineyard_per_cap) at(french_share = (0(0.1)1))
+
+    marginsplot, ///
+        graphregion(fcolor(white)) ///
+        title("Marginal effect of vineyard area, by French-language share", size(medsmall)) ///
+        ytitle("dy/dx of vineyard_per_cap (HC3)") ///
+        xtitle("French share (Ger.+Fr. denom.)") ///
+        recast(line) recastci(rarea) ///
+        ciopts(color(navy%30)) plotopts(lcolor(navy) lwidth(medthick)) ///
+        addplot(scatteri 0 0 0 1, recast(line) lcolor(black) lpattern(dash) lwidth(thin) ///
+                legend(label(1 "Marginal effect") label(2 "95% CI") label(3 "Zero line"))) ///
+        note("Marginal effect of vineyard_per_cap on yes_pct evaluated across the observed range of french_share. Spec: yes_pct on vineyard x french_share + catholic_share, HC3 robust SEs. The 'two sides of the coin' note: substituting german_share = 1 - french_share would mirror this plot. Negative slope = wine effect attenuates in French cantons (Simpson confound).", size(vsmall))
+    graph export "$MyProject/results/figures/f04_marginsplot_french.pdf", replace as(pdf)
+    graph close
+}
+
+
 **# 13. Sanity-check assertions for the expansion analyses
 *------------------------------------------------------------------------------*
 {
@@ -784,6 +1107,37 @@ run "$MyProject/scripts/programs/_config.do"
     di "Vote #63 (alcohol regulation): vineyard p = " %5.3f r(mean)
     assert r(mean) > 0.10  // null at 10% level
 
+    * --- Strategist 2026-04-30 controls ---
+    * KEY + net_migration: vineyard coef should remain POSITIVE and reasonable
+    qui sum coef if var == "vineyard_per_cap" & spec == "ctrl_migration"
+    di "KEY + net_migration: vineyard coef = " %6.1f r(mean)
+    assert r(mean) > 0
+    assert inrange(r(mean), 200, 700)
+
+    * KEY + parcels_per_farm: vineyard coef should remain POSITIVE
+    qui sum coef if var == "vineyard_per_cap" & spec == "ctrl_parcels"
+    di "KEY + parcels_per_farm: vineyard coef = " %6.1f r(mean)
+    assert r(mean) > 0
+
+    * Gelbach: language-group delta should be NEGATIVE (because adding language
+    * moves the vineyard coef UP, so the delta in b1base - b1full is negative
+    * for the language group). Religion-group delta near zero per Stigler/Simpson
+    * framing (it's the language confound, not religion).
+    use "$MyProject/results/intermediate/gelbach_decomp.dta", clear
+    summ coef if component == "LANG", meanonly
+    di "Gelbach LANG delta: " %6.1f r(mean)
+    assert r(mean) < 0
+    assert r(mean) < -300  // dominant contribution
+
+    summ coef if component == "TOTAL", meanonly
+    local gel_total = r(mean)
+    di "Gelbach TOTAL (b1base - b1full): " %6.1f `gel_total'
+    assert `gel_total' < 0  // negative because Simpson sign-flip moves coef up
+
+    * Restore the regressions_expansion.dta context for downstream code (none
+    * after this in the assertion block, but defensive)
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
 }
 
@@ -801,14 +1155,16 @@ run "$MyProject/scripts/programs/_config.do"
 
     foreach t in t04_placebo t05_subsample t06_weighted t07_alt_vineyard ///
                  t08_interactions t09_outcomes t10_stability t12_absinthe_tier ///
-                 t13_placebo_panel {
+                 t13_placebo_panel t14_new_controls t15_gelbach {
         _inventory_append, sheet("outputs") ///
             row("generated|results/tables/`t'.tex|table|05_expansion.do")
     }
-    _inventory_append, sheet("outputs") ///
-        row("generated|results/figures/f03_placebo_distribution.pdf|figure|05_expansion.do")
+    foreach f in f03_placebo_distribution f04_marginsplot_french {
+        _inventory_append, sheet("outputs") ///
+            row("generated|results/figures/`f'.pdf|figure|05_expansion.do")
+    }
     _inventory_append, sheet("scripts") ///
-        row("05_expansion.do|.|expansion analyses: placebo, subsamples, weighting, alt measures, interactions, outcomes, NE gap, Oster stability, cross-referendum falsification panel|.")
+        row("05_expansion.do|.|expansion analyses: placebo, subsamples, weighting, alt measures, interactions, outcomes, NE gap, Oster, cross-referendum panel, new controls, Gelbach decomp, marginsplot|.")
 }
 
 ** EOF

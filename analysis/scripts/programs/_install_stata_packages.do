@@ -121,13 +121,24 @@ _install_ssc labutil
 _install_ssc ingap
 
 ************************************************************
+* Group 7 — coefficient decomposition
+************************************************************
+* b1x2: Gelbach (2016) conditional decomposition of coefficient changes
+* between base and full regression specifications. Used in 05_expansion.do
+* to attribute the absinthe-vote vineyard sign-flip to language vs religion.
+* See analysis/documentation/methods/gelbach_decomposition.md for the full
+* methods reference + sources.
+_install_ssc b1x2
+
+************************************************************
 * Verification
 ************************************************************
 * Confirm each package's main command is reachable
 local commands ftools reghdfe ranktest avar ivreg2 boottest ///
     regsave texsave rscript ///
     gtools estout esttab coefplot ///
-    wyoung distinct unique fre winsor2 ingap
+    wyoung distinct unique fre winsor2 ingap ///
+    b1x2
 
 di _n as text "{hline 60}"
 di as text "Verification — checking 'which' for each main command"

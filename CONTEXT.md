@@ -16,6 +16,10 @@ This file is the project-level "what is this about" — distinct from `CLAUDE.md
 - **B.01b_EN.xlsx** — HSSO Table B.01b, population density by canton 1798–1990. We use the 1900 row.
 - **B.27_EN.xlsx** — HSSO Table B.27, population by religion 1850–1990. We use 1900 Protestant and Catholic counts per canton.
 - **B.32_EN.xlsx** — HSSO Table B.32, population by native language 1880–1990. We use 1900 German and French counts per canton.
+- **E.1a_EN.xlsx** — HSSO Table E.1a, net migration balance between population censuses, by canton, 1837/50–1980/90 (per-period averages). We use the 1900/10 row as the most recent pre-vote economic-vitality control. Added 2026-04-30 per strategist handoff.
+- **I.39c_EN.xlsx** — HSSO Table I.39c, agricultural farm censuses 1905–1990. Multiple sub-blocks per (canton, year): number of farms, number of parcels, parcels per farm, mean parcel area. We use the **parcels-per-farm** sub-block at 1905 (Olson 1965 organizational-capacity proxy). The strategist's preferred `avg_parcel_area_1905` block is unavailable (mean-parcel-area data starts at 1929). Added 2026-04-30 per strategist handoff.
+
+**HSSO file NOT imported but evaluated**: `I.04a_EN.xlsx` (fruit-tree stock by canton). The strategist requested 1885/88 fruit-tree counts as a "competing-spirits feedstock" control. Inspection: 1885/88 has only 2 cantons populated, 1910 has 1, 1926/28 has 3. First fully-populated year is 1951 — a 43-year forward projection from 1908 is not justifiable per the project's "no guesses" rule. Skip is documented in `01_import.do` between sections 10 and 11.
 
 All HSSO files are English translations in `$Absinthe1Data/translated/`. German originals in `$Absinthe1Data/original/` are for provenance auditing only — never imported.
 
@@ -96,6 +100,21 @@ french_share_total    = french_1900   / pop_1900
 * The two definitions diverge most where Italian/Romansh are large
 * (TI: french_share=11.2% subset vs 0.3% total-pop). Both are reported in
 * the OLS table (cols. 4 vs 5). Both yield the headline sign-flip.
+
+* --- German share (added 2026-04-30 — "two sides of the coin") ---
+* SUBSET denominator (Ger.+Fr. only, NOT exact complement of french_share
+* because of Italian/Romansh):
+german_share        = german_1900 / (german_1900 + french_1900)
+* TOTAL-POP denominator:
+german_share_total  = german_1900 / pop_1900
+
+* --- Strategist 2026-04-30 controls ---
+net_migration_pre_vote   = E.1a value at 1900/10 row, by canton
+                           [units: persons/year, average over 1900-1910]
+net_migration_per_cap    = net_migration_pre_vote / pop_1900
+                           [units: persons-per-pop-per-year]
+parcels_per_farm_1905    = I.39c "Anzahl Parzellen je Betrieb" 1905 row, by canton
+                           [units: parcels per farm; LOW = consolidated, HIGH = fragmented]
 ```
 
 **Naming rule for denominators**: bare name = subset denominator (binary contrast); `_total` suffix = total-population denominator. Future shares should follow this convention.

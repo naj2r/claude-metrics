@@ -30,6 +30,15 @@ program define clean_vars, nclass
 	replace `varlist' = "Vineyard x French share"           if `varlist'=="vine_x_french"
 	replace `varlist' = "Vineyard x Catholic share"         if `varlist'=="vine_x_catholic"
 	replace `varlist' = "Vineyard x log pop."               if `varlist'=="vine_x_lnpop"
+	replace `varlist' = "Vineyard x German share"           if `varlist'=="vine_x_german"
+	replace `varlist' = "Vineyard x parcels/farm"           if `varlist'=="vine_x_parcels"
+
+	* --- New controls per strategist 2026-04-30 ---
+	replace `varlist' = "German share (Ger.+Fr.)"           if `varlist'=="german_share"
+	replace `varlist' = "German share (total pop.)"         if `varlist'=="german_share_total"
+	replace `varlist' = "Net migration 1900/10 (avg/yr)"    if `varlist'=="net_migration_pre_vote"
+	replace `varlist' = "Net migration 1900/10 per capita"  if `varlist'=="net_migration_per_cap"
+	replace `varlist' = "Parcels per farm (1905)"           if `varlist'=="parcels_per_farm_1905"
 
 	replace `varlist' = "Constant"                          if `varlist'=="_cons"
 

@@ -571,14 +571,112 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
-**# 9. Post-credits: codebook + inventory
+**# 9. Import E.1a migration (1900/10 period)
+*------------------------------------------------------------------------------*
+{
+    * E.1a Wanderungsbilanz zwischen zwei Population censuses nach Kantonen.
+    * Per-period AVERAGE ANNUAL net migration (positive = net in-migration).
+    * We use the 1900/10 row (obs 12 after 1-row title + 1 blank + 1 header + 2
+    * blanks + 6 prior year-period rows). 1900/10 is the most recent pre-1908
+    * observation period, capturing economic vitality just before the absinthe
+    * vote.
+    * Strategist's rationale (handoff 2026-04-30): controls for "wine cantons
+    * were just declining anyway" alternative explanation.
+    *
+    * Layout: row 3 = canton header (B=ZH, C=BE,JU, D=BE-only [drop],
+    * E=LU, ..., AA=GE), data rows 7-21 are year periods.
+    import excel using "$Absinthe1Data/translated/E.1a_EN.xlsx", clear allstring
+    assert A[12] == "1900/10"
+    keep in 12
+    keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+
+    destring _all, replace force
+
+    xpose, clear varname
+    rename v1 net_migration_1900_10
+    gen str3 col_letter = upper(_varname)
+    drop _varname
+
+    merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+        assert(match) nogenerate
+    drop col_letter
+    order canton_code net_migration_1900_10
+
+    assert c(N) == 25
+    isid canton_code
+    qui count if missing(net_migration_1900_10)
+    assert r(N) == 0
+    label var canton_code           "Canton (2-letter code)"
+    label var net_migration_1900_10 "Net migration 1900/10, avg per year (persons)"
+
+    compress
+    save "$MyProject/processed/intermediate/migration_uncleaned.dta", replace
+}
+
+
+**# 10. Import I.39c parcels per farm (1905, concentration proxy)
+*------------------------------------------------------------------------------*
+{
+    * I.39c Landwirtschaftliche Betriebszählungen — sub-block "Anzahl Parzellen
+    * je Betrieb" (parcels per farm). 1905 is the pre-vote year of interest.
+    * Strategist's rationale: Olson (1965) collective-action prediction —
+    * concentrated industries mobilize politically more easily. Parcels-per-farm
+    * is an imperfect concentration proxy: low values can mean either consolidated
+    * holdings OR very small subsistence farms; high values can mean either
+    * fragmented smallholdings OR mountainous geography. Strategist's preferred
+    * `avg_parcel_area_1905` block is NOT in the data — block 4 (mittlere
+    * Parzellenfläche) starts at 1929. Documenting this limitation in the
+    * footnote of any table that uses parcels_per_farm.
+    *
+    * Layout: rows 1-2 = title (DE + FR), row 5 = canton header (B=ZH, C=BE,JU,
+    * D=BE-only [drop], E=LU, ..., AA=GE). Block 3 (Parzellen je Betrieb) starts
+    * at obs 27 with 3 blank rows then 1905* at obs 30.
+    import excel using "$Absinthe1Data/translated/I.39c_EN.xlsx", clear allstring
+    assert A[30] == "1905*"
+    keep in 30
+    keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+
+    destring _all, replace force
+
+    xpose, clear varname
+    rename v1 parcels_per_farm_1905
+    gen str3 col_letter = upper(_varname)
+    drop _varname
+
+    merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+        assert(match) nogenerate
+    drop col_letter
+    order canton_code parcels_per_farm_1905
+
+    assert c(N) == 25
+    isid canton_code
+    qui count if missing(parcels_per_farm_1905)
+    assert r(N) == 0
+    label var canton_code           "Canton (2-letter code)"
+    label var parcels_per_farm_1905 "Avg parcels per farm (1905, concentration proxy)"
+
+    compress
+    save "$MyProject/processed/intermediate/farm_concentration_uncleaned.dta", replace
+}
+
+* NOTE: I.04a fruit tree stock NOT imported. Pre-vote years (1885/88, 1910,
+* 1926/28) have <=3 cantons populated (verified via direct openpyxl-equivalent
+* read). First fully-populated year is 1951 (43 years post-vote). Per project
+* rule "no guesses" + "verified before adding", using 1951 as a 1908 proxy
+* would be a 43-year time-substitution that the strategist's rationale does
+* not justify. If naturalization or fruit-spirit feedstock matters for the
+* paper, find an alternative source (e.g., Annuaire statistique de la Suisse).
+
+
+**# 11. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {
     foreach ds in canton_crosswalk swissvotes_uncleaned vote67_uncleaned ///
                   placebo_votes_uncleaned ///
                   vineyard_uncleaned agland_uncleaned ///
                   population_uncleaned pop_density_uncleaned ///
-                  religion_uncleaned language_uncleaned {
+                  religion_uncleaned language_uncleaned ///
+                  migration_uncleaned farm_concentration_uncleaned {
         _codebook_update using "$MyProject/processed/intermediate/`ds'.dta", ///
             script("01_import.do")
         use "$MyProject/processed/intermediate/`ds'.dta", clear

@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Robustness to additional controls (per strategist 2026-04-30)}
+\label{tab:new_controls}
+\begin{tabularx}{\linewidth}{@{}lCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+net\_migration\_per\_cap\_coef&&4.16&&
+net\_migration\_per\_cap\_stderr&&(403)&&
+vineyard\_per\_cap\_coef&405&483**&395&306
+vineyard\_per\_cap\_stderr&(248)&(210)&(377)&(483)
+french\_share\_coef&--27.7***&--28.3***&--27.7***&--27.0***
+french\_share\_stderr&(8.50)&(8.04)&(7.28)&(9.16)
+catholic\_share\_coef&8.53*&8.44*&8.22&8.30
+catholic\_share\_stderr&(4.41)&(4.80)&(5.11)&(4.92)
+net\_migration\_pre\_vote\_coef&0.00189&&&0.00191
+net\_migration\_pre\_vote\_stderr&(0.00158)&&&(0.00165)
+parcels\_per\_farm\_1905\_coef&&&0.105&0.116
+parcels\_per\_farm\_1905\_stderr&&&(0.344)&(0.357)
+\_cons\_coef&61.3***&61.6***&60.9***&60.6***
+\_cons\_stderr&(3.28)&(3.65)&(3.94)&(3.75)
+N&25&25&25&25
+r2&0.562&0.538&0.542&0.567
+spec&ctrl\_migration&ctrl\_migration\_pc&ctrl\_parcels&ctrl\_all\_new
+model&ols&ols&ols&ols
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec (vineyard\_per\_cap + french\_share + catholic\_share) plus one new control per column. (1) net migration 1900/10 (level); (2) net migration 1900/10 per capita; (3) parcels per farm 1905 (Olson 1965 organizational-capacity proxy; imperfect because mountainous geography also raises fragmentation); (4) migration-level + parcels jointly (per-capita migration omitted, collinear). Tests strategist-suggested alternative explanations (econ-vitality, agricultural-canton confound, organizational-capacity). I.04a fruit-tree-density NOT included: pre-vote-year data has fewer than 3 cantons populated; first fully populated year 1951 is 43 years post-vote. HC3 SEs. Significance: * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}
