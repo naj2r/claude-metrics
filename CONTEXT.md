@@ -41,7 +41,11 @@ Swiss canton in the 1908 federal vote. Cross-section, N = 25 cantons. BE = pre-1
 
 > _OLS / FE / DiD / IV / matching / RCT / RDD — one sentence on the source of variation._
 
-Cross-sectional OLS with HC3 robust standard errors. Compare the bivariate vineyard–vote relationship to the relationship after conditioning on French-language share and Catholic share. The sign flip in the vineyard coefficient (negative bivariate → positive conditional) is the core finding — Simpson's paradox driven by French-speaking cantons being both wine-producing AND culturally opposed to federal temperance regulation.
+Cross-sectional OLS with HC3 robust standard errors. Compare the bivariate vineyard–vote relationship to the relationship after conditioning on French-language share and Catholic share. The sign flip in the vineyard coefficient (negative bivariate → positive conditional) is the methodological finding — Simpson's paradox driven by French-speaking cantons being both wine-producing AND culturally opposed to federal temperance regulation.
+
+**Substantive headline (the absinthe ban itself, vote #68)**: vineyard coefficient ~+484 (p=0.024) after conditioning on language and religion; ~+437 (p=0.063) with total-pop denominators (matches prior independent analysis exactly).
+
+**SECOND HEADLINE (added 2026-04-30, see `analysis/documentation/progress/progress_2026-04-30_1830_foodbev.md`)**: cross-referendum falsification panel reveals the absinthe ban is the second of two wine-industry rent-seeking victories in 1900-1910. Vote #65 (10 June 1906 federal Lebensmittelgesetz) shows vineyard coefficient ~+1286 (p=0.045) — the food-purity law that disadvantaged adulterated-wine and substitute-beverage competitors. Vote #63 (25 Oct 1903 federal alcohol-trade regulation) is a clean null (p=0.886) — vineyard cantons did NOT generically oppose federal alcohol regulation. The three-vote sequence (null on #63, positive on #65, positive on #68) is the canonical empirical signature of **Stigler (1971) regulatory capture**: industries support regulation when and only when it disadvantages competitors. Provides quantitative triangulation of a process the historical literature (Prestwich 1988; Padosch et al. 2006; Studer 2024) has documented qualitatively.
 
 **Two share-denominator definitions reported in tables**:
 - `french_share`/`catholic_share` (subset): French/(German+French speakers); Catholic/(Protestant+Catholic). Focuses on the language/religion cleavage that drives federal politics.
