@@ -188,6 +188,72 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 2.4 Placebo-referenda panel: all 15 federal votes 1900-1910 (anr 56-70)
+*------------------------------------------------------------------------------*
+{
+    * Falsification design: KEY-spec vineyard coefficient should be null on
+    * unrelated federal votes from the same era. If vineyard predicts yes-vote
+    * shares broadly across votes, the absinthe finding is a spurious correlation
+    * with some omitted canton attribute. If only the absinthe vote (#68) shows
+    * a positive coefficient, the wine-protection mechanism is issue-specific.
+    *
+    * Design ported from Brainstorm-Absinthe ProjectBook entry
+    * 2026-04-09_expansion-analysis.qmd Section 2 ("Placebo Referenda Panel
+    * 1900-1910"). Window matches: 15 referenda total (anr 56 through 70).
+    * Includes vote #68 (treatment) and #67 (same-day placebo) for comparability.
+    import delimited using "$Absinthe1Data/swissvotes_dataset.csv", ///
+        delimiter(";") encoding("utf-8") case(lower) bindquote(strict) clear
+    keep if inrange(anr, 56, 70)
+    assert c(N) == 15
+
+    * Keep yes-vote share for each canton + vote metadata
+    local cantons "zh be lu ur sz ow nw gl zg fr so bs bl sh ar ai sg gr ag tg ti vd vs ne ge"
+    local keepvars "anr datum titel_kurz_d titel_kurz_e rechtsform annahme"
+    foreach ct of local cantons {
+        local keepvars "`keepvars' `ct'japroz"
+    }
+    keep `keepvars'
+
+    * Rename canton columns so the canton code is the SUFFIX (reshape requires it)
+    foreach ct of local cantons {
+        rename `ct'japroz japroz`ct'
+    }
+
+    * Reshape to long: one row per (vote, canton) = 15 * 25 = 375 rows
+    reshape long japroz, i(anr) j(canton_code) string
+    replace canton_code = upper(canton_code)
+    rename japroz yes_pct
+
+    * Coerce to numeric (some cells are blank for cantons that didn't vote)
+    destring yes_pct, replace force ignore(",")
+    drop if missing(yes_pct)
+    assert _N == 25 * 15  // 375 placebo observations
+
+    * Parse year from datum (DD.MM.YYYY)
+    gen int vote_year = real(substr(datum, -4, 4))
+
+    * Short label for table rows: prefer English title, fall back to German truncated
+    gen str80 vote_label = titel_kurz_e
+    replace vote_label = substr(titel_kurz_d, 1, 80) if missing(vote_label)
+
+    keep canton_code anr vote_year vote_label rechtsform annahme yes_pct
+    order canton_code anr vote_year yes_pct vote_label rechtsform annahme
+
+    label var canton_code "Canton (2-letter code)"
+    label var anr         "Vote number (swissvotes anr)"
+    label var vote_year   "Year of vote"
+    label var yes_pct     "Yes-vote share (%, this vote, this canton)"
+    label var vote_label  "Short title of vote (English if available)"
+    label var rechtsform  "Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter"
+    label var annahme     "1 if vote passed nationally, 0 if rejected"
+
+    compress
+    save "$MyProject/processed/intermediate/placebo_votes_uncleaned.dta", replace
+
+    di "Placebo panel: " _N " rows (15 votes x 25 cantons = 375)"
+}
+
+
 **# 3. Helper macro: HSSO row extractor (defined here for sections 4-7)
 *------------------------------------------------------------------------------*
 {
@@ -509,6 +575,7 @@ run "$MyProject/scripts/programs/_config.do"
 *------------------------------------------------------------------------------*
 {
     foreach ds in canton_crosswalk swissvotes_uncleaned vote67_uncleaned ///
+                  placebo_votes_uncleaned ///
                   vineyard_uncleaned agland_uncleaned ///
                   population_uncleaned pop_density_uncleaned ///
                   religion_uncleaned language_uncleaned {

@@ -376,16 +376,51 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 4b. Build placebo-panel analysis dataset (long: 25 cantons x 15 votes)
+*------------------------------------------------------------------------------*
+{
+    * Long-format dataset for the cross-referendum falsification design.
+    * Each row = (canton, vote) pair; KEY-spec covariates merged in from the
+    * canton-level main dataset. Used by 05_expansion.do section 14 to loop
+    * a KEY-spec regression per vote and construct t13 + f03.
+    use "$MyProject/processed/intermediate/placebo_votes_uncleaned.dta", clear
+
+    * Merge the canton-level KEY-spec covariates (m:1 because each canton
+    * appears 15 times in the placebo panel, once per vote)
+    merge m:1 canton_code using "$MyProject/processed/absinthe_analysis.dta", ///
+        keepusing(vineyard_per_cap french_share catholic_share ///
+                  french_share_total catholic_share_total ///
+                  pop_1900 ln_pop) ///
+        keep(match) nogen
+    assert _N == 25 * 15  // 375 rows preserved
+
+    sort anr canton_code
+    order canton_code anr vote_year yes_pct vote_label ///
+          vineyard_per_cap french_share catholic_share
+
+    compress
+    save "$MyProject/processed/placebo_panel.dta", replace
+    di "Placebo panel dataset: " _N " rows (25 cantons x 15 votes)"
+}
+
+
 **# 5. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {
     _codebook_update using "$MyProject/processed/absinthe_analysis.dta", script("02_clean.do")
+    _codebook_update using "$MyProject/processed/placebo_panel.dta", script("02_clean.do")
+    use "$MyProject/processed/absinthe_analysis.dta", clear
     local nobs  = c(N)
     local nvars = c(k)
     _inventory_append, sheet("datasets") ///
         row("created|processed/absinthe_analysis.dta|`nobs'|`nvars'|.|02_clean.do")
+    use "$MyProject/processed/placebo_panel.dta", clear
+    local nobs_pp  = c(N)
+    local nvars_pp = c(k)
+    _inventory_append, sheet("datasets") ///
+        row("created|processed/placebo_panel.dta|`nobs_pp'|`nvars_pp'|.|02_clean.do")
     _inventory_append, sheet("scripts") ///
-        row("02_clean.do|.|merges 6 uncleaned sources and constructs analysis variables|.")
+        row("02_clean.do|.|merges 7 uncleaned sources, builds main and placebo-panel datasets|.")
 }
 
 ** EOF

@@ -365,6 +365,38 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.5 Cross-referendum falsification panel (15 votes 1900-1910)
+*------------------------------------------------------------------------------*
+{
+    * For each of the 15 federal votes 1900-1910, run the KEY-spec regression
+    * of canton yes-vote share on vineyard_per_cap + french_share + catholic_share.
+    * Save coefficients to feed t13_placebo_panel and f03_placebo_distribution.
+    *
+    * Logic (Brainstorm-Absinthe ProjectBook 2026-04-09_expansion-analysis.qmd
+    * Section 2): if the absinthe vote (#68) coefficient (~+484) is the only
+    * one significantly different from zero in this set, the wine-protection
+    * mechanism is issue-specific. Hits at votes other than #68 would suggest
+    * a spurious correlation with some omitted canton attribute.
+    *
+    * Prior analysis found non-null also at #65 (food safety, 1906) and
+    * #57-58 (proportional representation 1900). Vote #63 (alcohol regulation,
+    * 1903) is critical: a null there means vineyard cantons did NOT generically
+    * oppose federal alcohol regulation -- their resistance was specific to
+    * absinthe.
+    preserve
+    use "$MyProject/processed/placebo_panel.dta", clear
+    levelsof anr, local(placebos) clean
+    foreach a of local placebos {
+        qui reg yes_pct vineyard_per_cap french_share catholic_share ///
+            if anr == `a', vce(hc3)
+        regsave using "`results_exp'", t p autoid append ///
+            addlabel(spec, "panel_anr`a'", model, "ols")
+    }
+    di "Placebo panel: ran KEY spec on " wordcount("`placebos'") " votes 1900-1910"
+    restore
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -603,6 +635,102 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.8 t13_placebo_panel: cross-referendum falsification (15 votes 1900-1910)
+*------------------------------------------------------------------------------*
+{
+    * One row per vote: anr, year, vineyard coef, SE, t, p, sig stars, short title.
+    * Sorted by date (ascending) so the absinthe vote (#68) is in the middle.
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr")
+    gen int anr = real(substr(spec, 10, .))
+    keep anr coef stderr tstat pval N
+    rename (coef stderr tstat pval) (b se t p)
+
+    * Merge in vote metadata (year + label) from placebo_panel
+    tempfile meta
+    preserve
+        use "$MyProject/processed/placebo_panel.dta", clear
+        keep anr vote_year vote_label
+        duplicates drop
+        save "`meta'", replace
+    restore
+    merge 1:1 anr using "`meta'", nogen keep(match)
+    sort vote_year anr
+
+    * Format coefficient with significance stars
+    gen str20 b_str = ""
+    replace b_str = string(b, "%9.1f") + "***" if p < 0.01
+    replace b_str = string(b, "%9.1f") + "**"  if p >= 0.01 & p < 0.05
+    replace b_str = string(b, "%9.1f") + "*"   if p >= 0.05 & p < 0.10
+    replace b_str = string(b, "%9.1f")          if p >= 0.10
+    gen str20 se_str  = "(" + string(se, "%6.0f") + ")"
+    gen str8  p_str   = string(p, "%5.3f")
+    gen str8  yr_str  = string(vote_year)
+    gen str4  anr_str = string(anr)
+
+    * Mark the treatment vote
+    gen str4 marker = ""
+    replace marker = "TREAT" if anr == 68
+
+    * Truncate vote_label for table fit
+    replace vote_label = substr(vote_label, 1, 55)
+
+    keep anr_str yr_str vote_label b_str se_str p_str marker
+    order anr_str yr_str vote_label b_str se_str p_str marker
+    rename anr_str       anr
+    rename yr_str        year
+    rename vote_label    title
+    rename b_str         vineyard_coef
+    rename se_str        se
+    rename p_str         pval
+    label var anr           "Vote no."
+    label var year          "Year"
+    label var title         "Title (short)"
+    label var vineyard_coef "Vineyard coef"
+    label var se            "(SE)"
+    label var pval          "p"
+    label var marker        ""
+
+    local fn "Notes: KEY-spec OLS (yes\_pct on vineyard\_per\_cap + french\_share + catholic\_share, HC3 SEs) run separately on each of the 15 federal popular votes between 1900 and 1910. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\_per\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \#68 (and possibly substantively related votes) shows a non-null coefficient, the wine-protection mechanism is issue-specific. Stars: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave anr year title vineyard_coef se pval marker ///
+        using "$MyProject/results/tables/t13_placebo_panel.tex", ///
+        replace autonumber varlabels marker(tab:placebo_panel) ///
+        title("Cross-referendum falsification: 15 federal votes 1900-1910") ///
+        footnote("`fn'")
+}
+
+
+**# 12.9 f03_placebo_distribution: histogram of placebo coefs vs absinthe
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr")
+    gen int anr = real(substr(spec, 10, .))
+
+    * Stata return for the absinthe coefficient (red reference line)
+    summ coef if anr == 68, meanonly
+    local b_absinthe = r(mean)
+
+    * Coefficients on placebo (non-treatment) votes only
+    gen byte is_treatment = (anr == 68)
+
+    twoway (histogram coef if is_treatment == 0, ///
+                width(150) start(-1500) ///
+                fcolor(navy%50) lcolor(navy)) ///
+           (scatteri 0 `b_absinthe' 0.005 `b_absinthe', ///
+                connect(line) lcolor(red) lwidth(thick) lpattern(solid)), ///
+        title("Cross-referendum falsification: vineyard coef across 1900-1910 votes") ///
+        subtitle("KEY-spec coefficient on vineyard_per_cap; absinthe vote (#68) marked in red") ///
+        xtitle("Vineyard_per_cap coefficient (KEY spec, HC3)") ///
+        ytitle("Density (placebo votes, N=14)") ///
+        legend(off) ///
+        xlabel(-1500(500)1500) ///
+        note("Red vertical line: absinthe vote (#68) coefficient = " + string(`b_absinthe', "%9.1f") + ". Histogram: 14 placebo votes (1900-1910 excluding #68).")
+    graph export "$MyProject/results/figures/f03_placebo_distribution.pdf", replace as(pdf)
+    graph close
+}
+
+
 **# 13. Sanity-check assertions for the expansion analyses
 *------------------------------------------------------------------------------*
 {
@@ -638,6 +766,24 @@ run "$MyProject/scripts/programs/_config.do"
     di "Weighted regressions: vineyard coef positive in `pos_count' of 5 schemes"
     assert `pos_count' >= 4
 
+    * Cross-referendum falsification: absinthe vote (#68) coef should be in the
+    * upper half of the placebo distribution. Less stringent than "extreme tail"
+    * because we have known corroborating votes (#65 food safety, ~+1225).
+    qui sum coef if var == "vineyard_per_cap" & spec == "panel_anr68"
+    local b_treat = r(mean)
+    qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") & coef >= `b_treat'
+    local n_extreme = r(N)
+    di "Falsification: " `n_extreme' " of 15 placebo coefs >= absinthe coef (" %6.1f `b_treat' ")"
+    * Absinthe should rank in the top 5 of 15 (i.e., n_extreme including itself <= 5)
+    assert `n_extreme' <= 5
+
+    * Vote #63 (alcohol regulation, 1903): vineyard coef should NOT be
+    * significantly positive. If vineyard cantons opposed federal alcohol
+    * regulation generically, the absinthe finding loses its issue-specificity.
+    qui sum pval if var == "vineyard_per_cap" & spec == "panel_anr63"
+    di "Vote #63 (alcohol regulation): vineyard p = " %5.3f r(mean)
+    assert r(mean) > 0.10  // null at 10% level
+
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
 }
 
@@ -654,12 +800,15 @@ run "$MyProject/scripts/programs/_config.do"
         row("created|results/intermediate/regressions_expansion.dta|`nobs'|`nvars'|.|05_expansion.do")
 
     foreach t in t04_placebo t05_subsample t06_weighted t07_alt_vineyard ///
-                 t08_interactions t09_outcomes t10_stability t12_absinthe_tier {
+                 t08_interactions t09_outcomes t10_stability t12_absinthe_tier ///
+                 t13_placebo_panel {
         _inventory_append, sheet("outputs") ///
             row("generated|results/tables/`t'.tex|table|05_expansion.do")
     }
+    _inventory_append, sheet("outputs") ///
+        row("generated|results/figures/f03_placebo_distribution.pdf|figure|05_expansion.do")
     _inventory_append, sheet("scripts") ///
-        row("05_expansion.do|.|expansion analyses: placebo, subsamples, weighting, alt measures, interactions, outcomes, NE gap, Oster stability|.")
+        row("05_expansion.do|.|expansion analyses: placebo, subsamples, weighting, alt measures, interactions, outcomes, NE gap, Oster stability, cross-referendum falsification panel|.")
 }
 
 ** EOF

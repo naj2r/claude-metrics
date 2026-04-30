@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{__000006}
+\label{__00000A}
+\begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)} \tabularnewline \midrule
+{Vote no.}&{Year}&{Title (short)}&{Vineyard coef}&{(SE)}&{p}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+56&1900&Gesetz zur Kranken-, Unfall- und Militärversicherung&--203.6&(312)&0.522&
+57&1900&Initiative «für die Proporzwahl des Nationalrates»&--478.9&(304)&0.130&
+58&1900&Initiative für die Volkswahl des Bundesrates&--431.1&(346)&0.226&
+59&1902&Unterstützung der Primarschule durch den Bund&383.4&(482)&0.435&
+60&1903&Zolltarifgesetz&737.3&(737)&0.328&
+61&1903&Bundesstrafrecht (Anstiftung Militärpflichtiger zu Ver&99.6&(314)&0.754&
+62&1903&Initiative «für die Wahl des Nationalrates aufgrund d&--3.3&(655)&0.996&
+63&1903&Artikel über die Regulierung des Alkoholhandels&--51.7&(356)&0.886&
+64&1905&Ausdehnung des Erfinderschutzes&352.7&(387)&0.373&
+65&1906&Lebensmittelgesetz&1285.6**&(604)&0.045&
+66&1907&Militärorganisation der schweizerischen Eidgenossensch&300.6&(355)&0.407&
+67&1908&Verfassungsartikel zur Gesetzgebung über das Gewerbewe&76.0&(445)&0.866&
+68&1908&Initiative «für ein Absinthverbot»&484.4**&(200)&0.024&TREAT
+69&1908&Verfassungsartikel über die Wasserkraft und Elektrizit&65.4&(205)&0.753&
+70&1910&Initiative «für die Proporzwahl des Nationalrates»&--61.5&(524)&0.908&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY-spec OLS (yes\\_pct on vineyard\\_per\\_cap + french\\_share + catholic\\_share, HC3 SEs) run separately on each of the 15 federal popular votes between 1900 and 1910. The treatment vote (\\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\\_per\\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \\#68 (and possibly substantively related votes) shows a non-null coefficient, the wine-protection mechanism is issue-specific. Stars: * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

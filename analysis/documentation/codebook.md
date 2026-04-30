@@ -68,10 +68,22 @@ _Auto-updated by _codebook_update.ado_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
 ### processed/intermediate/canton_crosswalk.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:40 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -85,7 +97,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
 ### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:40 by 01_import.do_
 
 **N = 25, vars = 7**
 
@@ -104,7 +116,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
 ### processed/intermediate/vote67_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:40 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -115,10 +127,29 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:end -->
 
+<!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
+### processed/intermediate/placebo_votes_uncleaned.dta
+
+_Updated: 30 Apr 2026 18:10:40 by 01_import.do_
+
+**N = 375, vars = 7**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| vote_year | int | %8.0g | Year of vote |
+| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
+| vote_label | str80 | %80s | Short title of vote (English if available) |
+| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
+| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
+
+<!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:end -->
+
 <!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
 ### processed/intermediate/vineyard_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:40 by 01_import.do_
 
 **N = 125, vars = 3**
 
@@ -133,7 +164,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
 ### processed/intermediate/agland_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:40 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -147,7 +178,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
 ### processed/intermediate/population_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:41 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -161,7 +192,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
 ### processed/intermediate/pop_density_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:41 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -175,7 +206,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
 ### processed/intermediate/religion_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:41 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -190,7 +221,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
 ### processed/intermediate/language_uncleaned.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 01_import.do_
+_Updated: 30 Apr 2026 18:10:41 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -205,7 +236,7 @@ _Updated: 30 Apr 2026 17:27:08 by 01_import.do_
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated: 30 Apr 2026 17:27:08 by 02_clean.do_
+_Updated: 30 Apr 2026 18:10:41 by 02_clean.do_
 
 **N = 25, vars = 46**
 
@@ -260,10 +291,36 @@ _Updated: 30 Apr 2026 17:27:08 by 02_clean.do_
 
 <!-- codebook:processed/absinthe_analysis.dta:end -->
 
+<!-- codebook:processed/placebo_panel.dta:start -->
+### processed/placebo_panel.dta
+
+_Updated: 30 Apr 2026 18:10:41 by 02_clean.do_
+
+**N = 375, vars = 14**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| vote_year | int | %8.0g | Year of vote |
+| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
+| vote_label | str80 | %80s | Short title of vote (English if available) |
+| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
+| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
+| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
+| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
+| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
+| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
+| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
+| ln_pop | double | %10.0g | Log population (1900) |
+| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
+
+<!-- codebook:processed/placebo_panel.dta:end -->
+
 <!-- codebook:results/intermediate/regressions.dta:start -->
 ### results/intermediate/regressions.dta
 
-_Updated: 30 Apr 2026 17:28:07 by 03_regress.do_
+_Updated: 30 Apr 2026 18:11:39 by 03_regress.do_
 
 **N = 140, vars = 11**
 
@@ -286,9 +343,9 @@ _Updated: 30 Apr 2026 17:28:07 by 03_regress.do_
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 30 Apr 2026 17:28:11 by 05_expansion.do_
+_Updated: 30 Apr 2026 18:11:44 by 05_expansion.do_
 
-**N = 118, vars = 10**
+**N = 178, vars = 10**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
