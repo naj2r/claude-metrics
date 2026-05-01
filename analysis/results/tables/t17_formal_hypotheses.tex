@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Formal hypothesis tests: H3 (coalition) and H6 (Olsonian concentration)}
+\label{tab:formal_hypotheses}
+\begin{tabularx}{\linewidth}{@{}lCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+catholic\_share\_coef&8.43*&&8.03& \tabularnewline
+catholic\_share\_stderr&(4.59)&&(5.55)& \tabularnewline
+vineyard\_c\_coef&484**&464*&1,096&759 \tabularnewline
+vineyard\_c\_stderr&(200)&(236)&(3,657)&(4,665) \tabularnewline
+protestant\_c\_coef&&--8.67&&--8.48 \tabularnewline
+protestant\_c\_stderr&&(5.07)&&(5.82) \tabularnewline
+vineyard\_X\_protestant\_coef&&454&&386 \tabularnewline
+vineyard\_X\_protestant\_stderr&&(578)&&(986) \tabularnewline
+parcel\_c\_coef&&&2.97&1.41 \tabularnewline
+parcel\_c\_stderr&&&(15.1)&(19.6) \tabularnewline
+vineyard\_X\_parcel\_coef&&&394&190 \tabularnewline
+vineyard\_X\_parcel\_stderr&&&(2,407)&(3,024) \tabularnewline
+french\_share\_coef&--28.3***&--28.0***&--31.4&--29.5 \tabularnewline
+french\_share\_stderr&(7.11)&(6.94)&(26.8)&(33.7) \tabularnewline
+\_cons\_coef&64.6***&69.0***&68.1***&70.6** \tabularnewline
+\_cons\_stderr&(3.35)&(2.09)&(20.4)&(26.8) \tabularnewline
+N&25&25&25&25 \tabularnewline
+r2&0.538&0.553&0.546&0.554 \tabularnewline
+spec&H\_KEY\_centered&H3\_coalition\_interaction&H6\_olsonian\_interaction&H3\_and\_H6\_joint \tabularnewline
+model&ols&ols&ols&ols \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Formal tests of two implications of the bootleggers-and-baptists framework derived from Becker (1983) and Olson (1965). Column (1) replicates the headline KEY spec with a mean-centered vineyard regressor (coefficient identical to the uncentered version; centering only shifts the intercept). Column (2) tests H3 (coalition interaction): the wine-industry effect is amplified by moralist coalition strength, operationalized as protestant\\_share\\_total = 1 - catholic\\_share\\_total in the absence of canton-level Blue Cross / Croix-Bleue / IOGT membership data (the first-best measure). Column (3) tests H6 (Olsonian concentration): the wine-industry effect is amplified by industrial concentration, operationalized as avg\\_parcel\\_area\\_1905 (constructed from agricultural land 1912 / total parcels 1905; documented in CONTEXT.md). Column (4) tests both interactions jointly. Religion-control choice: in columns (2) and (4) the religion control is protestant\\_c (centered protestant\\_share\\_total), NOT catholic\\_share. In 1900 Switzerland Catholic + Protestant was 99.4 percent of total population, so catholic\\_share and 1 - catholic\\_share\\_total share essentially the same Catholic-population variation; including both produces near-perfect multicollinearity (joint-spec main-effect VIFs above 25\{,\}000 in pilot). Column (3) retains catholic\\_share since protestant\\_c is not in that specification. Centered regressors (vineyard\\_c, protestant\\_c, parcel\\_c) ease interpretation: the main effect of vineyard\\_c in any column is the vineyard slope at the mean of the moderator(s) in that spec; the interaction coefficient is the change in that slope per unit increase in the (mean-centered) moderator. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}
