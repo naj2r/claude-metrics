@@ -39,6 +39,11 @@ program define clean_vars, nclass
 	replace `varlist' = "Net migration 1900/10 (avg/yr)"    if `varlist'=="net_migration_pre_vote"
 	replace `varlist' = "Net migration 1900/10 per capita"  if `varlist'=="net_migration_per_cap"
 	replace `varlist' = "Parcels per farm (1905)"           if `varlist'=="parcels_per_farm_1905"
+	replace `varlist' = "Avg parcel area, ha (1905)"        if `varlist'=="avg_parcel_area_1905"
+	replace `varlist' = "Vineyard x avg parcel area"        if `varlist'=="vine_x_parcel_area"
+	replace `varlist' = "Number of farms (1905)"            if `varlist'=="farms_1905"
+	replace `varlist' = "Fruit trees per cap (1951 proxy)"  if `varlist'=="fruit_tree_density"
+	replace `varlist' = "Vineyard x fruit-tree density"     if `varlist'=="vine_x_fruit"
 
 	replace `varlist' = "Constant"                          if `varlist'=="_cons"
 

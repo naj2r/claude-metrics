@@ -628,44 +628,122 @@ run "$MyProject/scripts/programs/_config.do"
     * Parzellenfläche) starts at 1929. Documenting this limitation in the
     * footnote of any table that uses parcels_per_farm.
     *
-    * Layout: rows 1-2 = title (DE + FR), row 5 = canton header (B=ZH, C=BE,JU,
-    * D=BE-only [drop], E=LU, ..., AA=GE). Block 3 (Parzellen je Betrieb) starts
-    * at obs 27 with 3 blank rows then 1905* at obs 30.
+    * Layout (verified row-by-row 2026-04-30, see methods/I39c_inspection.md if
+    * created later). 4 blocks per (year, canton):
+    *   Block 1 (Anzahl Betriebe / number of farms):       row  8 = 1905
+    *   Block 2 (Anzahl Parzellen berechnet / parcels):    row 19 = 1905*
+    *   Block 3 (Anzahl Parzellen je Betrieb / parcels/farm): row 30 = 1905*
+    *   Block 4 (mittlere Parzellenfläche / mean parcel area in ares):
+    *                                                      row 41 = 1929 (NO 1905!)
+    * Per the row-54 footnote, the 1905 census used a slightly different
+    * definition for small farms (0-0.5 ha range). Block 4 (mean parcel area)
+    * was apparently not computed for 1905 due to this. We reconstruct it
+    * below in 02_clean.do as agland * 1000 / (farms * parcels_per_farm).
+
+    * --- Block 1: number of farms 1905 (row 8) ---
+    import excel using "$Absinthe1Data/translated/I.39c_EN.xlsx", clear allstring
+    assert A[8] == "1905"
+    keep in 8
+    keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+    destring _all, replace force
+    xpose, clear varname
+    rename v1 farms_1905
+    gen str3 col_letter = upper(_varname)
+    drop _varname
+    merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+        assert(match) nogenerate
+    drop col_letter
+    order canton_code farms_1905
+    assert c(N) == 25
+    qui count if missing(farms_1905)
+    assert r(N) == 0
+    tempfile farms_tmp
+    save `farms_tmp'
+
+    * --- Block 3: parcels per farm 1905 (row 30) ---
     import excel using "$Absinthe1Data/translated/I.39c_EN.xlsx", clear allstring
     assert A[30] == "1905*"
     keep in 30
     keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
-
     destring _all, replace force
-
     xpose, clear varname
     rename v1 parcels_per_farm_1905
     gen str3 col_letter = upper(_varname)
     drop _varname
-
     merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
         assert(match) nogenerate
     drop col_letter
     order canton_code parcels_per_farm_1905
-
     assert c(N) == 25
-    isid canton_code
     qui count if missing(parcels_per_farm_1905)
     assert r(N) == 0
+
+    * --- Combine: merge farms_1905 in ---
+    merge 1:1 canton_code using `farms_tmp', assert(match) nogenerate
+    order canton_code farms_1905 parcels_per_farm_1905
+
+    isid canton_code
     label var canton_code           "Canton (2-letter code)"
+    label var farms_1905            "Number of farms (1905, I.39c block 1)"
     label var parcels_per_farm_1905 "Avg parcels per farm (1905, concentration proxy)"
 
     compress
     save "$MyProject/processed/intermediate/farm_concentration_uncleaned.dta", replace
 }
 
-* NOTE: I.04a fruit tree stock NOT imported. Pre-vote years (1885/88, 1910,
-* 1926/28) have <=3 cantons populated (verified via direct openpyxl-equivalent
-* read). First fully-populated year is 1951 (43 years post-vote). Per project
-* rule "no guesses" + "verified before adding", using 1951 as a 1908 proxy
-* would be a 43-year time-substitution that the strategist's rationale does
-* not justify. If naturalization or fruit-spirit feedstock matters for the
-* paper, find an alternative source (e.g., Annuaire statistique de la Suisse).
+**# 10.5 Import I.04a fruit-tree stock (1951 — geographic proxy for 1908)
+*------------------------------------------------------------------------------*
+{
+    * I.04a Feldobstbaumbestand nach Kantonen ("Sämtliche Obstbäume" = Total).
+    * Pre-vote years (1885/88, 1910, 1926/28) have <=3 cantons populated.
+    * First fully-populated year is 1951.
+    *
+    * STATUS RECONSIDERATION (2026-04-30 user update): the canton-level wine-
+    * industry-employment search is now definitively closed. With no better
+    * pre-1908 data available, the canonical canton-level proxies for wine-
+    * industry size are: vineyard_per_cap + avg_parcel_area_1905 +
+    * fruit_tree_density. We therefore IMPORT fruit-tree stock from 1951 as
+    * a geographic proxy under an explicit time-stability assumption: canton
+    * orchard suitability (climate + topography + soil) is approximately stable
+    * over 1908-1951, much more so than wine acreage (which fluctuated with
+    * phylloxera and the post-phylloxera replanting). The 43-year gap is the
+    * cost of accepting that no 1900-era canton-level fruit-tree data exists.
+    *
+    * Use of fruit_tree_density: control for "competing-spirits feedstock
+    * capacity" — fruit-spirit-producing cantons (Kirsch, Pflümli, Williams)
+    * may have had different rent-seeking incentives on the absinthe ban
+    * because they had their own competitor distillates.
+    *
+    * Layout (verified): row 1 = title, row 4 = canton header (B=ZH, C=BE,JU,
+    * D=BE-only [drop], E=LU, ..., AA=GE), block 1 ("Sämtliche Obstbäume" total
+    * fruit trees) at rows 7-15, with year labels in column A: 1885/88 (row 7),
+    * 1910 (8), 1926/28 (9), blank (10), 1951 (11), 1961 (12), 1971 (13),
+    * 1981 (14), 1991 (15). 1951 is at obs 11.
+    import excel using "$Absinthe1Data/translated/I.04a_EN.xlsx", clear allstring
+    assert A[11] == "1951"
+    keep in 11
+    keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+    destring _all, replace force
+    xpose, clear varname
+    rename v1 fruit_trees_total_1951
+    gen str3 col_letter = upper(_varname)
+    drop _varname
+
+    merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+        assert(match) nogenerate
+    drop col_letter
+    order canton_code fruit_trees_total_1951
+
+    assert c(N) == 25
+    isid canton_code
+    qui count if missing(fruit_trees_total_1951)
+    assert r(N) == 0
+    label var canton_code             "Canton (2-letter code)"
+    label var fruit_trees_total_1951  "Total fruit trees (1951, in 1000s; geographic proxy for 1908)"
+
+    compress
+    save "$MyProject/processed/intermediate/fruit_trees_uncleaned.dta", replace
+}
 
 
 **# 11. Post-credits: codebook + inventory
@@ -676,7 +754,8 @@ run "$MyProject/scripts/programs/_config.do"
                   vineyard_uncleaned agland_uncleaned ///
                   population_uncleaned pop_density_uncleaned ///
                   religion_uncleaned language_uncleaned ///
-                  migration_uncleaned farm_concentration_uncleaned {
+                  migration_uncleaned farm_concentration_uncleaned ///
+                  fruit_trees_uncleaned {
         _codebook_update using "$MyProject/processed/intermediate/`ds'.dta", ///
             script("01_import.do")
         use "$MyProject/processed/intermediate/`ds'.dta", clear

@@ -435,16 +435,34 @@ run "$MyProject/scripts/programs/_config.do"
 
     * KEY + parcels_per_farm_1905 (Olson 1965 organizational-capacity control).
     * Imperfect concentration proxy: lower parcels/farm = consolidated holdings;
-    * higher = fragmented. Mountain cantons confound this with topography. Used
-    * because avg-parcel-area data starts at 1929 in I.39c (not 1905).
+    * higher = fragmented. Mountain cantons confound this with topography.
     reg yes_pct vineyard_per_cap french_share catholic_share parcels_per_farm_1905, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "ctrl_parcels", model, "ols")
 
-    * KEY + BOTH new controls together (migration LEVEL + parcels; per-capita
-    * migration omitted because it's collinear with the level + ln_pop)
+    * KEY + avg_parcel_area_1905 (the strategist's PRIMARY Olson concentration
+    * measure; constructed from agland_1912/(farms_1905*parcels_per_farm_1905)
+    * because I.39c block 4 has no 1905 row). Higher = more consolidated land,
+    * theoretically aligned with Olson 1965 prediction (concentrated holdings
+    * → easier political mobilization → wine effect should be larger).
+    reg yes_pct vineyard_per_cap french_share catholic_share avg_parcel_area_1905, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "ctrl_parcel_area", model, "ols")
+
+    * KEY + fruit_tree_density (1951 geographic proxy; competing-spirits
+    * feedstock control). Per user 2026-04-30: with canton-level employment
+    * search closed, the canonical wine-industry proxy set is
+    * vineyard_per_cap + avg_parcel_area_1905 + fruit_tree_density.
+    reg yes_pct vineyard_per_cap french_share catholic_share fruit_tree_density, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "ctrl_fruit", model, "ols")
+
+    * KEY + ALL THREE canonical wine-industry-size controls (avg parcel area
+    * + fruit-tree density + migration level). Per-capita migration omitted
+    * (collinear with level + ln_pop). parcels_per_farm omitted (parcel area
+    * is preferred per Olson 1965 framing).
     reg yes_pct vineyard_per_cap french_share catholic_share ///
-        net_migration_pre_vote parcels_per_farm_1905, vce(hc3)
+        avg_parcel_area_1905 fruit_tree_density net_migration_pre_vote, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "ctrl_all_new", model, "ols")
 }
@@ -466,15 +484,18 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
-**# 10.8 vine x parcels_per_farm interaction (Olson 1965 organizational test)
+**# 10.8 vine x concentration interactions (Olson 1965 organizational tests)
 *------------------------------------------------------------------------------*
 {
     * Substantive prediction: in concentrated wine industries, the wine effect
     * on the absinthe vote should be STRONGER (Olson: small concentrated groups
-    * mobilize politically more easily than large dispersed ones). Concentration
-    * proxy: low parcels_per_farm. Interaction sign expectation: NEGATIVE
-    * (vineyard effect attenuates as parcels_per_farm rises = farms more
-    * fragmented = less concentrated). N=25 makes this noisy.
+    * mobilize politically more easily than large dispersed ones). Two
+    * concentration proxies:
+    *   parcels_per_farm: LOW = consolidated, HIGH = fragmented. Sign on
+    *     interaction: NEGATIVE (effect attenuates with fragmentation).
+    *   avg_parcel_area: HIGH = consolidated land, LOW = fragmented. Sign on
+    *     interaction: POSITIVE (effect strengthens with bigger parcels).
+    * N=25 makes this noisy.
     cap drop vine_x_parcels
     gen double vine_x_parcels = vineyard_per_cap * parcels_per_farm_1905
     label var vine_x_parcels "vineyard_per_cap x parcels_per_farm"
@@ -483,6 +504,26 @@ run "$MyProject/scripts/programs/_config.do"
         parcels_per_farm_1905 vine_x_parcels, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "interact_parcels", model, "ols")
+
+    cap drop vine_x_parcel_area
+    gen double vine_x_parcel_area = vineyard_per_cap * avg_parcel_area_1905
+    label var vine_x_parcel_area "vineyard_per_cap x avg_parcel_area"
+
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        avg_parcel_area_1905 vine_x_parcel_area, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_parcel_area", model, "ols")
+
+    * vine x fruit_tree_density: does the wine effect attenuate where
+    * competing-spirit (fruit-distillate) capacity is high?
+    cap drop vine_x_fruit
+    gen double vine_x_fruit = vineyard_per_cap * fruit_tree_density
+    label var vine_x_fruit "vineyard_per_cap x fruit_tree_density"
+
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        fruit_tree_density vine_x_fruit, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "interact_fruit", model, "ols")
 }
 
 
@@ -753,7 +794,9 @@ run "$MyProject/scripts/programs/_config.do"
 {
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
     keep if model == "ols" & inlist(spec, "interact_french", "interact_catholic", ///
-                                          "interact_lnpop", "interact_german", "interact_parcels")
+                                          "interact_lnpop", "interact_german", ///
+                                          "interact_parcels", "interact_parcel_area", ///
+                                          "interact_fruit")
     tempfile ix
     regsave_tbl using "`ix'" if spec == "interact_french", ///
         name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
@@ -765,14 +808,18 @@ run "$MyProject/scripts/programs/_config.do"
         name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`ix'" if spec == "interact_parcels", ///
         name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`ix'" if spec == "interact_parcel_area", ///
+        name(col6) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`ix'" if spec == "interact_fruit", ///
+        name(col7) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     use "`ix'", clear
     drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
     clean_vars var
     label var var "Variable"
-    local fn "Notes: KEY spec + one interaction term per column. (1) vineyard x french_share; (2) vineyard x german_share (the 'other side of the coin'); (3) vineyard x catholic_share; (4) vineyard x ln_pop; (5) vineyard x parcels_per_farm_1905 (Olson 1965 organizational-capacity test). N=25 makes interactions noisy but signs are informative. The french_share/german_share pair are not exact complements because of Italian/Romansh populations. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
-    texsave var col1 col2 col3 col4 col5 using "$MyProject/results/tables/t08_interactions.tex", ///
+    local fn "Notes: KEY spec + one interaction term per column. (1) vineyard x french_share; (2) vineyard x german_share ('other side of the coin'); (3) vineyard x catholic_share; (4) vineyard x ln_pop; (5) vineyard x parcels_per_farm_1905; (6) vineyard x avg_parcel_area_1905; (7) vineyard x fruit_tree_density (does wine effect attenuate where fruit-spirit competing distillates dominate?). N=25 makes interactions noisy but signs are informative. french_share/german_share are not exact complements (Italian/Romansh). HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 col6 col7 using "$MyProject/results/tables/t08_interactions.tex", ///
         replace autonumber varlabels marker(tab:interactions) ///
-        title("Heterogeneity: vineyard interactions with language, religion, size, concentration") ///
+        title("Heterogeneity: vineyard interactions with language, religion, size, concentration, fruit-spirits") ///
         footnote("`fn'")
 }
 
@@ -932,7 +979,8 @@ run "$MyProject/scripts/programs/_config.do"
 {
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
     keep if model == "ols" & inlist(spec, "ctrl_migration", "ctrl_migration_pc", ///
-                                          "ctrl_parcels", "ctrl_all_new")
+                                          "ctrl_parcels", "ctrl_parcel_area", ///
+                                          "ctrl_fruit", "ctrl_all_new")
     tempfile nc
     regsave_tbl using "`nc'" if spec == "ctrl_migration", ///
         name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
@@ -940,16 +988,20 @@ run "$MyProject/scripts/programs/_config.do"
         name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`nc'" if spec == "ctrl_parcels", ///
         name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
-    regsave_tbl using "`nc'" if spec == "ctrl_all_new", ///
+    regsave_tbl using "`nc'" if spec == "ctrl_parcel_area", ///
         name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`nc'" if spec == "ctrl_fruit", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`nc'" if spec == "ctrl_all_new", ///
+        name(col6) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     use "`nc'", clear
     drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
     clean_vars var
     label var var "Variable"
-    local fn "Notes: KEY spec (vineyard_per_cap + french_share + catholic_share) plus one new control per column. (1) net migration 1900/10 (level); (2) net migration 1900/10 per capita; (3) parcels per farm 1905 (Olson 1965 organizational-capacity proxy; imperfect because mountainous geography also raises fragmentation); (4) migration-level + parcels jointly (per-capita migration omitted, collinear). Tests strategist-suggested alternative explanations (econ-vitality, agricultural-canton confound, organizational-capacity). I.04a fruit-tree-density NOT included: pre-vote-year data has fewer than 3 cantons populated; first fully populated year 1951 is 43 years post-vote. HC3 SEs. Significance: * p<0.10, ** p<0.05, *** p<0.01."
-    texsave var col1 col2 col3 col4 using "$MyProject/results/tables/t14_new_controls.tex", ///
+    local fn "Notes: KEY spec (vineyard_per_cap + french_share + catholic_share) plus additional control(s). (1) net migration 1900/10 level; (2) per capita; (3) parcels per farm 1905 (operational fragmentation); (4) avg parcel area 1905 in ha/parcel (constructed: agland_1912/(farms_1905*parcels_per_farm_1905)); (5) fruit-tree density (1951 in trees/capita; geographic proxy for 1908 because pre-vote-year canton coverage is unavailable; competing-spirits feedstock control); (6) all three canonical proxies jointly: avg parcel area + fruit-tree density + migration level. Per user 2026-04-30 the canton-level wine-industry-employment search is definitively closed; vineyard_per_cap + avg_parcel_area_1905 + fruit_tree_density is the canonical proxy set. Substantive note: in the Swiss context avg_parcel_area is NEGATIVELY correlated with vineyard_per_cap (rho=-0.49) -- alpine cantons have huge parcels and no vineyards -- so the Olson 1965 'concentration -> mobilization' prediction does NOT cleanly apply to Swiss land geography. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 col6 using "$MyProject/results/tables/t14_new_controls.tex", ///
         replace autonumber varlabels marker(tab:new_controls) ///
-        title("Robustness to additional controls (per strategist 2026-04-30)") ///
+        title("Robustness to canonical wine-industry-size proxies (vineyard\_per\_cap + avg\_parcel\_area + fruit\_trees + migration)") ///
         footnote("`fn'")
 }
 

@@ -111,10 +111,42 @@ _Auto-updated by _codebook_update.ado_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
 ### processed/intermediate/canton_crosswalk.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -128,7 +160,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
 ### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 25, vars = 7**
 
@@ -147,7 +179,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
 ### processed/intermediate/vote67_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -161,7 +193,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
 ### processed/intermediate/placebo_votes_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 375, vars = 7**
 
@@ -180,7 +212,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
 ### processed/intermediate/vineyard_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 125, vars = 3**
 
@@ -195,7 +227,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
 ### processed/intermediate/agland_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -209,7 +241,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
 ### processed/intermediate/population_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -223,7 +255,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
 ### processed/intermediate/pop_density_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -237,7 +269,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
 ### processed/intermediate/religion_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -252,7 +284,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
 ### processed/intermediate/language_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:45 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -267,7 +299,7 @@ _Updated: 30 Apr 2026 19:36:45 by 01_import.do_
 <!-- codebook:processed/intermediate/migration_uncleaned.dta:start -->
 ### processed/intermediate/migration_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:46 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -281,23 +313,38 @@ _Updated: 30 Apr 2026 19:36:46 by 01_import.do_
 <!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:start -->
 ### processed/intermediate/farm_concentration_uncleaned.dta
 
-_Updated: 30 Apr 2026 19:36:46 by 01_import.do_
+_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
+
+**N = 25, vars = 3**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| farms_1905 | float | %9.0g | Number of farms (1905, I.39c block 1) |
+| parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
+
+<!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:start -->
+### processed/intermediate/fruit_trees_uncleaned.dta
+
+_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 
 **N = 25, vars = 2**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
 | canton_code | str2 | %9s | Canton (2-letter code) |
-| parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
+| fruit_trees_total_1951 | float | %9.0g | Total fruit trees (1951, in 1000s; geographic proxy for 1908) |
 
-<!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:end -->
+<!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:end -->
 
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated: 30 Apr 2026 19:36:46 by 02_clean.do_
+_Updated: 30 Apr 2026 20:06:38 by 02_clean.do_
 
-**N = 25, vars = 52**
+**N = 25, vars = 57**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
@@ -343,6 +390,11 @@ _Updated: 30 Apr 2026 19:36:46 by 02_clean.do_
 | net_migration_per_cap | double | %10.0g | Net migration 1900/10 per 1900 capita |
 | net_migration_1900_10 | float | %9.0g | Net migration 1900/10, avg per year (persons) |
 | parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
+| farms_1905 | float | %9.0g | Number of farms (1905, I.39c block 1) |
+| total_parcels_1905 | long | %10.0g | Total parcels in canton (1905, computed) |
+| avg_parcel_area_1905 | double | %10.0g | Avg parcel area (ha/parcel, 1905, computed) |
+| fruit_trees_total_1951 | float | %9.0g | Total fruit trees (1951, in 1000s; geographic proxy for 1908) |
+| fruit_tree_density | double | %10.0g | Fruit trees per capita (1951 proxy / 1900 pop) |
 | absinthe_dummy | byte | %8.0g | Absinthe-producing canton (NE only; heartland) |
 | lang_french | byte | %8.0g | French-speaking canton (narrow: VD,VS,NE,GE) |
 | lang_french_broad | byte | %8.0g | French/bilingual canton (incl. FR, BE) |
@@ -359,7 +411,7 @@ _Updated: 30 Apr 2026 19:36:46 by 02_clean.do_
 <!-- codebook:processed/placebo_panel.dta:start -->
 ### processed/placebo_panel.dta
 
-_Updated: 30 Apr 2026 19:36:46 by 02_clean.do_
+_Updated: 30 Apr 2026 20:06:38 by 02_clean.do_
 
 **N = 375, vars = 14**
 
@@ -385,7 +437,7 @@ _Updated: 30 Apr 2026 19:36:46 by 02_clean.do_
 <!-- codebook:results/intermediate/regressions.dta:start -->
 ### results/intermediate/regressions.dta
 
-_Updated: 30 Apr 2026 19:37:45 by 03_regress.do_
+_Updated: 30 Apr 2026 20:07:39 by 03_regress.do_
 
 **N = 140, vars = 11**
 
@@ -408,9 +460,9 @@ _Updated: 30 Apr 2026 19:37:45 by 03_regress.do_
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 30 Apr 2026 19:37:50 by 05_expansion.do_
+_Updated: 30 Apr 2026 20:07:45 by 05_expansion.do_
 
-**N = 210, vars = 10**
+**N = 233, vars = 10**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|

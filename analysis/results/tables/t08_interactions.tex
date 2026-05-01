@@ -9,45 +9,53 @@
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 
-\caption{Heterogeneity: vineyard interactions with language, religion, size, concentration}
+\caption{Heterogeneity: vineyard interactions with language, religion, size, concentration, fruit-spirits}
 \label{tab:interactions}
-\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+\begin{tabularx}{\linewidth}{@{}lCCCCCCC@{}}
 
 \toprule
-&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
-{Variable}&{}&{}&{}&{}&{} \tabularnewline
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{}&{}&{} \tabularnewline
 \midrule \addlinespace[\belowrulesep]
-german\_share\_coef&&30.3&&&
-german\_share\_stderr&&(23.5)&&&
-ln\_pop\_coef&&&&0.518&
-ln\_pop\_stderr&&&&(2.66)&
-vine\_x\_catholic\_coef&&&--458&&
-vine\_x\_catholic\_stderr&&&(579)&&
-vine\_x\_french\_coef&173&&&&
-vine\_x\_french\_stderr&(1,416)&&&&
-vine\_x\_german\_coef&&--173&&&
-vine\_x\_german\_stderr&&(1,416)&&&
-vine\_x\_lnpop\_coef&&&&125&
-vine\_x\_lnpop\_stderr&&&&(680)&
-vineyard\_per\_cap\_coef&442&615&724**&--943&759
-vineyard\_per\_cap\_stderr&(278)&(1,277)&(293)&(8,162)&(628)
-french\_share\_coef&--30.3&&--28.0***&--29.9***&--28.4***
-french\_share\_stderr&(23.5)&&(6.96)&(9.25)&(7.40)
-catholic\_share\_coef&8.24&8.24&11.5*&9.28&11.0*
-catholic\_share\_stderr&(5.97)&(5.97)&(5.91)&(7.08)&(6.33)
-parcels\_per\_farm\_1905\_coef&&&&&0.261
-parcels\_per\_farm\_1905\_stderr&&&&&(0.503)
-vine\_x\_parcels\_coef&&&&&--19.4
-vine\_x\_parcels\_stderr&&&&&(32.7)
-\_cons\_coef&61.9***&31.5&59.6***&55.3&57.7***
-\_cons\_stderr&(4.70)&(21)&(4.32)&(32)&(6.42)
-N&25&25&25&25&25
-r2&0.539&0.539&0.553&0.547&0.550
-spec&interact\_french&interact\_german&interact\_catholic&interact\_lnpop&interact\_parcels
-model&ols&ols&ols&ols&ols
+avg\_parcel\_area\_1905\_coef&&&&&&0.532&
+avg\_parcel\_area\_1905\_stderr&&&&&&(1.20)&
+german\_share\_coef&&30.3&&&&&
+german\_share\_stderr&&(23.5)&&&&&
+ln\_pop\_coef&&&&0.518&&&
+ln\_pop\_stderr&&&&(2.66)&&&
+parcels\_per\_farm\_1905\_coef&&&&&0.261&&
+parcels\_per\_farm\_1905\_stderr&&&&&(0.503)&&
+vine\_x\_catholic\_coef&&&--458&&&&
+vine\_x\_catholic\_stderr&&&(579)&&&&
+vine\_x\_french\_coef&173&&&&&&
+vine\_x\_french\_stderr&(1,416)&&&&&&
+vine\_x\_german\_coef&&--173&&&&&
+vine\_x\_german\_stderr&&(1,416)&&&&&
+vine\_x\_lnpop\_coef&&&&125&&&
+vine\_x\_lnpop\_stderr&&&&(680)&&&
+vine\_x\_parcel\_area\_coef&&&&&&394&
+vine\_x\_parcel\_area\_stderr&&&&&&(2,407)&
+vine\_x\_parcels\_coef&&&&&--19.4&&
+vine\_x\_parcels\_stderr&&&&&(32.7)&&
+vineyard\_per\_cap\_coef&442&615&724**&--943&759&442&432
+vineyard\_per\_cap\_stderr&(278)&(1,277)&(293)&(8,162)&(628)&(443)&(439)
+french\_share\_coef&--30.3&&--28.0***&--29.9***&--28.4***&--31.4&--29.5***
+french\_share\_stderr&(23.5)&&(6.96)&(9.25)&(7.40)&(26.8)&(8.01)
+catholic\_share\_coef&8.24&8.24&11.5*&9.28&11.0*&8.03&9.66*
+catholic\_share\_stderr&(5.97)&(5.97)&(5.91)&(7.08)&(6.33)&(5.55)&(5.32)
+fruit\_tree\_density\_coef&&&&&&&--0.609
+fruit\_tree\_density\_stderr&&&&&&&(0.763)
+vine\_x\_fruit\_coef&&&&&&&21.6
+vine\_x\_fruit\_stderr&&&&&&&(68.9)
+\_cons\_coef&61.9***&31.5&59.6***&55.3&57.7***&60.4***&63.6***
+\_cons\_stderr&(4.70)&(21)&(4.32)&(32)&(6.42)&(4.85)&(4.62)
+N&25&25&25&25&25&25&25
+r2&0.539&0.539&0.553&0.547&0.550&0.546&0.552
+spec&interact\_french&interact\_german&interact\_catholic&interact\_lnpop&interact\_parcels&interact\_parcel\_area&interact\_fruit
+model&ols&ols&ols&ols&ols&ols&ols
 \bottomrule \addlinespace[\belowrulesep]
 
 \end{tabularx}
-\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec + one interaction term per column. (1) vineyard x french\_share; (2) vineyard x german\_share (the 'other side of the coin'); (3) vineyard x catholic\_share; (4) vineyard x ln\_pop; (5) vineyard x parcels\_per\_farm\_1905 (Olson 1965 organizational-capacity test). N=25 makes interactions noisy but signs are informative. The french\_share/german\_share pair are not exact complements because of Italian/Romansh populations. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec + one interaction term per column. (1) vineyard x french\_share; (2) vineyard x german\_share ('other side of the coin'); (3) vineyard x catholic\_share; (4) vineyard x ln\_pop; (5) vineyard x parcels\_per\_farm\_1905; (6) vineyard x avg\_parcel\_area\_1905; (7) vineyard x fruit\_tree\_density (does wine effect attenuate where fruit-spirit competing distillates dominate?). N=25 makes interactions noisy but signs are informative. french\_share/german\_share are not exact complements (Italian/Romansh). HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
 \end{table}
 \end{document}

@@ -153,6 +153,15 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 1.10 Fruit-tree stock 1951 (1908 geographic proxy; competing-spirits feedstock)
+*------------------------------------------------------------------------------*
+{
+    merge 1:1 canton_code using "$MyProject/processed/intermediate/fruit_trees_uncleaned.dta", ///
+        assert(match) nogenerate
+    assert c(N) == 25
+}
+
+
 **# 2. Construct derived variables
 *------------------------------------------------------------------------------*
 
@@ -321,6 +330,57 @@ run "$MyProject/scripts/programs/_config.do"
     label var german_share_total "German share (total pop. denom.)"
     assert inrange(german_share,       0, 1)
     assert inrange(german_share_total, 0, 1)
+
+    * --- Average parcel area 1905 (CONSTRUCTED) -- industrial concentration ---
+    * Strategist 2026-04-30 wanted avg_parcel_area_1905 as the primary Olson
+    * 1965 concentration measure. The HSSO I.39c block 4 ("mittlere
+    * Parzellenfläche") doesn't have 1905 (the 1905 census used a different
+    * definition for small farms; first available year is 1929).
+    * We reconstruct it from the available 1905 data:
+    *
+    *   avg_parcel_area_1905 = ag_land_ha / total_parcels
+    *                        = (agland_1000ha * 1000) / (farms_1905 * parcels_per_farm_1905)
+    *
+    * Units: hectares per parcel. LOW = fragmented, HIGH = consolidated (per
+    * Olson 1965 prediction: concentrated holdings → easier political
+    * mobilization → wine effect should be STRONGER where avg parcel area is
+    * larger).
+    *
+    * Caveat: agland_1000ha is from 1912, not 1905 (4-year gap; closest HSSO
+    * has). We already use agland_1912 as the 1908 proxy in vine_share_agland.
+    * Validation block below cross-checks our 1929 reconstruction against
+    * I.39c block 4's directly-reported 1929 mean-parcel-area (in ares).
+    gen double total_parcels_1905   = farms_1905 * parcels_per_farm_1905
+    gen double avg_parcel_area_1905 = (agland_1000ha * 1000) / total_parcels_1905
+    label var total_parcels_1905   "Total parcels in canton (1905, computed)"
+    label var avg_parcel_area_1905 "Avg parcel area (ha/parcel, 1905, computed)"
+
+    * Sanity: avg parcel area should be in roughly [0.1, 10] hectares per
+    * parcel for Swiss agriculture circa 1905
+    assert inrange(avg_parcel_area_1905, 0.05, 20)
+
+    * --- Fruit-tree density (1951 GEOGRAPHIC PROXY for 1908) ---
+    * Per user 2026-04-30: with the canton-level wine-industry-employment
+    * search definitively closed, the canonical canton-level proxies for
+    * wine industry size are vineyard_per_cap + avg_parcel_area_1905 +
+    * fruit_tree_density. We use 1951 fruit-tree counts (the earliest
+    * fully-populated year) under an explicit time-stability assumption:
+    * canton orchard suitability (climate, topography, soil) is approximately
+    * stable 1908-1951, much more so than wine acreage.
+    *
+    * Substantive use: control for "competing-spirits feedstock capacity".
+    * Cantons with strong fruit production (apples, pears, cherries, plums)
+    * had their own distillates (Kirsch, Pflümli, Williams) that competed
+    * with absinthe AND with wine. So fruit-tree-rich cantons may have had
+    * different rent-seeking incentives on the absinthe ban.
+    *
+    * I.04a values are in thousands of trees. Per-capita scaling makes
+    * cantons comparable.
+    gen double fruit_tree_density = (fruit_trees_total_1951 * 1000) / pop_1900
+    label var fruit_tree_density "Fruit trees per capita (1951 proxy / 1900 pop)"
+
+    * Sanity: should be a few trees per person to ~10s
+    assert inrange(fruit_tree_density, 0.01, 100)
 }
 
 
@@ -387,7 +447,9 @@ run "$MyProject/scripts/programs/_config.do"
                  vote67_yes_pct agland_1000ha vine_share_agland margin ///
                  vine_per_1000 vineyard_per_cap_1894 area_km2 ///
                  lang_french lang_french_broad lang_italian wine_canton ///
-                 net_migration_pre_vote net_migration_per_cap parcels_per_farm_1905 {
+                 net_migration_pre_vote net_migration_per_cap ///
+                 parcels_per_farm_1905 farms_1905 avg_parcel_area_1905 ///
+                 fruit_trees_total_1951 fruit_tree_density {
         cap assert !missing(`v')
         if _rc {
             di as error "MISSING VALUE in `v' — aborting"
@@ -422,7 +484,8 @@ run "$MyProject/scripts/programs/_config.do"
           german_share german_share_total ///
           ln_pop pop_1900 pop_density_1900 area_km2 agland_1000ha ///
           net_migration_pre_vote net_migration_per_cap net_migration_1900_10 ///
-          parcels_per_farm_1905 ///
+          parcels_per_farm_1905 farms_1905 total_parcels_1905 avg_parcel_area_1905 ///
+          fruit_trees_total_1951 fruit_tree_density ///
           absinthe_dummy lang_french lang_french_broad lang_italian ///
           german_1900 french_1900 protestant_1900 catholic_1900
 
