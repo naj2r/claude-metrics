@@ -672,6 +672,169 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.10 Round-2 Task A: Multicollinearity & identification diagnostics
+*------------------------------------------------------------------------------*
+* Defends the headline KEY-spec result against the "with N=25 and language-
+* vineyard collinearity, identification is off small residual variation"
+* critique. Three components:
+*   A.1 VIFs on the KEY-spec covariates (target: all < 10)
+*   A.2 BKW condition number via coldiag2 (target: < 30)
+*   A.3 PDS-LASSO (Belloni-Chernozhukov-Hansen 2014) for data-driven covariate
+*       selection from a candidate set (target: vineyard selected with positive
+*       coef consistent with OLS headline)
+*
+* All three diagnostics target the headline KEY spec
+*   reg yes_pct vineyard_per_cap french_share catholic_share
+* Results saved as synthetic regsave rows in regressions_expansion.dta with
+* spec="diagnostic_<name>" so the t16 builder can read them downstream.
+*
+* See analysis/documentation/handoffs/round2/02_taskA_diagnostics.md for full
+* spec + acceptance criteria.
+{
+    * --- A.1: VIF on KEY spec ---
+    qui reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    estat vif
+    matrix vif_table = r(VIF_data)   // r(VIF_data) returns the full VIF column matrix
+    * estat vif stores the VIF column at r(...); the actual element name varies
+    * by Stata version. Belt+braces: read both r(VIF) and r(VIF_data) and use
+    * whichever exists.
+    cap matrix vif_table = r(VIF)
+    if _rc {
+        cap matrix vif_table = r(VIF_data)
+    }
+    * If both fail, fall back to manually computing 1/(1-R^2) from auxiliary regs.
+    * (The manual fallback is more robust across Stata versions.)
+    foreach v in vineyard_per_cap french_share catholic_share {
+        * Manual VIF via auxiliary R^2 (always works, no version dependence):
+        local aux_x = subinword("vineyard_per_cap french_share catholic_share", "`v'", "", .)
+        qui reg `v' `aux_x'
+        local r2_`v' = e(r2)
+        local vif_`v' = 1 / (1 - `r2_`v'')
+    }
+
+    di _n "*** Round-2 Task A.1: VIF on KEY spec ***"
+    di "  vineyard_per_cap : VIF = " %5.2f `vif_vineyard_per_cap'  " (R^2_aux = " %5.3f `r2_vineyard_per_cap' ")"
+    di "  french_share     : VIF = " %5.2f `vif_french_share'      " (R^2_aux = " %5.3f `r2_french_share' ")"
+    di "  catholic_share   : VIF = " %5.2f `vif_catholic_share'    " (R^2_aux = " %5.3f `r2_catholic_share' ")"
+
+    * Save VIFs as 3 rows in regressions_expansion.dta
+    foreach v in vineyard_per_cap french_share catholic_share {
+        clear
+        set obs 1
+        gen str30 var = "`v'"
+        gen double coef   = `vif_`v''     // store VIF in the "coef" slot for table reuse
+        gen double stderr = .
+        gen double tstat  = .
+        gen double pval   = .
+        gen long   N      = 25
+        gen str30 spec    = "diagnostic_vif"
+        gen str20 model   = "vif"
+        append using "`results_exp'"
+        save "`results_exp'", replace
+    }
+    use "$MyProject/processed/absinthe_analysis.dta", clear   // reload analytical data
+
+    * --- A.2: BKW condition number ---
+    * Belsley-Kuh-Welsch (1980) condition number = sqrt(lambda_max / lambda_min)
+    * of the column-scaled X'X (each column scaled to unit Euclidean norm).
+    * Computed directly via Mata for version-independence; the vendored
+    * coldiag2 package displays the full condition-index table on the side.
+    qui reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+
+    * Optional: display coldiag2's condition-index table for the log (no scalar
+    * captured from it; we use the Mata computation below for the headline value)
+    cap noi coldiag2 vineyard_per_cap french_share catholic_share
+
+    * Mata: scaled-X'X condition number (BKW canonical definition)
+    mata: ///
+        X = st_data(., "vineyard_per_cap french_share catholic_share") ; ///
+        X = X :/ sqrt(colsum(X:^2)) ; ///       /* unit-Euclidean column scaling */ ///
+        eigs = symeigenvalues(X' * X) ; ///
+        kappa = sqrt(max(eigs) / min(eigs)) ; ///
+        st_local("cond_num", strofreal(kappa, "%9.4f"))
+
+    di _n "*** Round-2 Task A.2: BKW condition number (Mata-computed) ***"
+    di "  sqrt(lambda_max / lambda_min) of scaled X'X: " %7.2f `cond_num'
+
+    * Save BKW as one row
+    clear
+    set obs 1
+    gen str30 var = "scaled_X_KEY"
+    gen double coef   = `cond_num'
+    gen double stderr = .
+    gen double tstat  = .
+    gen double pval   = .
+    gen long   N      = 25
+    gen str30 spec    = "diagnostic_bkw"
+    gen str20 model   = "bkw"
+    append using "`results_exp'"
+    save "`results_exp'", replace
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+
+    * --- A.3: PDS-LASSO ---
+    * Per round2/00_MASTER.md "Data availability fallbacks":
+    *   - Blue Cross unavailable -> protestant_share_total = 1 - catholic_share_total
+    *   - italian_share unavailable -> use lang_italian (binary)
+    *   - urban_share unavailable -> omit (ln_pop partially proxies)
+    cap drop protestant_share_total
+    gen double protestant_share_total = 1 - catholic_share_total
+    label var protestant_share_total ///
+        "Protestant share of total pop (= 1 - catholic_share_total; Blue Cross unavailable)"
+
+    local pds_controls "french_share catholic_share protestant_share_total lang_italian ln_pop agland_1000ha avg_parcel_area_1905 parcels_per_farm_1905 net_migration_per_cap"
+
+    di _n "*** Round-2 Task A.3: PDS-LASSO with available controls ***"
+    di "  Treatment:  vineyard_per_cap"
+    di "  Candidates: `pds_controls'"
+
+    * pdslasso syntax: pdslasso depvar treatvar (controls)
+    cap noi pdslasso yes_pct vineyard_per_cap (`pds_controls')
+    if _rc {
+        di as error "  pdslasso failed (rc=`_rc'); diagnostic incomplete"
+        local pds_coef = .
+        local pds_se   = .
+        local pds_p    = .
+        local sel_count = .
+    }
+    else {
+        local pds_coef = _b[vineyard_per_cap]
+        local pds_se   = _se[vineyard_per_cap]
+        local pds_t    = `pds_coef' / `pds_se'
+        local pds_p    = 2 * (1 - normal(abs(`pds_t')))
+
+        * Selected covariates (e() macro names vary; try common ones)
+        local sel_list ""
+        cap local sel_list = e(controls_sel)
+        if "`sel_list'" == "" {
+            cap local sel_list = e(selected)
+        }
+        local sel_count : word count `sel_list'
+
+        di "  PDS-LASSO vineyard coef: " %7.2f `pds_coef' "  SE: " %6.2f `pds_se' "  p: " %5.3f `pds_p'
+        di "  Selected " `sel_count' " of `: word count `pds_controls'' candidate controls"
+        di "  Selected list: `sel_list'"
+    }
+
+    * Save PDS-LASSO as one row (selected list goes into a separate marker row)
+    clear
+    set obs 1
+    gen str30 var = "vineyard_per_cap"
+    gen double coef   = `pds_coef'
+    gen double stderr = `pds_se'
+    gen double tstat  = .
+    gen double pval   = `pds_p'
+    gen long   N      = 25
+    gen str30 spec    = "diagnostic_pdslasso"
+    gen str20 model   = "pds_lasso"
+    append using "`results_exp'"
+    save "`results_exp'", replace
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+    cap drop protestant_share_total
+
+    di _n "*** Task A diagnostic block complete ***"
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -1160,6 +1323,58 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.11.5 t16_diagnostics: round-2 multicollinearity + post-selection diagnostics
+*------------------------------------------------------------------------------*
+* Builds t16_diagnostics.tex from the diagnostic_* rows saved in section 10.10.
+* Three blocks (rendered as a single texsave table with row separators):
+*   Panel A: VIFs for the 3 KEY-spec covariates
+*   Panel B: BKW condition number (Mata-computed sqrt(lambda_max/lambda_min) of scaled X'X)
+*   Panel C: PDS-LASSO post-selection coefficient on vineyard_per_cap
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if strpos(spec, "diagnostic_") == 1
+
+    * Format each diagnostic into a single string for the value column
+    gen str40 diagnostic_label = ""
+    gen str20 diagnostic_value = ""
+    gen byte  panel_order = .
+
+    * Panel A: VIFs (3 rows)
+    replace diagnostic_label = "VIF: vineyard\_per\_cap" if spec == "diagnostic_vif" & var == "vineyard_per_cap"
+    replace diagnostic_label = "VIF: french\_share"      if spec == "diagnostic_vif" & var == "french_share"
+    replace diagnostic_label = "VIF: catholic\_share"    if spec == "diagnostic_vif" & var == "catholic_share"
+    replace panel_order = 1 if spec == "diagnostic_vif"
+    replace diagnostic_value = string(coef, "%5.2f") if spec == "diagnostic_vif"
+
+    * Panel B: BKW condition number (1 row)
+    replace diagnostic_label = "BKW condition number (sqrt($\\lambda_{max}/\\lambda_{min}$) of scaled X'X)" if spec == "diagnostic_bkw"
+    replace diagnostic_value = string(coef, "%5.2f") if spec == "diagnostic_bkw"
+    replace panel_order = 2 if spec == "diagnostic_bkw"
+
+    * Panel C: PDS-LASSO (1 row, shown as point + SE + p)
+    replace diagnostic_label = "PDS-LASSO: vineyard\_per\_cap (post-selection)" if spec == "diagnostic_pdslasso"
+    replace diagnostic_value = string(coef, "%6.1f") + " (SE " + string(stderr, "%5.1f") + "; p=" + string(pval, "%4.3f") + ")" if spec == "diagnostic_pdslasso"
+    replace panel_order = 3 if spec == "diagnostic_pdslasso"
+
+    sort panel_order var
+    keep diagnostic_label diagnostic_value panel_order
+    rename diagnostic_label diagnostic
+    rename diagnostic_value value
+    label var diagnostic "Diagnostic"
+    label var value      "Value"
+    drop panel_order
+
+    local fn "Notes: Multicollinearity diagnostics and post-selection inference for the headline KEY specification (yes\_pct on vineyard\_per\_cap + french\_share + catholic\_share, HC3 robust standard errors, N=25 cantons). Variance inflation factors (Panel A) computed from auxiliary regressions of each covariate on the others; values < 10 indicate weak collinearity (Wooldridge 2010). The Belsley-Kuh-Welsch condition number (Panel B) is sqrt(lambda\_max / lambda\_min) of the column-scaled X'X (each column scaled to unit Euclidean norm); values < 30 indicate well-conditioned design matrix (Belsley, Kuh, and Welsch 1980). Panel C reports the post-double-selection LASSO coefficient on vineyard\_per\_cap (Belloni, Chernozhukov, and Hansen 2014) from a candidate control set including french\_share, catholic\_share, protestant\_share\_total, lang\_italian (binary), ln\_pop, agland\_1000ha, avg\_parcel\_area\_1905, parcels\_per\_farm\_1905, net\_migration\_per\_cap. Notes on covariate construction: protestant\_share\_total is constructed as 1 - catholic\_share\_total because the HSSO Catholic+Protestant religion data does not separately report Protestant counts; in 1900 Switzerland Catholic+Protestant constituted 99.4 percent of the population, making the construction a tight approximation. Italian share is represented by a binary indicator (lang\_italian) because continuous Italian population shares are not available for our HSSO subset. Urban share is omitted because canton-level urbanization data are not in our HSSO extracts; ln\_pop partially captures urban-rural variation."
+
+    texsave diagnostic value ///
+        using "$MyProject/results/tables/t16_diagnostics.tex", ///
+        replace autonumber varlabels marker(tab:diagnostics) ///
+        title("Round-2 multicollinearity diagnostics and post-selection inference (KEY spec)") ///
+        footnote("`fn'")
+    di "Saved t16_diagnostics.tex"
+}
+
+
 **# 12.12 f04_marginsplot_french: vineyard effect across (1 - french_share)
 *------------------------------------------------------------------------------*
 {
@@ -1283,9 +1498,27 @@ run "$MyProject/scripts/programs/_config.do"
     di "Gelbach TOTAL (b1base - b1full): " %6.1f `gel_total'
     assert `gel_total' < 0  // negative because Simpson sign-flip moves coef up
 
-    * Restore the regressions_expansion.dta context for downstream code (none
-    * after this in the assertion block, but defensive)
+    * --- Round-2 Task A diagnostics assertions ---
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+
+    * A.1 — VIFs should all be < 10 (multicollinearity threshold; Wooldridge 2010)
+    foreach v in vineyard_per_cap french_share catholic_share {
+        summ coef if spec == "diagnostic_vif" & var == "`v'", meanonly
+        di "Round-2 VIF `v' = " %5.2f r(mean)
+        assert r(mean) < 10
+    }
+
+    * A.2 — BKW condition number should be < 30 (Belsley/Kuh/Welsch 1980 threshold)
+    summ coef if spec == "diagnostic_bkw", meanonly
+    di "Round-2 BKW condition number = " %5.2f r(mean)
+    assert r(mean) < 30
+
+    * A.3 — PDS-LASSO post-selection vineyard coef should be POSITIVE
+    *       (sign agreement with OLS headline +484; significance NOT asserted
+    *        because post-selection inference is more conservative at N=25)
+    summ coef if spec == "diagnostic_pdslasso" & var == "vineyard_per_cap", meanonly
+    di "Round-2 PDS-LASSO vineyard coef = " %7.2f r(mean)
+    assert r(mean) > 0
 
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
 }
