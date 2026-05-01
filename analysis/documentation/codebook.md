@@ -143,10 +143,27 @@ _Auto-updated by _codebook_update.ado_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
 ### processed/intermediate/canton_crosswalk.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -160,7 +177,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
 ### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 25, vars = 7**
 
@@ -179,7 +196,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
 ### processed/intermediate/vote67_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -193,7 +210,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
 ### processed/intermediate/placebo_votes_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 375, vars = 7**
 
@@ -212,7 +229,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
 ### processed/intermediate/vineyard_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 125, vars = 3**
 
@@ -227,7 +244,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
 ### processed/intermediate/agland_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -241,7 +258,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
 ### processed/intermediate/population_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -255,7 +272,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
 ### processed/intermediate/pop_density_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:37 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -269,7 +286,7 @@ _Updated: 30 Apr 2026 20:06:37 by 01_import.do_
 <!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
 ### processed/intermediate/religion_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:32 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -284,7 +301,7 @@ _Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 <!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
 ### processed/intermediate/language_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:32 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -299,7 +316,7 @@ _Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 <!-- codebook:processed/intermediate/migration_uncleaned.dta:start -->
 ### processed/intermediate/migration_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:32 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -313,7 +330,7 @@ _Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 <!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:start -->
 ### processed/intermediate/farm_concentration_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:32 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -328,7 +345,7 @@ _Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 <!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:start -->
 ### processed/intermediate/fruit_trees_uncleaned.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 01_import.do_
+_Updated: 30 Apr 2026 20:13:32 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -342,7 +359,7 @@ _Updated: 30 Apr 2026 20:06:38 by 01_import.do_
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 02_clean.do_
+_Updated: 30 Apr 2026 20:13:32 by 02_clean.do_
 
 **N = 25, vars = 57**
 
@@ -411,7 +428,7 @@ _Updated: 30 Apr 2026 20:06:38 by 02_clean.do_
 <!-- codebook:processed/placebo_panel.dta:start -->
 ### processed/placebo_panel.dta
 
-_Updated: 30 Apr 2026 20:06:38 by 02_clean.do_
+_Updated: 30 Apr 2026 20:13:32 by 02_clean.do_
 
 **N = 375, vars = 14**
 
@@ -437,7 +454,7 @@ _Updated: 30 Apr 2026 20:06:38 by 02_clean.do_
 <!-- codebook:results/intermediate/regressions.dta:start -->
 ### results/intermediate/regressions.dta
 
-_Updated: 30 Apr 2026 20:07:39 by 03_regress.do_
+_Updated: 30 Apr 2026 20:14:32 by 03_regress.do_
 
 **N = 140, vars = 11**
 
@@ -460,9 +477,9 @@ _Updated: 30 Apr 2026 20:07:39 by 03_regress.do_
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 30 Apr 2026 20:07:45 by 05_expansion.do_
+_Updated: 30 Apr 2026 20:14:38 by 05_expansion.do_
 
-**N = 233, vars = 10**
+**N = 221, vars = 10**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|

@@ -9,39 +9,37 @@
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 
-\caption{Robustness to canonical wine-industry-size proxies (vineyard\\_per\\_cap + avg\\_parcel\\_area + fruit\\_trees + migration)}
+\caption{Robustness to additional controls (migration + farm-concentration proxies)}
 \label{tab:new_controls}
-\begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
 
 \toprule
-&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)} \tabularnewline \midrule
-{Variable}&{}&{}&{}&{}&{}&{} \tabularnewline
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{} \tabularnewline
 \midrule \addlinespace[\belowrulesep]
-net\_migration\_per\_cap\_coef&&4.16&&&&
-net\_migration\_per\_cap\_stderr&&(403)&&&&
-parcels\_per\_farm\_1905\_coef&&&0.105&&&
-parcels\_per\_farm\_1905\_stderr&&&(0.344)&&&
-vineyard\_per\_cap\_coef&405&483**&395&536**&544**&497
-vineyard\_per\_cap\_stderr&(248)&(210)&(377)&(250)&(230)&(295)
-french\_share\_coef&--27.7***&--28.3***&--27.7***&--28.3***&--29.7***&--28.7***
-french\_share\_stderr&(8.50)&(8.04)&(7.28)&(7.59)&(8.02)&(9.57)
-catholic\_share\_coef&8.53*&8.44*&8.22&7.17&9.70*&8.13
-catholic\_share\_stderr&(4.41)&(4.80)&(5.11)&(5.58)&(5.14)&(6.54)
-avg\_parcel\_area\_1905\_coef&&&&0.606&&0.606
-avg\_parcel\_area\_1905\_stderr&&&&(1.17)&&(1.39)
-fruit\_tree\_density\_coef&&&&&--0.483&--0.329
-fruit\_tree\_density\_stderr&&&&&(0.545)&(0.604)
-net\_migration\_pre\_vote\_coef&0.00189&&&&&0.00189
-net\_migration\_pre\_vote\_stderr&(0.00158)&&&&&(0.00171)
-\_cons\_coef&61.3***&61.6***&60.9***&61.0***&63.0***&61.7***
-\_cons\_stderr&(3.28)&(3.65)&(3.94)&(3.89)&(3.83)&(4.42)
-N&25&25&25&25&25&25
-r2&0.562&0.538&0.542&0.543&0.551&0.577
-spec&ctrl\_migration&ctrl\_migration\_pc&ctrl\_parcels&ctrl\_parcel\_area&ctrl\_fruit&ctrl\_all\_new
-model&ols&ols&ols&ols&ols&ols
+net\_migration\_per\_cap\_coef&&4.16&&&
+net\_migration\_per\_cap\_stderr&&(403)&&&
+parcels\_per\_farm\_1905\_coef&&&0.105&&
+parcels\_per\_farm\_1905\_stderr&&&(0.344)&&
+vineyard\_per\_cap\_coef&405&483**&395&536**&466
+vineyard\_per\_cap\_stderr&(248)&(210)&(377)&(250)&(289)
+french\_share\_coef&--27.7***&--28.3***&--27.7***&--28.3***&--27.7***
+french\_share\_stderr&(8.50)&(8.04)&(7.28)&(7.59)&(9)
+catholic\_share\_coef&8.53*&8.44*&8.22&7.17&6.91
+catholic\_share\_stderr&(4.41)&(4.80)&(5.11)&(5.58)&(5.52)
+avg\_parcel\_area\_1905\_coef&&&&0.606&0.784
+avg\_parcel\_area\_1905\_stderr&&&&(1.17)&(1.26)
+net\_migration\_pre\_vote\_coef&0.00189&&&&0.00203
+net\_migration\_pre\_vote\_stderr&(0.00158)&&&&(0.00166)
+\_cons\_coef&61.3***&61.6***&60.9***&61.0***&60.5***
+\_cons\_stderr&(3.28)&(3.65)&(3.94)&(3.89)&(3.72)
+N&25&25&25&25&25
+r2&0.562&0.538&0.542&0.543&0.571
+spec&ctrl\_migration&ctrl\_migration\_pc&ctrl\_parcels&ctrl\_parcel\_area&ctrl\_all\_new
+model&ols&ols&ols&ols&ols
 \bottomrule \addlinespace[\belowrulesep]
 
 \end{tabularx}
-\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec (vineyard\_per\_cap + french\_share + catholic\_share) plus additional control(s). (1) net migration 1900/10 level; (2) per capita; (3) parcels per farm 1905 (operational fragmentation); (4) avg parcel area 1905 in ha/parcel (constructed: agland\_1912/(farms\_1905*parcels\_per\_farm\_1905)); (5) fruit-tree density (1951 in trees/capita; geographic proxy for 1908 because pre-vote-year canton coverage is unavailable; competing-spirits feedstock control); (6) all three canonical proxies jointly: avg parcel area + fruit-tree density + migration level. Per user 2026-04-30 the canton-level wine-industry-employment search is definitively closed; vineyard\_per\_cap + avg\_parcel\_area\_1905 + fruit\_tree\_density is the canonical proxy set. Substantive note: in the Swiss context avg\_parcel\_area is NEGATIVELY correlated with vineyard\_per\_cap (rho=-0.49) -- alpine cantons have huge parcels and no vineyards -- so the Olson 1965 'concentration -> mobilization' prediction does NOT cleanly apply to Swiss land geography. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec (vineyard\_per\_cap + french\_share + catholic\_share) plus additional control(s). (1) net migration 1900/10 level; (2) per capita; (3) parcels per farm 1905 (operational fragmentation); (4) avg parcel area 1905 in ha/parcel (constructed: agland\_1912 / (farms\_1905 * parcels\_per\_farm\_1905); cross-validated against I.39c block 4 1929 values); (5) avg parcel area + migration jointly. fruit\_tree\_density (built from 1951 I.04a; first fully-populated year) was tested but EXCLUDED from this table -- the 43-year gap from the 1908 vote violates the project rule of using pre-referendum or same-date data. In Swiss data, avg\_parcel\_area is NEGATIVELY correlated with vineyard\_per\_cap (rho=-0.49) -- alpine cantons have huge parcels and no vineyards -- so Olson 1965's 'concentration -> mobilization' prediction does not cleanly apply to land geography. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
 \end{table}
 \end{document}
