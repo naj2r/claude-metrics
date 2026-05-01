@@ -407,13 +407,52 @@ run "$MyProject/scripts/programs/_config.do"
     preserve
     use "$MyProject/processed/placebo_panel.dta", clear
     levelsof anr, local(placebos) clean
+    local n_fracreg_failed = 0
     foreach a of local placebos {
+        * --- OLS (HC3) — primary reporting channel ---
         qui reg yes_pct vineyard_per_cap french_share catholic_share ///
             if anr == `a', vce(hc3)
         regsave using "`results_exp'", t p autoid append ///
             addlabel(spec, "panel_anr`a'", model, "ols")
+
+        * --- Fractional-logit AMEs (added per phase-review S4 audit, 2026-04-30)
+        * Mirrors the OLS row above with bounded-outcome treatment. fracreg
+        * cannot use vce(hc3); uses its own robust estimator. With N=25 and
+        * boundary yes-vote shares for some 1900-1910 votes, convergence is
+        * not guaranteed -- wrap in capture and tag failures as model="fracreg_failed"
+        * so the t13 builder can render "n/c" (not converged) explicitly rather
+        * than silently dropping votes from the AME column.
+        cap noi {
+            qui fracreg logit yes_frac vineyard_per_cap french_share catholic_share ///
+                if anr == `a', vce(robust)
+            qui margins, dydx(*) post
+            regsave using "`results_exp'", t p autoid append ///
+                addlabel(spec, "panel_anr`a'", model, "fracreg_ame")
+        }
+        local fracreg_rc = _rc          // capture immediately; subsequent commands clobber _rc
+        if `fracreg_rc' {
+            local n_fracreg_failed = `n_fracreg_failed' + 1
+            di as text "  fracreg did not converge for vote `a' (rc=`fracreg_rc'); marking as fracreg_failed"
+            * Save a sentinel row so t13 builder can show "n/c" instead of dropping the vote.
+            * Wrap in preserve/restore so the loop's placebo_panel data context is restored
+            * cleanly without an explicit re-`use` (which would lose any in-memory mods).
+            preserve
+            clear
+            set obs 1
+            gen str20 var = "vineyard_per_cap"
+            gen double coef = .
+            gen double stderr = .
+            gen double tstat = .
+            gen double pval = .
+            gen long N = .
+            gen str20 spec = "panel_anr`a'"
+            gen str20 model = "fracreg_failed"
+            append using "`results_exp'"
+            save "`results_exp'", replace
+            restore
+        }
     }
-    di "Placebo panel: ran KEY spec on " wordcount("`placebos'") " votes 1900-1910"
+    di "Placebo panel: ran KEY spec on " wordcount("`placebos'") " votes 1900-1910 (OLS); fracreg AMEs added with `n_fracreg_failed' convergence failures"
     restore
 }
 
@@ -532,6 +571,17 @@ run "$MyProject/scripts/programs/_config.do"
     * Decomposes the change in vineyard_per_cap coefficient from the bivariate
     * spec to the KEY spec (adding french_share + catholic_share) into
     * contributions of language vs religion.
+    *
+    * OLS-ONLY BY METHODOLOGICAL NECESSITY (decision documented per phase-review
+    * S4, 2026-04-30): the Gelbach decomposition identity b1base - b1full =
+    * sum(delta_k) follows from the Frisch-Waugh-Lovell theorem on linear
+    * projections. Fractional logit's nonlinear link function breaks FWL, so
+    * the additive delta decomposition is not defined for fracreg AMEs. The
+    * "right" nonlinear analog is closer to a Blinder-Oaxaca decomposition for
+    * fracreg, which is a different object (and not what b1x2 implements).
+    * t13 (cross-referendum panel) reports both OLS and fracreg AMEs; t15
+    * reports OLS Gelbach only. This is a property of the decomposition method,
+    * not a coverage gap.
     *
     * Hand-validation block runs first to verify the b1x2 identity. Then we
     * call b1x2 with x2delta() grouping, save coefficients via regsave,
@@ -871,13 +921,40 @@ run "$MyProject/scripts/programs/_config.do"
 **# 12.8 t13_placebo_panel: cross-referendum falsification (15 votes 1900-1910)
 *------------------------------------------------------------------------------*
 {
-    * One row per vote: anr, year, vineyard coef, SE, t, p, sig stars, short title.
+    * One row per vote: anr, year, OLS vineyard coef + SE + p, fracreg AME +
+    * SE + p (or "n/c" if fracreg failed to converge), short title.
     * Sorted by date (ascending) so the absinthe vote (#68) is in the middle.
+    *
+    * Per phase-review S4 (2026-04-30): added fracreg AME column to provide
+    * symmetric headline-vs-extension reporting. fracreg AMEs scaled by 100 for
+    * comparability with the OLS coefficient (which is in yes_pct units, 0-100).
+
+    * --- Build OLS rows ---
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
-    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr")
+    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr") & model == "ols"
     gen int anr = real(substr(spec, 10, .))
-    keep anr coef stderr tstat pval N
-    rename (coef stderr tstat pval) (b se t p)
+    keep anr coef stderr pval
+    rename (coef stderr pval) (b_ols se_ols p_ols)
+    tempfile ols_rows
+    save "`ols_rows'", replace
+
+    * --- Build fracreg rows (success + failed sentinel) ---
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
+            & inlist(model, "fracreg_ame", "fracreg_failed")
+    gen int anr = real(substr(spec, 10, .))
+    gen byte fr_converged = (model == "fracreg_ame")
+    keep anr coef stderr pval fr_converged
+    * Scale AMEs by 100 so they are comparable to OLS yes_pct-scale coefficients
+    replace coef   = coef   * 100 if fr_converged == 1
+    replace stderr = stderr * 100 if fr_converged == 1
+    rename (coef stderr pval) (b_fr se_fr p_fr)
+    tempfile fr_rows
+    save "`fr_rows'", replace
+
+    * --- Merge OLS + fracreg side-by-side ---
+    use "`ols_rows'", clear
+    merge 1:1 anr using "`fr_rows'", nogen
 
     * Merge in vote metadata (year + label) from placebo_panel
     tempfile meta
@@ -890,14 +967,24 @@ run "$MyProject/scripts/programs/_config.do"
     merge 1:1 anr using "`meta'", nogen keep(match)
     sort vote_year anr
 
-    * Format coefficient with significance stars
-    gen str20 b_str = ""
-    replace b_str = string(b, "%9.1f") + "***" if p < 0.01
-    replace b_str = string(b, "%9.1f") + "**"  if p >= 0.01 & p < 0.05
-    replace b_str = string(b, "%9.1f") + "*"   if p >= 0.05 & p < 0.10
-    replace b_str = string(b, "%9.1f")          if p >= 0.10
-    gen str20 se_str  = "(" + string(se, "%6.0f") + ")"
-    gen str8  p_str   = string(p, "%5.3f")
+    * --- Format OLS coefficient with significance stars ---
+    gen str20 b_ols_str = ""
+    replace b_ols_str = string(b_ols, "%9.1f") + "***" if p_ols < 0.01
+    replace b_ols_str = string(b_ols, "%9.1f") + "**"  if p_ols >= 0.01 & p_ols < 0.05
+    replace b_ols_str = string(b_ols, "%9.1f") + "*"   if p_ols >= 0.05 & p_ols < 0.10
+    replace b_ols_str = string(b_ols, "%9.1f")          if p_ols >= 0.10
+    gen str20 se_ols_str = "(" + string(se_ols, "%6.0f") + ")"
+
+    * --- Format fracreg AME coefficient with significance stars (or n/c) ---
+    gen str20 b_fr_str = ""
+    replace b_fr_str = string(b_fr, "%9.1f") + "***"  if p_fr < 0.01 & fr_converged == 1
+    replace b_fr_str = string(b_fr, "%9.1f") + "**"   if p_fr >= 0.01 & p_fr < 0.05 & fr_converged == 1
+    replace b_fr_str = string(b_fr, "%9.1f") + "*"    if p_fr >= 0.05 & p_fr < 0.10 & fr_converged == 1
+    replace b_fr_str = string(b_fr, "%9.1f")           if p_fr >= 0.10 & fr_converged == 1
+    replace b_fr_str = "n/c"                           if fr_converged == 0
+    gen str20 se_fr_str = "(" + string(se_fr, "%6.0f") + ")" if fr_converged == 1
+    replace  se_fr_str = ""                                  if fr_converged == 0
+
     gen str8  yr_str  = string(vote_year)
     gen str4  anr_str = string(anr)
 
@@ -906,29 +993,31 @@ run "$MyProject/scripts/programs/_config.do"
     replace marker = "TREAT" if anr == 68
 
     * Truncate vote_label for table fit
-    replace vote_label = substr(vote_label, 1, 55)
+    replace vote_label = substr(vote_label, 1, 50)
 
-    keep anr_str yr_str vote_label b_str se_str p_str marker
-    order anr_str yr_str vote_label b_str se_str p_str marker
+    keep anr_str yr_str vote_label b_ols_str se_ols_str b_fr_str se_fr_str marker
+    order anr_str yr_str vote_label b_ols_str se_ols_str b_fr_str se_fr_str marker
     rename anr_str       anr
     rename yr_str        year
     rename vote_label    title
-    rename b_str         vineyard_coef
-    rename se_str        se
-    rename p_str         pval
-    label var anr           "Vote no."
-    label var year          "Year"
-    label var title         "Title (short)"
-    label var vineyard_coef "Vineyard coef"
-    label var se            "(SE)"
-    label var pval          "p"
-    label var marker        ""
+    rename b_ols_str     vineyard_coef_ols
+    rename se_ols_str    se_ols
+    rename b_fr_str      vineyard_ame_fracreg
+    rename se_fr_str     se_fracreg
+    label var anr                  "Vote no."
+    label var year                 "Year"
+    label var title                "Title (short)"
+    label var vineyard_coef_ols    "OLS coef"
+    label var se_ols               "(SE)"
+    label var vineyard_ame_fracreg "Fracreg AME"
+    label var se_fracreg           "(SE)"
+    label var marker               ""
 
-    local fn "Notes: KEY-spec OLS (yes\_pct on vineyard\_per\_cap + french\_share + catholic\_share, HC3 SEs) run separately on each of the 15 federal popular votes between 1900 and 1910. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\_per\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \#68 plus substantively related votes show non-null coefficients, the wine-protection mechanism is issue-specific. Vote \#65 (Lebensmittelgesetz, 1906) is NOT a clean placebo: this Federal Act established the alcohol-regulation authority later invoked against absinthe and was supported by wine producers because it cracked down on wine adulteration and substitute beverages. Treat \#65 as the regulatory prequel to \#68, not an independent comparison. Vote \#63 (1903 alcohol-trade regulation, distinct earlier coalition that failed) is the cleaner alcohol-regulation null. Stars: * p<0.10, ** p<0.05, *** p<0.01."
-    texsave anr year title vineyard_coef se pval marker ///
+    local fn "Notes: KEY-spec regression of canton yes-vote share on vineyard\_per\_cap + french\_share + catholic\_share, run separately on each of the 15 federal popular votes between 1900 and 1910. OLS columns use yes\_pct (0-100) with HC3 SEs. Fracreg columns use fractional logit (Papke and Wooldridge 1996) on yes\_frac (0-1) with robust SEs; reported coefficients are average marginal effects from margins post-estimation, scaled by 100 for unit-comparability with OLS. n/c indicates fracreg did not converge for that vote. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\_per\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \#68 plus substantively related votes show non-null coefficients, the wine-protection mechanism is issue-specific. Vote \#65 (Lebensmittelgesetz, 1906) is NOT a clean placebo: this Federal Act established the alcohol-regulation authority later invoked against absinthe and was supported by wine producers because it cracked down on wine adulteration and substitute beverages. Treat \#65 as the regulatory prequel to \#68, not an independent comparison. Vote \#63 (1903 alcohol-trade regulation, distinct earlier coalition that failed) is the cleaner alcohol-regulation null. Stars: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave anr year title vineyard_coef_ols se_ols vineyard_ame_fracreg se_fracreg marker ///
         using "$MyProject/results/tables/t13_placebo_panel.tex", ///
         replace autonumber varlabels marker(tab:placebo_panel) ///
-        title("Cross-referendum falsification: 15 federal votes 1900-1910") ///
+        title("Cross-referendum falsification: 15 federal votes 1900-1910 (OLS + fracreg AMEs)") ///
         footnote("`fn'")
 }
 
@@ -937,7 +1026,10 @@ run "$MyProject/scripts/programs/_config.do"
 *------------------------------------------------------------------------------*
 {
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
-    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr")
+    * Filter to OLS rows only (panel_anr* now also has fracreg_ame and
+    * fracreg_failed model rows added 2026-04-30 per phase-review S4).
+    * The histogram visualizes the OLS-coefficient distribution.
+    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr") & model == "ols"
     gen int anr = real(substr(spec, 10, .))
 
     * Stata return for the absinthe coefficient (red reference line)
@@ -1132,19 +1224,36 @@ run "$MyProject/scripts/programs/_config.do"
     * Cross-referendum falsification: absinthe vote (#68) coef should be in the
     * upper half of the placebo distribution. Less stringent than "extreme tail"
     * because we have known corroborating votes (#65 food safety, ~+1225).
-    qui sum coef if var == "vineyard_per_cap" & spec == "panel_anr68"
+    * Filter to model=="ols": panel_anr* specs now have BOTH OLS rows and
+    * fracreg_ame rows (added 2026-04-30 per phase-review S4); we evaluate the
+    * OLS-coefficient ranking here. A separate fracreg AME ranking assertion
+    * follows.
+    qui sum coef if var == "vineyard_per_cap" & spec == "panel_anr68" & model == "ols"
     local b_treat = r(mean)
-    qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") & coef >= `b_treat'
+    qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
+                & model == "ols" & coef >= `b_treat'
     local n_extreme = r(N)
-    di "Falsification: " `n_extreme' " of 15 placebo coefs >= absinthe coef (" %6.1f `b_treat' ")"
+    di "Falsification (OLS): " `n_extreme' " of 15 placebo coefs >= absinthe coef (" %6.1f `b_treat' ")"
     * Absinthe should rank in the top 5 of 15 (i.e., n_extreme including itself <= 5)
     assert `n_extreme' <= 5
+
+    * Cross-referendum falsification (fracreg AMEs): same logic on bounded-outcome
+    * channel. AMEs are scaled by 100 in the t13 builder for unit-comparability;
+    * here we work on the raw stored AME values (so the absinthe vote AME is
+    * roughly b_treat / 100 in original-scale terms). Same top-5-of-15 expectation.
+    qui sum coef if var == "vineyard_per_cap" & spec == "panel_anr68" & model == "fracreg_ame"
+    local b_treat_fr = r(mean)
+    qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
+                & model == "fracreg_ame" & coef >= `b_treat_fr'
+    local n_extreme_fr = r(N)
+    di "Falsification (fracreg AME): " `n_extreme_fr' " of 15 placebo AMEs >= absinthe AME (" %7.4f `b_treat_fr' ")"
+    assert `n_extreme_fr' <= 5
 
     * Vote #63 (alcohol regulation, 1903): vineyard coef should NOT be
     * significantly positive. If vineyard cantons opposed federal alcohol
     * regulation generically, the absinthe finding loses its issue-specificity.
-    qui sum pval if var == "vineyard_per_cap" & spec == "panel_anr63"
-    di "Vote #63 (alcohol regulation): vineyard p = " %5.3f r(mean)
+    qui sum pval if var == "vineyard_per_cap" & spec == "panel_anr63" & model == "ols"
+    di "Vote #63 OLS p (alcohol regulation): " %5.3f r(mean)
     assert r(mean) > 0.10  // null at 10% level
 
     * --- Strategist 2026-04-30 controls ---

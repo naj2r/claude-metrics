@@ -10,31 +10,31 @@
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 
 \caption{__000006}
-\label{__00000A}
-\begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+\label{__00000B}
+\begin{tabularx}{\linewidth}{@{}lCCCCCCC@{}}
 
 \toprule
-&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)} \tabularnewline \midrule
-{Vote no.}&{Year}&{Title (short)}&{Vineyard coef}&{(SE)}&{p}&{} \tabularnewline
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)} \tabularnewline \midrule
+{Vote no.}&{Year}&{Title (short)}&{OLS coef}&{(SE)}&{Fracreg AME}&{(SE)}&{} \tabularnewline
 \midrule \addlinespace[\belowrulesep]
-56&1900&Gesetz zur Kranken-, Unfall- und Militärversicherung&--203.6&(312)&0.522& \tabularnewline
-57&1900&Initiative «für die Proporzwahl des Nationalrates»&--478.9&(304)&0.130& \tabularnewline
-58&1900&Initiative für die Volkswahl des Bundesrates&--431.1&(346)&0.226& \tabularnewline
-59&1902&Unterstützung der Primarschule durch den Bund&383.4&(482)&0.435& \tabularnewline
-60&1903&Zolltarifgesetz&737.3&(737)&0.328& \tabularnewline
-61&1903&Bundesstrafrecht (Anstiftung Militärpflichtiger zu Ver&99.6&(314)&0.754& \tabularnewline
-62&1903&Initiative «für die Wahl des Nationalrates aufgrund d&--3.3&(655)&0.996& \tabularnewline
-63&1903&Artikel über die Regulierung des Alkoholhandels&--51.7&(356)&0.886& \tabularnewline
-64&1905&Ausdehnung des Erfinderschutzes&352.7&(387)&0.373& \tabularnewline
-65&1906&Lebensmittelgesetz&1285.6**&(604)&0.045& \tabularnewline
-66&1907&Militärorganisation der schweizerischen Eidgenossensch&300.6&(355)&0.407& \tabularnewline
-67&1908&Verfassungsartikel zur Gesetzgebung über das Gewerbewe&76.0&(445)&0.866& \tabularnewline
-68&1908&Initiative «für ein Absinthverbot»&484.4**&(200)&0.024&TREAT \tabularnewline
-69&1908&Verfassungsartikel über die Wasserkraft und Elektrizit&65.4&(205)&0.753& \tabularnewline
-70&1910&Initiative «für die Proporzwahl des Nationalrates»&--61.5&(524)&0.908& \tabularnewline
+56&1900&Gesetz zur Kranken-, Unfall- und Militärversicher&--203.6&(312)&--213.2&(254)& \tabularnewline
+57&1900&Initiative «für die Proporzwahl des Nationalrate&--478.9&(304)&--517.9**&(236)& \tabularnewline
+58&1900&Initiative für die Volkswahl des Bundesrates&--431.1&(346)&--469.7*&(260)& \tabularnewline
+59&1902&Unterstützung der Primarschule durch den Bund&383.4&(482)&414.0&(403)& \tabularnewline
+60&1903&Zolltarifgesetz&737.3&(737)&748.6&(595)& \tabularnewline
+61&1903&Bundesstrafrecht (Anstiftung Militärpflichtiger z&99.6&(314)&92.0&(212)& \tabularnewline
+62&1903&Initiative «für die Wahl des Nationalrates aufgr&--3.3&(655)&--47.0&(503)& \tabularnewline
+63&1903&Artikel über die Regulierung des Alkoholhandels&--51.7&(356)&--56.5&(259)& \tabularnewline
+64&1905&Ausdehnung des Erfinderschutzes&352.7&(387)&377.1&(289)& \tabularnewline
+65&1906&Lebensmittelgesetz&1285.6**&(604)&1354.1***&(503)& \tabularnewline
+66&1907&Militärorganisation der schweizerischen Eidgenoss&300.6&(355)&309.7&(254)& \tabularnewline
+67&1908&Verfassungsartikel zur Gesetzgebung über das Gewe&76.0&(445)&77.9&(285)& \tabularnewline
+68&1908&Initiative «für ein Absinthverbot»&484.4**&(200)&478.0***&(162)&TREAT \tabularnewline
+69&1908&Verfassungsartikel über die Wasserkraft und Elekt&65.4&(205)&51.6&(168)& \tabularnewline
+70&1910&Initiative «für die Proporzwahl des Nationalrate&--61.5&(524)&--58.1&(382)& \tabularnewline
 \bottomrule \addlinespace[\belowrulesep]
 
 \end{tabularx}
-\\ \parbox{\linewidth}{\footnotesize Notes: KEY-spec OLS (yes\\_pct on vineyard\\_per\\_cap + french\\_share + catholic\\_share, HC3 SEs) run separately on each of the 15 federal popular votes between 1900 and 1910. The treatment vote (\\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\\_per\\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \\#68 plus substantively related votes show non-null coefficients, the wine-protection mechanism is issue-specific. Vote \\#65 (Lebensmittelgesetz, 1906) is NOT a clean placebo: this Federal Act established the alcohol-regulation authority later invoked against absinthe and was supported by wine producers because it cracked down on wine adulteration and substitute beverages. Treat \\#65 as the regulatory prequel to \\#68, not an independent comparison. Vote \\#63 (1903 alcohol-trade regulation, distinct earlier coalition that failed) is the cleaner alcohol-regulation null. Stars: * p<0.10, ** p<0.05, *** p<0.01.}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY-spec regression of canton yes-vote share on vineyard\\_per\\_cap + french\\_share + catholic\\_share, run separately on each of the 15 federal popular votes between 1900 and 1910. OLS columns use yes\\_pct (0-100) with HC3 SEs. Fracreg columns use fractional logit (Papke and Wooldridge 1996) on yes\\_frac (0-1) with robust SEs; reported coefficients are average marginal effects from margins post-estimation, scaled by 100 for unit-comparability with OLS. n/c indicates fracreg did not converge for that vote. The treatment vote (\\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\\_per\\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \\#68 plus substantively related votes show non-null coefficients, the wine-protection mechanism is issue-specific. Vote \\#65 (Lebensmittelgesetz, 1906) is NOT a clean placebo: this Federal Act established the alcohol-regulation authority later invoked against absinthe and was supported by wine producers because it cracked down on wine adulteration and substitute beverages. Treat \\#65 as the regulatory prequel to \\#68, not an independent comparison. Vote \\#63 (1903 alcohol-trade regulation, distinct earlier coalition that failed) is the cleaner alcohol-regulation null. Stars: * p<0.10, ** p<0.05, *** p<0.01.}
 \end{table}
 \end{document}

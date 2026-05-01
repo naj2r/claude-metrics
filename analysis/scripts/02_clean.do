@@ -516,8 +516,20 @@ run "$MyProject/scripts/programs/_config.do"
         keep(match) nogen
     assert _N == 25 * 15  // 375 rows preserved
 
+    * Construct fractional outcome (vote-specific, not the canton-level vote-#68
+    * yes_frac): each placebo vote has its own yes_pct, so its own yes_frac.
+    * Required by the fracreg AME column in t13 (added per phase-review S4,
+    * 2026-04-30). yes_pct in placebo_votes_uncleaned.dta is on the 0-100 scale.
+    gen double yes_frac = yes_pct / 100
+    label var yes_frac "Yes-vote share (fractional, 0-1) — vote-specific"
+    cap assert inrange(yes_frac, 0, 1)
+    if _rc {
+        di as error "yes_frac out of [0,1] range in placebo_panel — check yes_pct source"
+        error 9
+    }
+
     sort anr canton_code
-    order canton_code anr vote_year yes_pct vote_label ///
+    order canton_code anr vote_year yes_pct yes_frac vote_label ///
           vineyard_per_cap french_share catholic_share
 
     compress

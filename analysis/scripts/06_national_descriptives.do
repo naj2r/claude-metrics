@@ -281,7 +281,7 @@ if _rc {
 *   Block 5 (rows 43-46): n_employees_female (Beschaeftigte Frauen)
 *   Block 6 (rows 50-53): n_women_per_1000_men (Auf 1000 Maenner kommen Frauen)
 *
-* Section B (rows 55-108): Bergbau/Bau/Energie + Tertiaer, 19 industry classes (cols B-T)
+* Section B (rows 55-108): Bergbau/Bau/Energie + Tertiaer, 20 industry classes (cols B-U)
 *   Block 1 (rows 66-69): n_enterprises
 *   Block 2 (rows 73-76): n_employees_total
 *   Block 3 (rows 80-83): mean_employees_per_enterprise
@@ -501,7 +501,7 @@ if _rc {
     summ value if year==1905 & section=="secondary_tertiary" ///
                 & industry_class=="grand_total" ///
                 & metric=="n_enterprises", meanonly
-    * 1905 secondary+tertiary grand total enterprises: 237,989 (per F.13 R66 col T)
+    * 1905 secondary+tertiary grand total enterprises: 237,989 (per F.13 R66 col U)
     assert abs(r(mean) - 237989) < 1
 
     di as text ""

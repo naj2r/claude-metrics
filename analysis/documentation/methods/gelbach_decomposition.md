@@ -14,6 +14,23 @@
 - **Robust SEs**: `b1x2` accepts `robust` and `cluster()`. **It does not accept `vce(hc3)` directly** — use `robust` (which is HC1) for the package's internal SEs, but report the substantive coefficient with our project's standard `vce(hc3)`.
 - **N=25 caveat**: Gelbach's variance formulas are asymptotic. With our small sample, treat point estimates as informative and standard errors as approximate.
 
+## OLS only — methodological necessity, not coverage gap
+
+**The Gelbach decomposition is defined for OLS only.** Reasoning:
+
+The identity `b1base − b1full = Σ_k δ_k` follows from the **Frisch-Waugh-Lovell theorem on linear projections**. Each `δ_k = π_k × γ_k_full` decomposes the coefficient gap into components attributable to each x2 covariate, and the additivity is a property of orthogonal linear projections.
+
+Fractional logit (and any nonlinear link function) breaks FWL: the marginal effect of `x1` is no longer a linear projection of `y` onto the residualized `x1`, but instead a function of the link's first derivative evaluated at the observed `xβ`. The additive δ decomposition is therefore **undefined for fracreg AMEs**.
+
+A "right" nonlinear analog of Gelbach exists — it's closer to the **Blinder-Oaxaca decomposition for nonlinear models** (Yun 2004; Bauer & Sinning 2008). That object decomposes a *gap in predicted means between two groups* rather than a *coefficient change between two specifications*, and it is not what `b1x2` implements.
+
+**Coverage in this project**:
+- `t02` (OLS) and `t03` (fracreg AMEs) — symmetric reporting of the headline KEY-spec triplet.
+- `t13` (cross-referendum panel) — symmetric: OLS + fracreg AMEs side-by-side for all 15 votes 1900-1910 (added 2026-04-30 per phase-review S4).
+- `t15` (Gelbach decomposition) — OLS only. Reporting a fracreg-Gelbach is not possible because the decomposition theorem doesn't extend; reporting *something else* (e.g., Blinder-Oaxaca) would be a different paper.
+
+When a referee asks "why no fracreg Gelbach?", the answer is: **the decomposition theorem requires linearity. There is no fracreg Gelbach to compute.**
+
 ---
 
 ## What it is
