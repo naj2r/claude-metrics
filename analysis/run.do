@@ -52,11 +52,16 @@ _inventory_append, sheet("runs") row("start|run.do|.|`c(stata_version)'|`c(os)'|
 if "$DisableR"!="1" rscript, rversion(3.6) require(tidyverse estimatr)
 
 * Run project analysis
+*   01-05: canton-level chain producing the headline tables/figures
+*   06:    independent NATIONAL-LEVEL HSSO F-series archive (descriptive context
+*          only; does not feed canton merge — placed last so a failure here
+*          does not break the headline analysis)
 do "`ProjectDir'/scripts/01_import.do"
 do "`ProjectDir'/scripts/02_clean.do"
 do "`ProjectDir'/scripts/03_regress.do"
 do "`ProjectDir'/scripts/04_tables.do"
 do "`ProjectDir'/scripts/05_expansion.do"
+do "`ProjectDir'/scripts/06_national_descriptives.do"
 
 * Display runtime and end the script
 local datetime2 = clock("$S_DATE $S_TIME", "DMYhms")

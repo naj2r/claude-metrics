@@ -9,9 +9,10 @@
 ==============================================================================*/
 
 * Stata version control (set in _config.do; explicit here for standalone runs)
-version 15
+version 19
 
-* Bootstrap block — supports standalone execution
+* Standalone-execution preamble (avoid the word "bootstrap" — reserved for
+* econometric resampling here, not script init)
 * When run via run.do, _config.do is already sourced; otherwise we source it here
 if "${MyProject}" == "" {
     di as error "Error: \$MyProject must be set in run.do or your Stata profile"
