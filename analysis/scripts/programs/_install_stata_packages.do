@@ -131,6 +131,31 @@ _install_ssc ingap
 _install_ssc b1x2
 
 ************************************************************
+* Group 8 — round-2 diagnostics + permutation inference (added 2026-05-01)
+************************************************************
+* coldiag2: Belsley-Kuh-Welsch condition number for multicollinearity
+* diagnostics. Used in 05_expansion.do Task A (round-2) to defend the
+* headline KEY-spec result against the obstinate-EEH-collinearity critique.
+_install_ssc coldiag2
+
+* lassopack: LASSO machinery (lasso2, cvlasso, rlasso, lassoutils, etc.).
+* Must be installed BEFORE pdslasso because pdslasso depends on lassoutils.
+_install_ssc lassopack
+
+* pdslasso: post-double-selection LASSO (Belloni-Chernozhukov-Hansen 2014).
+* Used in 05_expansion.do Task A for data-driven covariate selection on
+* the headline yes_pct ~ vineyard_per_cap regression with a candidate
+* control set including french/catholic/protestant/lang_italian/ln_pop/
+* agland_1000ha/avg_parcel_area_1905/parcels_per_farm_1905/net_migration_per_cap.
+_install_ssc pdslasso
+
+* ritest: permutation inference (used in 03_regress.do for headline RI
+* and in round-2 Tasks C.3 + C.6 for cross-vote and turnout-deviation RI).
+* Already used implicitly in some round-1 paths; vendoring explicitly
+* per round-2 STOP-and-vendor protocol.
+_install_ssc ritest
+
+************************************************************
 * Verification
 ************************************************************
 * Confirm each package's main command is reachable
@@ -138,7 +163,8 @@ local commands ftools reghdfe ranktest avar ivreg2 boottest ///
     regsave texsave rscript ///
     gtools estout esttab coefplot ///
     wyoung distinct unique fre winsor2 ingap ///
-    b1x2
+    b1x2 ///
+    coldiag2 lassoutils pdslasso ritest
 
 di _n as text "{hline 60}"
 di as text "Verification — checking 'which' for each main command"

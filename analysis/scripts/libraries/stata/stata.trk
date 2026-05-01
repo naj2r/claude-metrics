@@ -1,4 +1,4 @@
-* 00000020
+* 00000042
 *! version 1.0.0
 * Do not erase or edit this file
 * It is used by Stata to track the ado and help
@@ -265,4 +265,907 @@ d Support: email gelbach@@gmail.com
 d 
 f b\b1x2.ado
 f b\b1x2.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/f
+N ftools.pkg
+D  1 May 2026
+U 21
+d 'FTOOLS': module to provide alternatives to common Stata commands optimized for large datasets
+d 
+d  ftools consists of a Mata file and several Stata commands: The
+d Mata file creates identifiers (factors) from variables by using
+d hash functions instead of sorting the data, so it runs in time
+d O(N) and not in O(N log N). The Stata commands exploit this to
+d avoid sort operations,  at the cost of being slower for small
+d datasets (mainly because of the cost involved in moving data from
+d Stata to Mata). Implemented commands are fcollapse, fegen group,
+d and fsort. Note that most of the capabilities of levels and
+d contract are already supported by these commands. Possible
+d commands include more egen functions and merge and reshape
+d alternatives.
+d 
+d KW: levels
+d KW: collapse
+d KW: contract
+d KW: egen
+d KW: sort
+d KW: factor variables
+d KW: Mata
+d 
+d Requires: Stata version 11.2 (Stata 12 or older also require boottest from SSC)
+d 
+d Distribution-Date: 20260111
+d 
+d Author: Sergio Correia, Board of Governors of the Federal Reserve System
+d Support: email sergio.correia@@gmail.com
+d 
+f f\ftools.ado
+f f\ftools.mata
+f f\ftools.sthlp
+f f\fcollapse.ado
+f f\fcollapse.sthlp
+f f\fegen.ado
+f f\fegen_group.ado
+f f\fegen.sthlp
+f f\fisid.ado
+f f\fisid.sthlp
+f f\flevelsof.ado
+f f\flevelsof.sthlp
+f f\fmerge.ado
+f f\fmerge.sthlp
+f f\freshape.ado
+f f\fsort.ado
+f f\fsort.sthlp
+f f\ftab.ado
+f j\join.ado
+f j\join.sthlp
+f l\local_inlist.ado
+f l\local_inlist.sthlp
+f f\fcollapse_functions.mata
+f f\fcollapse_main.mata
+f f\ftools_type_aliases.mata
+f f\ftools.mata
+f f\ftools_common.mata
+f f\ftools_hash1.mata
+f f\ftools_main.mata
+f f\ftools_experimental.mata
+f f\ftools_plugin.mata
+f f\ftools_type_aliases.mata
+f m\ms_compile_mata.ado
+f m\ms_expand_varlist.ado
+f m\ms_fvstrip.ado
+f m\ms_fvstrip.sthlp
+f m\ms_fvunab.ado
+f m\ms_get_version.ado
+f m\ms_parse_absvars.ado
+f m\ms_parse_depvar.ado
+f m\ms_parse_varlist.ado
+f m\ms_parse_vce.ado
+f m\ms_add_comma.ado
+f p\parallel_map_template.do.ado
+f p\parallel_map.ado
+f p\parallel_map.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/r
+N reghdfe.pkg
+D  1 May 2026
+U 22
+d 'REGHDFE': module to perform linear or instrumental-variable regression absorbing any number of high-dimensional fixed effects
+d 
+d  reghdfe fits a linear or instrumental-variable regression
+d absorbing an arbitrary number of categorical factors and
+d factorial interactions Optionally, it saves the estimated fixed
+d effects.
+d 
+d KW: regression
+d KW: instrumental variables
+d KW: fixed effects
+d KW: high dimension fixed effects
+d 
+d Requires: Stata version 11.2 and ftools from SSC (q.v.)
+d 
+d Distribution-Date: 20260111
+d 
+d Author: Sergio Correia, Board of Governors of the Federal Reserve System
+d Support: email sergio.correia@@gmail.com
+d 
+d Author: Noah Constantine, Board of Governors of the Federal Reserve System
+d Support: email
+d 
+f r\reghdfe.ado
+f r\reghdfe.mata
+f r\reghdfe5.mata
+f r\reghdfe3.ado
+f r\reghdfe_p.ado
+f r\reghdfe3_p.ado
+f r\reghdfe5.ado
+f r\reghdfe5_p.ado
+f r\reghdfe_estat.ado
+f r\reghdfe3_estat.ado
+f r\reghdfe5_estat.ado
+f r\reghdfe5_parse.ado
+f r\reghdfe_footnote.ado
+f r\reghdfe3_footnote.ado
+f r\reghdfe5_footnote.ado
+f e\estfe.ado
+f r\reghdfe_header.ado
+f r\reghdfe5_header.ado
+f r\reghdfe5_parse.ado
+f r\reghdfe.sthlp
+f r\reghdfe3.sthlp
+f r\reghdfe5.sthlp
+f r\reghdfe.mata
+f r\reghdfe_programming.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/r
+N ranktest.pkg
+D  1 May 2026
+U 23
+d 'RANKTEST': module to test the rank of a matrix
+d 
+d  ranktest implements various tests for the rank of a matrix.
+d Tests of the rank of a matrix have many practical applications.
+d For example, in econometrics the requirement for identification
+d is the rank condition, which states that a particular matrix must
+d be of full column rank. Another example from econometrics
+d concerns cointegration in vector autoregressive (VAR) models; the
+d Johansen trace test is a test of a rank of a particular matrix.
+d The traditional test of the rank of a matrix for the standard
+d (stationary) case is the Anderson (1951) canonical correlations
+d test. If we denote one list of variables as Y and a second as Z,
+d and we calculate the squared canonical correlations between Y and
+d Z, the LM form of the Anderson test, where the null hypothesis is
+d that the matrix of correlations or regression parameters B
+d between Y and Z has rank(B)=r, is N times the sum of the r+1
+d largest squared canonical correlations. A large test statistic
+d and rejection of the null indicates that the matrix has rank at
+d least r+1. The Cragg-Donald (1993) statistic is a closely related
+d Wald test for the rank of a matrix. The standard versions of
+d these tests require the assumption that the covariance matrix has
+d a Kronecker form; when this is not so, e.g., when disturbances
+d are heteroskedastic or autocorrelated, the test statistics are no
+d longer valid. ranktest implements various generalizations of
+d these tests - Kleibergen-Paap, Cragg-Donald, and J-type 2-step
+d GMM and CUE GMM tests - to the case of a non-Kronecker covariance
+d matrix. The implementation in ranktest will calculate test
+d statistics that are robust to various forms of
+d heteroskedasticity, autocorrelation, and clustering.
+d 
+d KW: matrix
+d KW: rank
+d KW: collinearity
+d KW: cointegration
+d 
+d Requires: Stata version 12 (version 9.2 for ranktest9, version 11 for ranktest11)
+d 
+d Distribution-Date: 20200929
+d 
+d Author: Frank Kleibergen, Brown University
+d Support: email  Frank_Kleibergen@@brown.edu
+d 
+d Author: Mark E Schaffer, Heriot-Watt University
+d Support: email m.e.schaffer@@hw.ac.uk
+d 
+d Author: Frank Windmeijer, University of Oxford
+d Support: email frank.windmeijer@@stats.ox.ac.uk
+d 
+f r\ranktest.ado
+f r\ranktest9.ado
+f r\ranktest11.ado
+f r\ranktest.sthlp
+f r\ranktest11.sthlp
+f l\livreg2.mlib
+e
+S http://fmwww.bc.edu/repec/bocode/a
+N avar.pkg
+D  1 May 2026
+U 24
+d 'AVAR': module to perform asymptotic covariance estimation for iid and non-iid data robust to heteroskedasticity, autocorrelation, 1- and 2-way clustering, and common cross-panel autocorrelated dis
+d 
+d  avar} is a routine for estimating S, the asymptotic variance of
+d (1/N)*Z'e, where Z is an NxL matrix of L variables, e is an Nxp
+d matrix of p variables, and N is the sample size. Typically, S
+d would be used to form a sandwich-type estimate of the variance of
+d an estimator, where S is the "filling" of the sandwich. avar can
+d estimate VCEs for single and multiple equations that are robust
+d to various violations of the assumption of iid data, including
+d heteroskedasticity, autocorrelation, 1- and 2-way clustering,
+d common cross-panel disturbances, etc. It supports time-series and
+d panel data.
+d 
+d KW: asymptotic variance
+d KW: VCE
+d KW: heteroskedasticity
+d KW: autocorrelation
+d KW: cluster-robust
+d KW: cross-equation correlation
+d 
+d Requires: Stata version 11.2 (version 9.2 for avar9)
+d 
+d Distribution-Date: 20150730
+d 
+d Author: Christopher F Baum, Boston College
+d Support: email baum@@bc.edu
+d 
+d Author: Mark E Schaffer, Heriot-Watt University
+d Support: email m.e.schaffer@@hw.ac.uk
+d 
+f a\avar.ado
+f a\avar9.ado
+f a\avar.sthlp
+f l\livreg2.mlib
+e
+S http://fmwww.bc.edu/repec/bocode/i
+N ivreg2.pkg
+D  1 May 2026
+U 25
+d 'IVREG2': module for extended instrumental variables/2SLS and GMM estimation
+d 
+d  ivreg2 provides extensions to Stata's official ivregress and
+d newey. Its main capabilities: two-step feasible GMM estimation;
+d continuously updated GMM estimation (CUE); LIML and k-class
+d estimation; automatic output of the Hansen-Sargan or
+d Anderson-Rubin statistic for overidentifying restrictions; C
+d statistic test of exogeneity of subsets of instruments (orthog()
+d option); kernel-based autocorrelation-consistent (AC) and
+d heteroskedastic and autocorrelation-consistent (HAC) estimation,
+d with user-specified choice of kernel; Cragg's "heteroskedastic
+d OLS" (HOLS) estimator; default reporting of large-sample
+d statistics (z and chi-squared rather than t and F); small option
+d to report small-sample statistics; first-stage regression
+d reported with F-test of excluded instruments and R-squared with
+d included instruments "partialled-out"; enhanced Kleibergen-Paap
+d and Cragg-Donald tests for weak instruments, redundancy of
+d instruments, significance of endogenous regressors; two-way
+d clustering of standard errors;  Kiefer and Driscoll-Kraay
+d standard errors. ivreg2 can also be used for ordinary least
+d squares (OLS) estimation using the same command syntax as Stata's
+d official regress and newey. New in this version: ivreg2 now
+d supports factor variables. This is version 4.1.11 of ivreg2,
+d updated from that published in Stata Journal, 5(4), requiring
+d Stata 11.2 or better. Stata 8.2/9.2/10.2 users may use this
+d routine, which will  automatically call ivreg28, ivreg29, or
+d ivreg210, respectively. These versions are now included in the
+d ivreg2 package. Stata 7 users may use the Stata Journal version
+d of ivreg2, accessible via net search ivreg2.
+d 
+d KW: instrumental variables
+d KW: Sargan test
+d KW: robust estimation
+d KW: orthogonality
+d KW: GMM
+d KW: Hansen's J
+d KW: heteroskedastic OLS
+d 
+d Requires: Stata version 11.2 and ranktest from SSC
+d 
+d Distribution-Date: 20240814
+d 
+d Author: Christopher F Baum, Boston College
+d Support: email baum@@bc.edu
+d 
+d Author: Mark E Schaffer, Heriot-Watt University
+d Support: email m.e.schaffer@@hw.ac.uk
+d 
+d Author: Steven Stillman, Free University of Bozen-Bolzano
+d Support: email  Steven.Stillman@@unibz.it
+d 
+f i\ivreg2.ado
+f i\ivreg2.sthlp
+f i\ivreg2_p.ado
+f l\livreg2.mlib
+f i\ivreg210.ado
+f i\ivreg210.sthlp
+f i\ivreg210_p.ado
+f i\ivreg29.ado
+f i\ivreg29.hlp
+f i\ivreg29_p.ado
+f i\ivreg29_cue.ado
+f i\ivreg28.ado
+f i\ivreg28.hlp
+f i\ivreg28_p.ado
+f i\ivreg28_cue.ado
+e
+S http://fmwww.bc.edu/repec/bocode/b
+N boottest.pkg
+D  1 May 2026
+U 26
+d 'BOOTTEST': module to provide fast execution of the wild bootstrap with null imposed
+d 
+d  boottest is a post-estimation command that offers fast execution
+d of the wild bootstrap (Wu 1986) with null imposed, as recommended
+d by Cameron, Gelbach, and Miller (2008) for estimates with
+d clustered standard errors and few clusters. It also performs the
+d “score bootstrap” (Kline and Santos 2012), which adapts the
+d wild approach to Maximum Likelihood estimators. Two wrappers,
+d waldtest and scoretest, give easy access to the classical Wald
+d (1943) and Rao (1948) score/Lagrange multiplier tests. boottest
+d works after regress, cnsreg, ivreg, ivregress, ivreg2 and most
+d Stata ML-based estimation commands. boottest offers inference
+d based on multi-way clustering after many Stata estimation
+d commands that do not otherwise support it. When bootstrapping, it
+d offers a choice of Rademacher, Mammen (1993), Webb (2014), and
+d standard normal weights. boottest requires Stata version 11.2 or
+d later and runs fastest in version 13 or later.
+d 
+d KW: wild bootstrap
+d KW: Cameron
+d KW: Gelbach
+d KW: Miller
+d KW: score bootstrap
+d KW: Rao LM test
+d KW: multi-way clustering
+d 
+d Requires: Stata version 13
+d 
+d Distribution-Date: 20260414
+d 
+d Author: David Roodman
+d Support: email david@@davidroodman.com
+d 
+f b\boottest.ado
+f b\boottest.mata
+f b\boottest.sthlp
+f b\boottest_1.ado
+f a\artest.ado
+f s\scoretest.ado
+f w\waldtest.ado
+f l\lboottest.mlib
+e
+S https://raw.githubusercontent.com/reifjulian/regsave/master
+N regsave.pkg
+D  1 May 2026
+U 27
+d regsave. Extract and store regression results.
+d Julian Reif, University of Illinois (jreif@illinois.edu)
+f r\regsave.ado
+f r\regsave.hlp
+f r\regsave_tbl.ado
+f r\regsave_tbl.hlp
+e
+S https://raw.githubusercontent.com/reifjulian/texsave/master
+N texsave.pkg
+D  1 May 2026
+U 28
+d texsave. Save dataset in LaTeX format.
+d Julian Reif, University of Illinois (jreif@illinois.edu)
+f t\texsave.ado
+f t\texsave.sthlp
+f a\appendfile.ado
+f a\appendfile.hlp
+e
+S https://raw.githubusercontent.com/reifjulian/rscript/master
+N rscript.pkg
+D  1 May 2026
+U 29
+d rscript. Call an R script from Stata.
+d David Molitor and Julian Reif, University of Illinois
+d dmolitor@illinois.edu, jreif@illinois.edu
+f r\rscript.ado
+f r\rscript.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/g
+N gtools.pkg
+D  1 May 2026
+U 30
+d 'GTOOLS': module to provide a fast implementation of common group commands
+d 
+d    gtools is a Stata package that provides a fast implementation
+d of common group commands like    collapse, egen, isid, levelsof,
+d contract, distinct, and so on using C plugins for a massive
+d speed improvement.
+d 
+d KW:  data management
+d KW: collapse
+d KW: egen
+d KW: isid
+d KW: levelsof
+d KW: contract
+d KW: distinct
+d KW: plugins
+d KW: hash
+d 
+d Requires: Stata version 13.1
+d 
+d Distribution-Date: 20221205
+d 
+d Author: Mauricio Caceres Bravo
+d Support: email mauricio.caceres.bravo@@gmail.com
+d 
+f g\gcollapse.ado
+f g\gcollapse.sthlp
+f g\gcontract.ado
+f g\gcontract.sthlp
+f g\gdistinct.ado
+f g\gdistinct.sthlp
+f g\gduplicates.ado
+f g\gduplicates.sthlp
+f g\gegen.ado
+f g\gegen.sthlp
+f g\gglm.ado
+f g\gglm.sthlp
+f g\gisid.ado
+f g\gisid.sthlp
+f g\givregress.ado
+f g\givregress.sthlp
+f g\glevelsof.ado
+f g\glevelsof.sthlp
+f g\gpoisson.ado
+f g\gquantiles.ado
+f g\gquantiles.sthlp
+f g\greg.ado
+f g\greg.sthlp
+f g\gregress.ado
+f g\gregress.sthlp
+f g\greshape.ado
+f g\greshape.sthlp
+f g\gstats.ado
+f g\gstats.sthlp
+f g\gstats_hdfe.sthlp
+f g\gstats_moving.sthlp
+f g\gstats_range.sthlp
+f g\gstats_residualize.sthlp
+f g\gstats_sum.sthlp
+f g\gstats_summarize.sthlp
+f g\gstats_tab.sthlp
+f g\gstats_transform.sthlp
+f g\gstats_winsor.sthlp
+f g\gtools.ado
+f g\gtools.sthlp
+f g\gtools_macosx_v2.plugin
+f g\gtools_macosx_v3.plugin
+f g\gtools_unix_v2.plugin
+f g\gtools_unix_v3.plugin
+f g\gtools_windows_v2.plugin
+f g\gtools_windows_v3.plugin
+f g\gtop.ado
+f g\gtop.sthlp
+f g\gtoplevelsof.ado
+f g\gtoplevelsof.sthlp
+f g\gunique.ado
+f g\gunique.sthlp
+f _\_gtools_internal.ado
+f _\_gtools_internal.mata
+f f\fasterxtile.ado
+f f\fasterxtile.sthlp
+f h\hashsort.ado
+f h\hashsort.sthlp
+f l\lgtools.mlib
+e
+S http://fmwww.bc.edu/repec/bocode/e
+N estout.pkg
+D  1 May 2026
+U 31
+d 'ESTOUT': module to make regression tables
+d 
+d  estout produces a table of regression results from one or
+d several models for use with spreadsheets, LaTeX, HTML, or a
+d word-processor table. eststo stores a quick copy of the active
+d estimation results for later tabulation. esttab is a wrapper for
+d estout. It displays a pretty looking publication-style regression
+d table without much typing. estadd adds additional results to the
+d e()-returns for one or several models previously fitted and
+d stored. This package subsumes the previously circulated esto,
+d esta, estadd,  and estadd_plus. An earlier version of estout is
+d available  as estout1.
+d 
+d KW: estimates
+d KW: LaTeX
+d KW: HTML
+d KW: word processor
+d KW: output
+d 
+d Requires: Stata version 8.2
+d 
+d Distribution-Date: 20260413
+d 
+d Author: Ben Jann, University of Bern
+d Support: email jann@@soz.unibe.ch
+d 
+f _\_eststo.ado
+f _\_eststo.hlp
+f e\estadd.ado
+f e\estadd.hlp
+f e\estout.ado
+f e\estout.hlp
+f e\eststo.ado
+f e\eststo.hlp
+f e\estpost.ado
+f e\estpost.hlp
+f e\esttab.ado
+f e\esttab.hlp
+e
+S http://fmwww.bc.edu/repec/bocode/c
+N coefplot.pkg
+D  1 May 2026
+U 32
+d 'COEFPLOT': module to plot regression coefficients and other results
+d 
+d   coefplot plots results from estimation commands or Stata
+d matrices. Results from multiple models or matrices can be
+d combined in a single graph. The default behavior of coefplot is
+d to draw markers for coefficients and horizontal spikes for
+d confidence intervals. However, coefplot can also produce various
+d other types of graphs.
+d 
+d KW: graphics
+d KW: coefficients
+d KW: estimation
+d 
+d Requires: Stata version 11
+d 
+d Distribution-Date: 20250822
+d 
+d Author: Ben Jann, University of Bern
+d Support: email jann@@soz.unibe.ch
+d 
+f c\coefplot.ado
+f c\coefplot.sthlp
+e
+S https://raw.githubusercontent.com/reifjulian/wyoung/master
+N wyoung.pkg
+D  1 May 2026
+U 33
+d wyoung. Control the family-wise error rate when performing multiple hypothesis tests.
+d Julian Reif, University of Illinois (jreif@illinois.edu)
+f w\wyoung.ado
+f w\wyoung.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/d
+N distinct.pkg
+D  1 May 2026
+U 34
+d 'DISTINCT': module to display distinct values of variables
+d 
+d distinct displays the number of distinct values for each variable
+d in a varlist.  The varlist may include both numeric and string
+d variables.
+d 
+d KW: distinct observations
+d KW: unique values
+d 
+d Requires: Stata version 8.0
+d 
+d 
+d Author: Gary Longton, Fred Hutchinson Cancer Research Center
+d Support: email glongton@@fhcrc.org
+d 
+d Author: Nicholas J. Cox, Durham University
+d Support: email N.J.Cox@@durham.ac.uk
+d 
+d Distribution-Date: 20120321
+d 
+f d\distinct.ado
+f d\distinct.hlp
+e
+S http://fmwww.bc.edu/repec/bocode/u
+N unique.pkg
+D  1 May 2026
+U 35
+d 'UNIQUE': module to report number of unique values in variable(s)
+d 
+d  The command unique without a by reports the number of unique
+d values for the varlist. With a by it does the same, but also
+d creates a new variable (_Unique by default but can be named in
+d the gen option). This new variable contains the number of unique
+d values of the varlist for each level of the by variable. The new
+d variable is coded missing except for the first record in each
+d group defined by the levels of the by variable. The command is
+d useful for exploring data where the records refer to more than
+d one level, for example longitudinal data where each record refers
+d to a visit by a subject.
+d 
+d 
+d Requires: Stata version 10.1
+d 
+d Distribution-Date: 20200618
+d 
+d Author: Tony Brady
+d Support: email tony@@sealedenvelope.com
+d 
+f u\unique.ado
+f u\unique.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/f
+N fre.pkg
+D  1 May 2026
+U 36
+d 'FRE': module to display one-way frequency table
+d 
+d   fre displays, for each specified variable, a univariate
+d frequency table containing counts, percent, and cumulative
+d percent. Variables may be string or numeric. Labels, in full
+d length, and values are printed. By default, fre only tabulates
+d the smallest and largest 10 values (along with all missing
+d values), but this can be changed. Furthermore,  values with zero
+d observed frequency may be included in the  tables. The default
+d for fre is to display the frequency  tables in the results
+d window. Alternatively, the tables may be written to a file on
+d disk, either tab-delimited or  LaTeX-formatted.
+d 
+d KW: data management
+d KW: frequencies
+d KW: frequency table
+d KW: tabulation
+d 
+d Requires: Stata version 9.2
+d 
+d Distribution-Date: 20210531
+d 
+d Author: Ben Jann, University of Bern
+d Support: email jann@@soz.unibe.ch
+d 
+f f\fre.ado
+f f\fre.hlp
+e
+S http://fmwww.bc.edu/repec/bocode/w
+N winsor2.pkg
+D  1 May 2026
+U 37
+d 'WINSOR2': module to winsorize data
+d 
+d    winsor2 can winsorize a varlist, operate with the by prefix,
+d and offers a replace option.
+d 
+d KW: winsor
+d KW: winsorize
+d KW: data management
+d 
+d Requires: Stata version 8
+d 
+d Distribution-Date: 20201125
+d 
+d Author: Yujun Lian, Department of Finance, Sun Yat-Sen University, China
+d Support: email arlionn@@163.com
+d 
+f w\winsor2.ado
+f w\winsor2.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/l
+N labutil.pkg
+D  1 May 2026
+U 38
+d 'LABUTIL': modules for managing value and variable labels
+d 
+d labcopy copies value labels, or swaps them around. labdel deletes
+d  them.  lablog defines value labels for values which are base 10
+d logarithms containing the antilogged values. labcd defines value
+d labels in which decimal points and commas are  interchanged
+d compared with the Stata default. labdtch detaches value labels.
+d labmap maps numeric  values to numeric labels. labnoeq removes
+d text up to and including "==" from variable labels. labvalch
+d supersedes labcopy and labdel.   labvarch is a more general tool
+d to change variable labels.  labmask assigns the values (or
+d value labels) of one variable  to another.  These  command-line
+d tools may complement John Gleason's interactive  labedit
+d (STB-51). labvalclone clones a set of value labels under a new
+d label name.  labvalcombine combines two or more sets of value
+d labels. It requires Stata 8.
+d 
+d KW: value labels
+d KW: variable labels
+d KW: data management
+d KW: logarithm
+d 
+d Requires: Stata version 7.0 (version 8 for labvalcombine).
+d 
+d 
+d Author: Nicholas J. Cox, University of Durham
+d Support: email N.J.Cox@@durham.ac.uk
+d 
+d Distribution-Date: 20131123
+d 
+f l\labcd.ado
+f l\labcd.hlp
+f l\labcopy.ado
+f l\labcopy.hlp
+f l\labdel.ado
+f l\labdel.hlp
+f l\lablog.ado
+f l\lablog.hlp
+f l\labdtch.ado
+f l\labdtch.hlp
+f l\labmap.ado
+f l\labmap.hlp
+f l\labnoeq.ado
+f l\labnoeq.hlp
+f l\labvarch.ado
+f l\labvarch.hlp
+f l\labvalch.ado
+f l\labvalch.hlp
+f l\labmask.ado
+f l\labmask.hlp
+f l\labvalclone.ado
+f l\labvalclone.sthlp
+f l\labvalcombine.ado
+f l\labvalcombine.hlp
+e
+S http://fmwww.bc.edu/repec/bocode/c
+N coldiag2.pkg
+D  1 May 2026
+U 39
+d 'COLDIAG2': module to evaluate collinearity in linear regression
+d 
+d coldiag2 is an implementation of the regression collinearity
+d diagnostic procedures found in Belsley, Kuh, and Welsch (1980).
+d These procedures examine the "conditioning" of the matrix of
+d independent variables. This routine is an extension of Joseph
+d Harkness' coldiag (q.v.)
+d 
+d KW: collinearity
+d KW: conditioning
+d 
+d Requires: Stata version 7.0
+d 
+d Distribution-Date: 20041209
+d 
+d Author: John Hendrickx, University of Nijmegen
+d Support: email J.Hendrickx@@mailbox.kun.nl
+d 
+f c\coldiag2.ado
+f p\prnt_cx.ado
+f c\coldiag2.hlp
+e
+S http://fmwww.bc.edu/repec/bocode/l
+N lassopack.pkg
+D  1 May 2026
+U 40
+d 'LASSOPACK': module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estimation and cross-validation
+d 
+d  LASSOPACK is a suite of programs for penalized regression
+d methods suitable for the high-dimensional setting where the
+d number of predictors p may be large and possibly greater than the
+d number of observations. LASSOPACK supports both lasso and
+d logistic lasso regression. The package consists of six main
+d programs: lasso2 implements lasso, square-root lasso, elastic
+d net, ridge regression, adaptive lasso and post-estimation OLS.
+d cvlasso supports K-fold cross-validation and rolling
+d cross-validation for cross-section, panel and time-series data.
+d rlasso implements theory-driven penalization for the lasso and
+d square-root lasso for cross-section and panel data. lassologit,
+d cvlassologit and rlassologit are the corresponding programs for
+d logistic lasso regression. The lasso (Least Absolute Shrinkage
+d and Selection Operator, Tibshirani 1996), the square-root-lasso
+d (Belloni et al. 2011) and the adaptive lasso (Zou 2006) are
+d regularization methods that use L1 norm penalization to achieve
+d sparse solutions: of the full set of p predictors, typically most
+d will have coefficients set to zero. Ridge regression (Hoerl &
+d Kennard 1970) relies on L2 norm penalization; the elastic net
+d (Zou & Hastie 2005) uses a mix of L1 and L2 penalization. lasso2
+d implements all these estimators. rlasso uses the theory-driven
+d penalization methodology of Belloni et al. (2012, 2013, 2014,
+d 2016) for the lasso and square-root lasso. cvlasso implements
+d K-fold cross-validation and h-step ahead rolling cross-validation
+d (for time-series and panel data) to choose the penalization
+d parameters for all the implemented estimators. lassologit,
+d rlassologit and cvlassologit extend support to the case where the
+d dependent variable is a binary response. In addition, rlasso
+d implements the Chernozhukov et al. (2013) sup-score test of joint
+d significance of the regressors that is suitable for the
+d high-dimensional setting.
+d 
+d KW: lasso
+d KW: elastic net
+d KW: ridge regression
+d KW: adaptive lasso
+d KW: cross-validation
+d KW: high-dimensional models
+d KW: regularization
+d KW: penalization
+d KW: sparsity
+d 
+d Requires: Stata version 13.1
+d 
+d Distribution-Date: 20240918
+d 
+d Author: Achim Ahrens, Economic and Social Research Institute, Republic of Ireland
+d Support: email achim.ahrens@@esri.ie
+d 
+d Author: Christian B. Hansen, University of Chicago
+d Support: email Christian.Hansen@@chicagobooth.edu
+d 
+d Author: Mark E Schaffer, Heriot-Watt University
+d Support: email m.e.schaffer@@hw.ac.uk
+d 
+f l\lassoutils.ado
+f l\lasso2.ado
+f l\lasso2_p.ado
+f l\lasso2.sthlp
+f c\cvlasso.ado
+f c\cvlasso.sthlp
+f c\cvlassologit.sthlp
+f r\rlasso.ado
+f c\cvlassologit.ado
+f l\lassologit.ado
+f r\rlassologit.ado
+f l\lassologit_p.ado
+f r\rlasso_p.ado
+f r\rlasso.sthlp
+f l\lassopack.sthlp
+f l\lassologit.ihlp
+f l\lassologit.sthlp
+f r\rlassologit.sthlp
+e
+S http://fmwww.bc.edu/repec/bocode/p
+N pdslasso.pkg
+D  1 May 2026
+U 41
+d 'PDSLASSO': module for post-selection and post-regularization OLS or IV estimation and inference
+d 
+d  pdslasso and ivlasso are routines for estimating structural
+d parameters in linear models with many controls and/or
+d instruments. The routines use methods for estimating sparse
+d high-dimensional models, specifically the lasso (Least Absolute
+d Shrinkage and Selection Operator, Tibshirani 1996) and the
+d square-root-lasso (Belloni et al. 2011, 2014). These estimators
+d are used to select controls (pdslasso) and/or instruments
+d (ivlasso) from a large set of variables (possibly numbering more
+d than the number of observations), in a setting where the
+d researcher is interested in estimating the causal impact of one
+d or more (possibly endogenous) causal variables of interest. Two
+d approaches are implemented in pdslasso and ivlasso: (1) The
+d "post-double-selection" (PDS) methodology of Belloni et al.
+d (2012, 2013, 2014, 2015, 2016). (2) The "post-regularization"
+d (CHS) methodology of Chernozhukov, Hansen and Spindler (2015).
+d For instrumental variable estimation, ivlasso implements
+d weak-identification-robust hypothesis tests and confidence sets
+d using the Chernozhukov et al. (2013) sup-score test. The
+d implemention of these methods in pdslasso and ivlasso require the
+d Stata program rlasso (available in the separate Stata module
+d lassopack), which provides lasso and square root-lasso estimation
+d with data-driven penalization.
+d 
+d KW: lasso
+d KW: causal inference
+d KW: high-dimensional models
+d KW: instrumental variables
+d KW: square-root lasso
+d KW: regularization
+d KW: penalization
+d KW: sparsity
+d KW: post-double-selection
+d KW: post-regularization
+d 
+d Requires: Stata version 13.1 and lassopack, ranktest from SSC (q.v.)
+d 
+d Distribution-Date: 20240806
+d 
+d Author: Achim Ahrens, Economic and Social Research Institute, Republic of Ireland
+d Support: email achim.ahrens@@esri.ie
+d 
+d Author: Christian B. Hansen, University of Chicago
+d Support: email Christian.Hansen@@chicagobooth.edu
+d 
+d Author: Mark E Schaffer, Heriot-Watt University
+d Support: email m.e.schaffer@@hw.ac.uk
+d 
+f p\pdslasso.ado
+f p\pdslasso.sthlp
+f i\ivlasso.ado
+f i\ivlasso_p.ado
+f i\ivlasso.sthlp
+f i\ivlasso.ihlp
+e
+S http://fmwww.bc.edu/repec/bocode/r
+N ritest.pkg
+D  1 May 2026
+U 42
+d 'RITEST': module to perform randomization inference and permutation tests
+d 
+d  ritest performs randomization inference and permutation tests,
+d allowing for arbitrary randomization procedures and with (almost)
+d any Stata command.
+d 
+d KW: randomization inference
+d KW: permutation tests
+d 
+d Requires: Stata version 13
+d 
+d Distribution-Date: 20200521
+d 
+d Author: Simon Hess, University of Frankfurt
+d Support: email simon.h.hess@@gmail.com
+d 
+f r\ritest.ado
+f r\ritest.sthlp
 e
