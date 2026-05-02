@@ -1170,6 +1170,72 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.14 Round-2 Task C.3: RI consistency for three wine-relevant votes
+*------------------------------------------------------------------------------*
+* Round 1 used analytical HC3 for the 15-vote cross-referendum falsification
+* panel due to runtime cost. This task adds 10k-permutation RI specifically
+* for the three wine-relevant votes (#63 alcohol regulation, #65 food law,
+* #68 absinthe ban) for inference consistency with the headline #68 RI
+* (which itself uses 10k permutations in 03_regress.do section 3.3).
+*
+* The other 11 placebos remain analytical-only; they are orthogonal to the
+* wine-industry mechanism and would not benefit from RI re-checking.
+*
+* Test statistic: t-stat = _b/_se on vineyard_per_cap. Matches Task C.2
+* methodology + matches headline #68 RI methodology in 03_regress.do.
+* Seed = 20260430 (round-2 standard per round2/00_MASTER.md).
+*
+* Expected results from round-1 analytical p-values:
+*   #63 analytical p = 0.886 -> RI p should be similarly null (>0.10)
+*   #65 analytical p = 0.045 -> RI p should be roughly comparable
+*   #68 analytical p = 0.024 -> RI p should be roughly comparable
+* (RI p will differ slightly from headline #68 RI p in 03_regress.do because
+*  the seed differs (20260430 vs 20260409) and ritest vs permute use different
+*  random-draw mechanisms.)
+*
+* See round2/06_taskC3_RI_three_votes.md for full spec + acceptance criteria.
+{
+    foreach v in 63 65 68 {
+        preserve
+        use "$MyProject/processed/placebo_panel.dta", clear
+        keep if anr == `v'
+        qui count
+        assert r(N) == 25  // sanity: 25 cantons present for each vote
+
+        set seed 20260430
+        cap noi ritest vineyard_per_cap _b[vineyard_per_cap]/_se[vineyard_per_cap], ///
+            reps(10000) seed(20260430) nodots: ///
+            reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+        if _rc {
+            di as error "  ritest failed for vote #`v' (rc=`_rc'); RI p set to missing"
+            local ri_p_`v' = .
+        }
+        else {
+            * Per Task C.2 lesson: ritest stores r(p) as a 1xk matrix; use el()
+            local ri_p_`v' = el(r(p), 1, 1)
+        }
+        di "*** Round-2 Task C.3: Vote #`v' RI p (10k, t-stat-based) = " %5.3f `ri_p_`v'' " ***"
+
+        * Save as a synthetic regsave-style row
+        clear
+        set obs 1
+        gen str30 var = "vineyard_per_cap"
+        gen double coef   = .
+        gen double stderr = .
+        gen double tstat  = .
+        gen double pval   = `ri_p_`v''
+        gen long   N      = 25
+        gen str30 spec    = "panel_anr`v'_ri10k"
+        gen str20 model   = "ri_10k"
+        append using "`results_exp'"
+        save "`results_exp'", replace
+
+        restore
+    }
+    di _n "*** Task C.3 RI for three wine-relevant votes complete ***"
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -1463,6 +1529,21 @@ run "$MyProject/scripts/programs/_config.do"
         save "`meta'", replace
     restore
     merge 1:1 anr using "`meta'", nogen keep(match)
+
+    * --- Round-2 Task C.3: merge in RI 10k p-values for 3 wine-relevant votes ---
+    * Spec naming: "panel_anr<v>_ri10k" where <v> in {63, 65, 68}.
+    * Other 12 votes will have missing ri_p_10k and be displayed as em-dash.
+    tempfile ri_rows
+    preserve
+        use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+        keep if model == "ri_10k" & strpos(spec, "panel_anr") & strpos(spec, "_ri10k")
+        gen int anr_v = real(substr(spec, 10, strpos(spec, "_ri10k") - 10))
+        keep anr_v pval
+        rename anr_v anr
+        rename pval ri_p_10k
+        save "`ri_rows'", replace
+    restore
+    merge 1:1 anr using "`ri_rows'", nogen keep(master match)
     sort vote_year anr
 
     * --- Format OLS coefficient with significance stars ---
@@ -1486,6 +1567,11 @@ run "$MyProject/scripts/programs/_config.do"
     gen str8  yr_str  = string(vote_year)
     gen str4  anr_str = string(anr)
 
+    * --- Format RI 10k p-value (3 wine-relevant votes; em-dash elsewhere) ---
+    gen str10 ri_p_str = ""
+    replace ri_p_str = string(ri_p_10k, "%5.3f") if !missing(ri_p_10k)
+    replace ri_p_str = "---"                     if missing(ri_p_10k)
+
     * Mark the treatment vote
     gen str4 marker = ""
     replace marker = "TREAT" if anr == 68
@@ -1493,8 +1579,8 @@ run "$MyProject/scripts/programs/_config.do"
     * Truncate vote_label for table fit
     replace vote_label = substr(vote_label, 1, 50)
 
-    keep anr_str yr_str vote_label b_ols_str se_ols_str b_fr_str se_fr_str marker
-    order anr_str yr_str vote_label b_ols_str se_ols_str b_fr_str se_fr_str marker
+    keep anr_str yr_str vote_label b_ols_str se_ols_str b_fr_str se_fr_str ri_p_str marker
+    order anr_str yr_str vote_label b_ols_str se_ols_str b_fr_str se_fr_str ri_p_str marker
     rename anr_str       anr
     rename yr_str        year
     rename vote_label    title
@@ -1502,6 +1588,7 @@ run "$MyProject/scripts/programs/_config.do"
     rename se_ols_str    se_ols
     rename b_fr_str      vineyard_ame_fracreg
     rename se_fr_str     se_fracreg
+    rename ri_p_str      ri_p_10k_str
     label var anr                  "Vote no."
     label var year                 "Year"
     label var title                "Title (short)"
@@ -1509,13 +1596,14 @@ run "$MyProject/scripts/programs/_config.do"
     label var se_ols               "(SE)"
     label var vineyard_ame_fracreg "Fracreg AME"
     label var se_fracreg           "(SE)"
+    label var ri_p_10k_str         "RI p (10k)"
     label var marker               ""
 
-    local fn "Notes: KEY-spec regression of canton yes-vote share on vineyard\_per\_cap + french\_share + catholic\_share, run separately on each of the 15 federal popular votes between 1900 and 1910. OLS columns use yes\_pct (0-100) with HC3 SEs. Fracreg columns use fractional logit (Papke and Wooldridge 1996) on yes\_frac (0-1) with robust SEs; reported coefficients are average marginal effects from margins post-estimation, scaled by 100 for unit-comparability with OLS. n/c indicates fracreg did not converge for that vote. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\_per\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \#68 plus substantively related votes show non-null coefficients, the wine-protection mechanism is issue-specific. Vote \#65 (Lebensmittelgesetz, 1906) is NOT a clean placebo: this Federal Act established the alcohol-regulation authority later invoked against absinthe and was supported by wine producers because it cracked down on wine adulteration and substitute beverages. Treat \#65 as the regulatory prequel to \#68, not an independent comparison. Vote \#63 (1903 alcohol-trade regulation, distinct earlier coalition that failed) is the cleaner alcohol-regulation null. Stars: * p<0.10, ** p<0.05, *** p<0.01."
-    texsave anr year title vineyard_coef_ols se_ols vineyard_ame_fracreg se_fracreg marker ///
+    local fn "Notes: KEY-spec regression of canton yes-vote share on vineyard\_per\_cap + french\_share + catholic\_share, run separately on each of the 15 federal popular votes between 1900 and 1910. OLS columns use yes\_pct (0-100) with HC3 SEs. Fracreg columns use fractional logit (Papke and Wooldridge 1996) on yes\_frac (0-1) with robust SEs; reported coefficients are average marginal effects from margins post-estimation, scaled by 100 for unit-comparability with OLS. n/c indicates fracreg did not converge for that vote. The RI p (10k) column reports randomization-inference p-values from 10,000 permutations of vineyard\_per\_cap (ritest, t-stat-based, seed = 20260430) for the three wine-relevant votes (\#63 alcohol regulation, \#65 food law, \#68 absinthe ban). Em-dashes mark the 12 other votes for which RI was not run; their analytical OLS p is the reportable inference. RI for \#68 here uses the round-2 seed 20260430 and may differ slightly from the headline \#68 RI p in 03\_regress.do (seed 20260409, permute-based) -- both are valid; the difference is RNG draw, not methodology. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT. Falsification logic: if vineyard\_per\_cap predicts yes-vote shares broadly, the absinthe finding is spurious; if only \#68 plus substantively related votes show non-null coefficients, the wine-protection mechanism is issue-specific. Vote \#65 (Lebensmittelgesetz, 1906) is NOT a clean placebo: this Federal Act established the alcohol-regulation authority later invoked against absinthe and was supported by wine producers because it cracked down on wine adulteration and substitute beverages. Treat \#65 as the regulatory prequel to \#68, not an independent comparison. Vote \#63 (1903 alcohol-trade regulation, distinct earlier coalition that failed) is the cleaner alcohol-regulation null. Stars: * p<0.10, ** p<0.05, *** p<0.01."
+    texsave anr year title vineyard_coef_ols se_ols vineyard_ame_fracreg se_fracreg ri_p_10k_str marker ///
         using "$MyProject/results/tables/t13_placebo_panel.tex", ///
         replace autonumber varlabels marker(tab:placebo_panel) ///
-        title("Cross-referendum falsification: 15 federal votes 1900-1910 (OLS + fracreg AMEs)") ///
+        title("Cross-referendum falsification: 15 federal votes 1900-1910 (OLS + fracreg AMEs + RI for wine-relevant votes)") ///
         footnote("`fn'")
 }
 
@@ -2161,6 +2249,22 @@ run "$MyProject/scripts/programs/_config.do"
     foreach w in pop_1900 french_1900 german_1900 {
         summ coef if spec == "food65_weighted_`w'" & var == "vineyard_per_cap", meanonly
         di "Round-2 Task C.2: Weighted by `w': vineyard coef = " %8.2f r(mean)
+    }
+
+    * --- Round-2 Task C.3 RI consistency assert: vote #63 must remain null ---
+    * Vote #63 (1903 alcohol-trade regulation) is the cleaner alcohol-regulation
+    * null. If the RI p drops below 0.10, the falsification design is compromised
+    * (would mean vineyard cantons systematically opposed federal alcohol
+    * regulation generically, undermining the issue-specificity claim for #68).
+    summ pval if spec == "panel_anr63_ri10k" & var == "vineyard_per_cap", meanonly
+    local f63_ri_p = r(mean)
+    di _n "Round-2 Task C.3: Vote #63 RI 10k p-value = " %5.3f `f63_ri_p' " (must be > 0.10)"
+    assert `f63_ri_p' > 0.10
+
+    * Informational: report all 3 RI p-values for context
+    foreach v in 63 65 68 {
+        summ pval if spec == "panel_anr`v'_ri10k" & var == "vineyard_per_cap", meanonly
+        di "Round-2 Task C.3: Vote #`v' RI 10k p-value = " %5.3f r(mean)
     }
 
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
