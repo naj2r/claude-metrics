@@ -901,24 +901,45 @@ run "$MyProject/scripts/programs/_config.do"
         addlabel(spec, "H_KEY_centered", model, "ols")
 
     * --- B.1: H3 coalition interaction (vine x protestant_share_total) ---
-    * Religion control is protestant_c (centered 1 - catholic_share_total),
-    * NOT catholic_share. Reason: in 1900 Switzerland Catholic + Protestant
-    * was 99.4% of total pop, so protestant_share_total ~= 1 - catholic_share
-    * mechanically. Including BOTH catholic_share and protestant_c creates
-    * near-perfect multicollinearity (joint-spec VIFs ~25,800 in initial test
-    * run). protestant_c alone is the appropriate religion control for the
-    * moralist-coalition operationalization here.
+    * Two parallel variants estimated and reported in separate tables:
+    *   STRAT (main t17): strategist's pre-specified spec including BOTH
+    *     catholic_share AND protestant_c as religion controls.
+    *   ALT (backmatter t17b): drops catholic_share, uses protestant_c alone.
+    * Why both: in 1900 Switzerland Catholic + Protestant = 99.4% of total
+    * population, so protestant_share_total ~= 1 - catholic_share mechanically.
+    * Including BOTH inflates the religion-main-effect VIFs to ~25,800 in
+    * the joint spec (Task A diagnostic ran 2026-05-01; see HANDOFF). The
+    * INTERACTION term itself remains identified despite the main-effect
+    * collinearity (interactions don't share variance the same way), so the
+    * H3 result is comparable across the two variants. Reporting both in the
+    * paper preserves the pre-specified analysis (STRAT) and shows the cleaner
+    * design (ALT) as transparency on the post-hoc religion-control choice.
+
+    * B.1.STRAT — strategist's original (main table)
+    reg yes_pct vineyard_c protestant_c vineyard_X_protestant ///
+        french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "H3_coalition_strat", model, "ols")
+    local h3s_coef = _b[vineyard_X_protestant]
+    local h3s_se   = _se[vineyard_X_protestant]
+    local h3s_p    = 2 * (1 - normal(abs(`h3s_coef' / `h3s_se')))
+    local h3s_main = _b[vineyard_c]
+    di _n "*** Round-2 Task B.1 STRAT (H3 main: vine x protestant, both religion vars) ***"
+    di "  interaction coef = " %8.2f `h3s_coef' "  SE " %7.2f `h3s_se' "  p = " %5.3f `h3s_p'
+    di "  vineyard main effect (at mean protestant): " %7.2f `h3s_main'
+
+    * B.1.ALT — protestant_c alone as religion control (backmatter table)
     reg yes_pct vineyard_c protestant_c vineyard_X_protestant ///
         french_share, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
-        addlabel(spec, "H3_coalition_interaction", model, "ols")
-    local h3_coef = _b[vineyard_X_protestant]
-    local h3_se   = _se[vineyard_X_protestant]
-    local h3_p    = 2 * (1 - normal(abs(`h3_coef' / `h3_se')))
-    local h3_main = _b[vineyard_c]
-    di _n "*** Round-2 Task B.1 (H3 coalition: vineyard x protestant_share_total) ***"
-    di "  interaction coef = " %8.2f `h3_coef' "  SE " %7.2f `h3_se' "  p = " %5.3f `h3_p'
-    di "  vineyard main effect (at mean protestant): " %7.2f `h3_main'
+        addlabel(spec, "H3_coalition_alt", model, "ols")
+    local h3a_coef = _b[vineyard_X_protestant]
+    local h3a_se   = _se[vineyard_X_protestant]
+    local h3a_p    = 2 * (1 - normal(abs(`h3a_coef' / `h3a_se')))
+    local h3a_main = _b[vineyard_c]
+    di _n "*** Round-2 Task B.1 ALT (H3 backmatter: vine x protestant, protestant alone) ***"
+    di "  interaction coef = " %8.2f `h3a_coef' "  SE " %7.2f `h3a_se' "  p = " %5.3f `h3a_p'
+    di "  vineyard main effect (at mean protestant): " %7.2f `h3a_main'
 
     * --- B.2: H6 Olsonian concentration (vine x avg_parcel_area_1905) ---
     reg yes_pct vineyard_c parcel_c vineyard_X_parcel ///
@@ -934,26 +955,41 @@ run "$MyProject/scripts/programs/_config.do"
     di "  vineyard main effect (at mean parcel): " %7.2f `h6_main'
 
     * --- B.3: Joint H3 + H6 spec ---
-    * Drops catholic_share (collinear with protestant_c per B.1 note above).
-    * Religion control = protestant_c; agricultural-concentration control =
-    * parcel_c. The joint spec tests whether each interaction survives
-    * controlling for the other.
+    * Two parallel variants (parallel to B.1):
+    *   STRAT (main t17): both religion vars + parcel_c (per strategist)
+    *   ALT (backmatter t17b): protestant_c alone + parcel_c
+
+    * B.3.STRAT — strategist's original joint (main table)
+    reg yes_pct vineyard_c protestant_c vineyard_X_protestant ///
+        parcel_c vineyard_X_parcel ///
+        french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "H3H6_joint_strat", model, "ols")
+    local hjs_h3   = _b[vineyard_X_protestant]
+    local hjs_h6   = _b[vineyard_X_parcel]
+    local hjs_main = _b[vineyard_c]
+    di _n "*** Round-2 Task B.3 STRAT (Joint H3 + H6, main) ***"
+    di "  vineyard_X_protestant: " %8.2f `hjs_h3'
+    di "  vineyard_X_parcel:     " %8.2f `hjs_h6'
+    di "  vineyard main effect (at moderator means): " %7.2f `hjs_main'
+    di _n "  STRAT joint-spec VIFs (expect inflation on religion vars due to"
+    di "  catholic_share + protestant_c collinearity; documented in t17 caption):"
+    cap noi estat vif
+
+    * B.3.ALT — protestant alone joint (backmatter table)
     reg yes_pct vineyard_c protestant_c vineyard_X_protestant ///
         parcel_c vineyard_X_parcel ///
         french_share, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
-        addlabel(spec, "H3_and_H6_joint", model, "ols")
-    local hj_h3   = _b[vineyard_X_protestant]
-    local hj_h6   = _b[vineyard_X_parcel]
-    local hj_main = _b[vineyard_c]
-    di _n "*** Round-2 Task B.3 (Joint H3 + H6) ***"
-    di "  vineyard_X_protestant: " %8.2f `hj_h3'
-    di "  vineyard_X_parcel:     " %8.2f `hj_h6'
-    di "  vineyard main effect (at moderator means): " %7.2f `hj_main'
-
-    * Joint-spec VIF (handoff pitfall #2: with N=25 and two interactions,
-    * VIFs may inflate; report for transparency. No assertion -- this is the
-    * joint diagnostic spec, not the headline KEY spec asserted in Task A.)
+        addlabel(spec, "H3H6_joint_alt", model, "ols")
+    local hja_h3   = _b[vineyard_X_protestant]
+    local hja_h6   = _b[vineyard_X_parcel]
+    local hja_main = _b[vineyard_c]
+    di _n "*** Round-2 Task B.3 ALT (Joint H3 + H6, backmatter) ***"
+    di "  vineyard_X_protestant: " %8.2f `hja_h3'
+    di "  vineyard_X_parcel:     " %8.2f `hja_h6'
+    di "  vineyard main effect (at moderator means): " %7.2f `hja_main'
+    di _n "  ALT joint-spec VIFs (cleaner; religion-vars no longer collinear):"
     cap noi estat vif
 
     * Cleanup centered + interaction vars (avoid namespace collision with
@@ -1506,38 +1542,76 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
-**# 12.11.6 t17_formal_hypotheses: H3 coalition + H6 Olsonian formal tests
+**# 12.11.6 t17_formal_hypotheses: H3 coalition + H6 Olsonian (MAIN + BACKMATTER)
 *------------------------------------------------------------------------------*
-* Builds t17_formal_hypotheses.tex from the H_KEY_centered, H3_*, H6_*, and
-* H3_and_H6_joint specs saved in section 10.11. Four columns:
-*   Col 1: KEY-centered (replicates KEY spec coefs with vineyard_c row name)
-*   Col 2: H3 coalition (vineyard x protestant_share_total interaction)
-*   Col 3: H6 Olsonian (vineyard x avg_parcel_area_1905 interaction)
-*   Col 4: Joint H3 + H6 (both interactions simultaneously)
+* Two parallel tables with identical 4-column layout:
+*   t17_formal_hypotheses.tex      (MAIN, strategist's pre-specified spec)
+*   t17b_formal_hypotheses_alt.tex (BACKMATTER, protestant-alone variant)
+*
+* Common columns:
+*   Col 1: KEY-centered baseline (same in both tables)
+*   Col 2: H3 coalition interaction (STRAT or ALT)
+*   Col 3: H6 Olsonian (same in both tables -- no protestant_c, no design issue)
+*   Col 4: Joint H3 + H6 (STRAT or ALT)
+*
+* Why two tables: the strategist's pre-specified H3/joint specs include both
+* catholic_share AND protestant_c. In 1900 Switzerland Cath+Prot = 99.4%, so
+* these are near-mechanically collinear (joint-spec main-effect VIFs ~25,800).
+* The interaction term itself is identified in both spec families, but the
+* religion main-effects are uninterpretable in STRAT. Reporting both preserves
+* the pre-specified analysis (STRAT in the paper body) while documenting the
+* design issue and a cleaner variant (ALT in backmatter).
+
 {
+    * --- t17 MAIN (strategist's pre-specified spec) ---
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
-    keep if model == "ols" & inlist(spec, "H_KEY_centered", "H3_coalition_interaction", ///
-                                          "H6_olsonian_interaction", "H3_and_H6_joint")
-    tempfile fh
-    regsave_tbl using "`fh'" if spec == "H_KEY_centered", ///
+    keep if model == "ols" & inlist(spec, "H_KEY_centered", "H3_coalition_strat", ///
+                                          "H6_olsonian_interaction", "H3H6_joint_strat")
+    tempfile fh_main
+    regsave_tbl using "`fh_main'" if spec == "H_KEY_centered", ///
         name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
-    regsave_tbl using "`fh'" if spec == "H3_coalition_interaction", ///
+    regsave_tbl using "`fh_main'" if spec == "H3_coalition_strat", ///
         name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
-    regsave_tbl using "`fh'" if spec == "H6_olsonian_interaction", ///
+    regsave_tbl using "`fh_main'" if spec == "H6_olsonian_interaction", ///
         name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
-    regsave_tbl using "`fh'" if spec == "H3_and_H6_joint", ///
+    regsave_tbl using "`fh_main'" if spec == "H3H6_joint_strat", ///
         name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
-    use "`fh'", clear
+    use "`fh_main'", clear
     drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
     clean_vars var
     label var var "Variable"
-    local fn "Notes: Formal tests of two implications of the bootleggers-and-baptists framework derived from Becker (1983) and Olson (1965). Column (1) replicates the headline KEY spec with a mean-centered vineyard regressor (coefficient identical to the uncentered version; centering only shifts the intercept). Column (2) tests H3 (coalition interaction): the wine-industry effect is amplified by moralist coalition strength, operationalized as protestant\_share\_total = 1 - catholic\_share\_total in the absence of canton-level Blue Cross / Croix-Bleue / IOGT membership data (the first-best measure). Column (3) tests H6 (Olsonian concentration): the wine-industry effect is amplified by industrial concentration, operationalized as avg\_parcel\_area\_1905 (constructed from agricultural land 1912 / total parcels 1905; documented in CONTEXT.md). Column (4) tests both interactions jointly. Religion-control choice: in columns (2) and (4) the religion control is protestant\_c (centered protestant\_share\_total), NOT catholic\_share. In 1900 Switzerland Catholic + Protestant was 99.4 percent of total population, so catholic\_share and 1 - catholic\_share\_total share essentially the same Catholic-population variation; including both produces near-perfect multicollinearity (joint-spec main-effect VIFs above 25{,}000 in pilot). Column (3) retains catholic\_share since protestant\_c is not in that specification. Centered regressors (vineyard\_c, protestant\_c, parcel\_c) ease interpretation: the main effect of vineyard\_c in any column is the vineyard slope at the mean of the moderator(s) in that spec; the interaction coefficient is the change in that slope per unit increase in the (mean-centered) moderator. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01."
+    local fn_main "Notes: Formal tests of two implications of the bootleggers-and-baptists framework derived from Becker (1983) and Olson (1965), pre-specified design. Column (1) replicates the headline KEY spec with a mean-centered vineyard regressor (coefficient identical to the uncentered version). Column (2) tests H3 (coalition interaction): wine-industry effect amplified by moralist coalition strength, operationalized as protestant\_share\_total = 1 - catholic\_share\_total in the absence of canton-level Blue Cross / Croix-Bleue / IOGT membership data. Column (3) tests H6 (Olsonian concentration): wine-industry effect amplified by industrial concentration, operationalized as avg\_parcel\_area\_1905 (constructed from agricultural land 1912 / total parcels 1905; documented in CONTEXT.md). Column (4) tests both interactions jointly. Caveat on the pre-specified design: columns (2) and (4) include BOTH catholic\_share and protestant\_c as religion controls. In 1900 Switzerland Catholic + Protestant constituted 99.4 percent of total population, so these two religion variables are near-mechanically collinear (main-effect VIFs above 25{,}000 in the joint specification). The interaction coefficient itself is identified despite this main-effect collinearity (interactions and their components do not share variance the same way), so the H3 result reported here remains substantively interpretable. The religion main effects in columns (2) and (4) should not be interpreted. A cleaner variant dropping catholic\_share from columns (2) and (4) is reported in the backmatter Table~\\ref{tab:formal_hypotheses_alt} for transparency. Centered regressors (vineyard\_c, protestant\_c, parcel\_c) ease interpretation: the main effect of vineyard\_c is the vineyard slope at the mean of the moderator(s) in that spec; the interaction coefficient is the change in that slope per unit increase in the (mean-centered) moderator. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01."
     texsave var col1 col2 col3 col4 ///
         using "$MyProject/results/tables/t17_formal_hypotheses.tex", ///
         replace autonumber varlabels marker(tab:formal_hypotheses) ///
         title("Formal hypothesis tests: H3 (coalition) and H6 (Olsonian concentration)") ///
-        footnote("`fn'")
-    di "Saved t17_formal_hypotheses.tex"
+        footnote("`fn_main'")
+    di "Saved t17_formal_hypotheses.tex (MAIN, strategist's pre-specified spec)"
+
+    * --- t17b BACKMATTER (protestant-alone variant) ---
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "H_KEY_centered", "H3_coalition_alt", ///
+                                          "H6_olsonian_interaction", "H3H6_joint_alt")
+    tempfile fh_alt
+    regsave_tbl using "`fh_alt'" if spec == "H_KEY_centered", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`fh_alt'" if spec == "H3_coalition_alt", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`fh_alt'" if spec == "H6_olsonian_interaction", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`fh_alt'" if spec == "H3H6_joint_alt", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`fh_alt'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn_alt "Notes: Backmatter variant of Table~\\ref{tab:formal_hypotheses}. Identical structure and column 1 (KEY-centered baseline) and column 3 (H6 Olsonian) as the main table. Columns (2) and (4) drop catholic\_share and use protestant\_c (centered protestant\_share\_total) as the sole religion control. In 1900 Switzerland Catholic + Protestant constituted 99.4 percent of total population, making catholic\_share and (1 - catholic\_share\_total) near-mechanically collinear; including both (as in the main pre-specified spec) inflates joint religion-main-effect VIFs above 25{,}000. This variant reports cleaner main effects on the religion dimension while preserving the same H3 and H6 interaction-term identification as the main table. We report both for transparency; the substantive H3 / H6 conclusions do not depend on which variant the reader prefers, since the interaction coefficients themselves are robust across the two parameterizations. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 ///
+        using "$MyProject/results/tables/t17b_formal_hypotheses_alt.tex", ///
+        replace autonumber varlabels marker(tab:formal_hypotheses_alt) ///
+        title("Formal hypothesis tests: protestant-alone religion-control variant (backmatter)") ///
+        footnote("`fn_alt'")
+    di "Saved t17b_formal_hypotheses_alt.tex (BACKMATTER, protestant-alone variant)"
 }
 
 
@@ -1686,36 +1760,50 @@ run "$MyProject/scripts/programs/_config.do"
     di "Round-2 PDS-LASSO vineyard coef = " %7.2f r(mean)
     assert r(mean) > 0
 
-    * --- Round-2 Task B formal-hypothesis assertions ---
+    * --- Round-2 Task B formal-hypothesis assertions (5 specs across STRAT + ALT) ---
     * H3 / H6 hypothesis SIGNS are NOT asserted -- those are the results being
     * reported. The sanity check is that vineyard's main effect remains POSITIVE
-    * across all 3 interaction specs (KEY-spec result must survive interaction
-    * inclusion; if it doesn't, the interaction is masking the headline effect).
-    foreach s in H3_coalition_interaction H6_olsonian_interaction H3_and_H6_joint {
+    * across all interaction specs in BOTH spec families (STRAT main + ALT
+    * backmatter). KEY-spec result must survive interaction inclusion regardless
+    * of which religion-control parameterization the reader prefers.
+    foreach s in H3_coalition_strat H3_coalition_alt H6_olsonian_interaction ///
+                 H3H6_joint_strat H3H6_joint_alt {
         summ coef if spec == "`s'" & var == "vineyard_c", meanonly
         di "Round-2 Task B vineyard main effect in `s' (at moderator means) = " %7.2f r(mean)
         assert r(mean) > 0
     }
 
     * Report H3 + H6 interaction results (informational only; no assert on sign)
-    summ coef if spec == "H3_coalition_interaction" & var == "vineyard_X_protestant", meanonly
-    local h3_chk = r(mean)
-    summ pval if spec == "H3_coalition_interaction" & var == "vineyard_X_protestant", meanonly
-    local h3_p_chk = r(mean)
-    di _n "Round-2 Task B.1 H3 (coalition):  vineyard_X_protestant = " %8.2f `h3_chk' " (p=" %5.3f `h3_p_chk' ")"
+    * STRAT family (main table)
+    summ coef if spec == "H3_coalition_strat" & var == "vineyard_X_protestant", meanonly
+    local h3s_chk = r(mean)
+    summ pval if spec == "H3_coalition_strat" & var == "vineyard_X_protestant", meanonly
+    local h3s_p_chk = r(mean)
+    di _n "Round-2 Task B.1 H3 STRAT (main):       vineyard_X_protestant = " %8.2f `h3s_chk' " (p=" %5.3f `h3s_p_chk' ")"
+
+    summ coef if spec == "H3_coalition_alt" & var == "vineyard_X_protestant", meanonly
+    local h3a_chk = r(mean)
+    summ pval if spec == "H3_coalition_alt" & var == "vineyard_X_protestant", meanonly
+    local h3a_p_chk = r(mean)
+    di "Round-2 Task B.1 H3 ALT (backmatter): vineyard_X_protestant = " %8.2f `h3a_chk' " (p=" %5.3f `h3a_p_chk' ")"
 
     summ coef if spec == "H6_olsonian_interaction" & var == "vineyard_X_parcel", meanonly
     local h6_chk = r(mean)
     summ pval if spec == "H6_olsonian_interaction" & var == "vineyard_X_parcel", meanonly
     local h6_p_chk = r(mean)
-    di "Round-2 Task B.2 H6 (Olsonian):  vineyard_X_parcel = " %8.2f `h6_chk' " (p=" %5.3f `h6_p_chk' ")"
+    di "Round-2 Task B.2 H6 (same in both):    vineyard_X_parcel     = " %8.2f `h6_chk' " (p=" %5.3f `h6_p_chk' ")"
 
-    * Joint spec interactions
-    summ coef if spec == "H3_and_H6_joint" & var == "vineyard_X_protestant", meanonly
-    local hj3 = r(mean)
-    summ coef if spec == "H3_and_H6_joint" & var == "vineyard_X_parcel", meanonly
-    local hj6 = r(mean)
-    di "Round-2 Task B.3 Joint:  vineyard_X_protestant = " %8.2f `hj3' "  vineyard_X_parcel = " %8.2f `hj6'
+    summ coef if spec == "H3H6_joint_strat" & var == "vineyard_X_protestant", meanonly
+    local hjs3 = r(mean)
+    summ coef if spec == "H3H6_joint_strat" & var == "vineyard_X_parcel", meanonly
+    local hjs6 = r(mean)
+    di "Round-2 Task B.3 Joint STRAT (main):       H3 int = " %8.2f `hjs3' "  H6 int = " %8.2f `hjs6'
+
+    summ coef if spec == "H3H6_joint_alt" & var == "vineyard_X_protestant", meanonly
+    local hja3 = r(mean)
+    summ coef if spec == "H3H6_joint_alt" & var == "vineyard_X_parcel", meanonly
+    local hja6 = r(mean)
+    di "Round-2 Task B.3 Joint ALT (backmatter): H3 int = " %8.2f `hja3' "  H6 int = " %8.2f `hja6'
 
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
 }
