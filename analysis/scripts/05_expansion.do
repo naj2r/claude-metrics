@@ -1056,6 +1056,120 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.13 Round-2 Task C.2: Food-law (#65) robustness battery
+*------------------------------------------------------------------------------*
+* Replicates on vote #65 the headline #68 robustness battery (LOO across 25
+* cantons, drop NE+GE, RI 10k permutations, weighted regressions). If the
+* +1286 conditional coefficient on #65 (Task C.1) survives, food-law evidence
+* is as robust as the absinthe headline; if it collapses under specific
+* specifications, that fragility is reportable.
+*
+* Spec details:
+*   - LOO + drop NE+GE + weighted: KEY-spec analog
+*       reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+*   - RI: 10k permutations of vineyard_per_cap via ritest (vendored Task 01),
+*     test statistic is _b/_se (t-stat), seed = 20260430 (round-2 standard
+*     per round2/00_MASTER.md "Cross-task data invariants")
+*   - Weighted: 3 schemes available in placebo_panel.dta + canton-level merge:
+*       pop_1900 (already in panel), french_1900 / german_1900 (merged from
+*       absinthe_analysis.dta). Vote-specific weights (yes_count, eligible)
+*       are NOT used because placebo_panel.dta does not yet carry per-vote
+*       counts -- per round2/05_taskC2 Pitfall #1 option (c), limit to
+*       canton-level weighting schemes; vote-specific weighting deferred to
+*       Task C.6 Phase 0 back-extension.
+*
+* See round2/05_taskC2_food65_robustness.md for full spec + acceptance criteria.
+{
+    preserve
+    use "$MyProject/processed/placebo_panel.dta", clear
+    keep if anr == 65
+    qui count
+    assert r(N) == 25  // sanity: 25 cantons present for vote #65
+
+    * Merge canton-level raw counts for the weighted regressions
+    merge 1:1 canton_code using "$MyProject/processed/absinthe_analysis.dta", ///
+        keepusing(french_1900 german_1900) nogen keep(match)
+
+    * --- C.2.1: LOO across 25 cantons ---
+    levelsof canton_code, local(cantons) clean
+    local n_loo_done = 0
+    foreach c of local cantons {
+        qui reg yes_pct vineyard_per_cap french_share catholic_share ///
+            if canton_code != "`c'", vce(hc3)
+        regsave using "`results_exp'", t p autoid append ///
+            addlabel(spec, "food65_loo", model, "ols", dropped, "`c'")
+        local ++n_loo_done
+    }
+    di _n "*** Round-2 Task C.2.1: Food-law (#65) LOO complete (`n_loo_done' regressions) ***"
+
+    * --- C.2.2: Drop NE + GE ---
+    qui reg yes_pct vineyard_per_cap french_share catholic_share ///
+        if canton_code != "NE" & canton_code != "GE", vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "food65_excl_ne_ge", model, "ols")
+    local f65_excl_b = _b[vineyard_per_cap]
+    local f65_excl_p = 2 * (1 - normal(abs(`f65_excl_b' / _se[vineyard_per_cap])))
+    di "*** Round-2 Task C.2.2: Drop NE+GE: vineyard coef = " %8.2f `f65_excl_b' " (p=" %5.3f `f65_excl_p' ") ***"
+
+    * --- C.2.3: Randomization inference (10k permutations of vineyard_per_cap) ---
+    * ritest permutes the focal regressor across the 25 cantons; t-stat is the
+    * test statistic (matches headline #68 RI methodology in 03_regress.do
+    * section 3.3, but uses round-2 seed 20260430 rather than headline's 20260409).
+    set seed 20260430
+    cap noi ritest vineyard_per_cap _b[vineyard_per_cap]/_se[vineyard_per_cap], ///
+        reps(10000) seed(20260430) nodots: ///
+        reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    if _rc {
+        di as error "  ritest failed (rc=`_rc'); RI p set to missing"
+        local f65_ri_p = .
+    }
+    else {
+        * ritest stores p as a 1xk matrix (one column per test expression);
+        * el() extracts the (1,1) scalar. Direct `local p = r(p)` fails with
+        * r(109) type mismatch because r(p) is a matrix, not a scalar.
+        local f65_ri_p = el(r(p), 1, 1)
+    }
+    di "*** Round-2 Task C.2.3: RI p (10k, t-stat-based) = " %5.3f `f65_ri_p' " ***"
+    * Save RI p as a synthetic regsave row for downstream table consumption
+    clear
+    set obs 1
+    gen str30 var = "vineyard_per_cap"
+    gen double coef   = .
+    gen double stderr = .
+    gen double tstat  = .
+    gen double pval   = `f65_ri_p'
+    gen long   N      = 25
+    gen str30 spec    = "food65_ri_pvalue"
+    gen str20 model   = "ritest_10k"
+    append using "`results_exp'"
+    save "`results_exp'", replace
+
+    * Reload the panel for weighted regressions
+    use "$MyProject/processed/placebo_panel.dta", clear
+    keep if anr == 65
+    merge 1:1 canton_code using "$MyProject/processed/absinthe_analysis.dta", ///
+        keepusing(french_1900 german_1900) nogen keep(match)
+
+    * --- C.2.4: Weighted regressions (3 canton-level schemes) ---
+    foreach w in pop_1900 french_1900 german_1900 {
+        cap qui reg yes_pct vineyard_per_cap french_share catholic_share ///
+            [aweight = `w'], vce(hc3)
+        if !_rc {
+            regsave using "`results_exp'", t p autoid append ///
+                addlabel(spec, "food65_weighted_`w'", model, "ols")
+            local f65_w_`w' = _b[vineyard_per_cap]
+            di "*** Round-2 Task C.2.4: Weighted by `w': vineyard coef = " %8.2f `f65_w_`w'' " ***"
+        }
+        else {
+            di as error "  weighted by `w' failed (rc=`_rc')"
+        }
+    }
+
+    di _n "*** Task C.2 robustness battery complete ***"
+    restore
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -1701,6 +1815,117 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.11.8 t18_food65_robustness: Task C.2 robustness battery for vote #65
+*------------------------------------------------------------------------------*
+* 4-row table summarizing the robustness battery from section 10.13:
+*   Row 1: Headline conditional (food65_conditional from C.1)
+*   Row 2: Drop NE+GE
+*   Row 3: LOO median across 25 drops + [min, max] range
+*   Row 4: RI p-value (10k permutations, t-stat-based)
+* Plus 3 weighted-regression rows in the body (pop_1900, french_1900, german_1900).
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+
+    * --- Row 1: Headline conditional (from C.1) ---
+    summ coef if spec == "food65_conditional" & var == "vineyard_per_cap", meanonly
+    local r1_b = r(mean)
+    summ stderr if spec == "food65_conditional" & var == "vineyard_per_cap", meanonly
+    local r1_se = r(mean)
+    summ pval if spec == "food65_conditional" & var == "vineyard_per_cap", meanonly
+    local r1_p = r(mean)
+
+    * --- Row 2: Drop NE+GE ---
+    summ coef if spec == "food65_excl_ne_ge" & var == "vineyard_per_cap", meanonly
+    local r2_b = r(mean)
+    summ stderr if spec == "food65_excl_ne_ge" & var == "vineyard_per_cap", meanonly
+    local r2_se = r(mean)
+    summ pval if spec == "food65_excl_ne_ge" & var == "vineyard_per_cap", meanonly
+    local r2_p = r(mean)
+
+    * --- Row 3: LOO median + range ---
+    summ coef if spec == "food65_loo" & var == "vineyard_per_cap", detail
+    local loo_n   = r(N)
+    local loo_med = r(p50)
+    local loo_min = r(min)
+    local loo_max = r(max)
+
+    * --- Row 4: RI p-value ---
+    summ pval if spec == "food65_ri_pvalue" & var == "vineyard_per_cap", meanonly
+    local r4_p = r(mean)
+
+    * --- Weighted regression coefs (for footnote inclusion in body) ---
+    summ coef if spec == "food65_weighted_pop_1900" & var == "vineyard_per_cap", meanonly
+    local w_pop = r(mean)
+    summ pval if spec == "food65_weighted_pop_1900" & var == "vineyard_per_cap", meanonly
+    local w_pop_p = r(mean)
+    summ coef if spec == "food65_weighted_french_1900" & var == "vineyard_per_cap", meanonly
+    local w_fr  = r(mean)
+    summ pval if spec == "food65_weighted_french_1900" & var == "vineyard_per_cap", meanonly
+    local w_fr_p = r(mean)
+    summ coef if spec == "food65_weighted_german_1900" & var == "vineyard_per_cap", meanonly
+    local w_de  = r(mean)
+    summ pval if spec == "food65_weighted_german_1900" & var == "vineyard_per_cap", meanonly
+    local w_de_p = r(mean)
+
+    * --- Build a small dataset of 7 display rows ---
+    clear
+    set obs 7
+    gen str40  spec_label = ""
+    gen str30  value      = ""
+    gen str20  pvalue     = ""
+    gen str30  notes      = ""
+
+    replace spec_label = "Headline (KEY-spec analog)"          in 1
+    replace value      = string(`r1_b', "%9.1f") + " (" + string(`r1_se', "%6.0f") + ")" in 1
+    replace pvalue     = "p = " + string(`r1_p', "%4.3f")      in 1
+    replace notes      = "From Table C.1 (food65 conditional)" in 1
+
+    replace spec_label = "Drop NE + GE (N=23)"                 in 2
+    replace value      = string(`r2_b', "%9.1f") + " (" + string(`r2_se', "%6.0f") + ")" in 2
+    replace pvalue     = "p = " + string(`r2_p', "%4.3f")      in 2
+    replace notes      = "Same cantons that rejected vote \#68" in 2
+
+    replace spec_label = "LOO (median, [min, max])"            in 3
+    replace value      = "med " + string(`loo_med', "%9.1f") + " [" + string(`loo_min', "%9.1f") + ", " + string(`loo_max', "%9.1f") + "]" in 3
+    replace pvalue     = "n = " + string(`loo_n')              in 3
+    replace notes      = "25 leave-one-out KEY-spec regressions" in 3
+
+    replace spec_label = "RI 10k permutations"                 in 4
+    replace value      = "see p ->"                             in 4
+    replace pvalue     = "p = " + string(`r4_p', "%4.3f")      in 4
+    replace notes      = "ritest, t-stat-based, seed 20260430" in 4
+
+    replace spec_label = "Weighted by pop\_1900"               in 5
+    replace value      = string(`w_pop', "%9.1f")              in 5
+    replace pvalue     = "p = " + string(`w_pop_p', "%4.3f")   in 5
+    replace notes      = "Total population (canton)"           in 5
+
+    replace spec_label = "Weighted by french\_1900"            in 6
+    replace value      = string(`w_fr', "%9.1f")               in 6
+    replace pvalue     = "p = " + string(`w_fr_p', "%4.3f")    in 6
+    replace notes      = "French-speaking population (canton)" in 6
+
+    replace spec_label = "Weighted by german\_1900"            in 7
+    replace value      = string(`w_de', "%9.1f")               in 7
+    replace pvalue     = "p = " + string(`w_de_p', "%4.3f")    in 7
+    replace notes      = "German-speaking population (canton)" in 7
+
+    label var spec_label "Specification"
+    label var value      "Vineyard coef (HC3 SE)"
+    label var pvalue     "Inference"
+    label var notes      "Notes"
+
+    local fn "Notes: Robustness battery for vote \#65 (1906 Lebensmittelgesetz / Federal Foodstuffs Act), KEY-spec analog: \texttt{reg yes\_pct vineyard\_per\_cap french\_share catholic\_share}, HC3 robust SEs. The headline (Row 1) is reproduced from Table~\\ref{tab:food65_simpson} column 2 for reference. Drop-NE+GE (Row 2) excludes the two cantons that rejected vote \#68; this is a leverage check, not a substantive subsample. Leave-one-out (Row 3) drops each canton in turn (25 regressions) and reports the median, minimum, and maximum vineyard coefficient across the LOO distribution. Randomization inference (Row 4) permutes vineyard\_per\_cap across cantons 10,000 times via \texttt{ritest} (vendored Round-2 Task 01); the test statistic is the t-statistic on vineyard\_per\_cap; seed = 20260430 (round-2 standard, distinct from the headline \#68 RI seed 20260409). Weighted regressions (Rows 5-7) re-estimate the KEY-spec analog with analytical weights from canton-level 1900 demographic counts. Vote-specific weights (yes\_count, eligible\_voters) used in the headline \#68 robustness are not yet available for vote \#65 because placebo\_panel.dta does not currently carry per-vote counts; this back-extension is scheduled for Task C.6 Phase 0 and will permit vote-specific weighting in a future iteration. N=25 cantons (N=23 for Row 2). * p<0.10, ** p<0.05, *** p<0.01 in supporting Tables; this summary table reports raw p-values."
+
+    texsave spec_label value pvalue notes ///
+        using "$MyProject/results/tables/t18_food65_robustness.tex", ///
+        replace autonumber varlabels marker(tab:food65_robustness) ///
+        title("Vote \#65 (Lebensmittelgesetz, 1906): robustness battery") ///
+        footnote("`fn'")
+    di "Saved t18_food65_robustness.tex"
+}
+
+
 **# 12.12 f04_marginsplot_french: vineyard effect across (1 - french_share)
 *------------------------------------------------------------------------------*
 {
@@ -1910,6 +2135,32 @@ run "$MyProject/scripts/programs/_config.do"
     }
     else {
         di "  Simpson sign-flip:         NO (mechanism differs from #68)"
+    }
+
+    * --- Round-2 Task C.2 sanity asserts (food-law #65 robustness battery) ---
+    * Two asserts: LOO produced 25 rows AND the LOO median vineyard coef > 0.
+    * The second is a sanity check: if the headline +1286 is robust to LOO,
+    * then the median of the 25 LOO drops should also be substantially positive.
+    qui count if spec == "food65_loo" & var == "vineyard_per_cap"
+    di "Round-2 Task C.2: LOO row count = " r(N) " (expected 25)"
+    assert r(N) == 25
+
+    summ coef if spec == "food65_loo" & var == "vineyard_per_cap", detail
+    local f65_loo_med = r(p50)
+    local f65_loo_min = r(min)
+    local f65_loo_max = r(max)
+    di "Round-2 Task C.2: LOO median = " %8.2f `f65_loo_med' "  range [" %8.2f `f65_loo_min' ", " %8.2f `f65_loo_max' "]"
+    assert `f65_loo_med' > 0  // sanity: median LOO coef should remain positive
+
+    summ coef if spec == "food65_excl_ne_ge" & var == "vineyard_per_cap", meanonly
+    di "Round-2 Task C.2: Drop NE+GE vineyard coef = " %8.2f r(mean)
+
+    summ pval if spec == "food65_ri_pvalue" & var == "vineyard_per_cap", meanonly
+    di "Round-2 Task C.2: RI 10k p-value = " %5.3f r(mean)
+
+    foreach w in pop_1900 french_1900 german_1900 {
+        summ coef if spec == "food65_weighted_`w'" & var == "vineyard_per_cap", meanonly
+        di "Round-2 Task C.2: Weighted by `w': vineyard coef = " %8.2f r(mean)
     }
 
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"

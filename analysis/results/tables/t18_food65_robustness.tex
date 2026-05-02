@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Vote \\#65 (Lebensmittelgesetz, 1906): robustness battery}
+\label{tab:food65_robustness}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{Specification}&{Vineyard coef (HC3 SE)}&{Inference}&{Notes} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Headline (KEY-spec analog)&1285.6 (604)&p = 0.045&From Table C.1 (food65 conditional) \tabularnewline
+Drop NE + GE (N=23)&838.6 (559)&p = 0.150&Same cantons that rejected vote \\#68 \tabularnewline
+LOO (median, [min, max])&med 1282.9 [1046.8, 1670.3]&n = 25&25 leave-one-out KEY-spec regressions \tabularnewline
+RI 10k permutations&see p ->&p = 0.038&ritest, t-stat-based, seed 20260430 \tabularnewline
+Weighted by pop\\_1900&925.3&p = 0.434&Total population (canton) \tabularnewline
+Weighted by french\\_1900&1987.3&p = 0.673&French-speaking population (canton) \tabularnewline
+Weighted by german\\_1900&455.0&p = 0.728&German-speaking population (canton) \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Robustness battery for vote \\#65 (1906 Lebensmittelgesetz / Federal Foodstuffs Act), KEY-spec analog: \texttt\{reg yes\\_pct vineyard\\_per\\_cap french\\_share catholic\\_share\}, HC3 robust SEs. The headline (Row 1) is reproduced from Table\~\\ref\{tab:food65\_simpson\} column 2 for reference. Drop-NE+GE (Row 2) excludes the two cantons that rejected vote \\#68; this is a leverage check, not a substantive subsample. Leave-one-out (Row 3) drops each canton in turn (25 regressions) and reports the median, minimum, and maximum vineyard coefficient across the LOO distribution. Randomization inference (Row 4) permutes vineyard\\_per\\_cap across cantons 10,000 times via \texttt\{ritest\} (vendored Round-2 Task 01); the test statistic is the t-statistic on vineyard\\_per\\_cap; seed = 20260430 (round-2 standard, distinct from the headline \\#68 RI seed 20260409). Weighted regressions (Rows 5-7) re-estimate the KEY-spec analog with analytical weights from canton-level 1900 demographic counts. Vote-specific weights (yes\\_count, eligible\\_voters) used in the headline \\#68 robustness are not yet available for vote \\#65 because placebo\\_panel.dta does not currently carry per-vote counts; this back-extension is scheduled for Task C.6 Phase 0 and will permit vote-specific weighting in a future iteration. N=25 cantons (N=23 for Row 2). * p<0.10, ** p<0.05, *** p<0.01 in supporting Tables; this summary table reports raw p-values.}
+\end{table}
+\end{document}
