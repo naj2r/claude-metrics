@@ -1002,6 +1002,60 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.12 Round-2 Task C.1: Food-law (#65) Simpson sign-flip diagnostic
+*------------------------------------------------------------------------------*
+* Tests whether vote #65 (1906 Lebensmittelgesetz / Federal Foodstuffs Act)
+* shows the same Simpson structure as the headline #68 absinthe vote:
+* bivariate vineyard coef negative, conditional positive after adding
+* french_share + catholic_share. Two regressions on the #65 subset of
+* placebo_panel.dta (long-format panel; #65 has the same 25 cantons as #68).
+*
+* Substantive interpretation:
+*   - YES Simpson sign-flip on #65 -> structurally identical mechanism to #68.
+*     Reinforces the regulatory-capture-via-language-confound story documented
+*     in progress_2026-04-30_1830_foodbev.md.
+*   - NO Simpson sign-flip on #65 -> similar-but-not-identical political
+*     coalition; the food-law had broader public-health support that may have
+*     made the bivariate already positive even before language is added.
+* Either outcome is informative; we do not assert sign-flip presence.
+*
+* See round2/04_taskC1_food65_simpson.md for full spec + acceptance criteria.
+{
+    preserve
+    use "$MyProject/processed/placebo_panel.dta", clear
+    keep if anr == 65
+    qui count
+    assert r(N) == 25  // sanity: 25 cantons present for vote #65
+
+    * --- Bivariate ---
+    reg yes_pct vineyard_per_cap, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "food65_bivariate", model, "ols")
+    local food65_b_biv  = _b[vineyard_per_cap]
+    local food65_se_biv = _se[vineyard_per_cap]
+    local food65_p_biv  = 2 * (1 - normal(abs(`food65_b_biv' / `food65_se_biv')))
+
+    * --- Conditional on french_share + catholic_share (KEY-spec analog for #65) ---
+    reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "food65_conditional", model, "ols")
+    local food65_b_cond  = _b[vineyard_per_cap]
+    local food65_se_cond = _se[vineyard_per_cap]
+    local food65_p_cond  = 2 * (1 - normal(abs(`food65_b_cond' / `food65_se_cond')))
+
+    di _n "*** Round-2 Task C.1: Food-law (#65) Simpson check ***"
+    di "  Bivariate:   vineyard_per_cap = " %8.2f `food65_b_biv'  "  SE " %7.2f `food65_se_biv'  "  p = " %5.3f `food65_p_biv'
+    di "  Conditional: vineyard_per_cap = " %8.2f `food65_b_cond' "  SE " %7.2f `food65_se_cond' "  p = " %5.3f `food65_p_cond'
+    if `food65_b_biv' < 0 & `food65_b_cond' > 0 {
+        di "  --> Simpson sign-flip: YES (structurally identical to #68 absinthe)"
+    }
+    else {
+        di "  --> Simpson sign-flip: NO (mechanism differs from #68; coalition assembled differently for the food law)"
+    }
+    restore
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -1615,6 +1669,38 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.11.7 t13b_food65_simpson: bivariate vs conditional KEY-spec for vote #65
+*------------------------------------------------------------------------------*
+* Sibling table to t13_placebo_panel.tex. Two-column comparison of the
+* vineyard coefficient on vote #65 (Lebensmittelgesetz, 1906) bivariate vs
+* conditional on french_share + catholic_share. Mirror of the headline #68
+* Simpson sign-flip diagnostic (which lives in t02_main.tex columns 1 vs 2).
+* Built as t13b sibling rather than t13 panel B because t13's manual-row
+* construction would be intrusive to extend (per round2/04_taskC1 handoff
+* recommendation: "Pick whichever is less code"). Numbered 12.11.7 to keep
+* the round-2 sibling tables (t16, t17/t17b, t13b) grouped in the script.
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "food65_bivariate", "food65_conditional")
+    tempfile fs
+    regsave_tbl using "`fs'" if spec == "food65_bivariate", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`fs'" if spec == "food65_conditional", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`fs'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+    local fn "Notes: Simpson sign-flip diagnostic for vote \#65 (1906 Federal Foodstuffs Act, ratified 10 June 1906; Lebensmittelgesetz). Column (1) is the bivariate regression of canton yes-vote share on vineyard\_per\_cap. Column (2) adds french\_share + catholic\_share, mirroring the headline KEY specification. If the vineyard coefficient flips from negative (bivariate) to positive (conditional) — as it does for the headline absinthe vote \#68 — vote \#65 exhibits the same Simpson structure: language and religion confound the bivariate vineyard-vote correlation, and conditioning on them reveals the underlying wine-industry rent-seeking effect. If the bivariate is already positive, the political coalition for \#65 was assembled differently (broader public-health coalition, less language-cleavage-driven). Either result is informative for the regulatory-capture-across-two-votes story (see \texttt{progress\_2026-04-30\_1830\_foodbev.md}). N=25 cantons. HC3 robust SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 ///
+        using "$MyProject/results/tables/t13b_food65_simpson.tex", ///
+        replace autonumber varlabels marker(tab:food65_simpson) ///
+        title("Vote \#65 (Lebensmittelgesetz, 1906): Simpson sign-flip diagnostic") ///
+        footnote("`fn'")
+    di "Saved t13b_food65_simpson.tex"
+}
+
+
 **# 12.12 f04_marginsplot_french: vineyard effect across (1 - french_share)
 *------------------------------------------------------------------------------*
 {
@@ -1804,6 +1890,27 @@ run "$MyProject/scripts/programs/_config.do"
     summ coef if spec == "H3H6_joint_alt" & var == "vineyard_X_parcel", meanonly
     local hja6 = r(mean)
     di "Round-2 Task B.3 Joint ALT (backmatter): H3 int = " %8.2f `hja3' "  H6 int = " %8.2f `hja6'
+
+    * --- Round-2 Task C.1 informational summary (food-law #65 Simpson check) ---
+    * No assertion (per round2/04_taskC1 handoff: this is a reportable diagnostic,
+    * not a hypothesis test with a predicted sign to assert).
+    summ coef if spec == "food65_bivariate" & var == "vineyard_per_cap", meanonly
+    local f65_b_biv = r(mean)
+    summ pval if spec == "food65_bivariate" & var == "vineyard_per_cap", meanonly
+    local f65_p_biv = r(mean)
+    summ coef if spec == "food65_conditional" & var == "vineyard_per_cap", meanonly
+    local f65_b_cond = r(mean)
+    summ pval if spec == "food65_conditional" & var == "vineyard_per_cap", meanonly
+    local f65_p_cond = r(mean)
+    di _n "Round-2 Task C.1 (food-law #65 Simpson check):"
+    di "  Bivariate vineyard coef:   " %8.2f `f65_b_biv'  " (p=" %5.3f `f65_p_biv' ")"
+    di "  Conditional vineyard coef: " %8.2f `f65_b_cond' " (p=" %5.3f `f65_p_cond' ")"
+    if `f65_b_biv' < 0 & `f65_b_cond' > 0 {
+        di "  Simpson sign-flip:         YES (structurally identical to #68 absinthe)"
+    }
+    else {
+        di "  Simpson sign-flip:         NO (mechanism differs from #68)"
+    }
 
     di _n "*** ALL EXPANSION ASSERTIONS PASSED ***"
 }
