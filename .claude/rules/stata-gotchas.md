@@ -38,6 +38,31 @@ When writing or editing `.do` files, ALWAYS follow these rules. They are loaded 
 - Numbered scripts use the `N_description.do` pattern. New scripts go through `/new-script`.
 - Each script ends with a post-credits block that calls `_codebook_update` and `_inventory_append`. See template at `analysis/scripts/programs/_template_script.do`.
 
+## Independent (background / batch) vs manual (interactive) Stata runs
+
+When invoking Stata **independently** — i.e. via `/e do` batch mode, a background `run_in_background: true` Bash call, a cmd.exe `.bat` wrapper, or any path where the Claude/automation layer does not have a human at the keyboard — the wrapper `.do` file MUST set the following BEFORE sourcing the project pipeline:
+
+```stata
+* Suppress graph windows. Stata /e batch mode on Windows still pops graph
+* windows for `twoway`, `marginsplot`, `histogram`, etc. The graph window
+* stealing focus interrupts the batch and produces "test_full_pipeline.do
+* has been interrupted. Continue?" modal dialogs that pile up across runs.
+* `set graphics off` suppresses all graph window display; `graph export`
+* still writes the PDF/PNG to disk normally.
+set graphics off
+
+* Pre-erase regenerable intermediate .dta files to prevent the
+* "Replace existing file?" modal dialog when a prior run was interrupted
+* and left files partially written. Source data in $Absinthe1Data is NOT touched.
+foreach f in <list of regenerable intermediates> {
+    cap erase "$Absinthe1/results/intermediate/`f'"
+}
+```
+
+When invoking Stata **manually** in an interactive session (the human is at the keyboard, the GUI is open, graphs and dialogs are wanted), do NOT add `set graphics off` — graphs should display in the GUI as expected, and the user can answer "Replace existing file?" prompts directly.
+
+The distinction is operational: graph windows are useful when a human can see them; they are batch-poisonous when a human cannot. Each Stata invocation must explicitly choose one mode. The default for the Claude automation layer is **independent / batch mode**, so the wrapper `.do` files used by Claude (e.g. `test_full_pipeline.do`) MUST include both lines above.
+
 ## Section navigation (do-file editor bookmarks)
 
 Use Stata's **`**#` bookmark syntax** for section headings. Lines starting with `**#` become navigable bookmarks in the do-file editor (View > Bookmarks).
