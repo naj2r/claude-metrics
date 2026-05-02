@@ -2097,56 +2097,107 @@ run "$MyProject/scripts/programs/_config.do"
     * Absinthe should rank in the top 5 of 15 (i.e., n_extreme including itself <= 5)
     assert `n_extreme' <= 5
 
-    * --- Round-2 Task C.4: True-placebo rank (#65 reclassified as comparator) ---
-    * #65 (Lebensmittelgesetz) is the regulatory prequel to #68 -- a wine-industry
-    * rent-seeking comparator, not a clean placebo (per progress_2026-04-30_1830_
-    * foodbev.md). The proper rank statistic excludes BOTH #65 and #68 from the
-    * placebo set, leaving 13 true placebos.
+    * --- Round-2 Task C.4: True-placebo rank with DUAL CLASSIFICATION + vote-LOO ---
+    * Per user dispatch 2026-05-01 22:25 (see progress_2026-05-01_2230_dual_
+    * classification.md): the paper MUST present BOTH classifications side-by-
+    * side -- one with #60 retained in the placebo set (conservative), one with
+    * #60 reclassified out (substantive) -- plus a vote-LOO sensitivity table
+    * showing which single placebo drop changes absinthe's rank.
     *
-    * Strict assertion: absinthe must be #1 of 14 (treatment + 13 true placebos),
-    * i.e., NO true placebo has a coef >= absinthe. If this fails, the
-    * falsification-design framing is weakened and the offending vote(s) need
-    * to be flagged in the paper text.
+    * Classification A: only #65 reclassified as comparator. #60 retained in
+    *   placebo set as a noisy (p=0.328) null. Conservative falsification.
+    *   Expected: absinthe rank #2 of 14 (1 placebo above it = #60), p ~0.143.
+    *
+    * Classification B: BOTH #65 and #60 reclassified as wine-industry
+    *   comparators. Substantive interpretation per
+    *   progress_2026-05-01_2210_vote60.md (#60 as the 1903 wine-protective
+    *   tariff vote). Expected: absinthe rank #1 of 13 (no placebos above it),
+    *   p ~0.077.
+    *
+    * Vote-LOO: for each placebo vote v in Classification A's 13-vote set,
+    *   drop v and recompute absinthe's rank in the remaining 12-vote set.
+    *   Expected: dropping #60 produces rank 1; dropping any other placebo
+    *   produces rank 2. Demonstrates the rank ambiguity is single-vote-driven.
+
+    * === CLASSIFICATION A: #65 reclassified, #60 retained ===
     qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
                 & model == "ols" & coef >= `b_treat' ///
                 & spec != "panel_anr65" & spec != "panel_anr68"
-    local n_true_above = r(N)
+    local n_above_A     = r(N)
     qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
                 & model == "ols" & spec != "panel_anr65" & spec != "panel_anr68"
-    local n_true_placebos = r(N)
-    local absinthe_true_rank = `n_true_above' + 1
-    local true_p = `absinthe_true_rank' / (`n_true_placebos' + 1)
-    di _n "Round-2 Task C.4 (true-placebo rank, #65 excluded as comparator):"
+    local n_placebos_A  = r(N)
+    local rank_A        = `n_above_A' + 1
+    local p_A           = `rank_A' / (`n_placebos_A' + 1)
+
+    di _n "Round-2 Task C.4 — DUAL CLASSIFICATION:"
     di "  Absinthe coef:                       " %7.2f `b_treat'
-    di "  True placebos with coef >= absinthe: " `n_true_above' " of " `n_true_placebos'
-    di "  Absinthe rank in true-placebo set:   #" `absinthe_true_rank' " of " `n_true_placebos' + 1 " (treatment + true placebos)"
-    di "  Permutation-style p (rank / (n+1)):  " %5.3f `true_p'
-    if `n_true_above' > 0 {
-        * Diagnostic: which true-placebo votes exceed absinthe? Listed for paper
-        * transparency. Round-2 finding: vote #60 (federal customs tariff 1903)
-        * has vineyard coef +737 (p=0.328, NOT significant) -- exceeds absinthe's
-        * +484 in magnitude but is statistically null. A customs tariff has a
-        * plausible wine-industry rent-seeking interpretation (protecting
-        * domestic wine producers from imports), so #60 is arguably a "soft
-        * wine-relevant" vote. We do NOT reclassify it out of the placebo set
-        * because: (a) the coefficient is not significant, (b) the historical
-        * record on #60's wine-industry relevance is weaker than for #65/#68,
-        * (c) including it as a placebo provides a conservative falsification.
-        * Documented in CONTEXT.md round-2 update + figure caption.
-        di as error "  Acknowledged: " `n_true_above' " true-placebo vote(s) have coef >= absinthe."
-        di as error "  Listing for paper transparency:"
+    di "  --- Classification A (#60 retained in placebo set) ---"
+    di "    Placebos exceeding absinthe:       " `n_above_A' " of " `n_placebos_A'
+    di "    Absinthe rank:                     #" `rank_A' " of " `n_placebos_A' + 1
+    di "    Permutation-style p:               " %5.3f `p_A'
+
+    if `n_above_A' > 0 {
+        di "    Listing of exceeding placebo(s) (for paper transparency):"
         list spec coef pval if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
                 & model == "ols" & coef >= `b_treat' ///
                 & spec != "panel_anr65" & spec != "panel_anr68"
     }
-    * Lenient assertion (round-2): absinthe must rank in the top 2 of the true
-    * placebo set. The strict #1 expectation in round2/07_taskC4 was based on
-    * the assumption that no clean placebo would have a notable positive coef;
-    * vote #60 (customs tariff 1903, +737 p=0.328) breaks that assumption but
-    * is a plausibly-wine-relevant vote and is not statistically significant.
-    * If this assert fires (3+ true placebos exceed absinthe), the falsification
-    * design IS compromised and the absinthe-specific claim weakens.
-    assert `n_true_above' <= 1
+
+    * === CLASSIFICATION B: #65 AND #60 both reclassified as comparators ===
+    qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
+                & model == "ols" & coef >= `b_treat' ///
+                & !inlist(spec, "panel_anr60", "panel_anr65", "panel_anr68")
+    local n_above_B     = r(N)
+    qui count if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
+                & model == "ols" & !inlist(spec, "panel_anr60", "panel_anr65", "panel_anr68")
+    local n_placebos_B  = r(N)
+    local rank_B        = `n_above_B' + 1
+    local p_B           = `rank_B' / (`n_placebos_B' + 1)
+
+    di _n "  --- Classification B (#60 + #65 BOTH reclassified as comparators) ---"
+    di "    Placebos exceeding absinthe:       " `n_above_B' " of " `n_placebos_B'
+    di "    Absinthe rank:                     #" `rank_B' " of " `n_placebos_B' + 1
+    di "    Permutation-style p:               " %5.3f `p_B'
+
+    * === VOTE-LOO SENSITIVITY (over Classification A's 13 placebos) ===
+    * Drop each placebo v one at a time; recompute absinthe rank in the
+    * remaining 12-vote set. Reports the distribution of LOO ranks.
+    di _n "  --- Vote-LOO sensitivity (drop each placebo, recompute rank) ---"
+
+    preserve
+        use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+        keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr") ///
+                & model == "ols" & spec != "panel_anr65" & spec != "panel_anr68"
+        gen int anr_v = real(substr(spec, 10, .))
+        levelsof anr_v, local(placebo_anrs) clean
+
+        local n_loo_rank_1 = 0
+        local n_loo_rank_2 = 0
+        local n_loo_other  = 0
+        foreach v of local placebo_anrs {
+            qui count if anr_v != `v' & coef >= `b_treat'
+            local rank_loo_`v' = r(N) + 1
+            di "    Drop placebo #" `v' ": absinthe rank = #" `rank_loo_`v'' " of 13"
+            if `rank_loo_`v'' == 1 local ++n_loo_rank_1
+            else if `rank_loo_`v'' == 2 local ++n_loo_rank_2
+            else local ++n_loo_other
+        }
+        di "    Vote-LOO summary: " `n_loo_rank_1' " drop(s) -> rank 1; " `n_loo_rank_2' " drop(s) -> rank 2; " `n_loo_other' " drop(s) -> rank > 2"
+    restore
+
+    * === Assertions ===
+    * Classification A: at most 1 placebo exceeds absinthe (lenient). If 2+ fire,
+    * the falsification IS compromised even under the conservative classification.
+    assert `n_above_A' <= 1
+    * Classification B: zero placebos exceed absinthe (strict). If this fires,
+    * a previously-unidentified vote is in the wine-relevant cluster and #60
+    * alone is not sufficient to clean the placebo set.
+    assert `n_above_B' == 0
+    * Vote-LOO: exactly 1 LOO drop should produce rank 1 (the drop of #60).
+    * If n_loo_rank_1 != 1, the rank ambiguity is multi-vote-driven, not
+    * single-vote-driven, and the dual-classification framing needs revision.
+    assert `n_loo_rank_1' == 1
 
     * Cross-referendum falsification (fracreg AMEs): same logic on bounded-outcome
     * channel. AMEs are scaled by 100 in the t13 builder for unit-comparability;
