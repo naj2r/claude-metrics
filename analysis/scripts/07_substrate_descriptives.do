@@ -267,22 +267,252 @@ if _rc {
 }
 
 
-**# 6. Post-credits: codebook + inventory
+**# 6. C.8 Federal subsidy time-series (I.33a + I.33b)
+*------------------------------------------------------------------------------*
+* Stages (iii) and (iv) of the substrate-substitution policy-economy arc:
+*
+*   (iii) 1908 viticulture-subsidy emergence (I.33a col C):
+*         BLANK 1866-1907, FIRST APPEARS 1908 (133K CHF), then 237K (1909)
+*         and 277K (1910). Cited as the third headline-candidate finding
+*         in progress_2026-05-11_2215_viti1908.md. Disambiguation between
+*         (a) actual program creation 1908 vs (b) categorical
+*         reclassification of pre-existing spending requires Brugger 1968
+*         archival lookup; here we present descriptive evidence consistent
+*         with full-spectrum capture (positive transfers + competitor
+*         elimination in the same calendar year).
+*
+*   (iv) Post-vote substrate-subsidy continuation (I.33b cols H/I/J):
+*        - Col H viticulture continues 1911-1991 from the 1908 line item.
+*        - Col I potato/fruit alcohol substrate subsidies emerge 1931+,
+*          reflecting Federal Alcohol Administration policy that supports
+*          the alternative-substrate distillation industry post-absinthe.
+*        - Col J sugar-beet processing emerges 1961+ (a later substrate
+*          for industrial alcohol).
+*
+* I.33a covers 1866-1915 yearly. I.33b covers 1911-1991 yearly. The two
+* series overlap for 1911-1915; I.33a is canonical for that window
+* (cross-checked: I.33a col C 1911 = 115 matches I.33b col H 1911 = 115).
+{
+    * --- I.33a extraction (1866-1915) ---
+    * Layout (verified by openpyxl survey 2026-05-12):
+    *   row 11: column headers ("Soil improvements", "Viticulture...", ..., "Total")
+    *   row 13 onwards: yearly data (1866 at r13, 1908 at r55, 1915 at r62)
+    *   Col A: Year
+    *   Col C: Viticulture and grape processing (PRIMARY)
+    *   Col K: Associations and exhibitions (SECONDARY, paper-text descriptive)
+    import excel using "$Absinthe1Data/translated/I.33a_EN.xlsx", ///
+        cellrange(A13:M62) allstring clear
+
+    rename A year_raw
+    rename C viticulture_raw
+    rename K associations_raw
+    keep year_raw viticulture_raw associations_raw
+
+    gen long year = real(year_raw)
+    drop if missing(year)
+    keep if inrange(year, 1866, 1915)
+
+    foreach v in viticulture associations {
+        destring `v'_raw, gen(`v') force
+        replace `v' = 0 if missing(`v')   // 0 = no line-item that year (blank in HSSO)
+    }
+    drop *_raw
+
+    gen str10 source = "I.33a"
+    label var year         "Year"
+    label var viticulture  "Viticulture & grape processing subsidy (1000 CHF, I.33a col C)"
+    label var associations "Ag associations & exhibitions subsidy (1000 CHF, I.33a col K)"
+    label var source       "HSSO source file"
+
+    isid year
+    tempfile i33a_yearly
+    save "`i33a_yearly'"
+
+    * --- I.33b extraction (1911-1991) ---
+    * Layout (verified by openpyxl survey 2026-05-12):
+    *   row 21: 1911 (first data row)
+    *   Col H: Viticulture (continuation of I.33a col C)
+    *   Col I: Potato + fruit alcohol substrate subsidies (emerges 1931+)
+    *   Col J: Sugar-beet processing subsidies (emerges 1961+)
+    import excel using "$Absinthe1Data/translated/I.33b_EN.xlsx", ///
+        cellrange(A21:M101) allstring clear
+
+    rename A year_raw
+    rename H viticulture_raw
+    rename I potato_fruit_raw
+    rename J sugar_beet_raw
+    keep year_raw viticulture_raw potato_fruit_raw sugar_beet_raw
+
+    gen long year = real(year_raw)
+    drop if missing(year)
+    keep if inrange(year, 1911, 1991)
+
+    foreach v in viticulture potato_fruit sugar_beet {
+        destring `v'_raw, gen(`v') force
+        replace `v' = 0 if missing(`v')
+    }
+    drop *_raw
+
+    label var year         "Year"
+    label var viticulture  "Viticulture & grape processing subsidy (1000 CHF, I.33b col H)"
+    label var potato_fruit "Potato + fruit alcohol substrate subsidy (1000 CHF, I.33b col I)"
+    label var sugar_beet   "Sugar-beet processing subsidy (1000 CHF, I.33b col J)"
+
+    isid year
+    gen str10 source = "I.33b"
+    tempfile i33b_yearly
+    save "`i33b_yearly'"
+
+    * --- Combine into one long-format series 1866-1991 ---
+    * For 1911-1915 (overlap) keep I.33a as canonical. Drop I.33b 1911-1915.
+    use "`i33b_yearly'", clear
+    drop if inrange(year, 1911, 1915)
+    * Ensure schema compatibility: add associations = . from I.33b
+    gen double associations = .
+    append using "`i33a_yearly'"
+    * For pre-1911 years (where I.33a is the only source), potato/sugar-beet
+    * are NaN (HSSO does not break out these line items pre-1911)
+    foreach v in potato_fruit sugar_beet {
+        cap confirm variable `v'
+        if _rc {
+            gen double `v' = .
+        }
+        else {
+            replace `v' = . if source == "I.33a"
+        }
+    }
+    sort year
+    order year source viticulture associations potato_fruit sugar_beet
+
+    label var potato_fruit "Potato + fruit alcohol substrate subsidy (1000 CHF, I.33b col I)"
+    label var sugar_beet   "Sugar-beet processing subsidy (1000 CHF, I.33b col J)"
+    notes _dta: HSSO I.33a (1866-1915) + I.33b (1911-1991 minus 1911-1915 overlap). National-level federal agricultural subsidy line items.
+    notes _dta: Substrate-substitution arc descriptive evidence (C.8). Viticulture emerges 1908 (133K CHF); potato/fruit emerges 1931; sugar-beet emerges 1961.
+
+    isid year
+    compress
+    save "$MyProject/processed/intermediate/i33_subsidies_long.dta", replace
+    di as result "Saved i33_subsidies_long.dta: " %5.0f c(N) " yearly rows 1866-1991"
+}
+
+
+**# 7. T22 viticulture subsidy table (1900-1920 focus)
 *------------------------------------------------------------------------------*
 {
-    _codebook_update using "$MyProject/processed/intermediate/h2a_substrate_prices_long.dta", ///
-        script("07_substrate_descriptives.do")
-    use "$MyProject/processed/intermediate/h2a_substrate_prices_long.dta", clear
-    local nobs  = c(N)
-    local nvars = c(k)
-    _inventory_append, sheet("datasets") ///
-        row("created|processed/intermediate/h2a_substrate_prices_long.dta|`nobs'|`nvars'|.|07_substrate_descriptives.do")
+    use "$MyProject/processed/intermediate/i33_subsidies_long.dta", clear
+    keep if inrange(year, 1900, 1920)
+    keep year viticulture
+    rename viticulture viticulture_1000chf
 
-    foreach t in t23_substrate_prices {
+    gen str10 viti_str = string(viticulture_1000chf, "%6.0f")
+    replace viti_str = "(blank)" if viticulture_1000chf == 0 & year <= 1907
+
+    gen str20 era_note = ""
+    replace era_note = "no line item"               if year <= 1907
+    replace era_note = "FIRST APPEARS (ban year)"   if year == 1908
+    replace era_note = "1909 implementing ordinance" if year == 1909
+    replace era_note = "WWI budget"                 if inrange(year, 1914, 1918)
+
+    keep year viti_str era_note
+    order year viti_str era_note
+    label var year     "Year"
+    label var viti_str "Viticulture subsidy (1000 CHF)"
+    label var era_note "Era / event marker"
+
+    local fn_t22 = "Notes: Federal viticulture subsidy line item from HSSO I.33a column C (1866-1915) and I.33b column H (continuation). The line is BLANK from the start of the federal agricultural subsidy series in 1866 through 1907 and first appears in 1908 with 133K CHF -- the same calendar year as the absinthe-ban referendum (5 July 1908, vote \#68). The 1909 row reflects the implementing ordinance of the 1906 Lebensmittelgesetz that established federal thujone limits. Two interpretations of the 1908 emergence remain possible without Brugger 1968 disambiguation: (a) a genuinely new federal program emerged in 1908 (full-spectrum-capture interpretation: positive transfers + competitor elimination in the same year); or (b) a pre-existing program newly broken out from a previously-aggregated category (categorical-reclassification interpretation). The post-1908 trajectory (237K 1909, 277K 1910) shows the line item growing in scale, and the post-vote continuation in I.33b is the foundation for the substrate-substitution industrial policy documented in stage (iv) of the policy-economy arc. WWI budget reallocation explains the 1914-1918 dip. Source: HSSO I.33a + I.33b, citing Brugger 1968. See progress\_2026-05-11\_2215\_viti1908.md for the full discovery context."
+
+    texsave year viti_str era_note ///
+        using "$MyProject/results/tables/t22_viticulture_subsidy.tex", ///
+        replace autonumber varlabels marker(tab:viti_subsidy) ///
+        title("Federal viticulture subsidy line item, 1900-1920 (HSSO I.33a + I.33b, 1000 CHF)") ///
+        footnote("`fn_t22'")
+    di as result "Saved t22_viticulture_subsidy.tex"
+}
+
+
+**# 8. F07 subsidy time-series figure (1866-1991 line plot)
+*------------------------------------------------------------------------------*
+{
+    use "$MyProject/processed/intermediate/i33_subsidies_long.dta", clear
+
+    twoway ///
+        (line viticulture year if !missing(viticulture), lcolor(red) lwidth(medthick) lpattern(solid)) ///
+        (line potato_fruit year if !missing(potato_fruit) & potato_fruit > 0, lcolor(orange) lwidth(medium) lpattern(solid)) ///
+        (line sugar_beet  year if !missing(sugar_beet)  & sugar_beet  > 0, lcolor(green)  lwidth(medium) lpattern(solid)) ///
+        , ///
+        title("Federal substrate-related subsidies 1866-1991 (HSSO I.33a + I.33b)", size(medsmall)) ///
+        subtitle("Substrate-substitution arc stages (iii) emergence 1908 + (iv) post-vote continuation", size(small)) ///
+        ytitle("Subsidy (1000 CHF)") ///
+        xtitle("Year") ///
+        xline(1908, lcolor(black) lpattern(dash)) ///
+        xline(1931, lcolor(gs10) lpattern(dot)) ///
+        xline(1961, lcolor(gs10) lpattern(dot)) ///
+        text(1500 1908 "#68 ban", size(vsmall) color(black)) ///
+        text(1500 1931 "potato/fruit emerges", size(vsmall) color(gs6)) ///
+        text(1500 1961 "sugar-beet emerges", size(vsmall) color(gs6)) ///
+        legend(order(1 "Viticulture (I.33a col C / I.33b col H)" 2 "Potato + fruit (I.33b col I)" 3 "Sugar-beet (I.33b col J)") rows(2) size(small) position(6)) ///
+        graphregion(fcolor(white)) ///
+        note("Substrate-substitution policy-economy arc stages (iii) and (iv): viticulture line emerges 1908 (133K CHF) -- same year as absinthe ban. Substrate-subsidy continuation: potato/fruit alcohol 1931+, sugar-beet 1961+. Source: HSSO I.33a (1866-1915) + I.33b (1916-1991, 1911-1915 overlap dropped).", size(vsmall))
+
+    graph export "$MyProject/results/figures/f07_subsidy_timeseries.pdf", replace as(pdf)
+    graph close
+    di as result "Saved f07_subsidy_timeseries.pdf"
+}
+
+
+**# 9. C.8 secondary: ag-association subsidies notes file
+*------------------------------------------------------------------------------*
+* Extract I.33a col K "Associations and exhibitions" values for key years
+* (1866, 1875, 1890, 1900, 1907, 1915) to a notes file for Background-section
+* prose use. The col K series is a quantitative proxy for organized
+* agricultural-interest-group landscape pre-ban -- noisy because it pools
+* all ag association subsidies, but informative for the "wine industry was
+* not the only organized constituency" framing.
+{
+    use "$MyProject/processed/intermediate/i33_subsidies_long.dta", clear
+    keep if inlist(year, 1866, 1875, 1890, 1900, 1907, 1915) & source == "I.33a"
+
+    cap mkdir "$MyProject/output"
+    cap mkdir "$MyProject/output/notes"
+
+    cap file close notes_fh
+    file open notes_fh using "$MyProject/output/notes/ag_association_subsidies_descriptive.md", write replace
+    file write notes_fh "# Federal Agricultural Association Subsidies, Key Years 1866-1915" _n _n
+    file write notes_fh "Source: HSSO I.33a column K (Associations and exhibitions; 1000 CHF)." _n _n
+    file write notes_fh "Generated automatically by 07_substrate_descriptives.do section 9 (C.8 secondary output)." _n _n
+    file write notes_fh "## Year-by-year values" _n _n
+    file write notes_fh "| Year | Associations subsidy (1000 CHF) |" _n
+    file write notes_fh "|------|---:|" _n
+    forvalues i = 1/`=c(N)' {
+        local y = year[`i']
+        local v : di %6.0f associations[`i']
+        file write notes_fh "| `y' | `v' |" _n
+    }
+    file write notes_fh _n
+    file write notes_fh "## Paper-text use" _n _n
+    file write notes_fh "These values document that the Swiss agricultural interest-group landscape -- of which the wine-grower associations were one constituency -- received a steady (and growing) flow of federal subsidies for associations and exhibitions throughout the pre-ban period 1866-1915. The line item is national-level only; HSSO does not break it down to specific associations." _n
+    file close notes_fh
+    di as result "Saved output/notes/ag_association_subsidies_descriptive.md"
+}
+
+
+**# 10. Post-credits: codebook + inventory
+*------------------------------------------------------------------------------*
+{
+    foreach ds in h2a_substrate_prices_long i33_subsidies_long {
+        _codebook_update using "$MyProject/processed/intermediate/`ds'.dta", ///
+            script("07_substrate_descriptives.do")
+        use "$MyProject/processed/intermediate/`ds'.dta", clear
+        local nobs  = c(N)
+        local nvars = c(k)
+        _inventory_append, sheet("datasets") ///
+            row("created|processed/intermediate/`ds'.dta|`nobs'|`nvars'|.|07_substrate_descriptives.do")
+    }
+    foreach t in t23_substrate_prices t22_viticulture_subsidy {
         _inventory_append, sheet("outputs") ///
             row("generated|results/tables/`t'.tex|table|07_substrate_descriptives.do")
     }
-    foreach f in f08_substrate_prices {
+    foreach f in f08_substrate_prices f07_subsidy_timeseries {
         _inventory_append, sheet("outputs") ///
             row("generated|results/figures/`f'.pdf|figure|07_substrate_descriptives.do")
     }
