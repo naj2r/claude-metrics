@@ -507,28 +507,6 @@ _Updated:  1 May 2026 23:34:59 by 03_regress.do_
 
 <!-- codebook:results/intermediate/regressions.dta:end -->
 
-<!-- codebook:results/intermediate/regressions_expansion.dta:start -->
-### results/intermediate/regressions_expansion.dta
-
-_Updated:  1 May 2026 23:46:39 by 05_expansion.do_
-
-**N = 433, vars = 11**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| var | str22 | %22s |  |
-| coef | double | %10.0g |  |
-| stderr | double | %10.0g |  |
-| tstat | double | %10.0g |  |
-| pval | double | %10.0g |  |
-| N | byte | %12.0g |  |
-| spec | str27 | %27s |  |
-| model | str11 | %11s |  |
-| r2 | float | %9.0g | R-squared |
-| _id | int | %9.0g | Regression ID number |
-| dropped | str2 | %9s |  |
-
-<!-- codebook:results/intermediate/regressions_expansion.dta:end -->
 
 <!-- codebook:processed/intermediate/f07a_employment_long.dta:start -->
 ### processed/intermediate/f07a_employment_long.dta
@@ -582,4 +560,27 @@ _Updated:  1 May 2026 23:46:47 by 06_national_descriptives.do_
 | pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
 
 <!-- codebook:processed/intermediate/f13_business_sector_long.dta:end -->
+
+<!-- codebook:results/intermediate/regressions_expansion.dta:start -->
+### results/intermediate/regressions_expansion.dta
+
+_Updated: 11 May 2026 19:34:44 by 05_expansion.do_
+
+**N = 433, vars = 11**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| var | str22 | %22s |  |
+| coef | double | %10.0g |  |
+| stderr | double | %10.0g |  |
+| tstat | double | %10.0g |  |
+| pval | double | %10.0g |  |
+| N | byte | %12.0g |  |
+| spec | str27 | %27s |  |
+| model | str11 | %11s |  |
+| r2 | float | %9.0g | R-squared |
+| _id | int | %9.0g | Regression ID number |
+| dropped | str2 | %9s |  |
+
+<!-- codebook:results/intermediate/regressions_expansion.dta:end -->
 
