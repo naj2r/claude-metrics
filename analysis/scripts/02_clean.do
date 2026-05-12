@@ -162,6 +162,15 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 1.11 Horticulture enterprises 1905 (C.7 multi-Bootlegger / Obstler proxy)
+*------------------------------------------------------------------------------*
+{
+    merge 1:1 canton_code using "$MyProject/processed/intermediate/horticulture_uncleaned.dta", ///
+        assert(match) nogenerate
+    assert c(N) == 25
+}
+
+
 **# 2. Construct derived variables
 *------------------------------------------------------------------------------*
 
@@ -179,6 +188,15 @@ run "$MyProject/scripts/programs/_config.do"
     * actual canton range is ~0 to 0.02 ha/person, giving 0-8 pp realized shifts.
     gen double vineyard_per_cap = vineyard_ha / pop_1900
     label var vineyard_per_cap "Vineyard area per capita (hectares/person, 1905)"
+
+    * Horticulture enterprise density (C.7 multi-Bootlegger / Obstler proxy).
+    * Per 1000 population for an interpretable scale (1905 national: 2467
+    * enterprises / 3.3M = 0.74 per 1000). Used in T17 col 6 + T18 row 9 as
+    * a co-explanatory test of whether the anti-absinthe coalition extended
+    * beyond grape-wine producers (vineyard_per_cap) to include fruit-brandy /
+    * Obstler producers (horticulture density).
+    gen double horticulture_per_cap = (horticulture_n_1905 / pop_1900) * 1000
+    label var horticulture_per_cap "Horticulture enterprises per 1000 pop (Gartenbau, 1905; Obstler proxy)"
 
     * --- French-language share: TWO definitions, both reported in tables ---
     * Subset denominator (German+French only): focuses on the language cleavage
@@ -506,7 +524,7 @@ run "$MyProject/scripts/programs/_config.do"
           fruit_trees_total_1951 fruit_tree_density ///
           absinthe_dummy lang_french lang_french_broad lang_italian ///
           german_1900 french_1900 protestant_1900 catholic_1900 ///
-          adj_neuchatel
+          adj_neuchatel horticulture_n_1905 horticulture_per_cap
 
     compress
     save "$MyProject/processed/absinthe_analysis.dta", replace
@@ -531,7 +549,7 @@ run "$MyProject/scripts/programs/_config.do"
     merge m:1 canton_code using "$MyProject/processed/absinthe_analysis.dta", ///
         keepusing(vineyard_per_cap french_share catholic_share ///
                   french_share_total catholic_share_total ///
-                  pop_1900 ln_pop adj_neuchatel) ///
+                  pop_1900 ln_pop adj_neuchatel horticulture_per_cap) ///
         keep(match) nogen
     assert _N == 25 * 15  // 375 rows preserved
 

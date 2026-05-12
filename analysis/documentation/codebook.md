@@ -225,10 +225,26 @@ _Updated: 12 May 2026 16:56:52 by 07_substrate_descriptives.do_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
 ### processed/intermediate/canton_crosswalk.dta
 
-_Updated: 12 May 2026 17:12:39 by 01_import.do_
+_Updated: 12 May 2026 17:30:25 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -242,7 +258,7 @@ _Updated: 12 May 2026 17:12:39 by 01_import.do_
 <!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
 ### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:40 by 01_import.do_
+_Updated: 12 May 2026 17:30:26 by 01_import.do_
 
 **N = 25, vars = 7**
 
@@ -261,7 +277,7 @@ _Updated: 12 May 2026 17:12:40 by 01_import.do_
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
 ### processed/intermediate/vote67_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:40 by 01_import.do_
+_Updated: 12 May 2026 17:30:27 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -275,7 +291,7 @@ _Updated: 12 May 2026 17:12:40 by 01_import.do_
 <!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
 ### processed/intermediate/placebo_votes_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:41 by 01_import.do_
+_Updated: 12 May 2026 17:30:28 by 01_import.do_
 
 **N = 375, vars = 10**
 
@@ -297,7 +313,7 @@ _Updated: 12 May 2026 17:12:41 by 01_import.do_
 <!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
 ### processed/intermediate/vineyard_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:42 by 01_import.do_
+_Updated: 12 May 2026 17:30:29 by 01_import.do_
 
 **N = 125, vars = 3**
 
@@ -312,7 +328,7 @@ _Updated: 12 May 2026 17:12:42 by 01_import.do_
 <!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
 ### processed/intermediate/agland_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:43 by 01_import.do_
+_Updated: 12 May 2026 17:30:30 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -326,7 +342,7 @@ _Updated: 12 May 2026 17:12:43 by 01_import.do_
 <!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
 ### processed/intermediate/population_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:44 by 01_import.do_
+_Updated: 12 May 2026 17:30:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -340,7 +356,7 @@ _Updated: 12 May 2026 17:12:44 by 01_import.do_
 <!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
 ### processed/intermediate/pop_density_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:45 by 01_import.do_
+_Updated: 12 May 2026 17:30:31 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -354,7 +370,7 @@ _Updated: 12 May 2026 17:12:45 by 01_import.do_
 <!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
 ### processed/intermediate/religion_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:46 by 01_import.do_
+_Updated: 12 May 2026 17:30:32 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -369,7 +385,7 @@ _Updated: 12 May 2026 17:12:46 by 01_import.do_
 <!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
 ### processed/intermediate/language_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:46 by 01_import.do_
+_Updated: 12 May 2026 17:30:33 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -384,7 +400,7 @@ _Updated: 12 May 2026 17:12:46 by 01_import.do_
 <!-- codebook:processed/intermediate/migration_uncleaned.dta:start -->
 ### processed/intermediate/migration_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:47 by 01_import.do_
+_Updated: 12 May 2026 17:30:34 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -398,7 +414,7 @@ _Updated: 12 May 2026 17:12:47 by 01_import.do_
 <!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:start -->
 ### processed/intermediate/farm_concentration_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:48 by 01_import.do_
+_Updated: 12 May 2026 17:30:35 by 01_import.do_
 
 **N = 25, vars = 3**
 
@@ -413,7 +429,7 @@ _Updated: 12 May 2026 17:12:48 by 01_import.do_
 <!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:start -->
 ### processed/intermediate/fruit_trees_uncleaned.dta
 
-_Updated: 12 May 2026 17:12:49 by 01_import.do_
+_Updated: 12 May 2026 17:30:35 by 01_import.do_
 
 **N = 25, vars = 2**
 
@@ -424,12 +440,26 @@ _Updated: 12 May 2026 17:12:49 by 01_import.do_
 
 <!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:end -->
 
+<!-- codebook:processed/intermediate/horticulture_uncleaned.dta:start -->
+### processed/intermediate/horticulture_uncleaned.dta
+
+_Updated: 12 May 2026 17:30:36 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
+
+<!-- codebook:processed/intermediate/horticulture_uncleaned.dta:end -->
+
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated: 12 May 2026 17:18:07 by 02_clean.do_
+_Updated: 12 May 2026 17:30:38 by 02_clean.do_
 
-**N = 25, vars = 61**
+**N = 25, vars = 63**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
@@ -489,6 +519,8 @@ _Updated: 12 May 2026 17:18:07 by 02_clean.do_
 | protestant_1900 | float | %9.0g | Protestant population (persons, 1900 census) |
 | catholic_1900 | float | %9.0g | Catholic population (Roman + Old Catholic, 1900 census) |
 | adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
+| horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
+| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; Obstler proxy) |
 | absinthe_dummy_broad | byte | %8.0g | Absinthe-producing canton (NE + VD; main) |
 | absinthe_dummy_any | byte | %8.0g | Absinthe-producing canton (NE + VD + GE; any) |
 | turnout_v68 | float | %9.0g | Turnout on vote #68 (1908 absinthe, %) |
@@ -500,9 +532,9 @@ _Updated: 12 May 2026 17:18:07 by 02_clean.do_
 <!-- codebook:processed/placebo_panel.dta:start -->
 ### processed/placebo_panel.dta
 
-_Updated: 12 May 2026 17:18:07 by 02_clean.do_
+_Updated: 12 May 2026 17:30:38 by 02_clean.do_
 
-**N = 375, vars = 19**
+**N = 375, vars = 20**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
@@ -525,15 +557,16 @@ _Updated: 12 May 2026 17:18:07 by 02_clean.do_
 | ln_pop | double | %10.0g | Log population (1900) |
 | pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
 | adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
+| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; Obstler proxy) |
 
 <!-- codebook:processed/placebo_panel.dta:end -->
 
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 12 May 2026 17:23:17 by 05_expansion.do_
+_Updated: 12 May 2026 17:36:15 by 05_expansion.do_
 
-**N = 454, vars = 11**
+**N = 464, vars = 11**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|

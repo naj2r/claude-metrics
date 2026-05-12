@@ -806,6 +806,61 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.5 Import I.51 horticulture (Gartenbau) enterprises 1905 (C.7)
+*------------------------------------------------------------------------------*
+{
+    * Source: HSSO I.51 Federal Horticulture Censuses 1905-1990 by Canton.
+    * Sub-table 1 (rows 5-16): "Betriebe" (Enterprises). Year column A,
+    * canton columns B-AC. 1905 row is row 7.
+    *
+    * IMPORTANT TERMINOLOGY: Swiss Gartenbau (horticulture) = vegetable
+    * gardens, ornamentals, fruit orchards, plant nurseries. EXCLUDES
+    * viticulture (Weinbau, separate industry, captured in I.01). Only the
+    * fruit-orchard component directly produces Obstler-substrate spirits;
+    * horticulture density is a NOISY proxy for fruit-brandy substrate
+    * capacity. Used in C.7 as a co-explanatory test of multi-Bootlegger
+    * coalition structure: a positive coefficient on horticulture density
+    * (separate from vineyard share) corroborates the claim that the anti-
+    * absinthe coalition extended beyond grape-wine producers to include
+    * fruit-brandy / Obstler producers.
+    *
+    * Pre-vote canton matrix is COMPLETE for 1905 (all 25 cantons populated;
+    * national total 2,467 enterprises). This is the highest-value unused
+    * canton-level pre-vote asset in the HSSO portfolio (per the
+    * 2026-05-11 HSSO survey + viti1908 progress note).
+    import excel using "$Absinthe1Data/translated/I.51_EN.xlsx", clear allstring
+    assert A[7] == "1905"
+    keep in 7
+    keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+    destring _all, replace force
+    xpose, clear varname
+    rename v1 horticulture_n_1905
+    gen str3 col_letter = upper(_varname)
+    drop _varname
+
+    merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+        assert(match) nogenerate
+    drop col_letter
+    order canton_code horticulture_n_1905
+
+    assert c(N) == 25
+    isid canton_code
+    qui count if missing(horticulture_n_1905)
+    assert r(N) == 0
+    label var canton_code         "Canton (2-letter code)"
+    label var horticulture_n_1905 "Horticulture enterprises (Gartenbau, 1905; HSSO I.51)"
+
+    * Sanity check: national-level total should be 2,467 enterprises (1905)
+    qui summ horticulture_n_1905, meanonly
+    local sum_check = r(sum)
+    di "  Horticulture 1905 sum across 25 cantons: " %5.0f `sum_check' " (national reference: 2,467)"
+    assert abs(`sum_check' - 2467) < 5
+
+    compress
+    save "$MyProject/processed/intermediate/horticulture_uncleaned.dta", replace
+}
+
+
 **# 11. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {
@@ -815,7 +870,7 @@ run "$MyProject/scripts/programs/_config.do"
                   population_uncleaned pop_density_uncleaned ///
                   religion_uncleaned language_uncleaned ///
                   migration_uncleaned farm_concentration_uncleaned ///
-                  fruit_trees_uncleaned {
+                  fruit_trees_uncleaned horticulture_uncleaned {
         _codebook_update using "$MyProject/processed/intermediate/`ds'.dta", ///
             script("01_import.do")
         use "$MyProject/processed/intermediate/`ds'.dta", clear
