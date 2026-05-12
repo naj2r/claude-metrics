@@ -63,6 +63,53 @@ When invoking Stata **manually** in an interactive session (the human is at the 
 
 The distinction is operational: graph windows are useful when a human can see them; they are batch-poisonous when a human cannot. Each Stata invocation must explicitly choose one mode. The default for the Claude automation layer is **independent / batch mode**, so the wrapper `.do` files used by Claude (e.g. `test_full_pipeline.do`) MUST include both lines above.
 
+## MCP-Stata process leak (Windows-specific)
+
+`python -m mcp_stata` embeds Stata in-process via `pystata` and uses `multiprocessing.spawn` for worker isolation. On Windows, when the parent dies (Claude Code restart, OS crash, `taskkill`), its multiprocessing children are **NOT auto-cleaned** — Windows has no equivalent of Linux's `PR_SET_PDEATHSIG`. Each orphaned child holds:
+
+- ~140 MB of resident memory (pystata + Stata loaded in-process)
+- A claim on the single-user Stata license
+
+After a few interrupted sessions, orphans accumulate. The next `mcp_stata` invocation appears to wedge — `di "hello"` over MCP hangs for minutes because pystata is blocked waiting for a license slot. Symptoms:
+
+- MCP `run_command` hangs on trivial commands
+- Batch `/e do <pipeline>` triggers cascading "Replace existing file?" or "...has been interrupted. Continue?" dialogs (multiple Stata instances competing for the same files)
+- Stata GUI refuses to launch with "license in use" or similar
+
+**Detection** (PowerShell):
+
+```powershell
+Get-CimInstance Win32_Process -Filter 'Name="python.exe"' |
+  Where-Object {
+    $_.CommandLine -like '*mcp_stata*' -or
+    ($_.CommandLine -like '*multiprocessing-fork*' -and $_.WorkingSetSize -gt 100MB)
+  } | Select-Object ProcessId, WorkingSetSize, CommandLine
+```
+
+A healthy session shows 1 `mcp_stata` parent + 1 multiprocessing child. More than that means orphans.
+
+**Fix (one-time setup)**: register the safe-launch wrapper instead of calling `python -m mcp_stata` directly. The wrapper lives at `$DROPBOX/Scripts/start_mcp_stata.ps1` and sweeps stale processes before launching. In `~/.claude.json`:
+
+```json
+"stata": {
+  "type": "stdio",
+  "command": "powershell.exe",
+  "args": [
+    "-NoProfile", "-ExecutionPolicy", "Bypass",
+    "-File", "C:\\Users\\jensenn\\Dropbox\\Scripts\\start_mcp_stata.ps1"
+  ]
+}
+```
+
+Equivalent `claude mcp` CLI:
+
+```
+claude mcp remove stata --scope user
+claude mcp add stata --scope user -- powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\jensenn\Dropbox\Scripts\start_mcp_stata.ps1"
+```
+
+After re-registering, restart Claude Code. The wrapper logs cleanup activity to **stderr** (stdout is reserved for MCP JSON-RPC). Look in Claude Code's MCP server logs to see lines like `[start_mcp_stata] killing pid=...` confirming the safeguard fired.
+
 ## Section navigation (do-file editor bookmarks)
 
 Use Stata's **`**#` bookmark syntax** for section headings. Lines starting with `**#` become navigable bookmarks in the do-file editor (View > Bookmarks).
