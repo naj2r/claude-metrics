@@ -22,6 +22,21 @@ When writing or editing `.do` files, ALWAYS follow these rules. They are loaded 
 - Use `i.` prefix for categorical variables in regressions — bare numeric vars are treated as continuous.
 - Use `///` for line continuation, not `\`.
 
+## `local x "..."` vs `local x = "..."` — expression-evaluation gotcha
+
+Stata's `local` command has two different parse modes:
+
+- `local x "...stuff..."` — Stata stores the literal text. **Backtick macros** (`` `name' ``) inside the string DO expand at parse time (macro substitution happens during scanning). But **expression operators** (`+`, function calls like `string()`, `substr()`, `subinstr()`, `format()`, `cond()`, `e()`, `r()`, `trim()`) are NOT evaluated — they get stored as literal text.
+- `local x = "...stuff..."` — Stata evaluates the RHS as a string expression. Operators and function calls execute.
+
+**The trap**: a footnote-style local that mixes literal text with embedded `+ string(...)` calls looks plausible without the `=`, but stores the literal text including the `+` and `string(...)` characters. When that local is later interpolated into a context like `texsave footnote("`fn'")`, the literal `"` characters inside `string(..., "%5.3f")` close the `footnote()` option early and texsave throws `r(198) Invalid syntax for footnote() option` — with a confusing 4000-character message that hides the one missing `=`.
+
+**Known instances in this repo**:
+- `analysis/scripts/05_expansion.do` line 2216 (`t19_cleavage_index` footnote with per-vote rho values) — **fixed** at commit `b885f8a`.
+- `analysis/scripts/05_expansion.do` line 1877 (`t15_gelbach` footnote with `` `b_base_str' `` etc.) — **preventively converted** to use `=` even though it would work without (the current RHS uses only bare backtick macros that expand at parse time; the `=` is defensive against future edits that might add `+ string(...)`).
+
+**Rule**: when a footnote local contains ANY of: `string(`, `substr(`, `subinstr(`, `cond(`, `e(`, `r(`, `format(`, `trim(`, `+ ` (string concat), use `local x = "..."`. When the RHS is pure literal text plus bare backtick macros, either form works — but the `=` form is defensive and recommended.
+
 ## File I/O and macro safety
 
 - **NEVER write literal backticks (`` ` ``) into files that another Stata script will later `file read`.** Stata's macro substitution treats any `` `...' `` pattern as a macro reference, even inside `macval()` and compound quotes (`` `"..."' ``). When you read back a line containing backticks (e.g., markdown code-quoted text from a previously generated `codebook.md`), Stata fails with `r(132) too few quotes`.

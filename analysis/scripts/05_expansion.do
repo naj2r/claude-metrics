@@ -1874,7 +1874,11 @@ run "$MyProject/scripts/programs/_config.do"
     local b_base_str : di %6.1f `b_base_disp'
     local b_full_str : di %6.1f `b_full_disp'
     local diff_str   : di %6.1f (`b_base_disp' - `b_full_disp')
-    local fn "Notes: Gelbach (2016) conditional decomposition of the change in the vineyard_per_cap coefficient between the bivariate spec (b1base = `b_base_str') and the KEY spec adding french_share + catholic_share (b1full = `b_full_str'). Delta is the contribution of each x2 group to b1base minus b1full (= `diff_str'). The Simpson sign-flip means deltas are NEGATIVE (the controls move the coefficient UP from negative to positive). Implementation: official b1x2 package by Gelbach (2014), v4.1.0, vendored at libraries/stata/b/. Hand-validated against the b1x2 identity (assertion in 05_expansion.do sec 10.9). Robust SEs (HC1; b1x2 does not support HC3). Methods reference: analysis/documentation/methods/gelbach_decomposition.md. Significance: * p<0.10, ** p<0.05, *** p<0.01."
+    * Note: `=` is required when the RHS contains expression operators or function
+    * calls; safer here even though the current RHS uses only backtick macros that
+    * would expand at parse time. Same bug class as the texsave fn typo fix at
+    * line 2216 (see .claude/rules/stata-gotchas.md "local fn ..." entry).
+    local fn = "Notes: Gelbach (2016) conditional decomposition of the change in the vineyard_per_cap coefficient between the bivariate spec (b1base = `b_base_str') and the KEY spec adding french_share + catholic_share (b1full = `b_full_str'). Delta is the contribution of each x2 group to b1base minus b1full (= `diff_str'). The Simpson sign-flip means deltas are NEGATIVE (the controls move the coefficient UP from negative to positive). Implementation: official b1x2 package by Gelbach (2014), v4.1.0, vendored at libraries/stata/b/. Hand-validated against the b1x2 identity (assertion in 05_expansion.do sec 10.9). Robust SEs (HC1; b1x2 does not support HC3). Methods reference: analysis/documentation/methods/gelbach_decomposition.md. Significance: * p<0.10, ** p<0.05, *** p<0.01."
     texsave component coef_str se_str p_str ///
         using "$MyProject/results/tables/t15_gelbach.tex", ///
         replace autonumber varlabels marker(tab:gelbach) ///
@@ -2692,11 +2696,15 @@ run "$MyProject/scripts/programs/_config.do"
 
     foreach t in t04_placebo t05_subsample t06_weighted t07_alt_vineyard ///
                  t08_interactions t09_outcomes t10_stability t12_absinthe_tier ///
-                 t13_placebo_panel t14_new_controls t15_gelbach {
+                 t13_placebo_panel t13b_food65_simpson t14_new_controls    ///
+                 t15_gelbach t16_diagnostics t17_formal_hypotheses         ///
+                 t17b_formal_hypotheses_alt t18_food65_robustness          ///
+                 t19_cleavage_index {
         _inventory_append, sheet("outputs") ///
             row("generated|results/tables/`t'.tex|table|05_expansion.do")
     }
-    foreach f in f03_placebo_distribution f04_marginsplot_french {
+    foreach f in f03_placebo_distribution f04_marginsplot_french ///
+                 f05_cleavage_coefficient_scatter {
         _inventory_append, sheet("outputs") ///
             row("generated|results/figures/`f'.pdf|figure|05_expansion.do")
     }
