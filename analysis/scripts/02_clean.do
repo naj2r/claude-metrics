@@ -260,6 +260,24 @@ run "$MyProject/scripts/programs/_config.do"
     * 05_expansion.do as alternative operationalization.
     gen byte wine_canton = (vineyard_1905 > 1000) if !missing(vineyard_1905)
     label var wine_canton "Wine canton (>1000 ha vineyard, 1905)"
+
+    * Neuchatel-adjacency indicator (C.9 robustness control). Cantons that share
+    * a border with NE in the 1908-era cantonal geography (pre-Jura-1979):
+    *   BE -- Bern, north/northeast border (BE in 1908 included the Jura region
+    *         that became canton JU in 1979)
+    *   VD -- Vaud, south/southwest border (Lake Neuchatel shore)
+    *   FR -- Fribourg, small southeastern border segment
+    * The remaining NE perimeter is the French Republic (Doubs departement),
+    * not a Swiss canton. NE itself is coded 0 (we are testing adjacency, not
+    * membership). Used in T17 and T18 to test whether spatial spillover --
+    * differential consumer ties, family networks, commercial relationships
+    * with the Val-de-Travers absinthe-production cluster -- confounds the
+    * vineyard-share coefficient. The headline coefficient should be robust
+    * to inclusion of this control if the wine-rent-seeking mechanism is
+    * about industrial substitution, not neighborhood-spillover.
+    gen byte adj_neuchatel = inlist(canton_code, "BE", "VD", "FR")
+    label var adj_neuchatel "Canton borders Neuchatel (1908 geography; BE, VD, FR)"
+    assert adj_neuchatel[_n] == 0 | inlist(canton_code, "BE", "VD", "FR")
 }
 
 
@@ -487,7 +505,8 @@ run "$MyProject/scripts/programs/_config.do"
           parcels_per_farm_1905 farms_1905 total_parcels_1905 avg_parcel_area_1905 ///
           fruit_trees_total_1951 fruit_tree_density ///
           absinthe_dummy lang_french lang_french_broad lang_italian ///
-          german_1900 french_1900 protestant_1900 catholic_1900
+          german_1900 french_1900 protestant_1900 catholic_1900 ///
+          adj_neuchatel
 
     compress
     save "$MyProject/processed/absinthe_analysis.dta", replace
@@ -512,7 +531,7 @@ run "$MyProject/scripts/programs/_config.do"
     merge m:1 canton_code using "$MyProject/processed/absinthe_analysis.dta", ///
         keepusing(vineyard_per_cap french_share catholic_share ///
                   french_share_total catholic_share_total ///
-                  pop_1900 ln_pop) ///
+                  pop_1900 ln_pop adj_neuchatel) ///
         keep(match) nogen
     assert _N == 25 * 15  // 375 rows preserved
 

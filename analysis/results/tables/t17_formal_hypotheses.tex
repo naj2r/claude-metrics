@@ -9,35 +9,37 @@
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 
-\caption{Formal hypothesis tests: H3 (coalition) and H6 (Olsonian concentration)}
+\caption{Formal hypothesis tests: H3, H6, and NE-adjacency spatial robustness}
 \label{tab:formal_hypotheses}
-\begin{tabularx}{\linewidth}{@{}lCCCC@{}}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
 
 \toprule
-&{(1)}&{(2)}&{(3)}&{(4)} \tabularnewline \midrule
-{Variable}&{}&{}&{}&{} \tabularnewline
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Variable}&{}&{}&{}&{}&{} \tabularnewline
 \midrule \addlinespace[\belowrulesep]
-vineyard\_c\_coef&484**&472**&1,096&873
-vineyard\_c\_stderr&(200)&(206)&(3,657)&(4,597)
-protestant\_c\_coef&&--548&&--572
-protestant\_c\_stderr&&(714)&&(1,024)
-vineyard\_X\_protestant\_coef&&359&&325
-vineyard\_X\_protestant\_stderr&&(483)&&(888)
-parcel\_c\_coef&&&2.97&1.68
-parcel\_c\_stderr&&&(15.1)&(19.5)
-vineyard\_X\_parcel\_coef&&&394&282
-vineyard\_X\_parcel\_stderr&&&(2,407)&(2,974)
-french\_share\_coef&--28.3***&--26.4***&--31.4&--28.5
-french\_share\_stderr&(7.11)&(7.75)&(26.8)&(34.4)
-catholic\_share\_coef&8.43*&--539&8.03&--563
-catholic\_share\_stderr&(4.59)&(714)&(5.55)&(1,022)
-\_cons\_coef&64.6***&376&68.1***&392
-\_cons\_stderr&(3.35)&(406)&(20.4)&(574)
-N&25&25&25&25
-spec&H\_KEY\_centered&H3\_coalition\_strat&H6\_olsonian\_interaction&H3H6\_joint\_strat
-model&ols&ols&ols&ols
-r2&0.538&0.564&0.546&0.565
-dropped&&&&
+parcel\_c\_coef&&&2.97&1.68&
+parcel\_c\_stderr&&&(15.1)&(19.5)&
+protestant\_c\_coef&&--548&&--572&
+protestant\_c\_stderr&&(714)&&(1,024)&
+vineyard\_X\_parcel\_coef&&&394&282&
+vineyard\_X\_parcel\_stderr&&&(2,407)&(2,974)&
+vineyard\_X\_protestant\_coef&&359&&325&
+vineyard\_X\_protestant\_stderr&&(483)&&(888)&
+vineyard\_c\_coef&484**&472**&1,096&873&557***
+vineyard\_c\_stderr&(200)&(206)&(3,657)&(4,597)&(176)
+adj\_neuchatel\_coef&&&&&7.71
+adj\_neuchatel\_stderr&&&&&(7.90)
+french\_share\_coef&--28.3***&--26.4***&--31.4&--28.5&--32.7***
+french\_share\_stderr&(7.11)&(7.75)&(26.8)&(34.4)&(5.48)
+catholic\_share\_coef&8.43*&--539&8.03&--563&9.86*
+catholic\_share\_stderr&(4.59)&(714)&(5.55)&(1,022)&(4.86)
+\_cons\_coef&64.6***&376&68.1***&392&63.6***
+\_cons\_stderr&(3.35)&(406)&(20.4)&(574)&(3.66)
+N&25&25&25&25&25
+spec&H\_KEY\_centered&H3\_coalition\_strat&H6\_olsonian\_interaction&H3H6\_joint\_strat&H\_KEY\_adj\_NE
+model&ols&ols&ols&ols&ols
+r2&0.538&0.564&0.546&0.565&0.572
+dropped&&&&&
 \bottomrule \addlinespace[\belowrulesep]
 
 \end{tabularx}

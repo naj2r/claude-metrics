@@ -900,6 +900,21 @@ run "$MyProject/scripts/programs/_config.do"
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "H_KEY_centered", model, "ols")
 
+    * --- B.0b: KEY spec + adj_neuchatel (C.9 spatial-spillover robustness) ---
+    * Tests whether the vineyard coefficient survives adding a control for
+    * cantons adjacent to Neuchatel (the Val-de-Travers absinthe-production
+    * cluster). If the wine-rent-seeking mechanism is about industrial
+    * substitution rather than neighborhood spillover, the vineyard coefficient
+    * should be stable. Centered vineyard for consistency with col 1.
+    reg yes_pct vineyard_c adj_neuchatel french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "H_KEY_adj_NE", model, "ols")
+    local adjne_main = _b[vineyard_c]
+    local adjne_adj  = _b[adj_neuchatel]
+    di _n "*** Round-2 Task C.9 (KEY spec + adj_neuchatel) ***"
+    di "  vineyard coef (centered):   " %8.2f `adjne_main'
+    di "  adj_neuchatel coef:          " %8.2f `adjne_adj'
+
     * --- B.1: H3 coalition interaction (vine x protestant_share_total) ---
     * Two parallel variants estimated and reported in separate tables:
     *   STRAT (main t17): strategist's pre-specified spec including BOTH
@@ -1042,6 +1057,14 @@ run "$MyProject/scripts/programs/_config.do"
     local food65_b_cond  = _b[vineyard_per_cap]
     local food65_se_cond = _se[vineyard_per_cap]
     local food65_p_cond  = 2 * (1 - normal(abs(`food65_b_cond' / `food65_se_cond')))
+
+    * --- Conditional + adj_neuchatel (C.9 spatial-spillover robustness) ---
+    reg yes_pct vineyard_per_cap adj_neuchatel french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "food65_adj_NE", model, "ols")
+    local food65_b_adjne  = _b[vineyard_per_cap]
+    local food65_se_adjne = _se[vineyard_per_cap]
+    local food65_p_adjne  = 2 * (1 - normal(abs(`food65_b_adjne' / `food65_se_adjne')))
 
     di _n "*** Round-2 Task C.1: Food-law (#65) Simpson check ***"
     di "  Bivariate:   vineyard_per_cap = " %8.2f `food65_b_biv'  "  SE " %7.2f `food65_se_biv'  "  p = " %5.3f `food65_p_biv'
@@ -1963,7 +1986,8 @@ run "$MyProject/scripts/programs/_config.do"
     * --- t17 MAIN (strategist's pre-specified spec) ---
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
     keep if model == "ols" & inlist(spec, "H_KEY_centered", "H3_coalition_strat", ///
-                                          "H6_olsonian_interaction", "H3H6_joint_strat")
+                                          "H6_olsonian_interaction", "H3H6_joint_strat", ///
+                                          "H_KEY_adj_NE")
     tempfile fh_main
     regsave_tbl using "`fh_main'" if spec == "H_KEY_centered", ///
         name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
@@ -1973,17 +1997,20 @@ run "$MyProject/scripts/programs/_config.do"
         name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     regsave_tbl using "`fh_main'" if spec == "H3H6_joint_strat", ///
         name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    * --- C.9 robustness: KEY + adj_neuchatel (col 5) ---
+    regsave_tbl using "`fh_main'" if spec == "H_KEY_adj_NE", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
     use "`fh_main'", clear
     drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
     clean_vars var
     label var var "Variable"
     local fn_main "Notes: Formal tests of two implications of the bootleggers-and-baptists framework derived from Becker (1983) and Olson (1965), pre-specified design. Column (1) replicates the headline KEY spec with a mean-centered vineyard regressor (coefficient identical to the uncentered version). Column (2) tests H3 (coalition interaction): wine-industry effect amplified by moralist coalition strength, operationalized as protestant\_share\_total = 1 - catholic\_share\_total in the absence of canton-level Blue Cross / Croix-Bleue / IOGT membership data. Column (3) tests H6 (Olsonian concentration): wine-industry effect amplified by industrial concentration, operationalized as avg\_parcel\_area\_1905 (constructed from agricultural land 1912 / total parcels 1905; documented in CONTEXT.md). Column (4) tests both interactions jointly. Caveat on the pre-specified design: columns (2) and (4) include BOTH catholic\_share and protestant\_c as religion controls. In 1900 Switzerland Catholic + Protestant constituted 99.4 percent of total population, so these two religion variables are near-mechanically collinear (main-effect VIFs above 25{,}000 in the joint specification). The interaction coefficient itself is identified despite this main-effect collinearity (interactions and their components do not share variance the same way), so the H3 result reported here remains substantively interpretable. The religion main effects in columns (2) and (4) should not be interpreted. A cleaner variant dropping catholic\_share from columns (2) and (4) is reported in the backmatter Table~\\ref{tab:formal_hypotheses_alt} for transparency. Centered regressors (vineyard\_c, protestant\_c, parcel\_c) ease interpretation: the main effect of vineyard\_c is the vineyard slope at the mean of the moderator(s) in that spec; the interaction coefficient is the change in that slope per unit increase in the (mean-centered) moderator. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01."
-    texsave var col1 col2 col3 col4 ///
+    texsave var col1 col2 col3 col4 col5 ///
         using "$MyProject/results/tables/t17_formal_hypotheses.tex", ///
         replace autonumber varlabels marker(tab:formal_hypotheses) ///
-        title("Formal hypothesis tests: H3 (coalition) and H6 (Olsonian concentration)") ///
+        title("Formal hypothesis tests: H3, H6, and NE-adjacency spatial robustness") ///
         footnote("`fn_main'")
-    di "Saved t17_formal_hypotheses.tex (MAIN, strategist's pre-specified spec)"
+    di "Saved t17_formal_hypotheses.tex (MAIN, strategist's pre-specified spec + C.9 column)"
 
     * --- t17b BACKMATTER (protestant-alone variant) ---
     use "$MyProject/results/intermediate/regressions_expansion.dta", clear
@@ -2082,6 +2109,14 @@ run "$MyProject/scripts/programs/_config.do"
     summ pval if spec == "food65_ri_pvalue" & var == "vineyard_per_cap", meanonly
     local r4_p = r(mean)
 
+    * --- Row 8: NE-adjacency control (C.9) ---
+    summ coef if spec == "food65_adj_NE" & var == "vineyard_per_cap", meanonly
+    local r8_b = r(mean)
+    summ stderr if spec == "food65_adj_NE" & var == "vineyard_per_cap", meanonly
+    local r8_se = r(mean)
+    summ pval if spec == "food65_adj_NE" & var == "vineyard_per_cap", meanonly
+    local r8_p = r(mean)
+
     * --- Weighted regression coefs (for footnote inclusion in body) ---
     summ coef if spec == "food65_weighted_pop_1900" & var == "vineyard_per_cap", meanonly
     local w_pop = r(mean)
@@ -2096,9 +2131,9 @@ run "$MyProject/scripts/programs/_config.do"
     summ pval if spec == "food65_weighted_german_1900" & var == "vineyard_per_cap", meanonly
     local w_de_p = r(mean)
 
-    * --- Build a small dataset of 7 display rows ---
+    * --- Build a small dataset of 8 display rows (Row 8 added in C.9) ---
     clear
-    set obs 7
+    set obs 8
     gen str40  spec_label = ""
     gen str30  value      = ""
     gen str20  pvalue     = ""
@@ -2138,6 +2173,11 @@ run "$MyProject/scripts/programs/_config.do"
     replace value      = string(`w_de', "%9.1f")               in 7
     replace pvalue     = "p = " + string(`w_de_p', "%4.3f")    in 7
     replace notes      = "German-speaking population (canton)" in 7
+
+    replace spec_label = "+ adj\_neuchatel (C.9 spatial)"      in 8
+    replace value      = string(`r8_b', "%9.1f") + " (" + string(`r8_se', "%6.0f") + ")" in 8
+    replace pvalue     = "p = " + string(`r8_p', "%4.3f")      in 8
+    replace notes      = "BE, VD, FR adjacent to NE"           in 8
 
     label var spec_label "Specification"
     label var value      "Vineyard coef (HC3 SE)"
