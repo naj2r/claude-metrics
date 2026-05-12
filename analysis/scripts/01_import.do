@@ -206,26 +206,43 @@ run "$MyProject/scripts/programs/_config.do"
     keep if inrange(anr, 56, 70)
     assert c(N) == 15
 
-    * Keep yes-vote share for each canton + vote metadata
+    * Keep yes-vote share + turnout/eligible/total_votes (C.6 Phase 0) for each
+    * canton + vote metadata. Per-vote turnout and eligible-voter counts are
+    * required to compute the differential-mobilization measure on vote #68
+    * vs the 14 placebo baseline (Becker-Olson producer-side mobilization
+    * channel of the bootleggers-and-baptists coalition).
     local cantons "zh be lu ur sz ow nw gl zg fr so bs bl sh ar ai sg gr ag tg ti vd vs ne ge"
     local keepvars "anr datum titel_kurz_d titel_kurz_e rechtsform annahme"
     foreach ct of local cantons {
-        local keepvars "`keepvars' `ct'japroz"
+        local keepvars "`keepvars' `ct'japroz `ct'bet `ct'berecht `ct'stimmen"
     }
     keep `keepvars'
 
     * Rename canton columns so the canton code is the SUFFIX (reshape requires it)
     foreach ct of local cantons {
-        rename `ct'japroz japroz`ct'
+        rename `ct'japroz   japroz`ct'
+        rename `ct'bet      bet`ct'
+        rename `ct'berecht  berecht`ct'
+        rename `ct'stimmen  stimmen`ct'
     }
 
     * Reshape to long: one row per (vote, canton) = 15 * 25 = 375 rows
-    reshape long japroz, i(anr) j(canton_code) string
+    reshape long japroz bet berecht stimmen, i(anr) j(canton_code) string
     replace canton_code = upper(canton_code)
-    rename japroz yes_pct
+    rename japroz   yes_pct
+    rename bet      turnout
+    rename berecht  eligible
+    rename stimmen  total_votes
 
     * Coerce to numeric (some cells are blank for cantons that didn't vote)
-    destring yes_pct, replace force ignore(",")
+    foreach v in yes_pct turnout eligible total_votes {
+        destring `v', replace force ignore(",")
+    }
+
+    * Drop observations missing yes_pct (cantons that did not vote on this anr).
+    * In our 15-vote / 25-canton design every cell should be populated, but the
+    * filter is defensive: a missing yes_pct would propagate through the
+    * downstream Simpson analyses.
     drop if missing(yes_pct)
     assert _N == 25 * 15  // 375 placebo observations
 
@@ -236,21 +253,64 @@ run "$MyProject/scripts/programs/_config.do"
     gen str80 vote_label = titel_kurz_e
     replace vote_label = substr(titel_kurz_d, 1, 80) if missing(vote_label)
 
-    keep canton_code anr vote_year vote_label rechtsform annahme yes_pct
-    order canton_code anr vote_year yes_pct vote_label rechtsform annahme
+    keep canton_code anr vote_year vote_label rechtsform annahme ///
+         yes_pct turnout eligible total_votes
+    order canton_code anr vote_year yes_pct turnout eligible total_votes ///
+          vote_label rechtsform annahme
 
     label var canton_code "Canton (2-letter code)"
     label var anr         "Vote number (swissvotes anr)"
     label var vote_year   "Year of vote"
     label var yes_pct     "Yes-vote share (%, this vote, this canton)"
+    label var turnout     "Turnout (%, this vote, this canton)"
+    label var eligible    "Eligible voters (this vote, this canton)"
+    label var total_votes "Total ballots cast (this vote, this canton)"
     label var vote_label  "Short title of vote (English if available)"
     label var rechtsform  "Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter"
     label var annahme     "1 if vote passed nationally, 0 if rejected"
+
+    * --- C.6 Phase 0 hard-stop verification ---
+    qui count
+    assert r(N) == 375
+    bysort anr: assert _N == 25  // 25 cantons per vote
+    qui count if missing(eligible) | eligible == 0
+    local n_missing_eligible = r(N)
+    qui count if missing(turnout)
+    local n_missing_turnout = r(N)
+    qui count if !missing(turnout) & !missing(eligible) & total_votes > eligible & !missing(total_votes)
+    local n_violation = r(N)
+    di _n "*** C.6 Phase 0 placebo-panel data plumbing verification ***"
+    di "  Total observations:                   " %5.0f c(N) " (expect 375 = 15 votes x 25 cantons)"
+    di "  Missing eligible-voter count:         " %5.0f `n_missing_eligible'
+    di "  Missing turnout (%):                  " %5.0f `n_missing_turnout'
+    di "  Cells where total_votes > eligible:   " %5.0f `n_violation'
+
+    * Per-vote turnout/eligible coverage table
+    di _n "  Per-vote coverage (anr | n_obs | n_miss_eligible | n_miss_turnout):"
+    qui levelsof anr, local(allvotes)
+    foreach v of local allvotes {
+        qui count if anr == `v'
+        local n_v = r(N)
+        qui count if anr == `v' & missing(eligible)
+        local nme = r(N)
+        qui count if anr == `v' & missing(turnout)
+        local nmt = r(N)
+        di "    " %4.0f `v' "    " %2.0f `n_v' "    " %2.0f `nme' "    " %2.0f `nmt'
+    }
+
+    * Hard-stop conditions
+    if `n_violation' > 0 {
+        di as error "  HARD STOP: turnout > eligible in `n_violation' cells. Saving as _DRAFT."
+        compress
+        save "$MyProject/processed/intermediate/placebo_votes_uncleaned_DRAFT.dta", replace
+        error 9
+    }
 
     compress
     save "$MyProject/processed/intermediate/placebo_votes_uncleaned.dta", replace
 
     di "Placebo panel: " _N " rows (15 votes x 25 cantons = 375)"
+    di "Per-vote turnout + eligible coverage verified; saved with full schema."
 }
 
 

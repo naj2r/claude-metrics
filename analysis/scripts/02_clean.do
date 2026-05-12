@@ -557,6 +557,78 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 4c. C.6 Phase 1: Differential mobilization measures (canton-level)
+*------------------------------------------------------------------------------*
+* Constructs canton-level mobilization measures from the long-format
+* placebo_panel.dta:
+*   - baseline_turnout_canton: median turnout across the 14 placebo votes
+*     (anr != 68). Captures the canton's baseline civic-engagement level
+*     net of vote-specific salience.
+*   - turnout_v68: the canton's turnout (%) on the absinthe-ban referendum.
+*   - mobilization_dev_v68: turnout_v68 - baseline_turnout_canton. Positive
+*     values indicate ABOVE-baseline mobilization on the absinthe vote
+*     specifically. The strategist's Becker-Olson producer-mobilization
+*     channel of the bootleggers-and-baptists framework predicts that wine
+*     cantons should show systematically positive mobilization deviation
+*     relative to non-wine cantons. A null pattern would imply a more
+*     preference-driven story.
+*
+* The constructed variables are merged back into absinthe_analysis.dta and
+* used by 05_expansion.do Section 14 (C.6 Phases 2-3 regression + figure).
+{
+    * Step 1: build mobilization measures from placebo_panel (long format)
+    use "$MyProject/processed/placebo_panel.dta", clear
+    cap confirm variable turnout
+    if _rc {
+        di as error "Error: placebo_panel.dta missing turnout column. Re-run 01_import.do (C.6 Phase 0)."
+        error 459
+    }
+
+    * Baseline turnout: median across the 14 placebo votes (exclude #68)
+    preserve
+        keep if anr != 68
+        collapse (median) baseline_turnout_canton = turnout, by(canton_code)
+        tempfile baseline
+        save "`baseline'"
+    restore
+
+    * Vote-#68 turnout per canton
+    keep if anr == 68
+    keep canton_code turnout
+    rename turnout turnout_v68
+    merge 1:1 canton_code using "`baseline'", nogen
+    gen double mobilization_dev_v68 = turnout_v68 - baseline_turnout_canton
+
+    label var turnout_v68              "Turnout on vote #68 (1908 absinthe, %)"
+    label var baseline_turnout_canton  "Median turnout across 14 placebo votes (%)"
+    label var mobilization_dev_v68     "Mobilization deviation on #68 (pp above placebo baseline)"
+
+    qui count
+    assert r(N) == 25
+    isid canton_code
+    tempfile mobil
+    save "`mobil'"
+
+    * Step 2: load absinthe_analysis.dta and merge mobilization measures in
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+    merge 1:1 canton_code using "`mobil'", nogen
+    qui count if missing(mobilization_dev_v68)
+    assert r(N) == 0
+
+    di _n "*** C.6 Phase 1: differential mobilization measures merged into absinthe_analysis ***"
+    summ turnout_v68 baseline_turnout_canton mobilization_dev_v68
+}
+
+
+**# 4d. Re-save absinthe_analysis.dta with the C.6 Phase 1 variables
+*------------------------------------------------------------------------------*
+{
+    compress
+    save "$MyProject/processed/absinthe_analysis.dta", replace
+    di "absinthe_analysis.dta resaved with C.6 Phase 1 mobilization measures (3 new vars)."
+}
+
+
 **# 5. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {

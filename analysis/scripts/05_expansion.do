@@ -1390,6 +1390,75 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.16 Round-2 Task C.6: Differential mobilization (Phase 2)
+*------------------------------------------------------------------------------*
+* Tests the Becker (1983) / Olson (1965) producer-side mobilization channel
+* of the bootleggers-and-baptists framework. Wine cantons' turnout deviation
+* on #68 (relative to placebo-vote baseline) should be systematically
+* positive if producers mobilized differentially. A null pattern would
+* imply a more preference-driven story.
+*
+* Phase 0 (data plumbing): added per-vote turnout/eligible to
+*   placebo_votes_uncleaned.dta in 01_import.do.
+* Phase 1 (measure construction): built canton-level mobilization_dev_v68,
+*   baseline_turnout_canton, turnout_v68 in 02_clean.do section 4c, merged
+*   into absinthe_analysis.dta.
+* Phase 2 (this section): two regressions.
+*   - C6_mobil_conditional: yes_pct on mobilization_dev_v68 + KEY controls.
+*     Does ABOVE-baseline mobilization predict yes-share?
+*   - C6_vineyard_X_mobil:  yes_pct on vineyard_per_cap + mobilization_dev_v68
+*     + their interaction + KEY controls. Does the wine-industry-rent-
+*     seeking effect amplify with mobilization (LitA5 turnout x vote)?
+* Phase 3 (sections 12.13-12.14): T20 + T21 builders + F06 scatter.
+{
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+
+    cap confirm variable mobilization_dev_v68
+    if _rc {
+        di as error "Error: mobilization_dev_v68 not in absinthe_analysis.dta. Re-run 02_clean.do (C.6 Phase 1)."
+        error 111
+    }
+
+    * --- C.6.1 mobilization on yes-share conditional on KEY controls ---
+    reg yes_pct mobilization_dev_v68 vineyard_per_cap french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "C6_mobil_conditional", model, "ols")
+    local c6_mobil_coef = _b[mobilization_dev_v68]
+    local c6_mobil_se   = _se[mobilization_dev_v68]
+    local c6_mobil_p    = 2 * (1 - normal(abs(`c6_mobil_coef' / `c6_mobil_se')))
+    local c6_vine_main  = _b[vineyard_per_cap]
+
+    di _n "*** C.6.1 mobilization on yes-share, KEY-conditional ***"
+    di "  mobilization_dev_v68 coef: " %8.2f `c6_mobil_coef' "  SE " %7.2f `c6_mobil_se' "  p = " %5.3f `c6_mobil_p'
+    di "  vineyard_per_cap main:     " %8.2f `c6_vine_main'
+
+    * --- C.6.2 vineyard x mobilization interaction (LitA5) ---
+    * Mean-center both interaction inputs so main effects remain interpretable.
+    qui summ mobilization_dev_v68 if !missing(yes_pct), meanonly
+    gen double mobil_c = mobilization_dev_v68 - r(mean)
+    qui summ vineyard_per_cap if !missing(yes_pct), meanonly
+    gen double vine_c_c6 = vineyard_per_cap - r(mean)
+    gen double vine_X_mobil = vine_c_c6 * mobil_c
+    label var vine_X_mobil "vine_c x mobil_c (LitA5 turnout x vote interaction)"
+
+    reg yes_pct vine_c_c6 mobil_c vine_X_mobil french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "C6_vineyard_X_mobil", model, "ols")
+    local c6_inter_coef = _b[vine_X_mobil]
+    local c6_inter_se   = _se[vine_X_mobil]
+    local c6_inter_p    = 2 * (1 - normal(abs(`c6_inter_coef' / `c6_inter_se')))
+    local c6_vine_at_mean   = _b[vine_c_c6]
+    local c6_mobil_at_mean  = _b[mobil_c]
+
+    di _n "*** C.6.2 vineyard x mobilization interaction (LitA5) ***"
+    di "  interaction coef:        " %8.2f `c6_inter_coef' "  SE " %7.2f `c6_inter_se' "  p = " %5.3f `c6_inter_p'
+    di "  vineyard at mean mobil:  " %7.2f `c6_vine_at_mean'
+    di "  mobil at mean vineyard:  " %7.2f `c6_mobil_at_mean'
+
+    cap drop mobil_c vine_c_c6 vine_X_mobil
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -2341,6 +2410,80 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.13 t20_mobilization + t21_vineyard_X_mobil + f06 (Round-2 Task C.6 P3)
+*------------------------------------------------------------------------------*
+* Phase 3 deliverables for the differential-mobilization analysis (C.6).
+* Pulls cached coefficients from regressions_expansion.dta (specs
+* C6_mobil_conditional and C6_vineyard_X_mobil set up in section 10.16).
+{
+    * --- T20 mobilization spec ---
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & spec == "C6_mobil_conditional"
+    tempfile t20_tbl
+    regsave_tbl using "`t20_tbl'" if spec == "C6_mobil_conditional", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    use "`t20_tbl'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+
+    local fn_t20 = "Notes: Differential-mobilization regression (C.6 Phase 2). Tests the Becker (1983) producer-side channel of the bootleggers-and-baptists framework. The mobilization\_dev\_v68 measure is canton-level turnout on vote \#68 minus the canton's median turnout across the 14 placebo votes 1900-1910 (positive = above-baseline mobilization on the absinthe vote specifically). Conditional on the headline KEY-spec controls (vineyard\_per\_cap, french\_share, catholic\_share). A positive mobilization coefficient supports the producer-mobilization channel. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 ///
+        using "$MyProject/results/tables/t20_mobilization.tex", ///
+        replace autonumber varlabels marker(tab:mobilization) ///
+        title("Differential mobilization on vote \#68 (Becker producer-channel; C.6)") ///
+        footnote("`fn_t20'")
+    di "Saved t20_mobilization.tex"
+
+    * --- T21 vineyard x mobilization interaction (LitA5) ---
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & spec == "C6_vineyard_X_mobil"
+    tempfile t21_tbl
+    regsave_tbl using "`t21_tbl'" if spec == "C6_vineyard_X_mobil", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    use "`t21_tbl'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+
+    local fn_t21 = "Notes: Vineyard x mobilization interaction (LitA5: turnout x vote interaction). Tests whether the wine-industry rent-seeking effect amplifies in cantons that mobilized differentially on vote \#68. Both interaction inputs are mean-centered (vine\_c\_c6, mobil\_c) so main effects represent slopes evaluated at the mean of the moderator. KEY-spec controls (french\_share, catholic\_share) included. A positive interaction would imply mobilization amplified the wine-rent-seeking effect (consistent with the Olson 1965 organizational-strength prediction); a null interaction would imply mobilization is an independent channel rather than a moderator. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 ///
+        using "$MyProject/results/tables/t21_vineyard_X_mobil.tex", ///
+        replace autonumber varlabels marker(tab:vine_X_mobil) ///
+        title("Vineyard x mobilization interaction (LitA5; C.6)") ///
+        footnote("`fn_t21'")
+    di "Saved t21_vineyard_X_mobil.tex"
+
+    * --- F06 scatter: mobilization_dev_v68 vs yes_pct, by wine-canton status ---
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+    cap confirm variable mobilization_dev_v68
+    if !_rc {
+        twoway ///
+            (scatter yes_pct mobilization_dev_v68 if wine_canton == 0, ///
+                mcolor(gs6)  msymbol(circle)  msize(medium) mlabel(canton_code) mlabsize(vsmall) mlabposition(3)) ///
+            (scatter yes_pct mobilization_dev_v68 if wine_canton == 1, ///
+                mcolor(red)  msymbol(diamond) msize(large)  mlabel(canton_code) mlabsize(small)  mlabposition(3) mlabcolor(red)) ///
+            (lfit yes_pct mobilization_dev_v68, lcolor(black) lpattern(dash)) ///
+            , ///
+            title("Mobilization deviation on vote #68 vs yes-share, by wine-canton status", size(medsmall)) ///
+            subtitle("C.6 Phase 3: producer-side channel of B&B coalition", size(small)) ///
+            ytitle("Yes-vote share on #68 (%)") ///
+            xtitle("Mobilization deviation: turnout_v68 - median(placebo turnout)") ///
+            xline(0, lcolor(gs10) lpattern(dot)) ///
+            legend(order(1 "Non-wine canton (n=17)" 2 "Wine canton (>1000 ha vineyard, n=8)" 3 "Linear fit") rows(1) size(small) position(6)) ///
+            graphregion(fcolor(white)) ///
+            note("Wine-canton dots clustering RIGHT of zero would corroborate the Becker producer-mobilization channel. Mobilization is computed as canton turnout on #68 minus median turnout across the 14 placebo votes 1900-1910. N=25 cantons.", size(vsmall))
+
+        graph export "$MyProject/results/figures/f06_mobilization_scatter.pdf", replace as(pdf)
+        graph close
+        di "Saved f06_mobilization_scatter.pdf"
+    }
+    else {
+        di as error "  C.6 Phase 3 figure SKIPPED -- mobilization_dev_v68 not in absinthe_analysis.dta."
+    }
+}
+
+
 **# 13. Sanity-check assertions for the expansion analyses
 *------------------------------------------------------------------------------*
 {
@@ -2739,12 +2882,12 @@ run "$MyProject/scripts/programs/_config.do"
                  t13_placebo_panel t13b_food65_simpson t14_new_controls    ///
                  t15_gelbach t16_diagnostics t17_formal_hypotheses         ///
                  t17b_formal_hypotheses_alt t18_food65_robustness          ///
-                 t19_cleavage_index {
+                 t19_cleavage_index t20_mobilization t21_vineyard_X_mobil {
         _inventory_append, sheet("outputs") ///
             row("generated|results/tables/`t'.tex|table|05_expansion.do")
     }
     foreach f in f03_placebo_distribution f04_marginsplot_french ///
-                 f05_cleavage_coefficient_scatter {
+                 f05_cleavage_coefficient_scatter f06_mobilization_scatter {
         _inventory_append, sheet("outputs") ///
             row("generated|results/figures/`f'.pdf|figure|05_expansion.do")
     }
