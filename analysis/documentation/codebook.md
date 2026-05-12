@@ -497,3 +497,25 @@ _Updated: 12 May 2026 14:29:56 by 06_national_descriptives.do_
 
 <!-- codebook:processed/intermediate/f13_business_sector_long.dta:end -->
 
+<!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:start -->
+### processed/intermediate/h2a_substrate_prices_long.dta
+
+_Updated: 12 May 2026 16:56:52 by 07_substrate_descriptives.do_
+
+**N = 183, vars = 10**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %12.0g | Year |
+| wheat_idx | double | %10.0g | Wheat producer-price index (1914=100) |
+| rye_idx | double | %10.0g | Rye producer-price index (1914=100) |
+| oats_idx | double | %10.0g | Oats producer-price index (1914=100) |
+| potato_idx | double | %10.0g | Potato producer-price index (1914=100) |
+| apple_idx | double | %10.0g | Apple producer-price index (1914=100) |
+| wine_idx | double | %10.0g | Wine producer-price index (1914=100) |
+| wine_potato_ratio | double | %10.0g | Wine/Potato price ratio (substitution-incentive proxy) |
+| wine_wheat_ratio | double | %10.0g | Wine/Wheat price ratio (substitution-incentive proxy) |
+| wine_rye_ratio | double | %10.0g | Wine/Rye price ratio (substitution-incentive proxy) |
+
+<!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:end -->
+

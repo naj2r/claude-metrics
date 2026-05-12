@@ -62,6 +62,7 @@ do "`ProjectDir'/scripts/03_regress.do"
 do "`ProjectDir'/scripts/04_tables.do"
 do "`ProjectDir'/scripts/05_expansion.do"
 do "`ProjectDir'/scripts/06_national_descriptives.do"
+do "`ProjectDir'/scripts/07_substrate_descriptives.do"
 
 * Display runtime and end the script
 local datetime2 = clock("$S_DATE $S_TIME", "DMYhms")
