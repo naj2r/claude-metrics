@@ -13,189 +13,37 @@ _Auto-updated by _codebook_update.ado_
 
 ## Datasets
 
+<!-- codebook:processed/placebo_panel.dta:start -->
+### processed/placebo_panel.dta
 
+_Updated: 12 May 2026 14:12:32 by /update-codebook_
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- codebook:results/intermediate/ri_distribution.dta:start -->
-### results/intermediate/ri_distribution.dta
-
-_Updated:  1 May 2026 20:33:11 by /update-codebook_
-
-**N = 10000, vars = 1**
+**N = 375, vars = 15**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|
-| t_vineyard | float | %9.0g | _b[vineyard_per_cap] / _se[vineyard_per_cap] |
-
-<!-- codebook:results/intermediate/ri_distribution.dta:end -->
-
-<!-- codebook:results/intermediate/gelbach_decomp.dta:start -->
-### results/intermediate/gelbach_decomp.dta
-
-_Updated:  1 May 2026 20:33:11 by /update-codebook_
-
-**N = 3, vars = 6**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| component | str20 | %20s |  |
-| coef | double | %10.0g |  |
-| stderr | double | %10.0g |  |
-| pval | double | %10.0g |  |
-| base_coef | double | %10.0g |  |
-| full_coef | double | %10.0g |  |
-
-<!-- codebook:results/intermediate/gelbach_decomp.dta:end -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| vote_year | int | %8.0g | Year of vote |
+| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
+| yes_frac | double | %10.0g | Yes-vote share (fractional, 0-1) — vote-specific |
+| vote_label | str80 | %80s | Short title of vote (English if available) |
+| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
+| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
+| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
+| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
+| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
+| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
+| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
+| ln_pop | double | %10.0g | Log population (1900) |
+| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
+
+<!-- codebook:processed/placebo_panel.dta:end -->
 
 <!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
 ### processed/intermediate/canton_crosswalk.dta
 
-_Updated:  1 May 2026 23:31:29 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -209,7 +57,7 @@ _Updated:  1 May 2026 23:31:29 by 01_import.do_
 <!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
 ### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:29 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 7**
 
@@ -228,7 +76,7 @@ _Updated:  1 May 2026 23:31:29 by 01_import.do_
 <!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
 ### processed/intermediate/vote67_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:30 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -242,7 +90,7 @@ _Updated:  1 May 2026 23:31:30 by 01_import.do_
 <!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
 ### processed/intermediate/placebo_votes_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:30 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 375, vars = 7**
 
@@ -261,7 +109,7 @@ _Updated:  1 May 2026 23:31:30 by 01_import.do_
 <!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
 ### processed/intermediate/vineyard_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:31 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 125, vars = 3**
 
@@ -276,7 +124,7 @@ _Updated:  1 May 2026 23:31:31 by 01_import.do_
 <!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
 ### processed/intermediate/agland_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:31 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -290,7 +138,7 @@ _Updated:  1 May 2026 23:31:31 by 01_import.do_
 <!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
 ### processed/intermediate/population_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:32 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -304,7 +152,7 @@ _Updated:  1 May 2026 23:31:32 by 01_import.do_
 <!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
 ### processed/intermediate/pop_density_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:32 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -318,7 +166,7 @@ _Updated:  1 May 2026 23:31:32 by 01_import.do_
 <!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
 ### processed/intermediate/religion_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:33 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 3**
 
@@ -333,7 +181,7 @@ _Updated:  1 May 2026 23:31:33 by 01_import.do_
 <!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
 ### processed/intermediate/language_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:33 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 3**
 
@@ -348,7 +196,7 @@ _Updated:  1 May 2026 23:31:33 by 01_import.do_
 <!-- codebook:processed/intermediate/migration_uncleaned.dta:start -->
 ### processed/intermediate/migration_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:34 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -362,7 +210,7 @@ _Updated:  1 May 2026 23:31:34 by 01_import.do_
 <!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:start -->
 ### processed/intermediate/farm_concentration_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:34 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 3**
 
@@ -377,7 +225,7 @@ _Updated:  1 May 2026 23:31:34 by 01_import.do_
 <!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:start -->
 ### processed/intermediate/fruit_trees_uncleaned.dta
 
-_Updated:  1 May 2026 23:31:35 by 01_import.do_
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 **N = 25, vars = 2**
 
@@ -388,10 +236,182 @@ _Updated:  1 May 2026 23:31:35 by 01_import.do_
 
 <!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:end -->
 
+<!-- codebook:processed/intermediate/f07a_employment_long.dta:start -->
+### processed/intermediate/f07a_employment_long.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 264, vars = 5**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %10.0g | Census year (national) |
+| gender_group | str6 | %9s | Gender block (total / male / female) |
+| employment_status | str19 | %19s | Employment status category |
+| value | double | %10.0g | Population in thousands of persons |
+| pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
+
+<!-- codebook:processed/intermediate/f07a_employment_long.dta:end -->
+
+<!-- codebook:processed/intermediate/f08a_agric_pop_long.dta:start -->
+### processed/intermediate/f08a_agric_pop_long.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 384, vars = 6**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %10.0g | Census year (national) |
+| year_flag | str2 | %9s | HSSO year-asterisk footnote (* or **) |
+| gender_group | str6 | %9s | Gender block (total / male / female) |
+| worker_category | str21 | %21s | Agricultural worker category |
+| value | double | %10.0g | Persons (absolute count) |
+| pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
+
+<!-- codebook:processed/intermediate/f08a_agric_pop_long.dta:end -->
+
+<!-- codebook:processed/intermediate/f13_business_sector_long.dta:start -->
+### processed/intermediate/f13_business_sector_long.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 960, vars = 6**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %10.0g | Census year (national) |
+| section | str19 | %19s | industry_handicraft (cols B-U) or secondary_tertiary (cols B-U) |
+| industry_class | str28 | %28s | Industry/sector class |
+| metric | str29 | %29s | Reported metric (enterprises, employees, ratios) |
+| value | double | %10.0g | Reported value (units depend on metric) |
+| pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
+
+<!-- codebook:processed/intermediate/f13_business_sector_long.dta:end -->
+
+<!-- codebook:processed/intermediate/language_cleavage_index.dta:start -->
+### processed/intermediate/language_cleavage_index.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 15, vars = 12**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| lang_gap | float | %9.0g | (first) lang_gap |
+| rho | float | %9.0g | (first) rho |
+| y_fr | float | %9.0g | (first) y_fr |
+| y_ge | float | %9.0g | (first) y_ge |
+| y_grand | float | %9.0g | (first) y_grand |
+| y_total_var | float | %9.0g | (first) y_total_var |
+| n_fr | float | %9.0g | (first) n_fr |
+| n_ge | float | %9.0g | (first) n_ge |
+| vote_year | int | %8.0g | (first) vote_year |
+| vote_label | str80 | %80s | (first) vote_label |
+| wine_relevant | byte | %8.0g | 1 if wine-/alcohol-relevant vote (#63 alcohol-reg null + #65 + #68) |
+
+<!-- codebook:processed/intermediate/language_cleavage_index.dta:end -->
+
+<!-- codebook:processed/intermediate/language_cleavage_index_excl_ne_ge.dta:start -->
+### processed/intermediate/language_cleavage_index_excl_ne_ge.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 15, vars = 6**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| lang_gap | float | %9.0g | (first) lang_gap |
+| rho | float | %9.0g | (first) rho |
+| vote_year | int | %8.0g | (first) vote_year |
+| vote_label | str80 | %80s | (first) vote_label |
+| wine_relevant | byte | %8.0g |  |
+
+<!-- codebook:processed/intermediate/language_cleavage_index_excl_ne_ge.dta:end -->
+
+<!-- codebook:results/intermediate/regressions.dta:start -->
+### results/intermediate/regressions.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 140, vars = 11**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| var | str20 | %20s | Variable |
+| coef | float | %9.0g | Coefficient |
+| stderr | float | %9.0g | Standard error |
+| tstat | float | %9.0g | t-statistic |
+| pval | float | %9.0g | Two-tailed p-value |
+| N | byte | %10.0g | Number of observations |
+| r2 | float | %9.0g | R-squared |
+| _id | byte | %9.0g | Regression ID number |
+| spec | str21 | %21s |  |
+| model | str11 | %11s | Model name |
+| dropped | str2 | %9s |  |
+
+<!-- codebook:results/intermediate/regressions.dta:end -->
+
+<!-- codebook:results/intermediate/ri_distribution.dta:start -->
+### results/intermediate/ri_distribution.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 10000, vars = 1**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| t_vineyard | float | %9.0g | _b[vineyard_per_cap] / _se[vineyard_per_cap] |
+
+<!-- codebook:results/intermediate/ri_distribution.dta:end -->
+
+<!-- codebook:results/intermediate/gelbach_decomp.dta:start -->
+### results/intermediate/gelbach_decomp.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 3, vars = 6**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| component | str20 | %20s |  |
+| coef | double | %10.0g |  |
+| stderr | double | %10.0g |  |
+| pval | double | %10.0g |  |
+| base_coef | double | %10.0g |  |
+| full_coef | double | %10.0g |  |
+
+<!-- codebook:results/intermediate/gelbach_decomp.dta:end -->
+
+<!-- codebook:results/intermediate/regressions_expansion.dta:start -->
+### results/intermediate/regressions_expansion.dta
+
+_Updated: 12 May 2026 14:12:33 by /update-codebook_
+
+**N = 433, vars = 11**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| var | str22 | %22s |  |
+| coef | double | %10.0g |  |
+| stderr | double | %10.0g |  |
+| tstat | double | %10.0g |  |
+| pval | double | %10.0g |  |
+| N | byte | %12.0g |  |
+| spec | str27 | %27s |  |
+| model | str11 | %11s |  |
+| r2 | float | %9.0g | R-squared |
+| _id | int | %9.0g | Regression ID number |
+| dropped | str2 | %9s |  |
+
+<!-- codebook:results/intermediate/regressions_expansion.dta:end -->
+
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated:  1 May 2026 23:31:36 by 02_clean.do_
+_Updated: 12 May 2026 14:13:55 by /update-codebook_
 
 **N = 25, vars = 57**
 
@@ -456,131 +476,4 @@ _Updated:  1 May 2026 23:31:36 by 02_clean.do_
 | absinthe_dummy_any | byte | %8.0g | Absinthe-producing canton (NE + VD + GE; any) |
 
 <!-- codebook:processed/absinthe_analysis.dta:end -->
-
-<!-- codebook:processed/placebo_panel.dta:start -->
-### processed/placebo_panel.dta
-
-_Updated:  1 May 2026 23:31:36 by 02_clean.do_
-
-**N = 375, vars = 15**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| anr | byte | %9.0g | Vote number (swissvotes anr) |
-| vote_year | int | %8.0g | Year of vote |
-| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
-| yes_frac | double | %10.0g | Yes-vote share (fractional, 0-1) — vote-specific |
-| vote_label | str80 | %80s | Short title of vote (English if available) |
-| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
-| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
-| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
-| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
-| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
-| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
-| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
-| ln_pop | double | %10.0g | Log population (1900) |
-| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
-
-<!-- codebook:processed/placebo_panel.dta:end -->
-
-<!-- codebook:results/intermediate/regressions.dta:start -->
-### results/intermediate/regressions.dta
-
-_Updated:  1 May 2026 23:34:59 by 03_regress.do_
-
-**N = 140, vars = 11**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| var | str20 | %20s | Variable |
-| coef | float | %9.0g | Coefficient |
-| stderr | float | %9.0g | Standard error |
-| tstat | float | %9.0g | t-statistic |
-| pval | float | %9.0g | Two-tailed p-value |
-| N | byte | %10.0g | Number of observations |
-| r2 | float | %9.0g | R-squared |
-| _id | byte | %9.0g | Regression ID number |
-| spec | str21 | %21s |  |
-| model | str11 | %11s | Model name |
-| dropped | str2 | %9s |  |
-
-<!-- codebook:results/intermediate/regressions.dta:end -->
-
-
-<!-- codebook:processed/intermediate/f07a_employment_long.dta:start -->
-### processed/intermediate/f07a_employment_long.dta
-
-_Updated:  1 May 2026 23:46:46 by 06_national_descriptives.do_
-
-**N = 264, vars = 5**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| year | int | %10.0g | Census year (national) |
-| gender_group | str6 | %9s | Gender block (total / male / female) |
-| employment_status | str19 | %19s | Employment status category |
-| value | double | %10.0g | Population in thousands of persons |
-| pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
-
-<!-- codebook:processed/intermediate/f07a_employment_long.dta:end -->
-
-<!-- codebook:processed/intermediate/f08a_agric_pop_long.dta:start -->
-### processed/intermediate/f08a_agric_pop_long.dta
-
-_Updated:  1 May 2026 23:46:47 by 06_national_descriptives.do_
-
-**N = 384, vars = 6**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| year | int | %10.0g | Census year (national) |
-| year_flag | str2 | %9s | HSSO year-asterisk footnote (* or **) |
-| gender_group | str6 | %9s | Gender block (total / male / female) |
-| worker_category | str21 | %21s | Agricultural worker category |
-| value | double | %10.0g | Persons (absolute count) |
-| pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
-
-<!-- codebook:processed/intermediate/f08a_agric_pop_long.dta:end -->
-
-<!-- codebook:processed/intermediate/f13_business_sector_long.dta:start -->
-### processed/intermediate/f13_business_sector_long.dta
-
-_Updated:  1 May 2026 23:46:47 by 06_national_descriptives.do_
-
-**N = 960, vars = 6**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| year | int | %10.0g | Census year (national) |
-| section | str19 | %19s | industry_handicraft (cols B-U) or secondary_tertiary (cols B-U) |
-| industry_class | str28 | %28s | Industry/sector class |
-| metric | str29 | %29s | Reported metric (enterprises, employees, ratios) |
-| value | double | %10.0g | Reported value (units depend on metric) |
-| pre_vote | byte | %8.0g | 1 = pre-absinthe-ban (year <= 1908) |
-
-<!-- codebook:processed/intermediate/f13_business_sector_long.dta:end -->
-
-<!-- codebook:results/intermediate/regressions_expansion.dta:start -->
-### results/intermediate/regressions_expansion.dta
-
-_Updated: 11 May 2026 19:34:44 by 05_expansion.do_
-
-**N = 433, vars = 11**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| var | str22 | %22s |  |
-| coef | double | %10.0g |  |
-| stderr | double | %10.0g |  |
-| tstat | double | %10.0g |  |
-| pval | double | %10.0g |  |
-| N | byte | %12.0g |  |
-| spec | str27 | %27s |  |
-| model | str11 | %11s |  |
-| r2 | float | %9.0g | R-squared |
-| _id | int | %9.0g | Regression ID number |
-| dropped | str2 | %9s |  |
-
-<!-- codebook:results/intermediate/regressions_expansion.dta:end -->
 
