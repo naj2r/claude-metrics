@@ -496,10 +496,103 @@ if _rc {
 }
 
 
+**# 9b. C.12 canton-level substrate-availability descriptive (I.01)
+*------------------------------------------------------------------------------*
+* Pairs the national H.2a substrate-price series (C.10) with canton-level
+* substrate-availability variation. Loads cereal_potato_area_uncleaned.dta
+* (built in 01_import.do section 4.05), merges canton population for per-
+* capita scaling, and writes a descriptive notes file.
+*
+* CAVEAT: I.01 has NO pre-vote canton-level potato area; the closest year
+* is 1910 (2 years post-vote). Cereal area is available for 1905 (perfect
+* pre-vote snapshot). Documented in the notes file.
+{
+    use "$MyProject/processed/intermediate/cereal_potato_area_uncleaned.dta", clear
+    merge 1:1 canton_code using "$MyProject/processed/intermediate/population_uncleaned.dta", ///
+        assert(match) nogenerate
+
+    * Per-capita scaling: areas are in 1000 hectares, population in persons.
+    * To get hectares per person: (1000 ha * 1000) / pop = 1,000,000 / pop.
+    foreach v in cereal_area_1905 cereal_area_1917 potato_area_1910 potato_area_1917 {
+        gen double `v'_per_cap = (`v' * 1000) / pop_1900
+    }
+
+    label var cereal_area_1905_per_cap "Cereal/pop (ha/person, 1905; SPARSE -- 3 cantons)"
+    label var cereal_area_1917_per_cap "Cereal/pop (ha/person, 1917; first complete canton-year)"
+    label var potato_area_1910_per_cap "Potato/pop (ha/person, 1910; SPARSE -- ZH only)"
+    label var potato_area_1917_per_cap "Potato/pop (ha/person, 1917; first complete canton-year)"
+
+    notes _dta: HSSO I.01 cereal (rows 47, 49) + potato (rows 74, 75) sub-blocks. Canton-level substrate-availability descriptive (C.12). NOT a main-regression input.
+    notes _dta: Pre-vote canton-level coverage is sparse (1905 cereal: 3 cantons; 1910 potato: 1 canton). First complete canton-level snapshot is 1917 (9 years post-vote). 1917 used under geographic-stability assumption: canton cereal/potato cultivation distribution is much more stable across decades than wine acreage.
+
+    isid canton_code
+    compress
+    save "$MyProject/processed/intermediate/cereal_potato_area_long.dta", replace
+    di as result "Saved cereal_potato_area_long.dta (canton-level substrate-availability descriptive)"
+
+    * --- Descriptive notes file ---
+    cap mkdir "$MyProject/output"
+    cap mkdir "$MyProject/output/notes"
+
+    * Merge in vineyard_per_cap for cross-reference
+    merge 1:1 canton_code using "$MyProject/processed/absinthe_analysis.dta", ///
+        keepusing(vineyard_per_cap) keep(match) nogen
+    sort canton_code
+
+    cap file close notes_fh
+    file open notes_fh using "$MyProject/output/notes/canton_substrate_availability_descriptive.md", write replace
+    file write notes_fh "# Canton-Level Substrate Availability (HSSO I.01, C.12 descriptive)" _n _n
+    file write notes_fh "**PRELIMINARY**: descriptive complement to the national H.2a producer-price evidence (C.10). NOT a main-regression input." _n _n
+    file write notes_fh "## Data-availability discovery" _n _n
+    file write notes_fh "HSSO I.01's cereal and potato sub-blocks have **sparse pre-vote canton-level coverage**. Pre-WWI, only a handful of major arable cantons report:" _n _n
+    file write notes_fh "- 1905 cereal: 3 cantons populated (ZH, BE+JU, VD). Other 22 cantons aggregate into CH national total only." _n
+    file write notes_fh "- 1910 potato: 1 canton populated (ZH only)." _n _n
+    file write notes_fh "**Full canton-level coverage begins in 1917**, presumably tied to WWI-era federal substrate-substitution surveys. We therefore extract both:" _n _n
+    file write notes_fh "1. 1905 cereal + 1910 potato (sparse pre-vote snapshots; useful only for major arable cantons)" _n
+    file write notes_fh "2. 1917 cereal + potato (complete canton-level snapshots; 9 years post-vote)" _n _n
+    file write notes_fh "Paper-text use should explicitly flag the 9-year gap for 1917 data. The geographic-stability assumption is much more defensible for cereal/potato than for wine: arable land distribution across cantons is stable over decades, whereas wine area fluctuated with phylloxera and replantation." _n _n
+    file write notes_fh "## Per-canton values (hectares per person)" _n _n
+    file write notes_fh "| Canton | Cereal/pop 1905 | Cereal/pop 1917 | Potato/pop 1910 | Potato/pop 1917 | Vineyard/pop 1905 |" _n
+    file write notes_fh "|---|---:|---:|---:|---:|---:|" _n
+    forvalues i = 1/`=c(N)' {
+        local cc = canton_code[`i']
+        local c05 : di %5.4f cereal_area_1905_per_cap[`i']
+        local c17 : di %5.4f cereal_area_1917_per_cap[`i']
+        local p10 : di %5.4f potato_area_1910_per_cap[`i']
+        local p17 : di %5.4f potato_area_1917_per_cap[`i']
+        local vi  : di %5.4f vineyard_per_cap[`i']
+        file write notes_fh "| `cc' | `c05' | `c17' | `p10' | `p17' | `vi' |" _n
+    }
+
+    qui summ cereal_area_1917_per_cap
+    local c17_mean : di %5.4f r(mean)
+    local c17_min  : di %5.4f r(min)
+    local c17_max  : di %5.4f r(max)
+    qui summ potato_area_1917_per_cap
+    local p17_mean : di %5.4f r(mean)
+    local p17_min  : di %5.4f r(min)
+    local p17_max  : di %5.4f r(max)
+
+    file write notes_fh _n
+    file write notes_fh "## Summary statistics (1917 complete-coverage snapshot, 25 cantons)" _n _n
+    file write notes_fh "| Variable | Mean | Min | Max |" _n
+    file write notes_fh "|---|---:|---:|---:|" _n
+    file write notes_fh "| Cereal area / person (1917, ha) | `c17_mean' | `c17_min' | `c17_max' |" _n
+    file write notes_fh "| Potato area / person (1917, ha) | `p17_mean' | `p17_min' | `p17_max' |" _n
+    file write notes_fh _n
+    file write notes_fh "## Paper-text use" _n _n
+    file write notes_fh "Documents canton-level variation in substrate availability complementing the national H.2a price series (C.10). Use in Background or Discussion paragraphs that contextualize the substrate-substitution arc with canton-level heterogeneity: cantons with high cereal or potato area had locally cheap substrate availability for grain/potato-alcohol distillation, contributing to the cheap-spirits supply that competed with grape eau-de-vie." _n _n
+    file write notes_fh "**Recommended framing**: use the 1917 numbers as the canonical canton substrate-availability snapshot (complete coverage), with a footnote acknowledging the 9-year gap from the 1908 vote and the geographic-stability assumption. The 1905/1910 columns are flagged as sparse and shown only to document the data-availability gap." _n _n
+    file write notes_fh "The vineyard/per/cap column (1905) is shown for cross-reference -- distinct industries with distinct geographic patterns. Cantons with the highest cereal area (BE, FR, VD) are NOT the same as those with the highest vineyard area (NE, GE, VS, VD)." _n
+    file close notes_fh
+    di as result "Saved output/notes/canton_substrate_availability_descriptive.md"
+}
+
+
 **# 10. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {
-    foreach ds in h2a_substrate_prices_long i33_subsidies_long {
+    foreach ds in h2a_substrate_prices_long i33_subsidies_long cereal_potato_area_long {
         _codebook_update using "$MyProject/processed/intermediate/`ds'.dta", ///
             script("07_substrate_descriptives.do")
         use "$MyProject/processed/intermediate/`ds'.dta", clear

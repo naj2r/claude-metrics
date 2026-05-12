@@ -399,6 +399,115 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 4.05 Import I.01 cereal + potato cultivation sub-blocks (C.12)
+*------------------------------------------------------------------------------*
+* Substrate-availability descriptive evidence to complement C.10's national
+* H.2a producer-price series (07_substrate_descriptives.do).
+*
+* DATA-AVAILABILITY DISCOVERY (2026-05-12): HSSO I.01's cereal and potato
+* sub-blocks have SPARSE pre-vote canton-level coverage. Pre-WWI, only a
+* handful of major arable cantons report (1905 cereal: 3 cantons -- ZH,
+* BE+JU, VD; 1910 potato: 1 canton -- ZH only). Full canton-level coverage
+* (all 25 cantons populated) begins in 1917, presumably tied to WWI-era
+* federal substitution surveys. The pre-1917 sub-blocks aggregate to the
+* CH national total but break out only the largest contributors.
+*
+* Decision: extract BOTH (a) the sparse 1905 cereal snapshot for the
+* major arable cantons (pre-vote but incomplete) and (b) the 1917
+* cereal + potato complete snapshots (9 years post-vote but full
+* canton coverage). The 1917 data is appropriate as a descriptive
+* PROXY for canton substrate-availability under a geographic-stability
+* assumption (canton cereal/potato cultivation distribution is much
+* more stable across decades than wine acreage, which fluctuated with
+* phylloxera). Paper-text use should explicitly flag the 9-year gap.
+*
+* Sub-block layout (verified 2026-05-12):
+*   Row 41 header: "Cereal cultivation area (in 1000 hectares)"
+*   Row 47 = 1905 (3 cantons populated)
+*   Row 49 = 1917 (25 cantons populated -- FIRST COMPLETE YEAR)
+*   Row 69 header: "Potato cultivation area (in 1000 hectares)"
+*   Row 74 = 1910 (1 canton populated -- ZH only)
+*   Row 75 = 1917 (25 cantons populated -- FIRST COMPLETE YEAR)
+*
+* DESCRIPTIVE USE ONLY: these variables are NOT added to the main
+* regression spec. Used by paper Background and Discussion sections to
+* characterize substrate-availability variation across cantons. Per
+* strategist's C.12 dispatch (rev 2 2026-05-12): pairs the H.2a national
+* price story with canton-level substrate-availability variation.
+{
+    * --- Cereal area 1905 (sparse pre-vote snapshot, 3 cantons) + ---
+    *     Cereal area 1917 (complete post-vote snapshot, 25 cantons)
+    foreach spec in "47 1905" "49 1917" {
+        local row : word 1 of `spec'
+        local yr  : word 2 of `spec'
+        import excel using "$Absinthe1Data/translated/I.01_EN.xlsx", clear allstring
+        assert A[`row'] == "`yr'"
+        keep in `row'
+        keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+        foreach v of varlist _all {
+            replace `v' = regexr(`v', "^[a-z]\)", "")
+            replace `v' = regexr(`v', "[*]+", "")
+        }
+        destring _all, replace force
+        xpose, clear varname
+        rename v1 cereal_area_`yr'
+        gen str3 col_letter = upper(_varname)
+        drop _varname
+        merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+            assert(match) nogenerate
+        drop col_letter
+        order canton_code cereal_area_`yr'
+        assert c(N) == 25
+        isid canton_code
+        tempfile cereal_`yr'
+        save "`cereal_`yr''"
+    }
+
+    * --- Potato area 1910 (1-canton sparse) + 1917 (25-canton complete) ---
+    foreach spec in "74 1910" "75 1917" {
+        local row : word 1 of `spec'
+        local yr  : word 2 of `spec'
+        import excel using "$Absinthe1Data/translated/I.01_EN.xlsx", clear allstring
+        assert A[`row'] == "`yr'"
+        keep in `row'
+        keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+        foreach v of varlist _all {
+            replace `v' = regexr(`v', "^[a-z]\)", "")
+            replace `v' = regexr(`v', "[*]+", "")
+        }
+        destring _all, replace force
+        xpose, clear varname
+        rename v1 potato_area_`yr'
+        gen str3 col_letter = upper(_varname)
+        drop _varname
+        merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+            assert(match) nogenerate
+        drop col_letter
+        order canton_code potato_area_`yr'
+        assert c(N) == 25
+        isid canton_code
+        tempfile potato_`yr'
+        save "`potato_`yr''"
+    }
+
+    * Combine all four single-year extracts into one canton-level dta
+    use "`cereal_1905'", clear
+    merge 1:1 canton_code using "`cereal_1917'", assert(match) nogenerate
+    merge 1:1 canton_code using "`potato_1910'", assert(match) nogenerate
+    merge 1:1 canton_code using "`potato_1917'", assert(match) nogenerate
+    order canton_code cereal_area_1905 cereal_area_1917 potato_area_1910 potato_area_1917
+
+    label var canton_code      "Canton (2-letter code)"
+    label var cereal_area_1905 "Cereal area (1000 ha, 1905; HSSO I.01; SPARSE -- 3 cantons only)"
+    label var cereal_area_1917 "Cereal area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote)"
+    label var potato_area_1910 "Potato area (1000 ha, 1910; HSSO I.01; SPARSE -- ZH only)"
+    label var potato_area_1917 "Potato area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote)"
+
+    compress
+    save "$MyProject/processed/intermediate/cereal_potato_area_uncleaned.dta", replace
+}
+
+
 **# 4.1 Import I.01 ag-land sub-block (year 1912, row 10)
 *------------------------------------------------------------------------------*
 {
@@ -870,7 +979,8 @@ run "$MyProject/scripts/programs/_config.do"
                   population_uncleaned pop_density_uncleaned ///
                   religion_uncleaned language_uncleaned ///
                   migration_uncleaned farm_concentration_uncleaned ///
-                  fruit_trees_uncleaned horticulture_uncleaned {
+                  fruit_trees_uncleaned horticulture_uncleaned ///
+                  cereal_potato_area_uncleaned {
         _codebook_update using "$MyProject/processed/intermediate/`ds'.dta", ///
             script("01_import.do")
         use "$MyProject/processed/intermediate/`ds'.dta", clear
