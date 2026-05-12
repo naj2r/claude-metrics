@@ -2254,7 +2254,7 @@ run "$MyProject/scripts/programs/_config.do"
                size(small) cols(1) position(11) ring(0)) ///
         graphregion(fcolor(white)) ///
         yline(0, lcolor(gs10) lpattern(dash)) ///
-        note("Wine-relevant votes (#65 food law, #68 absinthe) cluster at high vineyard coef AND low cleavage share -- consistent with cross-cutting wine-industry alignment overriding the dominant language cleavage. #63 (alcohol regulation 1903, the null reference) sits near the origin. See Table 19 for per-vote values.", size(vsmall))
+        note("#65 (food law): low rho, positive vine coef -- cleavage attenuation CONFIRMED (cross-cutting public-health coalition broadens beyond wine-industry interests). #68 (absinthe ban): high rho -- attenuation NOT confirmed; under the threshold definition the French-canton set coincides with the wine-canton set (VD VS NE GE), so language partition does not cut across the wine partition. #63 (alcohol-reg null, 1903): near origin. See Table 19 for per-vote rho values.", size(vsmall))
 
     graph export "$MyProject/results/figures/f05_cleavage_coefficient_scatter.pdf", replace as(pdf)
     graph close
