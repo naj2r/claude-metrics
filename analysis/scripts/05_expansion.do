@@ -1817,6 +1817,155 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.19 C.15 Phase 2: Olson x Wine interaction primary specs
+*------------------------------------------------------------------------------*
+* Phase C.15 Phase 2 (verify_reconstruct_expand handoff): runs the Olson x
+* Wine interaction regression under 4 concentration measures from
+* i38_canton_concentration.dta (built in section 9e + 9f):
+*   - share_above_3, share_above_10, share_above_30 (threshold-share family)
+*   - gini_lcap (Brown trapezoidal Gini, lower-bound cap)
+*
+* Spec (for each concentration measure):
+*   yes_pct = beta0 + beta1*vineyard_per_cap + beta2*conc_centered
+*           + beta3*(vineyard_per_cap x conc_centered)
+*           + beta4*french_share + beta5*catholic_share + epsilon
+*   HC3 robust SEs. N=25 cantons. Concentration measures mean-centered for
+*   interpretability of beta1 at the sample mean.
+*
+* Olson collective-action prediction: beta3 > 0 (vineyard's pro-ban-vote
+* effect is amplified in cantons with more concentrated agriculture).
+*
+* The 4-spec comparison IS Phase 2; the strategist selects the primary
+* concentration measure post-hoc per the methodology note v2 framing
+* (coefficient stability + SE tightness + top-bin sensitivity + placebo
+* cleanliness). The threshold-share family is the empirical primary prior;
+* gini_lcap is the robustness benchmark.
+*
+* On-the-fly merge of i38_canton_concentration.dta into absinthe_analysis.dta.
+* Followup commit will move the merge into 02_clean.do for pipeline cleanliness.
+{
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+    merge 1:1 canton_code using "$MyProject/processed/i38_canton_concentration.dta", ///
+        keepusing(gini_lcap share_above_3 share_above_10 share_above_30) ///
+        assert(match) nogenerate
+    assert c(N) == 25
+
+    foreach conc in share_above_3 share_above_10 share_above_30 gini_lcap {
+        qui sum `conc'
+        scalar `conc'_mean = r(mean)
+        gen double `conc'_c     = `conc' - r(mean)
+        gen double vine_x_`conc' = vineyard_per_cap * `conc'_c
+        label var `conc'_c       "`conc' (mean-centered)"
+        label var vine_x_`conc'  "vineyard_per_cap x `conc' (centered)"
+    }
+
+    * Run the 4 interaction specs; accumulate results to dedicated tempfile
+    tempfile c15_results
+    local first 1
+    foreach conc in share_above_3 share_above_10 share_above_30 gini_lcap {
+        di as result _n "==== C.15 Phase 2: Olson x Wine interaction with `conc' ===="
+        qui reg yes_pct vineyard_per_cap `conc'_c vine_x_`conc' ///
+            french_share catholic_share, vce(hc3)
+        di "  vineyard main (at mean conc):     " %9.2f _b[vineyard_per_cap]   "  SE " %8.2f _se[vineyard_per_cap]   "  p " %5.3f 2*ttail(e(df_r), abs(_b[vineyard_per_cap]/_se[vineyard_per_cap]))
+        di "  `conc' main (centered):           " %9.4f _b[`conc'_c]             "  SE " %8.4f _se[`conc'_c]             "  p " %5.3f 2*ttail(e(df_r), abs(_b[`conc'_c]/_se[`conc'_c]))
+        di "  vineyard x `conc' interaction:    " %9.4f _b[vine_x_`conc']        "  SE " %8.4f _se[vine_x_`conc']        "  p " %5.3f 2*ttail(e(df_r), abs(_b[vine_x_`conc']/_se[vine_x_`conc']))
+        di "  french main:                      " %9.2f _b[french_share]         "  SE " %8.2f _se[french_share]
+        di "  catholic main:                    " %9.2f _b[catholic_share]       "  SE " %8.2f _se[catholic_share]
+        di "  R2:                               " %9.3f e(r2)
+
+        if `first' == 1 {
+            regsave using `c15_results', ///
+                addlabel(spec, "olson_wine_`conc'", model, "ols") replace
+            local first 0
+        }
+        else {
+            regsave using `c15_results', ///
+                addlabel(spec, "olson_wine_`conc'", model, "ols") append
+        }
+    }
+
+    * Save consolidated Phase 2 results to a dedicated dataset
+    use `c15_results', clear
+    notes _dta: C.15 Phase 2 Olson x Wine interaction primary specs (4 concentration measures).
+    notes _dta: Concentration measures mean-centered before interaction. HC3 SEs. N=25 cantons each spec.
+    notes _dta: Olson prediction: vineyard x conc interaction coefficient > 0.
+    compress
+    save "$MyProject/results/intermediate/c15_olson_wine_specs.dta", replace
+    di as result _n "Saved c15_olson_wine_specs.dta (`=c(N)' rows across 4 specs)"
+
+    * --- Notes file deliverable ---
+    use "$MyProject/results/intermediate/c15_olson_wine_specs.dta", clear
+
+    cap file close ph2fh
+    file open ph2fh using "$MyProject/output/notes/2026-05-13_c15_phase2_olson_wine.md", write replace
+    file write ph2fh "# C.15 Phase 2: Olson x Wine Interaction Primary Specs" _n _n
+    file write ph2fh "**Phase**: C.15 Phase 2 (verify_reconstruct_expand handoff)  " _n
+    file write ph2fh "**Date**: 2026-05-13  " _n
+    file write ph2fh "**Source**: processed/absinthe_analysis.dta + processed/i38_canton_concentration.dta (on-the-fly merge)  " _n
+    file write ph2fh "**Output**: results/intermediate/c15_olson_wine_specs.dta  " _n
+    file write ph2fh "**Script**: 05_expansion.do, section 10.19  " _n _n
+    file write ph2fh "---" _n _n
+
+    file write ph2fh "## Specification" _n _n
+    file write ph2fh "For each of 4 concentration measures C in {share_above_3, share_above_10, share_above_30, gini_lcap}:" _n _n
+    file write ph2fh "    yes_pct = beta0 + beta1 * vineyard_per_cap + beta2 * (C - mean(C))" _n
+    file write ph2fh "            + beta3 * vineyard_per_cap * (C - mean(C))" _n
+    file write ph2fh "            + beta4 * french_share + beta5 * catholic_share + epsilon" _n _n
+    file write ph2fh "Estimator: OLS with HC3 robust SEs. N = 25 cantons. Concentration mean-centered so beta1 is the vineyard effect at the sample-mean concentration." _n _n
+    file write ph2fh "**Olson prediction**: beta3 > 0 (vineyard's pro-ban-vote effect amplified by agricultural concentration)." _n _n
+
+    file write ph2fh "## Results: 4-spec comparison" _n _n
+    file write ph2fh "| Concentration measure | beta1 (vineyard) | SE | beta3 (interaction) | SE | p (interaction) | R^2 |" _n
+    file write ph2fh "|---|---:|---:|---:|---:|---:|---:|" _n
+
+    * df_r = N - k = 25 - 6 = 19 for the Phase 2 specs (KEY-spec + conc + interaction)
+    local df = 19
+    foreach conc in share_above_3 share_above_10 share_above_30 gini_lcap {
+        qui sum coef if spec == "olson_wine_`conc'" & var == "vineyard_per_cap"
+        local b1_n = r(mean)
+        local b1 : di %8.2f `b1_n'
+        qui sum stderr if spec == "olson_wine_`conc'" & var == "vineyard_per_cap"
+        local se1 : di %7.2f r(mean)
+        qui sum coef if spec == "olson_wine_`conc'" & var == "vine_x_`conc'"
+        local b3_n = r(mean)
+        local b3 : di %8.4f `b3_n'
+        qui sum stderr if spec == "olson_wine_`conc'" & var == "vine_x_`conc'"
+        local se3_n = r(mean)
+        local se3 : di %7.4f `se3_n'
+        local t3   = abs(`b3_n' / `se3_n')
+        local p3_n = 2 * ttail(`df', `t3')
+        local p3 : di %5.3f `p3_n'
+        qui sum r2 if spec == "olson_wine_`conc'" & var == "vineyard_per_cap"
+        local r2 : di %5.3f r(mean)
+        file write ph2fh "| `conc' | `b1' | `se1' | `b3' | `se3' | `p3' | `r2' |" _n
+    }
+    file write ph2fh _n
+
+    file write ph2fh "## Substantive interpretation (proposed)" _n _n
+    file write ph2fh "- **beta1 (vineyard at mean conc)** captures the headline wine-protection effect at typical agricultural concentration. Should be positive and significant at the headline magnitude (~480 in raw KEY-spec, comparable here)." _n
+    file write ph2fh "- **beta3 (interaction)** is the Olson test. If positive across all 4 measures, the wine-protection effect is amplified by agricultural concentration -- supporting Olson at the canton level. If near zero or sign-inconsistent across measures, the wine effect operates independently of concentration." _n
+    file write ph2fh "- **Cross-measure stability** of beta3 (consistent sign, similar magnitudes) is itself an empirical signal: it suggests the Olson signal is in the data, not in the choice of measure." _n
+    file write ph2fh "- **R^2** comparison: the measure with the highest R^2 has the most explanatory power, but should be weighted alongside coefficient stability per the methodology note v2 selection criteria." _n _n
+
+    file write ph2fh "## Pending follow-up (Phases 3-5)" _n _n
+    file write ph2fh "1. **Phase 3 Robustness**: re-run all 4 specs with NE-OVB controls, drop-NE and drop-NE+GE subsamples, alternative covariate sets." _n
+    file write ph2fh "2. **Phase 4 NE-OVB**: explicitly test whether the Olson signal is driven by NE alone (the absinthe-producing canton, also flagged on the trip-wire at top_bin_area_share = 26.4%). If the interaction collapses without NE, the canton-level Olson story doesn't replicate." _n
+    file write ph2fh "3. **Phase 5 Placebo battery for the interaction**: extend Tier 1.1 (T14b) to the interaction spec -- run the interaction on each of the 14 placebo votes and check whether the interaction concentrates on #68 alone." _n
+    file write ph2fh "4. **Phase 6 Paragraph**: draft the Section 5 prose conditional on Phase 3-5 outcomes." _n _n
+    file write ph2fh "5. **Methodology**: area-calibrated robustness Gini still pending (deferred from C.15 Phase 1.1; requires independent canton-total cultivated area)." _n _n
+
+    file write ph2fh "## Provenance" _n _n
+    file write ph2fh "Computed in 05_expansion.do section 10.19 (Phase C.15 Phase 2). Source: processed/absinthe_analysis.dta + processed/i38_canton_concentration.dta. KEY-spec covariates: vineyard_per_cap + french_share + catholic_share. Concentration measures from I.38 (1905 Federal Agricultural Census)." _n
+    file close ph2fh
+    di as result "Saved output/notes/2026-05-13_c15_phase2_olson_wine.md"
+
+    cap _inventory_append, sheet("datasets") ///
+        row("created|results/intermediate/c15_olson_wine_specs.dta|.|.|.|05_expansion.do (C.15 Phase 2)")
+    cap _inventory_append, sheet("outputs") ///
+        row("created|output/notes/2026-05-13_c15_phase2_olson_wine.md|.|.|.|05_expansion.do (C.15 Phase 2)")
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
