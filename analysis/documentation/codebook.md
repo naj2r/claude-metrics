@@ -718,10 +718,13 @@ _Updated: 12 May 2026 20:56:36 by 05_expansion.do_
 
 <!-- codebook:results/intermediate/regressions_expansion.dta:end -->
 
+
+
+
 <!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:start -->
 ### processed/intermediate/h2a_substrate_prices_long.dta
 
-_Updated: 12 May 2026 21:00:44 by 07_substrate_descriptives.do_
+_Updated: 12 May 2026 21:11:07 by 07_substrate_descriptives.do_
 
 **N = 183, vars = 10**
 
@@ -743,7 +746,7 @@ _Updated: 12 May 2026 21:00:44 by 07_substrate_descriptives.do_
 <!-- codebook:processed/intermediate/i33_subsidies_long.dta:start -->
 ### processed/intermediate/i33_subsidies_long.dta
 
-_Updated: 12 May 2026 21:00:45 by 07_substrate_descriptives.do_
+_Updated: 12 May 2026 21:11:08 by 07_substrate_descriptives.do_
 
 **N = 125, vars = 6**
 
@@ -761,7 +764,7 @@ _Updated: 12 May 2026 21:00:45 by 07_substrate_descriptives.do_
 <!-- codebook:processed/intermediate/cereal_potato_area_long.dta:start -->
 ### processed/intermediate/cereal_potato_area_long.dta
 
-_Updated: 12 May 2026 21:00:46 by 07_substrate_descriptives.do_
+_Updated: 12 May 2026 21:11:08 by 07_substrate_descriptives.do_
 
 **N = 25, vars = 10**
 
@@ -779,4 +782,24 @@ _Updated: 12 May 2026 21:00:46 by 07_substrate_descriptives.do_
 | potato_area_1917_per_cap | double | %10.0g | Potato/pop (ha/person, 1917; first complete canton-year) |
 
 <!-- codebook:processed/intermediate/cereal_potato_area_long.dta:end -->
+
+<!-- codebook:processed/intermediate/i21a_quantities_long.dta:start -->
+### processed/intermediate/i21a_quantities_long.dta
+
+_Updated: 12 May 2026 21:11:09 by 07_substrate_descriptives.do_
+
+**N = 155, vars = 8**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %12.0g | Year |
+| wheat_qty | double | %10.0g | Wheat production (1000 q, HSSO I.21a) |
+| rye_qty | double | %10.0g | Rye production (1000 q, HSSO I.21a) |
+| oats_qty | double | %10.0g | Oats production (1000 q, HSSO I.21a) |
+| cereal_total_qty | double | %10.0g | Cereal Total production (1000 q, HSSO I.21a) |
+| potato_qty | double | %10.0g | Potato production (1000 q, HSSO I.21a) |
+| fruit_total_qty | double | %10.0g | Fruit Total production (1000 q, HSSO I.21a) |
+| wine_total_qty | int | %10.0g | Wine Total production (1000 hl, HSSO I.21a) |
+
+<!-- codebook:processed/intermediate/i21a_quantities_long.dta:end -->
 

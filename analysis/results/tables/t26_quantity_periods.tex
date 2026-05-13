@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{National crop production: structural-break period means, 1837-1915 (Phase C.14)}
+\label{tab:quantity_periods}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Period}&{Years (N)}&{Wine (1000 hl)}&{Potato (1000 q)}&{Cereal (1000 q)}&{Fruit (1000 q)} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Pre-phylloxera (1837--1862)&26&1418&5849&4301&2225
+Phylloxera era (1875--1895)&20&1363&7978&3477&3537
+Recovery + ban (1895--1915)&21&1014&6849&2673&3991
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Phase C.14 (verify\\_reconstruct\\_expand handoff). National crop production volumes from HSSO I.21a (1837-1991, yearly), summarized by structural-break period. Pillar 2 quantity-side corroboration of the substrate-substitution framework: framework predicts wine production DOWN and substitute production (potato, cereal) UP during the phylloxera era. Wine units are 1000 hl; crop units are 1000 quintals (q). Pre-phylloxera baseline starts 1837 (first data year in I.21a). Source: HSSO I.21a citing Mottu-Weber 1989 + Swiss Farmers' Secretariat statistics.}
+\end{table}
+\end{document}
