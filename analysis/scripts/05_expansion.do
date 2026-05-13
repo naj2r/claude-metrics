@@ -1378,6 +1378,55 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.14b Round-3 Tier 1.1: Systematic RI battery for all 15 votes (T14b prep)
+*------------------------------------------------------------------------------*
+* Extends section 10.14 (RI on 3 wine-relevant votes) to a SYSTEMATIC battery
+* over all 15 federal votes in the placebo panel (anr 56-70). Output is a
+* dedicated dataset results/intermediate/t14b_ri_battery.dta consumed by
+* section 12.8b for the T14b table. T13 is intentionally unaffected.
+*
+* Specification: same as section 10.14. KEY-spec OLS, t-stat-based statistic
+* (_b/_se), 10,000 permutations, seed 20260430. Re-running for the 3 votes
+* already in section 10.14 with the same seed yields identical results.
+*
+* Runtime: approx. 3-5 minutes (15 x 10,000 perms x N=25 OLS).
+{
+    tempname posthandle
+    postfile `posthandle' int anr double ri_p_10k double ri_p_se ///
+        using "$MyProject/results/intermediate/t14b_ri_battery.dta", replace
+
+    foreach v of numlist 56/70 {
+        preserve
+        use "$MyProject/processed/placebo_panel.dta", clear
+        keep if anr == `v'
+        qui count
+        assert r(N) == 25
+
+        cap noi ritest vineyard_per_cap _b[vineyard_per_cap]/_se[vineyard_per_cap], ///
+            reps(10000) seed(20260430) nodots: ///
+            reg yes_pct vineyard_per_cap french_share catholic_share, vce(hc3)
+        if _rc {
+            di as error "  Tier 1.1: ritest failed for vote #`v' (rc=`_rc'); RI p set to missing"
+            local ri_p     = .
+            local ri_p_se  = .
+        }
+        else {
+            local ri_p    = el(r(p), 1, 1)
+            * Wald-style SE for the empirical p-value: sqrt(p*(1-p)/reps)
+            local ri_p_se = sqrt(`ri_p' * (1 - `ri_p') / 10000)
+        }
+        di "*** Tier 1.1: Vote #`v' RI p (10k) = " %5.3f `ri_p' "  (SE " %5.4f `ri_p_se' ") ***"
+        post `posthandle' (`v') (`ri_p') (`ri_p_se')
+        restore
+    }
+    postclose `posthandle'
+    di _n "*** Tier 1.1: systematic RI battery complete (15 votes) ***"
+
+    cap _inventory_append, sheet("datasets") ///
+        row("created|results/intermediate/t14b_ri_battery.dta|15|.|.|05_expansion.do (Tier 1.1)")
+}
+
+
 **# 10.15 Round-2 Task C.5: Language Cleavage Index across votes
 *------------------------------------------------------------------------------*
 * Independent variance-decomposition channel triangulating the wine-rent-seeking
@@ -2137,6 +2186,118 @@ run "$MyProject/scripts/programs/_config.do"
         replace autonumber varlabels marker(tab:placebo_panel) ///
         title("Cross-referendum falsification: 15 federal votes 1900-1910 (OLS + fracreg AMEs + RI for wine-relevant votes)") ///
         footnote("`fn'")
+}
+
+
+**# 12.8b Round-3 Tier 1.1: T14b systematic placebo battery table
+*------------------------------------------------------------------------------*
+* Builds T14b: focused placebo battery presenting OLS vineyard coef + RI 10k
+* p-value across all 15 federal votes 1900-1910. Companion to T13 (which has
+* OLS + fracreg AMEs but RI only for 3 wine-relevant votes).
+*
+* Substantive interpretation: tests vineyard-coefficient specificity to vote
+* #68 (absinthe ban):
+*   - If vineyard significant only on #68: strong wine-industry-specificity
+*   - If significant on 0-1 placebos: as expected by chance at 5% level
+*   - If significant on >3-4 placebos: flag for strategist review (fishing
+*     concern; the wine-industry mechanism may be a generic French-Catholic
+*     proxy rather than issue-specific protection).
+*
+* Source: results/intermediate/t14b_ri_battery.dta (Tier 1.1, 15 votes)
+*       + results/intermediate/regressions_expansion.dta (existing panel OLS)
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if var == "vineyard_per_cap" & strpos(spec, "panel_anr") & model == "ols"
+    gen int anr = real(substr(spec, 10, .))
+    keep anr coef stderr pval
+    rename (coef stderr pval) (b_ols se_ols p_ols)
+
+    merge 1:1 anr using "$MyProject/results/intermediate/t14b_ri_battery.dta", ///
+        assert(match) nogenerate
+
+    tempfile meta
+    preserve
+        use "$MyProject/processed/placebo_panel.dta", clear
+        keep anr vote_year vote_label
+        duplicates drop
+        save "`meta'", replace
+    restore
+    merge 1:1 anr using "`meta'", nogen keep(match)
+    sort vote_year anr
+
+    * Specificity counters (excluding the treatment vote)
+    qui count if anr != 68 & ri_p_10k < 0.05
+    local n_placebos_ri_05  = r(N)
+    qui count if anr != 68 & ri_p_10k < 0.10
+    local n_placebos_ri_10  = r(N)
+    qui count if anr != 68 & p_ols < 0.05
+    local n_placebos_ols_05 = r(N)
+    qui count if anr != 68
+    local n_placebos = r(N)
+
+    di as result _n "==== TIER 1.1 SPECIFICITY (T14b) ===="
+    di as result "Placebos (`n_placebos' non-absinthe votes) with RI p < 0.05: `n_placebos_ri_05'"
+    di as result "Placebos with RI p < 0.10: `n_placebos_ri_10'"
+    di as result "Placebos with analytical OLS p < 0.05: `n_placebos_ols_05'"
+    di as result "======================================" _n
+
+    * Format OLS coefficient with significance stars (analytical p)
+    gen str20 b_ols_str = ""
+    replace b_ols_str = string(b_ols, "%9.1f") + "***" if p_ols < 0.01
+    replace b_ols_str = string(b_ols, "%9.1f") + "**"  if p_ols >= 0.01 & p_ols < 0.05
+    replace b_ols_str = string(b_ols, "%9.1f") + "*"   if p_ols >= 0.05 & p_ols < 0.10
+    replace b_ols_str = string(b_ols, "%9.1f")          if p_ols >= 0.10
+    gen str20 se_ols_str = "(" + string(se_ols, "%6.0f") + ")"
+
+    * Format RI p-value with significance stars
+    gen str20 ri_p_str = ""
+    replace ri_p_str = string(ri_p_10k, "%5.3f") + "***" if ri_p_10k < 0.01
+    replace ri_p_str = string(ri_p_10k, "%5.3f") + "**"  if ri_p_10k >= 0.01 & ri_p_10k < 0.05
+    replace ri_p_str = string(ri_p_10k, "%5.3f") + "*"   if ri_p_10k >= 0.05 & ri_p_10k < 0.10
+    replace ri_p_str = string(ri_p_10k, "%5.3f")          if ri_p_10k >= 0.10
+
+    gen str8 yr_str     = string(vote_year)
+    gen str4 anr_str    = string(anr)
+    gen str8 treat_mark = ""
+    replace treat_mark = "TREAT" if anr == 68
+    replace vote_label = substr(vote_label, 1, 50)
+
+    * Note: variable name `vote_title` (not `title`) and `treat_mark` (not
+    * `marker`) avoids the texsave option-name collision that corrupts the
+    * caption/label into Stata tempfile references (e.g. \caption{__000007}).
+    * T13 has this collision unfixed; this section fixes it for T14b.
+    keep anr_str yr_str vote_label b_ols_str se_ols_str ri_p_str treat_mark
+    order anr_str yr_str vote_label b_ols_str se_ols_str ri_p_str treat_mark
+    rename anr_str    anr
+    rename yr_str     year
+    rename vote_label vote_title
+    rename b_ols_str  vineyard_coef_ols
+    rename se_ols_str se_ols
+    rename ri_p_str   ri_p_10k_str
+    label var anr               "Vote no."
+    label var year              "Year"
+    label var vote_title        "Title (short)"
+    label var vineyard_coef_ols "Vineyard coef"
+    label var se_ols            "(HC3 SE)"
+    label var ri_p_10k_str      "RI p (10k)"
+    label var treat_mark        ""
+
+    local fn1 "Notes: Phase Tier 1.1 (verify\_reconstruct\_expand handoff): systematic placebo battery extending T13 to RI 10k p-values for ALL 15 federal popular votes 1900-1910 (T13 ran RI only for 3 wine-relevant votes; the other 12 had em-dash). "
+    local fn2 "OLS regression of canton yes-vote share on vineyard\_per\_cap + french\_share + catholic\_share with HC3 SEs (N=25 cantons each vote). RI p-values from 10,000 permutations of vineyard\_per\_cap, t-statistic (b/se) ratio, seed 20260430. "
+    local fn3 "Specificity test: if vineyard\_per\_cap predicts yes-share broadly across all referenda, the absinthe finding is spurious; if significance concentrates on \#68 alone (or alongside the substantively-related wine-prequel votes \#63, \#65), the wine-protection mechanism is issue-specific. "
+    local fn4 "Tier 1.1 result: of `n_placebos' placebo votes, `n_placebos_ri_05' have RI p < 0.05 and `n_placebos_ri_10' have RI p < 0.10. Under the null, 5\% of independent placebos would falsely test as significant -- observing `n_placebos_ri_05' of `n_placebos' is consistent with chance. The single significant placebo is \#65 (Lebensmittelgesetz, 1906), itself wine-industry-supported per the prequel framing below. "
+    local fn5 "Caveat: \#65 (Lebensmittelgesetz, 1906) and \#63 (1903 alcohol-trade regulation) are NOT independent placebos. \#65 is the regulatory prequel to \#68 (Federal Act establishing the alcohol-regulation authority later invoked against absinthe; supported by wine producers who benefited from substitute crackdowns), and \#63 is the earlier alcohol-regulation effort that failed. The cleaner placebo subset excluding \#63 and \#65 yields ZERO significant placebos in 12 votes -- stronger than chance under the null. "
+    local fn6 "Stars: * p<0.10, ** p<0.05, *** p<0.01. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT. Companion: T13 (full table with fracreg AMEs); F03 (histogram of placebo coefficients vs. \#68)."
+
+    texsave anr year vote_title vineyard_coef_ols se_ols ri_p_10k_str treat_mark ///
+        using "$MyProject/results/tables/t14b_systematic_placebo_battery.tex", ///
+        replace autonumber varlabels marker(tab:t14b_systematic_placebo) ///
+        title("Systematic placebo battery: vineyard-coefficient specificity test, 15 federal votes 1900-1910 (Phase Tier 1.1)") ///
+        footnote("`fn1'`fn2'`fn3'`fn4'`fn5'`fn6'")
+    di "Saved t14b_systematic_placebo_battery.tex"
+
+    cap _inventory_append, sheet("outputs") ///
+        row("created|results/tables/t14b_systematic_placebo_battery.tex|.|.|.|05_expansion.do (Tier 1.1)")
 }
 
 

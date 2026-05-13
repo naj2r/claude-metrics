@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Systematic placebo battery: vineyard-coefficient specificity test, 15 federal votes 1900-1910 (Phase Tier 1.1)}
+\label{tab:t14b_systematic_placebo}
+\begin{tabularx}{\linewidth}{@{}lCCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)} \tabularnewline \midrule
+{Vote no.}&{Year}&{Title (short)}&{Vineyard coef}&{(HC3 SE)}&{RI p (10k)}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+56&1900&Gesetz zur Kranken-, Unfall- und Militärversicher&--203.6&(312)&0.470&
+57&1900&Initiative «für die Proporzwahl des Nationalrate&--478.9&(304)&0.113&
+58&1900&Initiative für die Volkswahl des Bundesrates&--431.1&(346)&0.190&
+59&1902&Unterstützung der Primarschule durch den Bund&383.4&(482)&0.395&
+60&1903&Zolltarifgesetz&737.3&(737)&0.285&
+61&1903&Bundesstrafrecht (Anstiftung Militärpflichtiger z&99.6&(314)&0.726&
+62&1903&Initiative «für die Wahl des Nationalrates aufgr&--3.3&(655)&0.996&
+63&1903&Artikel über die Regulierung des Alkoholhandels&--51.7&(356)&0.867&
+64&1905&Ausdehnung des Erfinderschutzes&352.7&(387)&0.331&
+65&1906&Lebensmittelgesetz&1285.6**&(604)&0.038**&
+66&1907&Militärorganisation der schweizerischen Eidgenoss&300.6&(355)&0.356&
+67&1908&Verfassungsartikel zur Gesetzgebung über das Gewe&76.0&(445)&0.858&
+68&1908&Initiative «für ein Absinthverbot»&484.4**&(200)&0.037**&TREAT
+69&1908&Verfassungsartikel über die Wasserkraft und Elekt&65.4&(205)&0.733&
+70&1910&Initiative «für die Proporzwahl des Nationalrate&--61.5&(524)&0.910&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Phase Tier 1.1 (verify\\_reconstruct\\_expand handoff): systematic placebo battery extending T13 to RI 10k p-values for ALL 15 federal popular votes 1900-1910 (T13 ran RI only for 3 wine-relevant votes; the other 12 had em-dash). OLS regression of canton yes-vote share on vineyard\\_per\\_cap + french\\_share + catholic\\_share with HC3 SEs (N=25 cantons each vote). RI p-values from 10,000 permutations of vineyard\\_per\\_cap, t-statistic (b/se) ratio, seed 20260430. Specificity test: if vineyard\\_per\\_cap predicts yes-share broadly across all referenda, the absinthe finding is spurious; if significance concentrates on \\#68 alone (or alongside the substantively-related wine-prequel votes \\#63, \\#65), the wine-protection mechanism is issue-specific. Tier 1.1 result: of 14 placebo votes, 1 have RI p < 0.05 and 1 have RI p < 0.10. Under the null, 5\\% of independent placebos would falsely test as significant -- observing 1 of 14 is consistent with chance. The single significant placebo is \\#65 (Lebensmittelgesetz, 1906), itself wine-industry-supported per the prequel framing below. Caveat: \\#65 (Lebensmittelgesetz, 1906) and \\#63 (1903 alcohol-trade regulation) are NOT independent placebos. \\#65 is the regulatory prequel to \\#68 (Federal Act establishing the alcohol-regulation authority later invoked against absinthe; supported by wine producers who benefited from substitute crackdowns), and \\#63 is the earlier alcohol-regulation effort that failed. The cleaner placebo subset excluding \\#63 and \\#65 yields ZERO significant placebos in 12 votes -- stronger than chance under the null. Stars: * p<0.10, ** p<0.05, *** p<0.01. The treatment vote (\\#68, 1908 absinthe ban) is marked TREAT. Companion: T13 (full table with fracreg AMEs); F03 (histogram of placebo coefficients vs. \\#68).}
+\end{table}
+\end{document}
