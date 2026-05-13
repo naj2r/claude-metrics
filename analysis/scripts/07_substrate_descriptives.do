@@ -133,9 +133,17 @@ if _rc {
     label var potato_idx          "Potato producer-price index (1914=100)"
     label var apple_idx           "Apple producer-price index (1914=100)"
     label var wine_idx            "Wine producer-price index (1914=100)"
-    label var wine_potato_ratio   "Wine/Potato price ratio (substitution-incentive proxy)"
-    label var wine_wheat_ratio    "Wine/Wheat price ratio (substitution-incentive proxy)"
-    label var wine_rye_ratio      "Wine/Rye price ratio (substitution-incentive proxy)"
+    * Phase B.5 framing: substitution-INCENTIVE proxy (relative input cost),
+    * NOT cross-price elasticity (which requires demand-quantity data we do
+    * not observe for this period). The supply-and-demand framework predicts
+    * ambiguous price movements (demand for substitutes up; supply of
+    * substitute inputs up via land reallocation), so the ratio movements
+    * are CONSISTENT WITH but not direct PROOF of substitution. Quantity-
+    * side corroboration via Marrus (1974) consumption volumes and HSSO
+    * I.01 substrate-crop areas (canton_substrate_availability_descriptive.md).
+    label var wine_potato_ratio   "Wine/Potato producer-price ratio (substitution-INCENTIVE proxy; not cross-price elasticity)"
+    label var wine_wheat_ratio    "Wine/Wheat producer-price ratio (substitution-INCENTIVE proxy; not cross-price elasticity)"
+    label var wine_rye_ratio      "Wine/Rye producer-price ratio (substitution-INCENTIVE proxy; not cross-price elasticity)"
 
     notes _dta: HSSO H.2a (Producer Price Indexes of Vegetable Products 1801-1983, 1914=100). National-level only. Source: Ritzmann 1990 + Swiss Farmers' Secretariat 1922-1984.
     notes _dta: Substrate-substitution arc descriptive evidence (C.10). Wine/Potato ratio is the primary substitution-incentive proxy for spirits distillers' substrate choice between grape eau-de-vie and potato eau-de-vie.
@@ -185,7 +193,7 @@ if _rc {
     label var ratio_wp_str    "Wine/Potato"
     label var era_marker      "Era"
 
-    local fn = "Notes: Producer Price Indexes for vegetable products (1914 = 100). The Wine/Potato ratio is the primary substitution-incentive proxy: higher values indicate stronger cost-rational incentive for spirits distillers to use potato eau-de-vie in place of grape eau-de-vie. (P) marks the phylloxera-trough period 1880-1895 during which Swiss vineyard area collapsed (Banerjee et al. 2010; Simpson 2011); (B) marks the 1908 absinthe ban referendum year (vote \#68). The 1908 ratio was `ratio_1908_str', indicating ongoing cost-rational substitution incentive at the ban-year baseline. Source: HSSO H.2a (Producer Price Indexes of Vegetable Products 1801-1983, citing Ritzmann 1990 and Swiss Farmers' Secretariat 1922-1984)."
+    local fn = "Notes: This table presents the substrate input-price environment faced by spirits distillers. It documents substitution INCENTIVE (relative input costs), not substitution behavior (which requires demand-quantity data we do not observe). Producer Price Indexes for vegetable products (1914 = 100). The Wine/Potato ratio is the primary substitution-incentive proxy: higher values indicate stronger cost-rational incentive for spirits distillers to use potato eau-de-vie in place of grape eau-de-vie. (P) marks the phylloxera-trough period 1880-1895 during which Swiss vineyard area collapsed (Banerjee et al. 2010; Simpson 2011); (B) marks the 1908 absinthe ban referendum year (vote \#68). The 1908 ratio was `ratio_1908_str', indicating ongoing cost-rational substitution incentive at the ban-year baseline. Convergent quantity-side evidence: Marrus (1974) consumption volumes; HSSO I.01 canton-level substrate-crop areas (canton\_substrate\_availability\_descriptive.md). Source: HSSO H.2a (Producer Price Indexes of Vegetable Products 1801-1983, citing Ritzmann 1990 and Swiss Farmers' Secretariat 1922-1984)."
 
     texsave year wine_idx_str potato_idx_str apple_idx_str ratio_wp_str era_marker ///
         using "$MyProject/results/tables/t23_substrate_prices.tex", ///
@@ -218,10 +226,11 @@ if _rc {
         xline(1880, lcolor(gs10) lpattern(dot)) ///
         xline(1908, lcolor(black) lpattern(dash)) ///
         text(115 1882 "Phylloxera era 1880-1895", size(vsmall) color(gs6)) ///
-        text(115 1908 "1908 ban", size(vsmall) color(black)) ///
+        text(115 1892 "Peak ratio 2.30 (1892)", size(vsmall) color(black)) ///
+        text(115 1908 "1908 ban (ratio 1.50)", size(vsmall) color(black)) ///
         legend(order(1 "Wine" 2 "Potato" 3 "Wine/Potato ratio (R)") rows(1) size(small) position(6)) ///
         graphregion(fcolor(white)) ///
-        note("Substrate-substitution arc stage (i): phylloxera shock drove the relative-price reversal favoring potato substrate. At 1908 the wine/potato ratio remained {bf:>1}, indicating cost-rational substitution incentive at the ban-year baseline. Source: HSSO H.2a, 1914 = 100.", size(vsmall))
+        note("Substitution INCENTIVE evidence (relative input cost), not substitution behavior (which requires demand-quantity data unavailable for this period). The wine-potato divergence (wine prices rising during phylloxera scarcity; potato prices falling during the same period) is consistent with the joint supply-and-demand framework: phylloxera reduces wine supply (wine prices up); demand for substitute alcohols increases (upward pressure on substitute prices); concurrent supply of substitute inputs increases as producers reallocate land toward viable crops (downward pressure on substitute prices). Net effect on substitute prices is theoretically ambiguous; observed potato-price decline suggests supply response dominated demand response. Framework predicts unambiguous increase in substitute crop quantities (corroborated descriptively via I.01 canton substrate-area data, 1917 complete coverage). Peak substitution incentive 1892 (ratio 2.30); ban year 1908 (ratio 1.50). The 16-year peak-to-mobilization gap is consistent with the historical-political-economy argument that mobilization lags structural pressure and requires coalitional opportunity (cf. Prestwich 1979). Source: HSSO H.2a, 1914 = 100.", size(vsmall))
 
     graph export "$MyProject/results/figures/f08_substrate_prices.pdf", replace as(pdf)
     graph close
@@ -419,7 +428,7 @@ if _rc {
     label var viti_str "Viticulture subsidy (1000 CHF)"
     label var era_note "Era / event marker"
 
-    local fn_t22 = "Notes: Federal viticulture subsidy line item from HSSO I.33a column C (1866-1915) and I.33b column H (continuation). The line is BLANK from the start of the federal agricultural subsidy series in 1866 through 1907 and first appears in 1908 with 133K CHF -- the same calendar year as the absinthe-ban referendum (5 July 1908, vote \#68). The 1909 row reflects the implementing ordinance of the 1906 Lebensmittelgesetz that established federal thujone limits. Two interpretations of the 1908 emergence remain possible without Brugger 1968 disambiguation: (a) a genuinely new federal program emerged in 1908 (full-spectrum-capture interpretation: positive transfers + competitor elimination in the same year); or (b) a pre-existing program newly broken out from a previously-aggregated category (categorical-reclassification interpretation). The post-1908 trajectory (237K 1909, 277K 1910) shows the line item growing in scale, and the post-vote continuation in I.33b is the foundation for the substrate-substitution industrial policy documented in stage (iv) of the policy-economy arc. WWI budget reallocation explains the 1914-1918 dip. Source: HSSO I.33a + I.33b, citing Brugger 1968. See progress\_2026-05-11\_2215\_viti1908.md for the full discovery context."
+    local fn_t22 = "Notes: Federal viticulture subsidy line item from HSSO I.33a column C (1866-1915) and I.33b column H (continuation). The line is BLANK from the start of the federal agricultural subsidy series in 1866 through 1907 and first appears in 1908 with 133K CHF -- the same calendar year as the absinthe-ban referendum (5 July 1908, vote \#68). The 1909 row reflects the implementing ordinance of the 1906 Lebensmittelgesetz that established federal thujone limits. Two interpretations of the 1908 emergence remain possible without Brugger 1968 disambiguation: (a) a genuinely new federal program emerged in 1908 (full-spectrum-capture interpretation: positive transfers + competitor elimination in the same year); or (b) a pre-existing program newly broken out from a previously-aggregated category (categorical-reclassification interpretation). The post-1908 trajectory (237K 1909, 277K 1910) shows the line item growing in scale, and the post-vote continuation in I.33b is the foundation for the substrate-substitution industrial policy documented in stage (iv) of the policy-economy arc. The post-1908 wine-index surge (1910 = 107 vs. 1905 ~ 50) coincides with the ban-imposed elimination of cheap-absinthe substitute demand. This pattern is consistent with regulatory-capture-induced demand redirection toward wine, distinct from the natural supply-recovery from phylloxera replanting (which occurred 1895-1905). The two sources of wine-market improvement are temporally separable and substantively distinct. WWI budget reallocation explains the 1914-1918 dip. Source: HSSO I.33a + I.33b, citing Brugger 1968. See progress\_2026-05-11\_2215\_viti1908.md for the full discovery context."
 
     texsave year viti_str era_note ///
         using "$MyProject/results/tables/t22_viticulture_subsidy.tex", ///
@@ -452,7 +461,7 @@ if _rc {
         text(1500 1961 "sugar-beet emerges", size(vsmall) color(gs6)) ///
         legend(order(1 "Viticulture (I.33a col C / I.33b col H)" 2 "Potato + fruit (I.33b col I)" 3 "Sugar-beet (I.33b col J)") rows(2) size(small) position(6)) ///
         graphregion(fcolor(white)) ///
-        note("Substrate-substitution policy-economy arc stages (iii) and (iv): viticulture line emerges 1908 (133K CHF) -- same year as absinthe ban. Substrate-subsidy continuation: potato/fruit alcohol 1931+, sugar-beet 1961+. Source: HSSO I.33a (1866-1915) + I.33b (1916-1991, 1911-1915 overlap dropped).", size(vsmall))
+        note("Substrate-substitution policy-economy arc stages (iii) and (iv): viticulture line emerges 1908 (133K CHF) -- same year as absinthe ban. The post-1908 wine-index surge (1910 = 107 vs. 1905 ~ 50) coincides with the ban-imposed elimination of cheap-absinthe substitute demand: consistent with regulatory-capture-induced demand redirection toward wine, distinct from the natural supply-recovery from phylloxera replanting 1895-1905. Substrate-subsidy continuation: potato/fruit alcohol 1931+, sugar-beet 1961+. Source: HSSO I.33a (1866-1915) + I.33b (1916-1991, 1911-1915 overlap dropped).", size(vsmall))
 
     graph export "$MyProject/results/figures/f07_subsidy_timeseries.pdf", replace as(pdf)
     graph close

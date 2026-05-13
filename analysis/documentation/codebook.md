@@ -495,10 +495,39 @@ _Updated: 12 May 2026 18:04:41 by 01_import.do_
 
 <!-- codebook:processed/intermediate/cereal_potato_area_uncleaned.dta:end -->
 
+
+
+
+
+
+<!-- codebook:results/intermediate/regressions.dta:start -->
+### results/intermediate/regressions.dta
+
+_Updated: 12 May 2026 19:53:30 by 03_regress.do_
+
+**N = 144, vars = 11**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| var | str20 | %20s | Variable |
+| coef | float | %9.0g | Coefficient |
+| stderr | float | %9.0g | Standard error |
+| tstat | float | %9.0g | t-statistic |
+| pval | float | %9.0g | Two-tailed p-value |
+| N | byte | %10.0g | Number of observations |
+| r2 | float | %9.0g | R-squared |
+| _id | byte | %9.0g | Regression ID number |
+| spec | str21 | %21s |  |
+| model | str11 | %11s | Model name |
+| dropped | str2 | %9s |  |
+
+<!-- codebook:results/intermediate/regressions.dta:end -->
+
+
 <!-- codebook:processed/absinthe_analysis.dta:start -->
 ### processed/absinthe_analysis.dta
 
-_Updated: 12 May 2026 18:04:43 by 02_clean.do_
+_Updated: 12 May 2026 20:13:57 by 02_clean.do_
 
 **N = 25, vars = 63**
 
@@ -561,7 +590,7 @@ _Updated: 12 May 2026 18:04:43 by 02_clean.do_
 | catholic_1900 | float | %9.0g | Catholic population (Roman + Old Catholic, 1900 census) |
 | adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
 | horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
-| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; Obstler proxy) |
+| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootl |
 | absinthe_dummy_broad | byte | %8.0g | Absinthe-producing canton (NE + VD; main) |
 | absinthe_dummy_any | byte | %8.0g | Absinthe-producing canton (NE + VD + GE; any) |
 | turnout_v68 | float | %9.0g | Turnout on vote #68 (1908 absinthe, %) |
@@ -573,7 +602,7 @@ _Updated: 12 May 2026 18:04:43 by 02_clean.do_
 <!-- codebook:processed/placebo_panel.dta:start -->
 ### processed/placebo_panel.dta
 
-_Updated: 12 May 2026 18:04:43 by 02_clean.do_
+_Updated: 12 May 2026 20:13:57 by 02_clean.do_
 
 **N = 375, vars = 20**
 
@@ -598,14 +627,14 @@ _Updated: 12 May 2026 18:04:43 by 02_clean.do_
 | ln_pop | double | %10.0g | Log population (1900) |
 | pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
 | adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
-| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; Obstler proxy) |
+| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootl |
 
 <!-- codebook:processed/placebo_panel.dta:end -->
 
 <!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:start -->
 ### processed/intermediate/h2a_substrate_prices_long.dta
 
-_Updated: 12 May 2026 18:04:45 by 07_substrate_descriptives.do_
+_Updated: 12 May 2026 20:13:59 by 07_substrate_descriptives.do_
 
 **N = 183, vars = 10**
 
@@ -618,16 +647,16 @@ _Updated: 12 May 2026 18:04:45 by 07_substrate_descriptives.do_
 | potato_idx | double | %10.0g | Potato producer-price index (1914=100) |
 | apple_idx | double | %10.0g | Apple producer-price index (1914=100) |
 | wine_idx | double | %10.0g | Wine producer-price index (1914=100) |
-| wine_potato_ratio | double | %10.0g | Wine/Potato price ratio (substitution-incentive proxy) |
-| wine_wheat_ratio | double | %10.0g | Wine/Wheat price ratio (substitution-incentive proxy) |
-| wine_rye_ratio | double | %10.0g | Wine/Rye price ratio (substitution-incentive proxy) |
+| wine_potato_ratio | double | %10.0g | Wine/Potato producer-price ratio (substitution-INCENTIVE proxy; not cross-price  |
+| wine_wheat_ratio | double | %10.0g | Wine/Wheat producer-price ratio (substitution-INCENTIVE proxy; not cross-price e |
+| wine_rye_ratio | double | %10.0g | Wine/Rye producer-price ratio (substitution-INCENTIVE proxy; not cross-price ela |
 
 <!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:end -->
 
 <!-- codebook:processed/intermediate/i33_subsidies_long.dta:start -->
 ### processed/intermediate/i33_subsidies_long.dta
 
-_Updated: 12 May 2026 18:04:46 by 07_substrate_descriptives.do_
+_Updated: 12 May 2026 20:14:00 by 07_substrate_descriptives.do_
 
 **N = 125, vars = 6**
 
@@ -645,7 +674,7 @@ _Updated: 12 May 2026 18:04:46 by 07_substrate_descriptives.do_
 <!-- codebook:processed/intermediate/cereal_potato_area_long.dta:start -->
 ### processed/intermediate/cereal_potato_area_long.dta
 
-_Updated: 12 May 2026 18:04:47 by 07_substrate_descriptives.do_
+_Updated: 12 May 2026 20:14:01 by 07_substrate_descriptives.do_
 
 **N = 25, vars = 10**
 
@@ -664,33 +693,10 @@ _Updated: 12 May 2026 18:04:47 by 07_substrate_descriptives.do_
 
 <!-- codebook:processed/intermediate/cereal_potato_area_long.dta:end -->
 
-<!-- codebook:results/intermediate/regressions.dta:start -->
-### results/intermediate/regressions.dta
-
-_Updated: 12 May 2026 19:53:30 by 03_regress.do_
-
-**N = 144, vars = 11**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| var | str20 | %20s | Variable |
-| coef | float | %9.0g | Coefficient |
-| stderr | float | %9.0g | Standard error |
-| tstat | float | %9.0g | t-statistic |
-| pval | float | %9.0g | Two-tailed p-value |
-| N | byte | %10.0g | Number of observations |
-| r2 | float | %9.0g | R-squared |
-| _id | byte | %9.0g | Regression ID number |
-| spec | str21 | %21s |  |
-| model | str11 | %11s | Model name |
-| dropped | str2 | %9s |  |
-
-<!-- codebook:results/intermediate/regressions.dta:end -->
-
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 12 May 2026 19:59:59 by 05_expansion.do_
+_Updated: 12 May 2026 20:19:36 by 05_expansion.do_
 
 **N = 477, vars = 11**
 

@@ -196,7 +196,14 @@ run "$MyProject/scripts/programs/_config.do"
     * beyond grape-wine producers (vineyard_per_cap) to include fruit-brandy /
     * Obstler producers (horticulture density).
     gen double horticulture_per_cap = (horticulture_n_1905 / pop_1900) * 1000
-    label var horticulture_per_cap "Horticulture enterprises per 1000 pop (Gartenbau, 1905; Obstler proxy)"
+    * Phase B.6 framing: INCONCLUSIVE proxy. Gartenbau aggregates vegetable
+    * gardens, ornamentals, fruit orchards, and plant nurseries; only the
+    * fruit-orchard component directly produces Obstler substrate. Null
+    * coefficients in T17 col 6 + T18 row 9 are consistent with both (a)
+    * absence of a fruit-spirit Bootlegger coalition member and (b) noisy
+    * proxy. Formal multi-Bootlegger test deferred to companion paper P1B
+    * with firm-level data. FUTURE-WORK / backmatter status.
+    label var horticulture_per_cap "Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootlegger proxy; backmatter)"
 
     * --- French-language share: TWO definitions, both reported in tables ---
     * Subset denominator (German+French only): focuses on the language cleavage
