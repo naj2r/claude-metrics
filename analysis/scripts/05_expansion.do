@@ -2858,6 +2858,113 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.15 T25 French--German turnout gap-collapse table (Phase C.6c)
+*------------------------------------------------------------------------------*
+* Builds T25: a 3-row paper-ready descriptive table summarizing the language-
+* driven mobilization asymmetry on vote #68. Documents the ~12-pp swing in
+* the French-German turnout gap between the 14-vote 1907-1910 placebo baseline
+* and the absinthe-ban referendum.
+*
+* Source descriptive: output/notes/dispersion_descriptive_stats.md section
+* A.8.6. This table is the paper-ready visualization of that swing.
+{
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+
+    cap drop french_majority
+    gen byte french_majority = french_share > 0.5
+    label var french_majority "1 if French majority (french_share > 0.5)"
+
+    qui summ baseline_turnout_canton if french_majority == 1, meanonly
+    local b_fr = r(mean)
+    qui summ baseline_turnout_canton if french_majority == 0, meanonly
+    local b_de = r(mean)
+    qui summ turnout_v68 if french_majority == 1, meanonly
+    local v_fr = r(mean)
+    qui summ turnout_v68 if french_majority == 0, meanonly
+    local v_de = r(mean)
+    qui summ mobilization_dev_v68 if french_majority == 1, meanonly
+    local d_fr = r(mean)
+    qui summ mobilization_dev_v68 if french_majority == 0, meanonly
+    local d_de = r(mean)
+
+    local b_gap = `b_fr' - `b_de'
+    local v_gap = `v_fr' - `v_de'
+    local d_gap = `d_fr' - `d_de'
+
+    * Validation: delta-row gap should equal (v68 gap) - (baseline gap)
+    * by linearity of group means.
+    assert abs(`d_gap' - (`v_gap' - `b_gap')) < 0.01
+
+    * Format strings (no %+N.Mf prefix supported by Stata; manual sign prepend
+    * per .claude/rules/stata-gotchas.md file-write lesson #1).
+    local b_fr_str  = trim(string(`b_fr',  "%5.2f"))
+    local b_de_str  = trim(string(`b_de',  "%5.2f"))
+    local b_gap_str = trim(string(`b_gap', "%5.2f"))
+    local v_fr_str  = trim(string(`v_fr',  "%5.2f"))
+    local v_de_str  = trim(string(`v_de',  "%5.2f"))
+    local v_gap_str = trim(string(`v_gap', "%5.2f"))
+    local d_fr_str  = trim(string(`d_fr',  "%5.2f"))
+    local d_de_str  = trim(string(`d_de',  "%5.2f"))
+    local d_gap_str = trim(string(`d_gap', "%5.2f"))
+
+    if `d_fr'  >= 0 local d_fr_str  = "+" + "`d_fr_str'"
+    if `d_de'  >= 0 local d_de_str  = "+" + "`d_de_str'"
+    if `d_gap' >= 0 local d_gap_str = "+" + "`d_gap_str'"
+
+    di as result _n "T25 cell values:"
+    di as result "  Baseline: French=`b_fr_str', German=`b_de_str', Gap=`b_gap_str'"
+    di as result "  Vote 68:  French=`v_fr_str', German=`v_de_str', Gap=`v_gap_str'"
+    di as result "  Delta:    French=`d_fr_str', German=`d_de_str', Gap=`d_gap_str'"
+
+    preserve
+        clear
+        set obs 3
+        gen str150 rowlabel = ""
+        gen str10  french   = ""
+        gen str10  german   = ""
+        gen str10  gap      = ""
+
+        replace rowlabel = "Baseline turnout (median across 14 placebo votes 1907--1910)" in 1
+        replace french   = "`b_fr_str'"  in 1
+        replace german   = "`b_de_str'"  in 1
+        replace gap      = "`b_gap_str'" in 1
+
+        replace rowlabel = "Vote #68 turnout (5 July 1908, absinthe ban)" in 2
+        replace french   = "`v_fr_str'"  in 2
+        replace german   = "`v_de_str'"  in 2
+        replace gap      = "`v_gap_str'" in 2
+
+        replace rowlabel = "Change (gap collapse, row 2 minus row 1)" in 3
+        replace french   = "`d_fr_str'"  in 3
+        replace german   = "`d_de_str'"  in 3
+        replace gap      = "`d_gap_str'" in 3
+
+        label var rowlabel " "
+        label var french   "French (N=5)"
+        label var german   "German (N=20)"
+        label var gap      "Gap (Fr--Ge)"
+
+        local fn1 "Notes: Phase C.6c (verify\_reconstruct\_expand handoff). "
+        local fn2 "Documents the language-driven mobilization asymmetry on the 1908 absinthe-ban referendum. "
+        local fn3 "Group definitions: French = cantons with french\_share>0.5 of (German+French) speakers (NE, GE, VD, FR, VS; N=5); German = remaining cantons (N=20). "
+        local fn4 "Baseline turnout = canton-level median across the 14 federal referenda from 1907 to 1910 (the 'placebo' set used to detect mobilization deviation on \#68). "
+        local fn5 "Gap entries are arithmetic differences between the French and German group means in each row. The $\Delta$ row entries are differences between row 2 and row 1 within each group; the $\Delta$ Gap entry (`d_gap_str') equals the swing in the French--German turnout gap from baseline to \#68. "
+        local fn6 "Source: \texttt{processed/absinthe\_analysis.dta} via the Phase A.8 dispersion descriptive (section A.8.6 of \texttt{output/notes/dispersion\_descriptive\_stats.md}). All numbers reproducible by \texttt{summarize} on \texttt{baseline\_turnout\_canton}, \texttt{turnout\_v68}, and \texttt{mobilization\_dev\_v68}. "
+        local fn7 "Together with Table~\ref{tab:mobil\_lang\_relig} (T20b: language predicts mobilization in regression), this table makes the `d_gap_str'-pp swing legible as the empirical signature of the language cleavage activating on vote \#68."
+
+        texsave rowlabel french german gap ///
+            using "$MyProject/results/tables/t25_lang_turnout_gap.tex", ///
+            replace autonumber varlabels marker(tab:lang_turnout_gap) ///
+            title("French--German turnout gap collapse on the absinthe ban (Vote #68)") ///
+            footnote("`fn1'`fn2'`fn3'`fn4'`fn5'`fn6'`fn7'")
+        di "Saved t25_lang_turnout_gap.tex"
+    restore
+
+    cap _inventory_append, sheet("outputs") ///
+        row("created|results/tables/t25_lang_turnout_gap.tex|.|.|.|05_expansion.do (Phase C.6c)")
+}
+
+
 **# 13. Sanity-check assertions for the expansion analyses
 *------------------------------------------------------------------------------*
 {
