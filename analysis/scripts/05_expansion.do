@@ -3019,6 +3019,142 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 12.14b Phase C.6b Phase B: T24 mobilization-dev cross-vote + F09 scatter
+*------------------------------------------------------------------------------*
+* Phase C.6b Phase B (verify_reconstruct_expand handoff): cross-vote
+* mobilization comparison documenting that vote #68 (1908 absinthe ban) is
+* the OUTLIER on within-vote turnout-deviation HETEROGENEITY (SD, range),
+* not on aggregate mean. Companion to T25 (Phase C.6c paper-ready 3-row
+* table) and to the dispersion descriptive (output/notes/dispersion_
+* descriptive_stats.md A.8.3).
+*
+* T24: per-vote summary (mean, SD, min, max of mob_dev across 25 cantons).
+* F09: 375-obs scatter of yes_pct vs mob_dev, 1900-1910, three-tier color
+*      scheme (12 standard placebos, 2 wine prequels #63+#65, treatment #68).
+*
+* Definition: mob_dev = turnout - baseline_turnout_canton, where
+* baseline_turnout_canton is the canton-level median across the 14 federal
+* referenda 1907-1910 (the "placebo" set used to detect mobilization
+* deviation on #68 in absinthe_analysis.dta). The same baseline is applied
+* to ALL 15 votes so that mean(mob_dev) for placebo votes is bounded near
+* zero by construction and the SUBSTANTIVE comparison is the heterogeneity
+* (SD) and range, not the aggregate mean.
+{
+    use "$MyProject/processed/placebo_panel.dta", clear
+
+    tempfile baseline_tmp
+    preserve
+        use "$MyProject/processed/absinthe_analysis.dta", clear
+        keep canton_code baseline_turnout_canton
+        isid canton_code
+        save `baseline_tmp'
+    restore
+    merge m:1 canton_code using `baseline_tmp', assert(match) nogenerate
+
+    gen double mob_dev = turnout - baseline_turnout_canton
+    label var mob_dev "Mobilization deviation (pp) = turnout - canton's 14-placebo median"
+
+    * --- T24: per-vote summary across 25 cantons ---
+    preserve
+        collapse (mean) mean_mob = mob_dev ///
+                 (sd)   sd_mob   = mob_dev ///
+                 (min)  min_mob  = mob_dev ///
+                 (max)  max_mob  = mob_dev ///
+                 (firstnm) vote_year vote_label, by(anr)
+        sort vote_year anr
+
+        * Capture #68 row stats for footnote
+        qui sum sd_mob if anr == 68
+        local sd68_str  : di %5.2f r(mean)
+        qui sum min_mob if anr == 68
+        local min68_str : di %5.2f r(mean)
+        qui sum max_mob if anr == 68
+        local max68_str : di %5.2f r(mean)
+        qui sum mean_mob if anr == 68
+        local mean68_str : di %5.2f r(mean)
+
+        * Format display columns (no %+N.Mf in Stata; no inline format specs
+        * in file write; pre-render via string() per stata-gotchas).
+        gen str8  yr_str   = string(vote_year)
+        gen str4  anr_str  = string(anr)
+        gen str10 mean_str = string(mean_mob, "%6.2f")
+        gen str10 sd_str   = string(sd_mob,   "%6.2f")
+        gen str10 min_str  = string(min_mob,  "%6.2f")
+        gen str10 max_str  = string(max_mob,  "%6.2f")
+        gen str8  treat_mark = ""
+        replace   treat_mark = "TREAT" if anr == 68
+
+        replace vote_label = substr(vote_label, 1, 50)
+
+        keep anr_str yr_str vote_label mean_str sd_str min_str max_str treat_mark
+        order anr_str yr_str vote_label mean_str sd_str min_str max_str treat_mark
+        rename anr_str    anr
+        rename yr_str     year
+        rename vote_label vote_title
+        rename mean_str   mean_dev
+        rename sd_str     sd_dev
+        rename min_str    min_dev
+        rename max_str    max_dev
+        label var anr        "Vote no."
+        label var year       "Year"
+        label var vote_title "Title (short)"
+        label var mean_dev   "Mean dev"
+        label var sd_dev     "SD"
+        label var min_dev    "Min"
+        label var max_dev    "Max"
+        label var treat_mark ""
+
+        local fn1 "Notes: Phase C.6b Phase B (verify\_reconstruct\_expand handoff): per-vote summary of mobilization deviation across the 15 federal referenda 1900-1910. "
+        local fn2 "Mobilization deviation = turnout - canton's median turnout across the 14 placebo referenda from 1907 to 1910. The SAME canton-level baseline is applied to ALL 15 votes; mean(mob\_dev) for the placebo votes is therefore close to zero by construction, and the substantive comparison across votes is the within-vote HETEROGENEITY (SD, range) and the AGGREGATE mean's sign (whether the vote drew above- or below-baseline turnout nationally). "
+        local fn3 "Substantive finding for vote \#68: mean mob\_dev = `mean68_str' pp (turnout drew slightly below the canton-level 1907-1910 placebo baseline in aggregate); SD = `sd68_str' pp, range = (`min68_str', `max68_str'). The canton-level decomposition reveals a directional pattern -- French cantons mobilized above their baseline (+3.5 pp average) while German cantons demobilized below it (-8.6 pp average) per dispersion\_descriptive\_stats.md A.8.3 -- yielding the +12-pp swing in the French-German turnout gap documented in T25 (Phase C.6c). Table~\ref{tab:mobil\_lang\_relig} (T20b, Phase B.1) decomposes this canton-level variation into language and religion components in regression form. "
+        local fn4 "Caveat on cross-vote SD comparability: the SAME canton-level baseline (1907-1910 placebo median) is applied to all 15 votes; pre-1907 votes' high SDs partly reflect temporal turnout drift between the vote year and the baseline window, not just within-vote cleavage heterogeneity. The most natural contemporary comparators for \#68 are the same-day 1908 votes \#67 (Gewerbewesen) and \#69 (Wasserkraft), which have SD = 11.78 and 8.86 respectively. "
+        local fn5 "Companion: T25 (C.6c French-German gap-collapse paper-ready table); T13 + T14b (cross-referendum falsification with vineyard coefficient + RI); F09 (scatter visualization of the same panel data). "
+        local fn6 "N=25 cantons per vote. The treatment vote (\#68, 1908 absinthe ban) is marked TREAT."
+
+        texsave anr year vote_title mean_dev sd_dev min_dev max_dev treat_mark ///
+            using "$MyProject/results/tables/t24_mobilization_dev_by_vote.tex", ///
+            replace autonumber varlabels marker(tab:t24_mobilization_dev_by_vote) ///
+            title("Mobilization-deviation summary across 15 federal votes 1900-1910 (Phase C.6b Phase B)") ///
+            footnote("`fn1'`fn2'`fn3'`fn4'`fn5'`fn6'")
+        di "Saved t24_mobilization_dev_by_vote.tex"
+    restore
+
+    * --- F09: 375-obs scatter, 3-tier color scheme ---
+    *   color_group == 1: 12 standard placebos (light gray, 50% opacity)
+    *   color_group == 2: 2 wine-prequel votes (#63, #65), orange
+    *   color_group == 3: treatment vote #68, red, larger marker
+    preserve
+        gen byte color_group = 1
+        replace color_group = 2 if inlist(anr, 63, 65)
+        replace color_group = 3 if anr == 68
+
+        twoway ///
+            (scatter yes_pct mob_dev if color_group == 1, ///
+                msize(small) mcolor(gs10%50) ms(O)) ///
+            (scatter yes_pct mob_dev if color_group == 2, ///
+                msize(medsmall) mcolor(orange%80) ms(D)) ///
+            (scatter yes_pct mob_dev if color_group == 3, ///
+                msize(medlarge) mcolor(red) ms(O)) ///
+            , ///
+            xtitle("Mobilization deviation (pp from canton baseline turnout)") ///
+            ytitle("Yes-vote share (%)") ///
+            title("Mobilization deviation vs yes-share across 15 federal votes 1900-1910") ///
+            subtitle("Vote #68 (absinthe ban) highlighted; n=375 canton-vote observations") ///
+            legend(order(1 "12 standard placebos" 2 "Wine prequels (#63, #65)" 3 "Treatment (#68)") ///
+                   rows(1) size(small) position(6)) ///
+            graphregion(color(white)) plotregion(color(white)) ///
+            xline(0, lcolor(gs10) lpattern(dash))
+        graph export "$MyProject/results/figures/f09_mob_dev_scatter.pdf", replace
+        di "Saved f09_mob_dev_scatter.pdf"
+    restore
+
+    cap _inventory_append, sheet("outputs") ///
+        row("created|results/tables/t24_mobilization_dev_by_vote.tex|.|.|.|05_expansion.do (C.6b Phase B)")
+    cap _inventory_append, sheet("outputs") ///
+        row("created|results/figures/f09_mob_dev_scatter.pdf|.|.|.|05_expansion.do (C.6b Phase B)")
+}
+
+
 **# 12.15 T25 French--German turnout gap-collapse table (Phase C.6c)
 *------------------------------------------------------------------------------*
 * Builds T25: a 3-row paper-ready descriptive table summarizing the language-
