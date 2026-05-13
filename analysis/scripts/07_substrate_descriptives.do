@@ -1355,6 +1355,148 @@ if _rc {
 }
 
 
+**# 9f. C.15 Phase 1.1: Land Gini construction (lower-bound-cap convention)
+*------------------------------------------------------------------------------*
+* Phase C.15 Phase 1.1 (verify_reconstruct_expand handoff): constructs the
+* lower-bound-cap Gini coefficient from i38_farm_size_long.dta (section 9e)
+* and merges into i38_canton_concentration.dta.
+*
+* Formula (Brown trapezoidal, GMV 2009 RES Appendix B p. 33):
+*   G_c = 1 - sum_{i=1}^{N} (F_{c,i} - F_{c,i-1}) * (L_{c,i} + L_{c,i-1})
+* where F_{c,i} = cumulative share of farms through bin i in canton c,
+*       L_{c,i} = cumulative share of imputed cultivated area through bin i,
+*       F_{c,0} = L_{c,0} = 0,
+*       N = 9 bins.
+*
+* Top-bin convention here is lower-bound cap (top-bin midpoint = 30 ha,
+* GMV 2009 primary). The area-calibrated robustness alternative (GMV 2005
+* Brown WP) requires independent canton-total cultivated area data and is
+* deferred to a follow-up commit.
+*
+* Per the methodology-note v2 framing (strategist, in parallel with this
+* commit), the threshold-share family in i38_canton_concentration.dta
+* (share_above_X for X in {3,5,10,15,20,30}) is the empirical PRIMARY
+* concentration measure; gini_lcap is the ROBUSTNESS measure here.
+{
+    use "$MyProject/processed/i38_farm_size_long.dta", clear
+    sort canton_code bin_idx
+
+    * Cumulative farm and imputed-area shares within canton
+    by canton_code: gen double cum_farms = sum(farm_count)
+    by canton_code: gen double cum_area  = sum(area_imputed)
+    by canton_code: egen double tot_farms = max(cum_farms)
+    by canton_code: egen double tot_area  = max(cum_area)
+    gen double F_i = cum_farms / tot_farms
+    gen double L_i = cum_area  / tot_area
+
+    * Lagged F_{i-1}, L_{i-1}; set to 0 at bin_idx == 1
+    by canton_code: gen double F_prev = F_i[_n-1]
+    by canton_code: gen double L_prev = L_i[_n-1]
+    replace F_prev = 0 if bin_idx == 1
+    replace L_prev = 0 if bin_idx == 1
+
+    * Per-bin trapezoid contribution
+    gen double trap_i = (F_i - F_prev) * (L_i + L_prev)
+
+    * Sum trapezoids per canton to get the Brown discrete-sum Gini
+    tempfile gini_tmp
+    preserve
+        collapse (sum) gini_sum = trap_i, by(canton_code)
+        gen double gini_lcap = 1 - gini_sum
+        label var gini_lcap "Land Gini (Brown trap., lower-bound-cap top bin = 30 ha)"
+        assert inrange(gini_lcap, 0, 1)
+        keep canton_code gini_lcap
+        save `gini_tmp'
+    restore
+
+    * Merge into i38_canton_concentration.dta
+    use "$MyProject/processed/i38_canton_concentration.dta", clear
+    merge 1:1 canton_code using `gini_tmp', assert(match) nogenerate
+    order canton_code farms_total area_total_imp gini_lcap ///
+          top_bin_area_share top_bin_flag ///
+          share_above_3 share_above_5 share_above_10 share_above_15 share_above_20 share_above_30
+
+    notes _dta: Updated 2026-05-13: added gini_lcap (Brown trapezoidal formula, lower-bound-cap top bin = 30 ha, per GMV 2009 RES Appendix B). Phase C.15 Phase 1.1.
+    notes _dta: Area-calibrated robustness Gini (GMV 2005 Brown WP Appendix B) not yet computed; requires independent canton-total cultivated area.
+
+    compress
+    save "$MyProject/processed/i38_canton_concentration.dta", replace
+
+    * --- Diagnostic display ---
+    sort canton_code
+    qui sum gini_lcap if top_bin_flag == 1
+    local mean_flag_str  : di %5.3f r(mean)
+    qui sum gini_lcap if top_bin_flag == 0
+    local mean_noflag_str : di %5.3f r(mean)
+    qui sum gini_lcap
+    local mean_g_str  : di %5.3f r(mean)
+    local sd_g_str    : di %5.3f r(sd)
+    local min_g_str   : di %5.3f r(min)
+    local max_g_str   : di %5.3f r(max)
+
+    di as result _n "==== C.15 Phase 1.1: Land Gini (lower-bound cap) ===="
+    list canton_code gini_lcap top_bin_area_share top_bin_flag, sep(0) noobs abb(20)
+    di as result _n "Summary: mean `mean_g_str', SD `sd_g_str', min `min_g_str', max `max_g_str'"
+    di as result "Mean gini_lcap on flagged cantons (>20% top bin): `mean_flag_str'"
+    di as result "Mean gini_lcap on unflagged cantons: `mean_noflag_str'"
+    di as result "=====================================================" _n
+
+    * --- Write deliverable notes file ---
+    cap file close ginifh
+    file open ginifh using "$MyProject/output/notes/2026-05-13_c15_gini_construction.md", write replace
+    file write ginifh "# C.15 Phase 1.1: Land Gini Construction (lower-bound-cap convention)" _n _n
+    file write ginifh "**Phase**: C.15 Phase 1.1 (verify_reconstruct_expand handoff)  " _n
+    file write ginifh "**Date**: 2026-05-13  " _n
+    file write ginifh "**Source dataset**: processed/i38_farm_size_long.dta (225 obs = 25 cantons x 9 bins)  " _n
+    file write ginifh "**Output**: gini_lcap added to processed/i38_canton_concentration.dta  " _n
+    file write ginifh "**Script**: 07_substrate_descriptives.do, section 9f  " _n _n
+    file write ginifh "---" _n _n
+
+    file write ginifh "## Formula" _n _n
+    file write ginifh "Brown trapezoidal discrete-sum (Galor, Moav, and Vollrath 2009 RES, Appendix B p. 33):" _n _n
+    file write ginifh "    G_c = 1 - sum_{i=1}^{N} (F_{c,i} - F_{c,i-1}) * (L_{c,i} + L_{c,i-1})" _n _n
+    file write ginifh "where F_{c,i} = cumulative share of farms through bin i in canton c; L_{c,i} = cumulative share of (imputed) cultivated area through bin i; F_{c,0} = L_{c,0} = 0; N = 9 bins. Bin areas are midpoint-imputed (no observed bin areas in I.38; see section 9e methodology deviation #2)." _n _n
+
+    file write ginifh "## Top-bin convention" _n _n
+    file write ginifh "**Lower-bound cap (primary, GMV 2009)**: top-bin midpoint = 30.0 ha (the bin lower bound). This is the conservative choice; it pulls the Gini downward for cantons with concentrated landholdings in the unbounded >30 ha bin -- precisely the 6 cantons flagged on the top-bin trip-wire (BS, GL, GR, NE, NW, UR; see section 9e)." _n _n
+    file write ginifh "**Area-calibrated (robustness, GMV 2005 Brown WP)**: NOT YET COMPUTED. Requires an independent canton-total cultivated area from HSSO I.01 (partial coverage available per C.12 workflow) or equivalent. The area-calibrated top-bin midpoint is set such that total imputed cultivated area equals the known canton total; this yields a HIGHER Gini for flagged cantons (the cap-attenuation reverses). Follow-up commit will compute and report side-by-side." _n _n
+
+    file write ginifh "## Per-canton Gini (lower-bound cap)" _n _n
+    file write ginifh "| Canton | Gini (lcap) | Top-bin area share (%) | Flag (>20%) |" _n
+    file write ginifh "|---|---:|---:|---:|" _n
+    forvalues i = 1/`=c(N)' {
+        local cc      = canton_code[`i']
+        local g       = gini_lcap[`i']
+        local g_str   : di %5.3f `g'
+        local sh      = top_bin_area_share[`i']
+        local sh_str  : di %5.2f `sh'
+        local flag    = top_bin_flag[`i']
+        local flag_str "no"
+        if `flag' == 1 local flag_str "**YES**"
+        file write ginifh "| `cc' | `g_str' | `sh_str' | `flag_str' |" _n
+    }
+    file write ginifh _n "**Summary**: mean `mean_g_str', SD `sd_g_str', min `min_g_str', max `max_g_str' (N=25 cantons)." _n _n
+    file write ginifh "**Trip-wire interaction**: flagged cantons (top-bin share > 20%) have mean gini_lcap = `mean_flag_str'; unflagged cantons have mean gini_lcap = `mean_noflag_str'. The area-calibrated robustness will yield higher Gini values for the flagged group; the threshold-share family (in the same canton-level dataset) is convention-invariant and immune to this attenuation by construction." _n _n
+
+    file write ginifh "## Caveats" _n _n
+    file write ginifh "- 9 bins, not 11 (methodology note v1 said 11; corrected in section 9e and pending v2 update)." _n
+    file write ginifh "- Areas imputed throughout (midpoint), not observed at bin level (methodology note v1 stated bin areas observed directly; corrected in section 9e)." _n
+    file write ginifh "- Lower-bound cap (top midpoint = 30 ha) attenuates Gini for cantons with large pastoral or alpine landholdings concentrated in the >30 ha bin. The 6 trip-wire-flagged cantons (BS, GL, GR, NE, NW, UR) are precisely the cases where attenuation matters most." _n
+    file write ginifh "- Area-calibrated robustness alternative not yet computed (deferred follow-up; requires independent canton-total cultivated area)." _n
+    file write ginifh "- Per the methodology note v2 framing (in parallel by the strategist), the threshold-share family (share_above_X for X in {3, 5, 10, 15, 20, 30}, already in processed/i38_canton_concentration.dta) is the empirical PRIMARY concentration measure for the Olson x Wine interaction in C.15 Phase 2. The Gini family (lcap here; area-calibrated follow-up) is the ROBUSTNESS measure." _n _n
+
+    file write ginifh "## Provenance" _n _n
+    file write ginifh "Computed in 07_substrate_descriptives.do section 9f (Phase C.15 Phase 1.1). Source: processed/i38_farm_size_long.dta (built in section 9e). Formula: GMV (2009) RES Appendix B. Top-bin convention: lower-bound cap = 30 ha (GMV 2009 primary). N = 9 bins, midpoint-imputed areas throughout (deviations from methodology note v1 documented in section 9e)." _n
+    file close ginifh
+    di as result "Saved output/notes/2026-05-13_c15_gini_construction.md"
+
+    cap _inventory_append, sheet("outputs") ///
+        row("updated|processed/i38_canton_concentration.dta|added gini_lcap|.|.|07_substrate_descriptives.do (C.15 Phase 1.1)")
+    cap _inventory_append, sheet("outputs") ///
+        row("created|output/notes/2026-05-13_c15_gini_construction.md|.|.|.|07_substrate_descriptives.do (C.15 Phase 1.1)")
+}
+
+
 **# 10. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {
