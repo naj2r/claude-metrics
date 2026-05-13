@@ -753,12 +753,13 @@ _Updated: 12 May 2026 20:39:16 by 02_clean.do_
 
 <!-- codebook:processed/placebo_panel.dta:end -->
 
+
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 12 May 2026 20:44:51 by 05_expansion.do_
+_Updated: 12 May 2026 20:56:36 by 05_expansion.do_
 
-**N = 477, vars = 11**
+**N = 481, vars = 11**
 
 | Variable | Type | Format | Label |
 |---|---|---|---|

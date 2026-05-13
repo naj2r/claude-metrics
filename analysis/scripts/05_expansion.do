@@ -304,6 +304,12 @@ run "$MyProject/scripts/programs/_config.do"
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "outcome_margin", model, "ols")
 
+    * Phase B.3 (verify_reconstruct_expand handoff): alternative margin
+    * construction (absolute vote count diff) for HC3-vs-RI diagnostic
+    reg margin_alt vineyard_per_cap french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "outcome_margin_alt", model, "ols")
+
     * Yes votes / eligible voters (combines yes-share and turnout)
     reg yes_eligible vineyard_per_cap french_share catholic_share, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
@@ -313,6 +319,93 @@ run "$MyProject/scripts/programs/_config.do"
     reg turnout vineyard_per_cap french_share catholic_share, vce(hc3)
     regsave using "`results_exp'", t p autoid append ///
         addlabel(spec, "outcome_turnout", model, "ols")
+}
+
+
+**# 8b. Phase B.2 + B.3 (verify_reconstruct_expand handoff): RI for additional outcomes
+*------------------------------------------------------------------------------*
+* April 2026 reported RI p-values for these outcomes:
+*   yes_eligible: RI p = 0.074  (vs current HC3 p = 0.116)
+*   margin:       RI p = 0.254  (n.s.; vs current HC3 p = 0.035 sig — substantial discrepancy)
+*
+* Adding RI permutations (10,000 perms each, distinct seeds) makes the
+* April-vs-current comparison apples-to-apples and resolves the inference
+* discrepancy on margin (HC3 vs RI difference at N=25 vs DV construction).
+*
+* Permutation seeds: 20260513 for yes_eligible (B.2); 20260514 for margin
+* (B.3 percentage version); 20260515 for margin_alt (B.3 absolute version).
+* Distinct from the headline #68 RI seed (20260409) and B.1 french_share RI
+* seed (20260512) so the four RI distributions are independent.
+{
+    * --- B.2: yes_eligible RI ---
+    set seed 20260513
+    qui reg yes_eligible vineyard_per_cap french_share catholic_share, vce(hc3)
+    local t_obs_yelig = _b[vineyard_per_cap] / _se[vineyard_per_cap]
+    di _n "*** Phase B.2 RI: yes_eligible ~ vineyard + KEY (10k perms) ***"
+    di "  Observed t-stat: " %6.3f `t_obs_yelig'
+
+    permute vineyard_per_cap ///
+        t_vine_yelig = (_b[vineyard_per_cap] / _se[vineyard_per_cap]), ///
+        reps(10000) rseed(20260513) ///
+        saving("$MyProject/results/intermediate/ri_distribution_B2_yes_elig.dta", replace) ///
+        nodots: ///
+        reg yes_eligible vineyard_per_cap french_share catholic_share, vce(hc3)
+
+    preserve
+        use "$MyProject/results/intermediate/ri_distribution_B2_yes_elig.dta", clear
+        gen byte more_extreme = abs(t_vine_yelig) >= abs(`t_obs_yelig')
+        qui sum more_extreme
+        local b2_ri_pval = r(mean)
+        di "  Phase B.2 RI two-sided p-value (yes_eligible): " %6.4f `b2_ri_pval'
+        di "  April reported: RI p = 0.074. Compare and reconcile."
+    restore
+
+    * --- B.3 percentage version: margin RI ---
+    set seed 20260514
+    qui reg margin vineyard_per_cap french_share catholic_share, vce(hc3)
+    local t_obs_marg = _b[vineyard_per_cap] / _se[vineyard_per_cap]
+    di _n "*** Phase B.3 RI: margin (yes-no/total*100) ~ vineyard + KEY (10k perms) ***"
+    di "  Observed t-stat: " %6.3f `t_obs_marg'
+
+    permute vineyard_per_cap ///
+        t_vine_marg = (_b[vineyard_per_cap] / _se[vineyard_per_cap]), ///
+        reps(10000) rseed(20260514) ///
+        saving("$MyProject/results/intermediate/ri_distribution_B3_margin.dta", replace) ///
+        nodots: ///
+        reg margin vineyard_per_cap french_share catholic_share, vce(hc3)
+
+    preserve
+        use "$MyProject/results/intermediate/ri_distribution_B3_margin.dta", clear
+        gen byte more_extreme = abs(t_vine_marg) >= abs(`t_obs_marg')
+        qui sum more_extreme
+        local b3_ri_pval = r(mean)
+        di "  Phase B.3 RI two-sided p-value (margin %): " %6.4f `b3_ri_pval'
+        di "  April reported: RI p = 0.254 (n.s.). Compare and reconcile HC3 (sig) vs RI gap."
+    restore
+
+    * --- B.3 absolute version: margin_alt RI (DV construction diagnostic) ---
+    set seed 20260515
+    qui reg margin_alt vineyard_per_cap french_share catholic_share, vce(hc3)
+    local t_obs_malt = _b[vineyard_per_cap] / _se[vineyard_per_cap]
+    di _n "*** Phase B.3 alt RI: margin_alt (yes-no count) ~ vineyard + KEY (10k perms) ***"
+    di "  Observed t-stat: " %6.3f `t_obs_malt'
+
+    permute vineyard_per_cap ///
+        t_vine_malt = (_b[vineyard_per_cap] / _se[vineyard_per_cap]), ///
+        reps(10000) rseed(20260515) ///
+        saving("$MyProject/results/intermediate/ri_distribution_B3_margin_alt.dta", replace) ///
+        nodots: ///
+        reg margin_alt vineyard_per_cap french_share catholic_share, vce(hc3)
+
+    preserve
+        use "$MyProject/results/intermediate/ri_distribution_B3_margin_alt.dta", clear
+        gen byte more_extreme = abs(t_vine_malt) >= abs(`t_obs_malt')
+        qui sum more_extreme
+        local b3alt_ri_pval = r(mean)
+        di "  Phase B.3 alt RI two-sided p-value (margin_alt count): " %6.4f `b3alt_ri_pval'
+        di "  Diagnostic: if p ~ 0.254 -> April used count-diff construction;"
+        di "             if p ~ 0.05  -> April used percentage construction."
+    restore
 }
 
 
