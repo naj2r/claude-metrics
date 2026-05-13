@@ -44,6 +44,62 @@ Stata's `local` command has two different parse modes:
   - **Fix**: in markdown output, use bold (`**path**`) or HTML `<code>path</code>` instead of backtick code-quotes. Reserve backticks for human-only docs that no Stata program will read back.
   - **Symmetric rule for input**: when reading user-provided text via `file read`, sanitize backticks before passing through `macval()` or compound quotes.
 
+## File-write formatting gotchas
+
+Three traps that recur when generating LaTeX tables or text files via `file write` (or via locals pre-formatted for later string interpolation):
+
+### 1. `%+N.Mf` is NOT a valid Stata format
+
+Stata's `format` and `display` specifiers do **not** support the `+` flag for forced sign prefix on positive numbers (unlike C/Python printf). The format `%+6.2f` returns `r(120) invalid %format` at runtime.
+
+**Workaround**: format normally, then manually prepend `"+"` for positive values:
+
+```stata
+local v_str = trim(string(`val', "%5.2f"))
+if `val' >= 0 local v_str = "+" + "`v_str'"
+```
+
+Use this pattern when visual contrast between signed values matters (e.g., a "delta" or "change" row where positives should read `+3.52` rather than `3.52`).
+
+### 2. Defensive `cap file close <handle>` before every `file open`
+
+If a prior Stata run aborted (error, interrupt, OS crash) while a file handle was open, the handle remains attached to its file. The next `file open <handle>` fails with `r(610)` or `r(603)`. Subsequent re-runs of the script then can't recover without manual `file close`.
+
+**Pattern**: always pair `file open` with a preceding `cap file close`:
+
+```stata
+cap file close myfh
+file open myfh using "$MyProject/output/path.md", write replace
+file write myfh "..." _n
+file close myfh
+```
+
+The `cap` form suppresses the "file handle not open" error on fresh runs where the handle was never opened. Purely defensive — costs nothing on healthy runs, recovers automatically on aborted-prior-run scenarios.
+
+### 3. `file write` does NOT accept inline format specs
+
+Unlike `display`, the `file write` command does not parse `%N.Mf` specifiers in its argument list. The following silently writes the literal text `%5.2f` rather than the formatted number:
+
+```stata
+file write myfh "value = " %5.2f `val' _n   // BUG: writes literal '%5.2f'
+```
+
+**Workaround**: pre-format the value into a local via `: di` or `string()`, then write the local:
+
+```stata
+local v_str : di %5.2f `val'
+file write myfh "value = `v_str'" _n         // writes "value = 44.40"
+```
+
+Equivalent with the `=` assignment form (preferred when concatenating with `+`):
+
+```stata
+local v_str = string(`val', "%5.2f")
+file write myfh "value = `v_str'" _n
+```
+
+Found during C.16 (07_substrate_descriptives.do § 9d) and C.6c (05_expansion.do § 12.15) work, May 2026.
+
 ## Project-specific
 
 - All paths reference `$MyProject` (defined in `run.do`). Never hardcode.
@@ -124,6 +180,32 @@ claude mcp add stata --scope user -- powershell.exe -NoProfile -ExecutionPolicy 
 ```
 
 After re-registering, restart Claude Code. The wrapper logs cleanup activity to **stderr** (stdout is reserved for MCP JSON-RPC). Look in Claude Code's MCP server logs to see lines like `[start_mcp_stata] killing pid=...` confirming the safeguard fired.
+
+## MCP-Stata transport: backslash mangling in inline code
+
+When running Stata code via `mcp__stata__stata_run` with `code=<inline-string>` (NOT `is_file=True`), **backslash characters in the code are silently converted to forward slashes**. This corrupts:
+
+- LaTeX escape sequences: `\#`, `\_`, `\$`, `\Delta`, `\texttt{...}`, `\ref{...}` all become `/#`, `/_`, `/Delta`, `/texttt{...}`, etc.
+- Any other content where `\` is structurally meaningful (regex patterns, etc.)
+
+The conversion appears to be a Windows path-normalization side effect in the MCP transport layer (it pre-processes the code string as if it were a path, converting `\` → `/` for portability). Reading code from a `.do` file on disk bypasses the transform — Stata reads the file directly from disk via `do "path/to/file"`.
+
+**Symptom**: LaTeX tables built via inline `stata_run` contain things like `/Delta`, `/texttt`, `/#68` — all invalid LaTeX commands. Visible only in the resulting `.tex` file; the Stata log shows the corrupted code as it was received (so the log "looks like" it executed `/_` rather than `\_`).
+
+**Workaround**: for any code that contains backslashes (LaTeX content, certain regex patterns, etc.), write the code to a `.do` file first and run via `mcp__stata__stata_run` with `is_file=True`:
+
+```
+# Bad: backslashes get mangled
+stata_run(code='replace x = "Vote \#68" in 1', is_file=False)
+
+# Good: write to file first, then run
+Write(".../_tmp.do", 'replace x = "Vote \#68" in 1\n...')
+stata_run(code=".../_tmp.do", is_file=True)
+```
+
+For short ad-hoc commands without backslashes, inline mode is fine. For any LaTeX-generating code or anything that contains explicit `\` characters, always go through a file.
+
+Found during C.6c T25 table generation, May 2026.
 
 ## Section navigation (do-file editor bookmarks)
 
