@@ -207,51 +207,7 @@ _Updated: 12 May 2026 14:12:33 by /update-codebook_
 
 
 
-<!-- codebook:results/intermediate/regressions.dta:start -->
-### results/intermediate/regressions.dta
 
-_Updated: 12 May 2026 17:54:57 by 03_regress.do_
-
-**N = 140, vars = 11**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| var | str20 | %20s | Variable |
-| coef | float | %9.0g | Coefficient |
-| stderr | float | %9.0g | Standard error |
-| tstat | float | %9.0g | t-statistic |
-| pval | float | %9.0g | Two-tailed p-value |
-| N | byte | %10.0g | Number of observations |
-| r2 | float | %9.0g | R-squared |
-| _id | byte | %9.0g | Regression ID number |
-| spec | str21 | %21s |  |
-| model | str11 | %11s | Model name |
-| dropped | str2 | %9s |  |
-
-<!-- codebook:results/intermediate/regressions.dta:end -->
-
-<!-- codebook:results/intermediate/regressions_expansion.dta:start -->
-### results/intermediate/regressions_expansion.dta
-
-_Updated: 12 May 2026 18:00:26 by 05_expansion.do_
-
-**N = 464, vars = 11**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| var | str22 | %22s | Variable |
-| coef | double | %9.0g | Coefficient |
-| stderr | double | %9.0g | Standard error |
-| tstat | double | %9.0g | t-statistic |
-| pval | double | %9.0g | Two-tailed p-value |
-| N | byte | %10.0g | Number of observations |
-| r2 | float | %9.0g | R-squared |
-| _id | int | %9.0g | Regression ID number |
-| spec | str27 | %27s |  |
-| model | str11 | %11s | Model name |
-| dropped | str2 | %9s |  |
-
-<!-- codebook:results/intermediate/regressions_expansion.dta:end -->
 
 <!-- codebook:processed/intermediate/f07a_employment_long.dta:start -->
 ### processed/intermediate/f07a_employment_long.dta
@@ -707,4 +663,50 @@ _Updated: 12 May 2026 18:04:47 by 07_substrate_descriptives.do_
 | potato_area_1917_per_cap | double | %10.0g | Potato/pop (ha/person, 1917; first complete canton-year) |
 
 <!-- codebook:processed/intermediate/cereal_potato_area_long.dta:end -->
+
+<!-- codebook:results/intermediate/regressions.dta:start -->
+### results/intermediate/regressions.dta
+
+_Updated: 12 May 2026 19:53:30 by 03_regress.do_
+
+**N = 144, vars = 11**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| var | str20 | %20s | Variable |
+| coef | float | %9.0g | Coefficient |
+| stderr | float | %9.0g | Standard error |
+| tstat | float | %9.0g | t-statistic |
+| pval | float | %9.0g | Two-tailed p-value |
+| N | byte | %10.0g | Number of observations |
+| r2 | float | %9.0g | R-squared |
+| _id | byte | %9.0g | Regression ID number |
+| spec | str21 | %21s |  |
+| model | str11 | %11s | Model name |
+| dropped | str2 | %9s |  |
+
+<!-- codebook:results/intermediate/regressions.dta:end -->
+
+<!-- codebook:results/intermediate/regressions_expansion.dta:start -->
+### results/intermediate/regressions_expansion.dta
+
+_Updated: 12 May 2026 19:59:59 by 05_expansion.do_
+
+**N = 477, vars = 11**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| var | str22 | %22s | Variable |
+| coef | double | %9.0g | Coefficient |
+| stderr | double | %9.0g | Standard error |
+| tstat | double | %9.0g | t-statistic |
+| pval | double | %9.0g | Two-tailed p-value |
+| N | byte | %10.0g | Number of observations |
+| r2 | float | %9.0g | R-squared |
+| _id | int | %9.0g | Regression ID number |
+| spec | str27 | %27s |  |
+| model | str11 | %11s | Model name |
+| dropped | str2 | %9s |  |
+
+<!-- codebook:results/intermediate/regressions_expansion.dta:end -->
 

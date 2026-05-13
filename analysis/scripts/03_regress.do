@@ -172,6 +172,24 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 3.2b Exclude NE only (KEY spec on N=24) — Phase A.3 patch
+*------------------------------------------------------------------------------*
+{
+    * Phase A.3 (verify_reconstruct_expand handoff): drop-NE-only spec was
+    * documented in April 2026 work (β ≈ +369) but missing from current
+    * pipeline. NE alone is the absinthe-producing canton (Couvet/Val-de-
+    * Travers heartland); GE has only secondary absinthe industry. Drop-NE-
+    * only is the cleaner robustness test — it removes the substantively
+    * decisive observation without simultaneously dropping a high-French
+    * mixed-economy canton. Distinct from § 3.2 which drops both NE and GE.
+    reg yes_pct vineyard_per_cap french_share catholic_share ///
+        if canton_code != "NE", vce(hc3)
+    estimates store ols_no_ne
+    regsave using "`results'", t p autoid append ///
+        addlabel(spec, "excl_ne", model, "ols")
+}
+
+
 **# 3.3 Randomization inference (10,000 permutations of vineyard_per_cap)
 *------------------------------------------------------------------------------*
 {

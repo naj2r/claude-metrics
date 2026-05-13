@@ -1485,6 +1485,122 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.17 Phase B.1 (verify_reconstruct_expand handoff): Turnout-deviation regression
+*------------------------------------------------------------------------------*
+* Reconstructs the EARLIER spec direction (April 2026 work): language predicts
+* differential mobilization on #68. This is the COMPLEMENT of section 10.16's
+* C.6 specs (which test mobilization predicting yes-vote share). Together they
+* form the structural chain:
+*
+*     language --> mobilization --> vote-share
+*
+* All three pieces are then statistically supported in the current pipeline:
+*   - language --> mobilization:  this section (B.1)
+*   - mobilization --> vote-share: section 10.16 (C.6)
+*   - language --> vote-share:    headline KEY spec (03_regress.do, T17 col 1)
+*
+* Built FROM SCRATCH using current pipeline conventions (variable names,
+* regsave/regsave_tbl infrastructure, mean-centering pattern, inventory
+* protocol). The April code structure (in Brainstorm-Absinthe repo) is NOT
+* an input — only the substantive spec direction is.
+*
+* Five specs:
+*   B1_mobil_french_uni    : mobilization_dev_v68 ~ french_share
+*   B1_mobil_catholic_uni  : mobilization_dev_v68 ~ catholic_share
+*   B1_mobil_lang_relig    : mobilization_dev_v68 ~ french_share + catholic_share
+*   B1_mobil_full          : mobilization_dev_v68 ~ french_share + catholic_share
+*                            + vineyard_per_cap (strategist's main spec)
+*   B1_mobil_vine_placebo  : mobilization_dev_v68 ~ vineyard_per_cap (April placebo;
+*                            should be null — vineyard does not drive mobilization)
+*
+* Plus 10,000-permutation RI on the headline B.1 spec (B1_mobil_full),
+* permuting french_share. Distinct seed (20260512) from the headline #68 RI
+* (20260409). Outputs to ri_distribution_B1_french.dta.
+{
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+
+    cap confirm variable mobilization_dev_v68
+    if _rc {
+        di as error "Error: mobilization_dev_v68 not in absinthe_analysis.dta. Re-run 02_clean.do (C.6 Phase 1)."
+        error 111
+    }
+
+    * --- B.1.1 Univariate: language predicts mobilization ---
+    reg mobilization_dev_v68 french_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "B1_mobil_french_uni", model, "ols")
+    local b1_french_uni_b  = _b[french_share]
+    local b1_french_uni_se = _se[french_share]
+    local b1_french_uni_p  = 2 * (1 - normal(abs(`b1_french_uni_b'/`b1_french_uni_se')))
+
+    * --- B.1.2 Univariate: religion predicts mobilization ---
+    reg mobilization_dev_v68 catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "B1_mobil_catholic_uni", model, "ols")
+    local b1_cath_uni_b    = _b[catholic_share]
+    local b1_cath_uni_se   = _se[catholic_share]
+    local b1_cath_uni_p    = 2 * (1 - normal(abs(`b1_cath_uni_b'/`b1_cath_uni_se')))
+
+    * --- B.1.3 Joint language + religion ---
+    reg mobilization_dev_v68 french_share catholic_share, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "B1_mobil_lang_relig", model, "ols")
+
+    * --- B.1.4 Full spec: language + religion + vineyard (strategist's main) ---
+    reg mobilization_dev_v68 french_share catholic_share vineyard_per_cap, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "B1_mobil_full", model, "ols")
+    local b1_full_french_b  = _b[french_share]
+    local b1_full_french_se = _se[french_share]
+    local b1_full_vine_b    = _b[vineyard_per_cap]
+    local b1_full_vine_se   = _se[vineyard_per_cap]
+
+    * --- B.1.5 Vineyard placebo (vineyard alone; April expected null) ---
+    reg mobilization_dev_v68 vineyard_per_cap, vce(hc3)
+    regsave using "`results_exp'", t p autoid append ///
+        addlabel(spec, "B1_mobil_vine_placebo", model, "ols")
+    local b1_vine_pl_b  = _b[vineyard_per_cap]
+    local b1_vine_pl_se = _se[vineyard_per_cap]
+    local b1_vine_pl_p  = 2 * (1 - normal(abs(`b1_vine_pl_b'/`b1_vine_pl_se')))
+
+    * --- Display report ---
+    di _n "*** Phase B.1: Turnout-deviation regression (language predicts mobilization) ***"
+    di "  Univariate french:         " %8.3f `b1_french_uni_b'  "  SE " %7.3f `b1_french_uni_se'  "  p = " %5.3f `b1_french_uni_p'
+    di "  Univariate catholic:       " %8.3f `b1_cath_uni_b'    "  SE " %7.3f `b1_cath_uni_se'    "  p = " %5.3f `b1_cath_uni_p'
+    di "  Full (french in joint):    " %8.3f `b1_full_french_b' "  SE " %7.3f `b1_full_french_se'
+    di "  Full (vineyard in joint):  " %8.3f `b1_full_vine_b'   "  SE " %7.3f `b1_full_vine_se'
+    di "  Placebo (vineyard alone):  " %8.3f `b1_vine_pl_b'     "  SE " %7.3f `b1_vine_pl_se'     "  p = " %5.3f `b1_vine_pl_p'
+
+    * --- B.1 RI: permute french_share for the full spec ---
+    * Match the headline #68 RI infrastructure (03_regress.do § 3.3): permute
+    * the focal regressor across cantons, recompute the t-stat, count |t_perm|
+    * >= |t_obs|. The B.1 focal regressor is french_share (the structural
+    * driver of mobilization in the chain interpretation).
+    set seed 20260512
+
+    qui reg mobilization_dev_v68 french_share catholic_share vineyard_per_cap, vce(hc3)
+    local t_obs_b1 = _b[french_share] / _se[french_share]
+    di _n "*** Phase B.1 RI: 10,000 permutations of french_share ***"
+    di "  Observed t-stat on french_share (B.1 full spec): " %6.3f `t_obs_b1'
+
+    permute french_share ///
+        t_french_b1 = (_b[french_share] / _se[french_share]), ///
+        reps(10000) rseed(20260512) ///
+        saving("$MyProject/results/intermediate/ri_distribution_B1_french.dta", replace) ///
+        nodots: ///
+        reg mobilization_dev_v68 french_share catholic_share vineyard_per_cap, vce(hc3)
+
+    preserve
+        use "$MyProject/results/intermediate/ri_distribution_B1_french.dta", clear
+        gen byte more_extreme = abs(t_french_b1) >= abs(`t_obs_b1')
+        qui sum more_extreme
+        local b1_ri_pval = r(mean)
+        di "  Phase B.1 RI two-sided p-value: " %6.4f `b1_ri_pval'
+        di "  (proportion of " c(N) " perms with |t| >= |t_obs|=" %6.3f `t_obs_b1' ")"
+    restore
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {
@@ -2523,6 +2639,55 @@ run "$MyProject/scripts/programs/_config.do"
     else {
         di as error "  C.6 Phase 3 figure SKIPPED -- mobilization_dev_v68 not in absinthe_analysis.dta."
     }
+}
+
+
+**# 12.14 t20b_mobil_lang_relig (Phase B.1 of verify_reconstruct_expand handoff)
+*------------------------------------------------------------------------------*
+* Builds T20b: a 5-column table presenting the EARLIER spec direction
+* (language predicts mobilization), complementing T20 which presents the
+* C.6 spec direction (mobilization predicts vote-share).
+*
+* T20 + T20b together display the structural chain language --> mobilization
+* --> vote-share. T20b is built from B.1 specs in section 10.17.
+{
+    use "$MyProject/results/intermediate/regressions_expansion.dta", clear
+    keep if model == "ols" & inlist(spec, "B1_mobil_french_uni", "B1_mobil_catholic_uni", ///
+                                          "B1_mobil_lang_relig", "B1_mobil_full", ///
+                                          "B1_mobil_vine_placebo")
+    tempfile t20b_tbl
+    regsave_tbl using "`t20b_tbl'" if spec == "B1_mobil_french_uni", ///
+        name(col1) asterisk(10 5 1) parentheses(stderr) sigfig(3) replace
+    regsave_tbl using "`t20b_tbl'" if spec == "B1_mobil_catholic_uni", ///
+        name(col2) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`t20b_tbl'" if spec == "B1_mobil_lang_relig", ///
+        name(col3) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`t20b_tbl'" if spec == "B1_mobil_full", ///
+        name(col4) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    regsave_tbl using "`t20b_tbl'" if spec == "B1_mobil_vine_placebo", ///
+        name(col5) asterisk(10 5 1) parentheses(stderr) sigfig(3) append
+    use "`t20b_tbl'", clear
+    drop if inlist(var, "_id") | strpos(var, "_id_") | strpos(var, "tstat") | strpos(var, "pval")
+    clean_vars var
+    label var var "Variable"
+
+    local fn1 "Notes: Phase B.1 (verify\_reconstruct\_expand handoff): language and religion as predictors of differential mobilization on vote \#68. "
+    local fn2 "DV is mobilization\_dev\_v68 = canton turnout on \#68 minus the canton's median turnout across the 14 placebo votes 1900-1910 (positive = above-baseline mobilization). "
+    local fn3 "Together with Table~\ref{tab:mobilization} (mobilization predicts vote-share), this table establishes the structural chain language $\to$ mobilization $\to$ vote-share. "
+    local fn4 "Cols. (1)-(2) test each correlate univariately. Col. (3) jointly. Col. (4) adds vineyard\_per\_cap as the wine-industry covariate (the strategist's main spec). Col. (5) is the April 2026 vineyard placebo: vineyard alone should NOT drive mobilization since wine cantons are not coextensive with French/Catholic-temperance cantons. "
+    local fn5 "HC3 robust SEs in parentheses. N=25 cantons. Randomization-inference p-value for col. (4) french\_share (10,000 perms, seed 20260512): see ri\_distribution\_B1\_french.dta. * p<0.10, ** p<0.05, *** p<0.01."
+    texsave var col1 col2 col3 col4 col5 ///
+        using "$MyProject/results/tables/t20b_mobil_lang_relig.tex", ///
+        replace autonumber varlabels marker(tab:mobil_lang_relig) ///
+        title("Language and religion as predictors of differential mobilization (Phase B.1)") ///
+        footnote("`fn1'`fn2'`fn3'`fn4'`fn5'")
+    di "Saved t20b_mobil_lang_relig.tex"
+
+    * --- Inventory: T20b + B.1 RI distribution ---
+    cap _inventory_append, sheet("outputs") ///
+        row("created|results/tables/t20b_mobil_lang_relig.tex|.|.|.|05_expansion.do (Phase B.1)")
+    cap _inventory_append, sheet("datasets") ///
+        row("created|results/intermediate/ri_distribution_B1_french.dta|10000|.|.|05_expansion.do (Phase B.1)")
 }
 
 
