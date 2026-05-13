@@ -471,6 +471,31 @@ run "$MyProject/scripts/programs/_config.do"
     * Yes votes / eligible voters × 100 (alternative scaling)
     gen double yes_eligible = yes_count / eligible * 100
     label var yes_eligible "Yes votes / eligible voters (%)"
+
+    * Phase B.3 alternative margin construction (verify_reconstruct_expand
+    * handoff): absolute vote count difference rather than percentage.
+    * Used as diagnostic for the April-vs-current margin RI discrepancy
+    * (April reported RI p = 0.254 n.s. vs current HC3 p = 0.035 sig).
+    * If the alt construction restores RI p ≈ 0.254, the discrepancy is
+    * DV construction (count-diff vs percentage-diff). If it does not,
+    * the discrepancy is HC3 vs RI inference at N=25.
+    gen double margin_alt = yes_count - no_count
+    label var margin_alt "Margin of victory (absolute vote count, 1908; B.3 diagnostic)"
+
+    * Phase B.4 (verify_reconstruct_expand handoff): same-day excess voters.
+    * Cantons where turnout on #68 (absinthe) exceeded turnout on #67
+    * (commerce, same ballot day) had voters who came specifically for the
+    * absinthe question. April-era finding: GL +11.9, SG +7.6, SH +7.3.
+    * Note: 9 cantons (BL, AI, GE, ZH, OW, NE, SO, AR, AG) report identical
+    * turnout for v67 and v68 in swissvotes (likely a ballot-day-level vs
+    * question-level reporting artifact; treat zero as data-availability
+    * limitation rather than evidence of zero question-specific mobilization).
+    * Note: turnout (the unsuffixed variable) is the v68 turnout (loaded from
+    * swissvotes via 01_import.do § 2.2). The duplicate turnout_v68 var is
+    * built later in section 4c for the C.6 mobilization plumbing; we use
+    * turnout here so the derivation lives in scope at section 2.6.
+    gen double same_day_excess_v68_v67 = turnout - turnout_v67
+    label var same_day_excess_v68_v67 "Same-day excess voters: turnout(#68 absinthe) - turnout(#67 commerce), pp (B.4)"
 }
 
 
@@ -487,7 +512,9 @@ run "$MyProject/scripts/programs/_config.do"
                  german_share german_share_total ///
                  ln_pop pop_1900 pop_density_1900 ///
                  absinthe_dummy absinthe_dummy_broad absinthe_dummy_any ///
-                 vote67_yes_pct agland_1000ha vine_share_agland margin ///
+                 vote67_yes_pct turnout_v67 eligible_v67 ///
+                 same_day_excess_v68_v67 margin_alt ///
+                 agland_1000ha vine_share_agland margin ///
                  vine_per_1000 vineyard_per_cap_1894 area_km2 ///
                  lang_french lang_french_broad lang_italian wine_canton ///
                  net_migration_pre_vote net_migration_per_cap ///
@@ -517,7 +544,8 @@ run "$MyProject/scripts/programs/_config.do"
 {
     order canton_code canton ///
           yes_pct yes_frac yes_count no_count turnout eligible total_votes ///
-          vote67_yes_pct margin yes_eligible ///
+          vote67_yes_pct turnout_v67 eligible_v67 total_votes_v67 ///
+          margin margin_alt yes_eligible same_day_excess_v68_v67 ///
           vineyard_ha vineyard_per_cap vine_per_1000 ///
           vineyard_1877 vineyard_1884 vineyard_1894 vineyard_1905 vineyard_1913 ///
           vineyard_per_cap_1894 vine_per_1000_1894 ///

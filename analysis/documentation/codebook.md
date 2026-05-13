@@ -265,235 +265,20 @@ _Updated: 12 May 2026 18:00:42 by 06_national_descriptives.do_
 
 
 
-<!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
-### processed/intermediate/canton_crosswalk.dta
 
-_Updated: 12 May 2026 18:04:32 by 01_import.do_
 
-**N = 25, vars = 2**
 
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| col_letter | str2 | %9s | Excel column letter in HSSO file |
-| canton_code | str2 | %9s | Canton (2-letter code, 1908) |
 
-<!-- codebook:processed/intermediate/canton_crosswalk.dta:end -->
 
-<!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
-### processed/intermediate/swissvotes_uncleaned.dta
 
-_Updated: 12 May 2026 18:04:33 by 01_import.do_
 
-**N = 25, vars = 7**
 
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| yes_count | long | %12.0g | Yes votes (1908 absinthe ban) |
-| no_count | int | %12.0g | No votes (1908 absinthe ban) |
-| yes_pct | float | %9.0g | Yes-vote share (%, 1908 absinthe ban) |
-| turnout | float | %9.0g | Turnout (%, 1908 absinthe ban) |
-| eligible | long | %12.0g | Eligible voters (1908) |
-| total_votes | long | %12.0g | Total ballots cast (1908) |
 
-<!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:end -->
 
-<!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
-### processed/intermediate/vote67_uncleaned.dta
 
-_Updated: 12 May 2026 18:04:34 by 01_import.do_
 
-**N = 25, vars = 2**
 
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| vote67_yes_pct | float | %9.0g | Yes-vote share (%, vote #67 commerce, same-day placebo) |
 
-<!-- codebook:processed/intermediate/vote67_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
-### processed/intermediate/placebo_votes_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:34 by 01_import.do_
-
-**N = 375, vars = 10**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| anr | byte | %9.0g | Vote number (swissvotes anr) |
-| vote_year | int | %8.0g | Year of vote |
-| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
-| turnout | float | %9.0g | Turnout (%, this vote, this canton) |
-| eligible | long | %12.0g | Eligible voters (this vote, this canton) |
-| total_votes | long | %12.0g | Total ballots cast (this vote, this canton) |
-| vote_label | str80 | %80s | Short title of vote (English if available) |
-| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
-| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
-
-<!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
-### processed/intermediate/vineyard_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:35 by 01_import.do_
-
-**N = 125, vars = 3**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| year | int | %10.0g | Year |
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| vineyard_ha | double | %10.0g | Vineyard area (hectares) |
-
-<!-- codebook:processed/intermediate/vineyard_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
-### processed/intermediate/agland_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:35 by 01_import.do_
-
-**N = 25, vars = 2**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| agland_1000ha | float | %9.0g | Productive ag+alpine land (1000 ha, 1912) |
-
-<!-- codebook:processed/intermediate/agland_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
-### processed/intermediate/population_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:36 by 01_import.do_
-
-**N = 25, vars = 2**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
-
-<!-- codebook:processed/intermediate/population_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
-### processed/intermediate/pop_density_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:37 by 01_import.do_
-
-**N = 25, vars = 2**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| pop_density_1900 | float | %9.0g | Population density (persons/km^2, 1900; excl. lake area) |
-
-<!-- codebook:processed/intermediate/pop_density_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
-### processed/intermediate/religion_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:37 by 01_import.do_
-
-**N = 25, vars = 3**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| protestant_1900 | float | %9.0g | Protestant population (persons, 1900 census) |
-| catholic_1900 | float | %9.0g | Catholic population (Roman + Old Catholic, 1900 census) |
-
-<!-- codebook:processed/intermediate/religion_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
-### processed/intermediate/language_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:38 by 01_import.do_
-
-**N = 25, vars = 3**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| german_1900 | float | %9.0g | German speakers (persons, 1900 census) |
-| french_1900 | float | %9.0g | French speakers (persons, 1900 census) |
-
-<!-- codebook:processed/intermediate/language_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/migration_uncleaned.dta:start -->
-### processed/intermediate/migration_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:39 by 01_import.do_
-
-**N = 25, vars = 2**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| net_migration_1900_10 | float | %9.0g | Net migration 1900/10, avg per year (persons) |
-
-<!-- codebook:processed/intermediate/migration_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:start -->
-### processed/intermediate/farm_concentration_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:39 by 01_import.do_
-
-**N = 25, vars = 3**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| farms_1905 | float | %9.0g | Number of farms (1905, I.39c block 1) |
-| parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
-
-<!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:start -->
-### processed/intermediate/fruit_trees_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:40 by 01_import.do_
-
-**N = 25, vars = 2**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| fruit_trees_total_1951 | float | %9.0g | Total fruit trees (1951, in 1000s; geographic proxy for 1908) |
-
-<!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/horticulture_uncleaned.dta:start -->
-### processed/intermediate/horticulture_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:41 by 01_import.do_
-
-**N = 25, vars = 2**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
-
-<!-- codebook:processed/intermediate/horticulture_uncleaned.dta:end -->
-
-<!-- codebook:processed/intermediate/cereal_potato_area_uncleaned.dta:start -->
-### processed/intermediate/cereal_potato_area_uncleaned.dta
-
-_Updated: 12 May 2026 18:04:41 by 01_import.do_
-
-**N = 25, vars = 5**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| cereal_area_1905 | float | %9.0g | Cereal area (1000 ha, 1905; HSSO I.01; SPARSE -- 3 cantons only) |
-| cereal_area_1917 | float | %9.0g | Cereal area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
-| potato_area_1910 | float | %9.0g | Potato area (1000 ha, 1910; HSSO I.01; SPARSE -- ZH only) |
-| potato_area_1917 | float | %9.0g | Potato area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
-
-<!-- codebook:processed/intermediate/cereal_potato_area_uncleaned.dta:end -->
 
 
 
@@ -524,112 +309,7 @@ _Updated: 12 May 2026 19:53:30 by 03_regress.do_
 <!-- codebook:results/intermediate/regressions.dta:end -->
 
 
-<!-- codebook:processed/absinthe_analysis.dta:start -->
-### processed/absinthe_analysis.dta
 
-_Updated: 12 May 2026 20:13:57 by 02_clean.do_
-
-**N = 25, vars = 63**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| canton | str12 | %12s | Canton (full name) |
-| yes_pct | float | %9.0g | Yes-vote share (%, 1908 absinthe ban) |
-| yes_frac | double | %10.0g | Yes-vote share (fractional, 0-1) |
-| yes_count | long | %12.0g | Yes votes (1908 absinthe ban) |
-| no_count | int | %12.0g | No votes (1908 absinthe ban) |
-| turnout | float | %9.0g | Turnout (%, 1908 absinthe ban) |
-| eligible | long | %12.0g | Eligible voters (1908) |
-| total_votes | long | %12.0g | Total ballots cast (1908) |
-| vote67_yes_pct | float | %9.0g | Yes-vote share (%, vote #67 commerce, same-day placebo) |
-| margin | double | %10.0g | Margin of victory (%, 1908) |
-| yes_eligible | double | %10.0g | Yes votes / eligible voters (%) |
-| vineyard_ha | int | %8.0g | Vineyard area, primary measure (= 1905, hectares) |
-| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
-| vine_per_1000 | double | %10.0g | Vineyard hectares per 1000 pop (1905) |
-| vineyard_1877 | int | %10.0g | Vineyard area 1877 (hectares) |
-| vineyard_1884 | int | %10.0g | Vineyard area 1884 (hectares) |
-| vineyard_1894 | double | %10.0g | Vineyard area 1894 (hectares) |
-| vineyard_1905 | int | %10.0g | Vineyard area 1905 (hectares) |
-| vineyard_1913 | int | %10.0g | Vineyard area 1913 (hectares) |
-| vineyard_per_cap_1894 | double | %10.0g | Vineyard per capita 1894 (pre-determined) |
-| vine_per_1000_1894 | double | %10.0g | Vineyard ha per 1000 pop (1894) |
-| vine_change_1877_1905 | int | %10.0g | Vineyard area change 1877-1905 (ha) |
-| vine_change_pct | double | %10.0g | Vineyard area change 1877-1905 (%) |
-| wine_canton | byte | %8.0g | Wine canton (>1000 ha vineyard, 1905) |
-| vine_per_km2 | double | %10.0g | Vineyard hectares per km^2 (1905) |
-| vine_share_agland | double | %10.0g | Vineyard share of ag land (%, 1905/1912) |
-| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
-| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
-| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
-| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
-| german_share | double | %10.0g | German share (Ger.+Fr. denom.) |
-| german_share_total | double | %10.0g | German share (total pop. denom.) |
-| ln_pop | double | %10.0g | Log population (1900) |
-| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
-| pop_density_1900 | float | %9.0g | Population density (persons/km^2, 1900; excl. lake area) |
-| area_km2 | double | %10.0g | Canton area (km^2; backed out from pop/density) |
-| agland_1000ha | float | %9.0g | Productive ag+alpine land (1000 ha, 1912) |
-| net_migration_pre_vote | double | %10.0g | Net migration 1900/10, avg/yr (persons) |
-| net_migration_per_cap | double | %10.0g | Net migration 1900/10 per 1900 capita |
-| net_migration_1900_10 | float | %9.0g | Net migration 1900/10, avg per year (persons) |
-| parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
-| farms_1905 | float | %9.0g | Number of farms (1905, I.39c block 1) |
-| total_parcels_1905 | long | %10.0g | Total parcels in canton (1905, computed) |
-| avg_parcel_area_1905 | double | %10.0g | Avg parcel area (ha/parcel, 1905, computed) |
-| fruit_trees_total_1951 | float | %9.0g | Total fruit trees (1951, in 1000s; geographic proxy for 1908) |
-| fruit_tree_density | double | %10.0g | Fruit trees per capita (1951 proxy / 1900 pop) |
-| absinthe_dummy | byte | %8.0g | Absinthe-producing canton (NE only; heartland) |
-| lang_french | byte | %8.0g | French-speaking canton (narrow: VD,VS,NE,GE) |
-| lang_french_broad | byte | %8.0g | French/bilingual canton (incl. FR, BE) |
-| lang_italian | byte | %8.0g | Italian-speaking canton (TI) |
-| german_1900 | float | %9.0g | German speakers (persons, 1900 census) |
-| french_1900 | float | %9.0g | French speakers (persons, 1900 census) |
-| protestant_1900 | float | %9.0g | Protestant population (persons, 1900 census) |
-| catholic_1900 | float | %9.0g | Catholic population (Roman + Old Catholic, 1900 census) |
-| adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
-| horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
-| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootl |
-| absinthe_dummy_broad | byte | %8.0g | Absinthe-producing canton (NE + VD; main) |
-| absinthe_dummy_any | byte | %8.0g | Absinthe-producing canton (NE + VD + GE; any) |
-| turnout_v68 | float | %9.0g | Turnout on vote #68 (1908 absinthe, %) |
-| baseline_turnout_canton | float | %9.0g | Median turnout across 14 placebo votes (%) |
-| mobilization_dev_v68 | double | %10.0g | Mobilization deviation on #68 (pp above placebo baseline) |
-
-<!-- codebook:processed/absinthe_analysis.dta:end -->
-
-<!-- codebook:processed/placebo_panel.dta:start -->
-### processed/placebo_panel.dta
-
-_Updated: 12 May 2026 20:13:57 by 02_clean.do_
-
-**N = 375, vars = 20**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| anr | byte | %9.0g | Vote number (swissvotes anr) |
-| vote_year | int | %8.0g | Year of vote |
-| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
-| yes_frac | double | %10.0g | Yes-vote share (fractional, 0-1) — vote-specific |
-| vote_label | str80 | %80s | Short title of vote (English if available) |
-| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
-| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
-| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
-| turnout | float | %9.0g | Turnout (%, this vote, this canton) |
-| eligible | long | %12.0g | Eligible voters (this vote, this canton) |
-| total_votes | long | %12.0g | Total ballots cast (this vote, this canton) |
-| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
-| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
-| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
-| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
-| ln_pop | double | %10.0g | Log population (1900) |
-| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
-| adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
-| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootl |
-
-<!-- codebook:processed/placebo_panel.dta:end -->
 
 <!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:start -->
 ### processed/intermediate/h2a_substrate_prices_long.dta
@@ -693,10 +373,390 @@ _Updated: 12 May 2026 20:14:01 by 07_substrate_descriptives.do_
 
 <!-- codebook:processed/intermediate/cereal_potato_area_long.dta:end -->
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- codebook:processed/intermediate/canton_crosswalk.dta:start -->
+### processed/intermediate/canton_crosswalk.dta
+
+_Updated: 12 May 2026 20:39:04 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| col_letter | str2 | %9s | Excel column letter in HSSO file |
+| canton_code | str2 | %9s | Canton (2-letter code, 1908) |
+
+<!-- codebook:processed/intermediate/canton_crosswalk.dta:end -->
+
+<!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:start -->
+### processed/intermediate/swissvotes_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:05 by 01_import.do_
+
+**N = 25, vars = 7**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| yes_count | long | %12.0g | Yes votes (1908 absinthe ban) |
+| no_count | int | %12.0g | No votes (1908 absinthe ban) |
+| yes_pct | float | %9.0g | Yes-vote share (%, 1908 absinthe ban) |
+| turnout | float | %9.0g | Turnout (%, 1908 absinthe ban) |
+| eligible | long | %12.0g | Eligible voters (1908) |
+| total_votes | long | %12.0g | Total ballots cast (1908) |
+
+<!-- codebook:processed/intermediate/swissvotes_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/vote67_uncleaned.dta:start -->
+### processed/intermediate/vote67_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:06 by 01_import.do_
+
+**N = 25, vars = 5**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| vote67_yes_pct | float | %9.0g | Yes-vote share (%, vote #67 commerce, same-day placebo) |
+| turnout_v67 | float | %9.0g | Turnout (%, vote #67 commerce, same-day placebo) |
+| eligible_v67 | long | %12.0g | Eligible voters (vote #67, same as #68) |
+| total_votes_v67 | long | %12.0g | Total ballots cast (vote #67) |
+
+<!-- codebook:processed/intermediate/vote67_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:start -->
+### processed/intermediate/placebo_votes_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:06 by 01_import.do_
+
+**N = 375, vars = 10**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| vote_year | int | %8.0g | Year of vote |
+| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
+| turnout | float | %9.0g | Turnout (%, this vote, this canton) |
+| eligible | long | %12.0g | Eligible voters (this vote, this canton) |
+| total_votes | long | %12.0g | Total ballots cast (this vote, this canton) |
+| vote_label | str80 | %80s | Short title of vote (English if available) |
+| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
+| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
+
+<!-- codebook:processed/intermediate/placebo_votes_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/vineyard_uncleaned.dta:start -->
+### processed/intermediate/vineyard_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:07 by 01_import.do_
+
+**N = 125, vars = 3**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %10.0g | Year |
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| vineyard_ha | double | %10.0g | Vineyard area (hectares) |
+
+<!-- codebook:processed/intermediate/vineyard_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/agland_uncleaned.dta:start -->
+### processed/intermediate/agland_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:08 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| agland_1000ha | float | %9.0g | Productive ag+alpine land (1000 ha, 1912) |
+
+<!-- codebook:processed/intermediate/agland_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/population_uncleaned.dta:start -->
+### processed/intermediate/population_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:08 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
+
+<!-- codebook:processed/intermediate/population_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/pop_density_uncleaned.dta:start -->
+### processed/intermediate/pop_density_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:09 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| pop_density_1900 | float | %9.0g | Population density (persons/km^2, 1900; excl. lake area) |
+
+<!-- codebook:processed/intermediate/pop_density_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/religion_uncleaned.dta:start -->
+### processed/intermediate/religion_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:10 by 01_import.do_
+
+**N = 25, vars = 3**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| protestant_1900 | float | %9.0g | Protestant population (persons, 1900 census) |
+| catholic_1900 | float | %9.0g | Catholic population (Roman + Old Catholic, 1900 census) |
+
+<!-- codebook:processed/intermediate/religion_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/language_uncleaned.dta:start -->
+### processed/intermediate/language_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:11 by 01_import.do_
+
+**N = 25, vars = 3**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| german_1900 | float | %9.0g | German speakers (persons, 1900 census) |
+| french_1900 | float | %9.0g | French speakers (persons, 1900 census) |
+
+<!-- codebook:processed/intermediate/language_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/migration_uncleaned.dta:start -->
+### processed/intermediate/migration_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:11 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| net_migration_1900_10 | float | %9.0g | Net migration 1900/10, avg per year (persons) |
+
+<!-- codebook:processed/intermediate/migration_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:start -->
+### processed/intermediate/farm_concentration_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:12 by 01_import.do_
+
+**N = 25, vars = 3**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| farms_1905 | float | %9.0g | Number of farms (1905, I.39c block 1) |
+| parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
+
+<!-- codebook:processed/intermediate/farm_concentration_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:start -->
+### processed/intermediate/fruit_trees_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:13 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| fruit_trees_total_1951 | float | %9.0g | Total fruit trees (1951, in 1000s; geographic proxy for 1908) |
+
+<!-- codebook:processed/intermediate/fruit_trees_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/horticulture_uncleaned.dta:start -->
+### processed/intermediate/horticulture_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:13 by 01_import.do_
+
+**N = 25, vars = 2**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
+
+<!-- codebook:processed/intermediate/horticulture_uncleaned.dta:end -->
+
+<!-- codebook:processed/intermediate/cereal_potato_area_uncleaned.dta:start -->
+### processed/intermediate/cereal_potato_area_uncleaned.dta
+
+_Updated: 12 May 2026 20:39:14 by 01_import.do_
+
+**N = 25, vars = 5**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| cereal_area_1905 | float | %9.0g | Cereal area (1000 ha, 1905; HSSO I.01; SPARSE -- 3 cantons only) |
+| cereal_area_1917 | float | %9.0g | Cereal area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
+| potato_area_1910 | float | %9.0g | Potato area (1000 ha, 1910; HSSO I.01; SPARSE -- ZH only) |
+| potato_area_1917 | float | %9.0g | Potato area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
+
+<!-- codebook:processed/intermediate/cereal_potato_area_uncleaned.dta:end -->
+
+<!-- codebook:processed/absinthe_analysis.dta:start -->
+### processed/absinthe_analysis.dta
+
+_Updated: 12 May 2026 20:39:16 by 02_clean.do_
+
+**N = 25, vars = 68**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| canton | str12 | %12s | Canton (full name) |
+| yes_pct | float | %9.0g | Yes-vote share (%, 1908 absinthe ban) |
+| yes_frac | double | %10.0g | Yes-vote share (fractional, 0-1) |
+| yes_count | long | %12.0g | Yes votes (1908 absinthe ban) |
+| no_count | int | %12.0g | No votes (1908 absinthe ban) |
+| turnout | float | %9.0g | Turnout (%, 1908 absinthe ban) |
+| eligible | long | %12.0g | Eligible voters (1908) |
+| total_votes | long | %12.0g | Total ballots cast (1908) |
+| vote67_yes_pct | float | %9.0g | Yes-vote share (%, vote #67 commerce, same-day placebo) |
+| turnout_v67 | float | %9.0g | Turnout (%, vote #67 commerce, same-day placebo) |
+| eligible_v67 | long | %12.0g | Eligible voters (vote #67, same as #68) |
+| total_votes_v67 | long | %12.0g | Total ballots cast (vote #67) |
+| margin | double | %10.0g | Margin of victory (%, 1908) |
+| margin_alt | int | %10.0g | Margin of victory (absolute vote count, 1908; B.3 diagnostic) |
+| yes_eligible | double | %10.0g | Yes votes / eligible voters (%) |
+| same_day_excess_v68_v67 | double | %10.0g | Same-day excess voters: turnout(#68 absinthe) - turnout(#67 commerce), pp (B.4) |
+| vineyard_ha | int | %8.0g | Vineyard area, primary measure (= 1905, hectares) |
+| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
+| vine_per_1000 | double | %10.0g | Vineyard hectares per 1000 pop (1905) |
+| vineyard_1877 | int | %10.0g | Vineyard area 1877 (hectares) |
+| vineyard_1884 | int | %10.0g | Vineyard area 1884 (hectares) |
+| vineyard_1894 | double | %10.0g | Vineyard area 1894 (hectares) |
+| vineyard_1905 | int | %10.0g | Vineyard area 1905 (hectares) |
+| vineyard_1913 | int | %10.0g | Vineyard area 1913 (hectares) |
+| vineyard_per_cap_1894 | double | %10.0g | Vineyard per capita 1894 (pre-determined) |
+| vine_per_1000_1894 | double | %10.0g | Vineyard ha per 1000 pop (1894) |
+| vine_change_1877_1905 | int | %10.0g | Vineyard area change 1877-1905 (ha) |
+| vine_change_pct | double | %10.0g | Vineyard area change 1877-1905 (%) |
+| wine_canton | byte | %8.0g | Wine canton (>1000 ha vineyard, 1905) |
+| vine_per_km2 | double | %10.0g | Vineyard hectares per km^2 (1905) |
+| vine_share_agland | double | %10.0g | Vineyard share of ag land (%, 1905/1912) |
+| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
+| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
+| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
+| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
+| german_share | double | %10.0g | German share (Ger.+Fr. denom.) |
+| german_share_total | double | %10.0g | German share (total pop. denom.) |
+| ln_pop | double | %10.0g | Log population (1900) |
+| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
+| pop_density_1900 | float | %9.0g | Population density (persons/km^2, 1900; excl. lake area) |
+| area_km2 | double | %10.0g | Canton area (km^2; backed out from pop/density) |
+| agland_1000ha | float | %9.0g | Productive ag+alpine land (1000 ha, 1912) |
+| net_migration_pre_vote | double | %10.0g | Net migration 1900/10, avg/yr (persons) |
+| net_migration_per_cap | double | %10.0g | Net migration 1900/10 per 1900 capita |
+| net_migration_1900_10 | float | %9.0g | Net migration 1900/10, avg per year (persons) |
+| parcels_per_farm_1905 | byte | %9.0g | Avg parcels per farm (1905, concentration proxy) |
+| farms_1905 | float | %9.0g | Number of farms (1905, I.39c block 1) |
+| total_parcels_1905 | long | %10.0g | Total parcels in canton (1905, computed) |
+| avg_parcel_area_1905 | double | %10.0g | Avg parcel area (ha/parcel, 1905, computed) |
+| fruit_trees_total_1951 | float | %9.0g | Total fruit trees (1951, in 1000s; geographic proxy for 1908) |
+| fruit_tree_density | double | %10.0g | Fruit trees per capita (1951 proxy / 1900 pop) |
+| absinthe_dummy | byte | %8.0g | Absinthe-producing canton (NE only; heartland) |
+| lang_french | byte | %8.0g | French-speaking canton (narrow: VD,VS,NE,GE) |
+| lang_french_broad | byte | %8.0g | French/bilingual canton (incl. FR, BE) |
+| lang_italian | byte | %8.0g | Italian-speaking canton (TI) |
+| german_1900 | float | %9.0g | German speakers (persons, 1900 census) |
+| french_1900 | float | %9.0g | French speakers (persons, 1900 census) |
+| protestant_1900 | float | %9.0g | Protestant population (persons, 1900 census) |
+| catholic_1900 | float | %9.0g | Catholic population (Roman + Old Catholic, 1900 census) |
+| adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
+| horticulture_n_1905 | int | %9.0g | Horticulture enterprises (Gartenbau, 1905; HSSO I.51) |
+| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootl |
+| absinthe_dummy_broad | byte | %8.0g | Absinthe-producing canton (NE + VD; main) |
+| absinthe_dummy_any | byte | %8.0g | Absinthe-producing canton (NE + VD + GE; any) |
+| turnout_v68 | float | %9.0g | Turnout on vote #68 (1908 absinthe, %) |
+| baseline_turnout_canton | float | %9.0g | Median turnout across 14 placebo votes (%) |
+| mobilization_dev_v68 | double | %10.0g | Mobilization deviation on #68 (pp above placebo baseline) |
+
+<!-- codebook:processed/absinthe_analysis.dta:end -->
+
+<!-- codebook:processed/placebo_panel.dta:start -->
+### processed/placebo_panel.dta
+
+_Updated: 12 May 2026 20:39:16 by 02_clean.do_
+
+**N = 375, vars = 20**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| anr | byte | %9.0g | Vote number (swissvotes anr) |
+| vote_year | int | %8.0g | Year of vote |
+| yes_pct | float | %9.0g | Yes-vote share (%, this vote, this canton) |
+| yes_frac | double | %10.0g | Yes-vote share (fractional, 0-1) — vote-specific |
+| vote_label | str80 | %80s | Short title of vote (English if available) |
+| vineyard_per_cap | double | %10.0g | Vineyard area per capita (hectares/person, 1905) |
+| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900) |
+| catholic_share | double | %10.0g | Catholic share of Christians (1900) |
+| turnout | float | %9.0g | Turnout (%, this vote, this canton) |
+| eligible | long | %12.0g | Eligible voters (this vote, this canton) |
+| total_votes | long | %12.0g | Total ballots cast (this vote, this canton) |
+| rechtsform | byte | %8.0g | Vote type: 1=mandatory, 2=optional, 3=initiative, 4=counter |
+| annahme | byte | %8.0g | 1 if vote passed nationally, 0 if rejected |
+| french_share_total | double | %10.0g | French speakers / total pop. (1900) |
+| catholic_share_total | double | %10.0g | Catholic pop. / total pop. (1900) |
+| ln_pop | double | %10.0g | Log population (1900) |
+| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
+| adj_neuchatel | byte | %8.0g | Canton borders Neuchatel (1908 geography; BE, VD, FR) |
+| horticulture_per_cap | double | %10.0g | Horticulture enterprises per 1000 pop (Gartenbau, 1905; INCONCLUSIVE multi-Bootl |
+
+<!-- codebook:processed/placebo_panel.dta:end -->
+
 <!-- codebook:results/intermediate/regressions_expansion.dta:start -->
 ### results/intermediate/regressions_expansion.dta
 
-_Updated: 12 May 2026 20:19:36 by 05_expansion.do_
+_Updated: 12 May 2026 20:44:51 by 05_expansion.do_
 
 **N = 477, vars = 11**
 

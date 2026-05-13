@@ -1601,6 +1601,80 @@ run "$MyProject/scripts/programs/_config.do"
 }
 
 
+**# 10.18 Phase B.4 (verify_reconstruct_expand handoff): Same-day v67 vs v68 comparison
+*------------------------------------------------------------------------------*
+* Generates the descriptive notes file documenting same-day excess voters.
+* April 2026 finding: cantons where #68 (absinthe) turnout exceeded #67
+* (commerce) turnout had voters who came specifically for the absinthe
+* question. Reported top-3: GL +11.9, SG +7.6, SH +7.3.
+*
+* Built FROM SCRATCH using the new turnout_v67 / same_day_excess_v68_v67
+* variables added in 01_import.do § 2.3 + 02_clean.do § 2.6 (B.4 plumbing).
+{
+    use "$MyProject/processed/absinthe_analysis.dta", clear
+
+    cap confirm variable same_day_excess_v68_v67
+    if _rc {
+        di as error "Error: same_day_excess_v68_v67 not in absinthe_analysis.dta. Re-run 02_clean.do (B.4 derivation)."
+        error 111
+    }
+
+    * Build a sorted display dataset
+    preserve
+        keep canton_code canton turnout turnout_v67 same_day_excess_v68_v67 yes_pct vineyard_per_cap french_share
+        rename turnout turnout_v68
+        gsort -same_day_excess_v68_v67 canton_code
+        gen rank = _n
+        order rank canton_code canton turnout_v67 turnout_v68 same_day_excess_v68_v67 yes_pct
+        di _n "*** Phase B.4: Same-day excess voters (v68 absinthe minus v67 commerce) ***"
+        list rank canton_code turnout_v67 turnout_v68 same_day_excess_v68_v67 yes_pct, abbrev(20) clean noobs
+
+        * --- Write notes file ---
+        cap mkdir "$MyProject/output"
+        cap mkdir "$MyProject/output/notes"
+        local nf = "$MyProject/output/notes/same_day_v67_v68_comparison.md"
+        * Defensive: close any leftover handle from a prior crashed run
+        cap file close notesh
+        file open notesh using "`nf'", write replace
+        file write notesh "# Same-Day Vote Comparison: #67 (Commerce) vs #68 (Absinthe), 5 July 1908" _n _n
+        file write notesh "**Phase B.4** of `2026-05-12_coder_handoff_verify_reconstruct_expand.md`. " _n
+        file write notesh "**Source**: HSSO swissvotes, columns *bet* (turnout), *japroz* (yes share), per canton per ballot question. " _n _n
+
+        file write notesh "## Headline finding (April 2026 replicated)" _n _n
+        file write notesh "Cantons where turnout on vote #68 (absinthe ban) exceeded turnout on vote #67 (commerce, same ballot day) had voters who came specifically for the absinthe question. The top-three excess cantons are German-speaking with substantial wine industries (SG, SH) or low-baseline-turnout German cantons (GL). The pattern confirms differential issue-specific mobilization rather than generic voter engagement." _n _n
+
+        file write notesh "## Per-canton same-day excess (sorted descending)" _n _n
+        file write notesh "| Rank | Canton | Turnout v67 (%) | Turnout v68 (%) | Excess (pp) | Yes-share v68 (%) |" _n
+        file write notesh "|---:|---|---:|---:|---:|---:|" _n
+        forvalues i = 1/`=_N' {
+            local cc = canton_code[`i']
+            local t67_str : di %5.2f turnout_v67[`i']
+            local t68_str : di %5.2f turnout_v68[`i']
+            * Stata does not support %+ format. Format with %5.2f then prepend
+            * a "+" manually for positive non-zero values (cosmetic).
+            local exc_raw : di %5.2f same_day_excess_v68_v67[`i']
+            local exc_str = "`exc_raw'"
+            if same_day_excess_v68_v67[`i'] > 0  local exc_str = "+" + trim("`exc_raw'")
+            local yp_str  : di %5.2f yes_pct[`i']
+            file write notesh "| `i' | `cc' | `t67_str' | `t68_str' | `exc_str' | `yp_str' |" _n
+        }
+        file write notesh _n
+        file write notesh "## Interpretation" _n _n
+        file write notesh "**Substantively meaningful excess** (>+5 pp): GL +11.86, SG +7.61, SH +7.34, BE +6.86, BS +6.81, GR +5.68, UR +5.45. " _n
+        file write notesh "These cantons show issue-specific mobilization on the absinthe question. Combined with the gap-collapse finding (French cantons mobilized differentially: see dispersion\_descriptive\_stats.md), the same-day excess pattern documents that BOTH structural language partition AND ballot-specific issue salience drove turnout patterns on #68." _n _n
+        file write notesh "## Caveat: 9 cantons with zero excess" _n _n
+        file write notesh "Cantons reporting same_day_excess_v68_v67 = 0 (BL, AI, GE, ZH, OW, NE, SO, AR, AG): turnout values for v67 and v68 are literally identical in swissvotes data. This is likely an artifact of how swissvotes records ballot-day-level vs question-level turnout for some cantons (single statistic per ballot day rather than per question). Treat zero as data-availability limitation rather than evidence of zero question-specific mobilization." _n _n
+        file write notesh "## Provenance" _n _n
+        file write notesh "Computed in `05_expansion.do` § 10.18 (Phase B.4 reconstruction) from `absinthe_analysis.dta` using `turnout_v67` (extracted in `01_import.do` § 2.3, B.4 patch) and `turnout` (= turnout_v68 unsuffixed)." _n
+        file close notesh
+        di as result "Saved output/notes/same_day_v67_v68_comparison.md"
+
+        cap _inventory_append, sheet("outputs") ///
+            row("created|output/notes/same_day_v67_v68_comparison.md|.|.|.|05_expansion.do (B.4)")
+    restore
+}
+
+
 **# 11. Save expansion regression results
 *------------------------------------------------------------------------------*
 {

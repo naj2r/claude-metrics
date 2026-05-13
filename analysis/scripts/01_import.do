@@ -165,22 +165,36 @@ run "$MyProject/scripts/programs/_config.do"
     local cantons "zh be lu ur sz ow nw gl zg fr so bs bl sh ar ai sg gr ag tg ti vd vs ne ge"
     local keepvars "anr"
     foreach ct of local cantons {
-        local keepvars "`keepvars' `ct'japroz"
+        * Phase B.4 (verify_reconstruct_expand): also extract turnout, eligible
+        * voters, total ballots for v67. Together with their v68 analogs in the
+        * main extraction (section 2.2), these support the same-day-excess
+        * voter analysis: cantons where #68 turnout exceeded #67 turnout had
+        * voters who came specifically for the absinthe question.
+        local keepvars "`keepvars' `ct'japroz `ct'bet `ct'berecht `ct'stimmen"
     }
     keep `keepvars'
     foreach ct of local cantons {
         rename `ct'japroz japroz`ct'
+        rename `ct'bet bet`ct'
+        rename `ct'berecht berecht`ct'
+        rename `ct'stimmen stimmen`ct'
     }
     gen byte rowid = 1
-    reshape long japroz, i(rowid) j(canton_code) string
+    reshape long japroz bet berecht stimmen, i(rowid) j(canton_code) string
     drop rowid anr
     replace canton_code = upper(canton_code)
-    rename japroz vote67_yes_pct
+    rename japroz   vote67_yes_pct
+    rename bet      turnout_v67
+    rename berecht  eligible_v67
+    rename stimmen  total_votes_v67
 
     assert c(N) == 25
     isid canton_code
-    label var canton_code     "Canton (2-letter code)"
-    label var vote67_yes_pct  "Yes-vote share (%, vote #67 commerce, same-day placebo)"
+    label var canton_code      "Canton (2-letter code)"
+    label var vote67_yes_pct   "Yes-vote share (%, vote #67 commerce, same-day placebo)"
+    label var turnout_v67      "Turnout (%, vote #67 commerce, same-day placebo)"
+    label var eligible_v67     "Eligible voters (vote #67, same as #68)"
+    label var total_votes_v67  "Total ballots cast (vote #67)"
     order canton_code
 
     compress
