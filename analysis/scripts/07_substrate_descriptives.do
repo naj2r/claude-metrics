@@ -204,30 +204,118 @@ if _rc {
 }
 
 
-**# 3. F08 substrate prices figure (1875-1915, line plot + ratio overlay)
+**# 2b. T23b period-mean summary table (Phase C.10b long-run extension)
+*------------------------------------------------------------------------------*
+* Extends C.10 H.2a evidence to a structural-break framing: three substantive
+* periods bracketing the phylloxera shock and the 1908 ban. Per strategist
+* C.10b spec (verify_reconstruct_expand handoff). Period definitions:
+*   (i)   pre-phylloxera baseline 1830-1862 (before French detection 1863)
+*   (ii)  phylloxera era         1875-1895 (peak disruption)
+*   (iii) recovery + ban era      1895-1915 (post-1908 wine-surge included)
+{
+    use "$MyProject/processed/intermediate/h2a_substrate_prices_long.dta", clear
+
+    * Build a 3-row summary dataset
+    preserve
+        keep year wine_idx potato_idx apple_idx wine_potato_ratio
+        gen str30 period = ""
+        gen byte period_id = .
+        replace period = "Pre-phylloxera (1830-1862)"  if inrange(year, 1830, 1862)
+        replace period_id = 1                          if inrange(year, 1830, 1862)
+        replace period = "Phylloxera era (1875-1895)"  if inrange(year, 1875, 1895)
+        replace period_id = 2                          if inrange(year, 1875, 1895)
+        replace period = "Recovery + ban (1895-1915)"  if inrange(year, 1895, 1915)
+        replace period_id = 3                          if inrange(year, 1895, 1915)
+        keep if !missing(period_id)
+        collapse (mean) wine_mean=wine_idx potato_mean=potato_idx ///
+                        apple_mean=apple_idx ratio_mean=wine_potato_ratio ///
+                 (count) n_years=year, by(period_id period)
+
+        * Format display strings
+        gen str10 wine_str   = string(wine_mean,   "%6.1f")
+        gen str10 potato_str = string(potato_mean, "%6.1f")
+        gen str10 apple_str  = string(apple_mean,  "%6.1f")
+        gen str10 ratio_str  = string(ratio_mean,  "%5.2f")
+        gen str8  n_str      = string(n_years)
+
+        sort period_id
+        keep period wine_str potato_str apple_str ratio_str n_str
+        order period n_str wine_str potato_str apple_str ratio_str
+        label var period     "Period"
+        label var n_str      "Years (N)"
+        label var wine_str   "Mean wine idx"
+        label var potato_str "Mean potato idx"
+        label var apple_str  "Mean apple idx"
+        label var ratio_str  "Mean wine/potato"
+
+        local fn_t23b = "Notes: Phase C.10b (verify\_reconstruct\_expand handoff). Long-run extension of T23 substrate-price evidence: three structural-break periods bracketing the phylloxera shock and the 1908 absinthe ban. (i) Pre-phylloxera baseline 1830-1862 establishes the equilibrium wine/potato substitution-incentive ratio before the French phylloxera detection (1863). (ii) Phylloxera era 1875-1895 spans peak disruption (Geneva first detection 1874; ratio peak 1892 = 2.30). (iii) Recovery + ban era 1895-1915 includes post-1908 wine-index surge (regulatory-capture demand redirection). All values are 1914 = 100 producer price indexes from HSSO H.2a. Apple mean for 1830-1862 may be missing or sparse (apple coverage starts 1861)."
+
+        texsave period n_str wine_str potato_str apple_str ratio_str ///
+            using "$MyProject/results/tables/t23b_substrate_prices_periods.tex", ///
+            replace autonumber varlabels marker(tab:substrate_prices_periods) ///
+            title("Substrate producer prices: structural-break period means, 1830-1915 (Phase C.10b)") ///
+            footnote("`fn_t23b'")
+        di as result "Saved t23b_substrate_prices_periods.tex"
+
+        cap _inventory_append, sheet("outputs") ///
+            row("created|results/tables/t23b_substrate_prices_periods.tex|.|.|.|07_substrate_descriptives.do (C.10b)")
+    restore
+}
+
+
+**# 2c. Post-ban wine-index differential scalar (Phase C.10b)
+*------------------------------------------------------------------------------*
+* Computes the regulatory-capture demand-redirection scalar:
+*   delta_wine_idx_1910_1905 = wine_idx[1910] - wine_idx[1905]
+* per strategist's framing in T22/F07 caption updates (B.5).
+{
+    use "$MyProject/processed/intermediate/h2a_substrate_prices_long.dta", clear
+    qui summ wine_idx if year == 1905, meanonly
+    local w1905 = r(mean)
+    qui summ wine_idx if year == 1910, meanonly
+    local w1910 = r(mean)
+    local delta = `w1910' - `w1905'
+    di _n "*** Phase C.10b post-ban wine-index differential ***"
+    di "  Wine idx 1905: " %6.1f `w1905'
+    di "  Wine idx 1910: " %6.1f `w1910'
+    di "  Delta (1910 - 1905): " %6.1f `delta' "  (regulatory-capture demand redirection scalar)"
+}
+
+
+**# 3. F08 substrate prices figure (1830-1915 long-run, Phase C.10b extended window)
 *------------------------------------------------------------------------------*
 * Plot: wine index (red) + potato index (blue) on left axis (price index, 1914 =
 * 100). Wine/Potato ratio (gray dashed) on right axis (substitution incentive).
-* Vertical lines at 1880 (phylloxera onset) and 1908 (absinthe ban).
+* Phase C.10b: extended window from 1875-1915 to 1830-1915. Phylloxera era
+* (1880-1895) shaded gray. Vertical reference lines at 1863 (French detection),
+* 1874 (Geneva detection), 1892 (peak ratio), 1908 (ban), 1910 (wine surge).
 {
     use "$MyProject/processed/intermediate/h2a_substrate_prices_long.dta", clear
-    keep if inrange(year, 1875, 1915)
+    keep if inrange(year, 1830, 1915)
 
     twoway ///
         (line wine_idx   year, lcolor(red)  lwidth(medthick) lpattern(solid))   ///
         (line potato_idx year, lcolor(blue) lwidth(medthick) lpattern(solid))   ///
         (line wine_potato_ratio year, lcolor(gs8) lwidth(medium) lpattern(dash) yaxis(2)) ///
         , ///
-        title("Wine vs Potato producer prices, 1875-1915 (HSSO H.2a)", size(medsmall)) ///
+        title("Wine vs Potato producer prices, 1830-1915 (HSSO H.2a)", size(medsmall)) ///
         subtitle("Substitution-incentive ratio (right axis, dashed): wine cost / potato cost", size(small)) ///
         ytitle("Producer price index (1914 = 100)", axis(1)) ///
         ytitle("Wine/Potato ratio", axis(2)) ///
         xtitle("Year") ///
+        xline(1863, lcolor(gs12) lpattern(dot)) ///
+        xline(1874, lcolor(gs12) lpattern(dot)) ///
         xline(1880, lcolor(gs10) lpattern(dot)) ///
+        xline(1892, lcolor(gs8)  lpattern(dot)) ///
         xline(1908, lcolor(black) lpattern(dash)) ///
+        xline(1910, lcolor(red)   lpattern(dot)) ///
+        text(120 1845 "Pre-phylloxera baseline 1830-1862", size(vsmall) color(gs6)) ///
+        text(110 1863 "1863 FR detect", size(vsmall) color(gs6)) ///
+        text(105 1874 "1874 CH detect", size(vsmall) color(gs6)) ///
         text(115 1882 "Phylloxera era 1880-1895", size(vsmall) color(gs6)) ///
         text(115 1892 "Peak ratio 2.30 (1892)", size(vsmall) color(black)) ///
         text(115 1908 "1908 ban (ratio 1.50)", size(vsmall) color(black)) ///
+        text(125 1910 "1910 wine surge (107)", size(vsmall) color(red)) ///
         legend(order(1 "Wine" 2 "Potato" 3 "Wine/Potato ratio (R)") rows(1) size(small) position(6)) ///
         graphregion(fcolor(white)) ///
         note("Substitution INCENTIVE evidence (relative input cost), not substitution behavior (which requires demand-quantity data unavailable for this period). The wine-potato divergence (wine prices rising during phylloxera scarcity; potato prices falling during the same period) is consistent with the joint supply-and-demand framework: phylloxera reduces wine supply (wine prices up); demand for substitute alcohols increases (upward pressure on substitute prices); concurrent supply of substitute inputs increases as producers reallocate land toward viable crops (downward pressure on substitute prices). Net effect on substitute prices is theoretically ambiguous; observed potato-price decline suggests supply response dominated demand response. Framework predicts unambiguous increase in substitute crop quantities (corroborated descriptively via I.01 canton substrate-area data, 1917 complete coverage). Peak substitution incentive 1892 (ratio 2.30); ban year 1908 (ratio 1.50). The 16-year peak-to-mobilization gap is consistent with the historical-political-economy argument that mobilization lags structural pressure and requires coalitional opportunity (cf. Prestwich 1979). Source: HSSO H.2a, 1914 = 100.", size(vsmall))

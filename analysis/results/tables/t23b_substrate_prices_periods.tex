@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Substrate producer prices: structural-break period means, 1830-1915 (Phase C.10b)}
+\label{tab:substrate_prices_periods}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Period}&{Years (N)}&{Mean wine idx}&{Mean potato idx}&{Mean apple idx}&{Mean wine/potato} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Pre-phylloxera (1830--1862)&33&43.8&48.5&121.1&1.00
+Phylloxera era (1875--1895)&20&63.1&54.8&94.4&1.25
+Recovery + ban (1895--1915)&21&74.0&56.7&147.3&1.34
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Phase C.10b (verify\\_reconstruct\\_expand handoff). Long-run extension of T23 substrate-price evidence: three structural-break periods bracketing the phylloxera shock and the 1908 absinthe ban. (i) Pre-phylloxera baseline 1830-1862 establishes the equilibrium wine/potato substitution-incentive ratio before the French phylloxera detection (1863). (ii) Phylloxera era 1875-1895 spans peak disruption (Geneva first detection 1874; ratio peak 1892 = 2.30). (iii) Recovery + ban era 1895-1915 includes post-1908 wine-index surge (regulatory-capture demand redirection). All values are 1914 = 100 producer price indexes from HSSO H.2a. Apple mean for 1830-1862 may be missing or sparse (apple coverage starts 1861).}
+\end{table}
+\end{document}

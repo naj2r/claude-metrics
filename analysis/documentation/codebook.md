@@ -311,67 +311,8 @@ _Updated: 12 May 2026 19:53:30 by 03_regress.do_
 
 
 
-<!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:start -->
-### processed/intermediate/h2a_substrate_prices_long.dta
 
-_Updated: 12 May 2026 20:13:59 by 07_substrate_descriptives.do_
 
-**N = 183, vars = 10**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| year | int | %12.0g | Year |
-| wheat_idx | double | %10.0g | Wheat producer-price index (1914=100) |
-| rye_idx | double | %10.0g | Rye producer-price index (1914=100) |
-| oats_idx | double | %10.0g | Oats producer-price index (1914=100) |
-| potato_idx | double | %10.0g | Potato producer-price index (1914=100) |
-| apple_idx | double | %10.0g | Apple producer-price index (1914=100) |
-| wine_idx | double | %10.0g | Wine producer-price index (1914=100) |
-| wine_potato_ratio | double | %10.0g | Wine/Potato producer-price ratio (substitution-INCENTIVE proxy; not cross-price  |
-| wine_wheat_ratio | double | %10.0g | Wine/Wheat producer-price ratio (substitution-INCENTIVE proxy; not cross-price e |
-| wine_rye_ratio | double | %10.0g | Wine/Rye producer-price ratio (substitution-INCENTIVE proxy; not cross-price ela |
-
-<!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:end -->
-
-<!-- codebook:processed/intermediate/i33_subsidies_long.dta:start -->
-### processed/intermediate/i33_subsidies_long.dta
-
-_Updated: 12 May 2026 20:14:00 by 07_substrate_descriptives.do_
-
-**N = 125, vars = 6**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| year | int | %12.0g | Year |
-| source | str5 | %9s |  |
-| viticulture | long | %10.0g | Viticulture & grape processing subsidy (1000 CHF, I.33b col H) |
-| associations | int | %10.0g |  |
-| potato_fruit | long | %10.0g | Potato + fruit alcohol substrate subsidy (1000 CHF, I.33b col I) |
-| sugar_beet | long | %10.0g | Sugar-beet processing subsidy (1000 CHF, I.33b col J) |
-
-<!-- codebook:processed/intermediate/i33_subsidies_long.dta:end -->
-
-<!-- codebook:processed/intermediate/cereal_potato_area_long.dta:start -->
-### processed/intermediate/cereal_potato_area_long.dta
-
-_Updated: 12 May 2026 20:14:01 by 07_substrate_descriptives.do_
-
-**N = 25, vars = 10**
-
-| Variable | Type | Format | Label |
-|---|---|---|---|
-| canton_code | str2 | %9s | Canton (2-letter code) |
-| cereal_area_1905 | float | %9.0g | Cereal area (1000 ha, 1905; HSSO I.01; SPARSE -- 3 cantons only) |
-| cereal_area_1917 | float | %9.0g | Cereal area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
-| potato_area_1910 | float | %9.0g | Potato area (1000 ha, 1910; HSSO I.01; SPARSE -- ZH only) |
-| potato_area_1917 | float | %9.0g | Potato area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
-| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
-| cereal_area_1905_per_cap | double | %10.0g | Cereal/pop (ha/person, 1905; SPARSE -- 3 cantons) |
-| cereal_area_1917_per_cap | double | %10.0g | Cereal/pop (ha/person, 1917; first complete canton-year) |
-| potato_area_1910_per_cap | double | %10.0g | Potato/pop (ha/person, 1910; SPARSE -- ZH only) |
-| potato_area_1917_per_cap | double | %10.0g | Potato/pop (ha/person, 1917; first complete canton-year) |
-
-<!-- codebook:processed/intermediate/cereal_potato_area_long.dta:end -->
 
 
 
@@ -776,4 +717,66 @@ _Updated: 12 May 2026 20:56:36 by 05_expansion.do_
 | dropped | str2 | %9s |  |
 
 <!-- codebook:results/intermediate/regressions_expansion.dta:end -->
+
+<!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:start -->
+### processed/intermediate/h2a_substrate_prices_long.dta
+
+_Updated: 12 May 2026 21:00:44 by 07_substrate_descriptives.do_
+
+**N = 183, vars = 10**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %12.0g | Year |
+| wheat_idx | double | %10.0g | Wheat producer-price index (1914=100) |
+| rye_idx | double | %10.0g | Rye producer-price index (1914=100) |
+| oats_idx | double | %10.0g | Oats producer-price index (1914=100) |
+| potato_idx | double | %10.0g | Potato producer-price index (1914=100) |
+| apple_idx | double | %10.0g | Apple producer-price index (1914=100) |
+| wine_idx | double | %10.0g | Wine producer-price index (1914=100) |
+| wine_potato_ratio | double | %10.0g | Wine/Potato producer-price ratio (substitution-INCENTIVE proxy; not cross-price  |
+| wine_wheat_ratio | double | %10.0g | Wine/Wheat producer-price ratio (substitution-INCENTIVE proxy; not cross-price e |
+| wine_rye_ratio | double | %10.0g | Wine/Rye producer-price ratio (substitution-INCENTIVE proxy; not cross-price ela |
+
+<!-- codebook:processed/intermediate/h2a_substrate_prices_long.dta:end -->
+
+<!-- codebook:processed/intermediate/i33_subsidies_long.dta:start -->
+### processed/intermediate/i33_subsidies_long.dta
+
+_Updated: 12 May 2026 21:00:45 by 07_substrate_descriptives.do_
+
+**N = 125, vars = 6**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| year | int | %12.0g | Year |
+| source | str5 | %9s |  |
+| viticulture | long | %10.0g | Viticulture & grape processing subsidy (1000 CHF, I.33b col H) |
+| associations | int | %10.0g |  |
+| potato_fruit | long | %10.0g | Potato + fruit alcohol substrate subsidy (1000 CHF, I.33b col I) |
+| sugar_beet | long | %10.0g | Sugar-beet processing subsidy (1000 CHF, I.33b col J) |
+
+<!-- codebook:processed/intermediate/i33_subsidies_long.dta:end -->
+
+<!-- codebook:processed/intermediate/cereal_potato_area_long.dta:start -->
+### processed/intermediate/cereal_potato_area_long.dta
+
+_Updated: 12 May 2026 21:00:46 by 07_substrate_descriptives.do_
+
+**N = 25, vars = 10**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_code | str2 | %9s | Canton (2-letter code) |
+| cereal_area_1905 | float | %9.0g | Cereal area (1000 ha, 1905; HSSO I.01; SPARSE -- 3 cantons only) |
+| cereal_area_1917 | float | %9.0g | Cereal area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
+| potato_area_1910 | float | %9.0g | Potato area (1000 ha, 1910; HSSO I.01; SPARSE -- ZH only) |
+| potato_area_1917 | float | %9.0g | Potato area (1000 ha, 1917; HSSO I.01; first complete canton year, 9y post-vote) |
+| pop_1900 | float | %9.0g | Resident population (persons, 1900 census) |
+| cereal_area_1905_per_cap | double | %10.0g | Cereal/pop (ha/person, 1905; SPARSE -- 3 cantons) |
+| cereal_area_1917_per_cap | double | %10.0g | Cereal/pop (ha/person, 1917; first complete canton-year) |
+| potato_area_1910_per_cap | double | %10.0g | Potato/pop (ha/person, 1910; SPARSE -- ZH only) |
+| potato_area_1917_per_cap | double | %10.0g | Potato/pop (ha/person, 1917; first complete canton-year) |
+
+<!-- codebook:processed/intermediate/cereal_potato_area_long.dta:end -->
 
