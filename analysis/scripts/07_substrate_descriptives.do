@@ -1085,6 +1085,276 @@ if _rc {
 }
 
 
+**# 9e. C.15 prep: I.38 farm-size distribution + canton-level concentration measures
+*------------------------------------------------------------------------------*
+* Phase C.15 prep / Phase 1.0 (verify_reconstruct_expand handoff). Extracts the
+* 1905 Swiss Federal Agricultural Census canton-level farm-size distribution
+* and computes the area-based threshold-share concentration ratio family +
+* top-bin area-share trip-wire diagnostic.
+*
+* Deliverables (all paths relative to $MyProject):
+*   processed/i38_farm_size_long.dta
+*       25 cantons x 9 bins = 225 obs. Variables: canton_code, bin_idx,
+*       bin_lower, bin_upper, bin_midpoint, farm_count, area_imputed.
+*   processed/i38_canton_concentration.dta
+*       25 cantons x ~11 vars wide. Variables: canton_code, farms_total,
+*       area_total_imp, top_bin_area_share, top_bin_flag,
+*       share_above_{3,5,10,15,20,30}.
+*   output/notes/2026-05-13_i38_extraction_and_topbin_diagnostic.md
+*       Documentation incl. the per-canton top-bin diagnostic table and the
+*       methodology deviations identified during extraction.
+*
+* TWO METHODOLOGICAL DEVIATIONS from gini_methodology.md identified during
+* extraction. The strategist should update that note before C.15 Phase 1.1:
+*   (a) NINE bins, not 11. Swiss I.38 reports 9 farm-size classes; the note
+*       overcounted.
+*   (b) NO observed bin-level cultivated areas. I.38 reports farm counts only.
+*       The note's claim that "each canton-bin cell reports both the number
+*       of farms and the total cultivated area" is incorrect. Bin areas must
+*       be IMPUTED via bin midpoints throughout (not just the top bin).
+*
+* This section is NOT added to run.do; strategist integrates after review.
+{
+    * --- Bin metadata (9 bins; the cumulative subtotal at I.38 section row 32
+    *     is skipped since it duplicates the sum of bins 2-9). ---
+    * bin_idx | section row | 1905 row | range (ha)     | midpoint (ha)
+    *   1     |  19         |  21      | 0.00 - 0.50    |  0.25
+    *   2     |  44         |  46      | 0.50 - 1.00    |  0.75
+    *   3     |  56         |  58      | 1.01 - 3.00    |  2.00
+    *   4     |  68         |  70      | 3.01 - 5.00    |  4.00
+    *   5     |  80         |  82      | 5.01 - 10.00   |  7.50
+    *   6     |  92         |  94      | 10.01 - 15.00  | 12.50
+    *   7     | 104         | 106      | 15.01 - 20.00  | 17.50
+    *   8     | 116         | 118      | 20.01 - 30.00  | 25.00
+    *   9     | 128         | 130      | > 30.00 (open) | 30.00  (lower-bound cap, GMV 2009)
+
+    local bin_data_rows  "21 46 58 70 82 94 106 118 130"
+    local bin_lowers     "0.00 0.50 1.01 3.01 5.01 10.01 15.01 20.01 30.01"
+    local bin_uppers     "0.50 1.00 3.00 5.00 10.00 15.00 20.00 30.00 ."
+    local bin_midpoints  "0.25 0.75 2.00 4.00 7.50 12.50 17.50 25.00 30.00"
+    local nbins : word count `bin_data_rows'
+
+    * --- Extract 1905 row for each bin; accumulate to combined long format. ---
+    tempfile combined
+    forvalues i = 1/`nbins' {
+        local data_row : word `i' of `bin_data_rows'
+
+        import excel using "$Absinthe1Data/translated/I.38_EN.xlsx", allstring clear
+        keep in `data_row'
+        keep B C E F G H I J K L M N O P Q R S T U V W X Y Z AA
+        destring _all, replace force
+        xpose, clear varname
+        rename v1 farm_count
+        gen str3 col_letter = upper(_varname)
+        drop _varname
+        merge 1:1 col_letter using "$MyProject/processed/intermediate/canton_crosswalk.dta", ///
+            assert(match) nogenerate
+        drop col_letter
+        gen byte bin_idx = `i'
+
+        if `i' == 1 {
+            save `combined', replace
+        }
+        else {
+            append using `combined'
+            save `combined', replace
+        }
+    }
+    use `combined', clear
+
+    * --- Attach bin metadata: lower/upper bounds, midpoint, imputed area. ---
+    gen double bin_lower    = .
+    gen double bin_upper    = .
+    gen double bin_midpoint = .
+    forvalues i = 1/`nbins' {
+        local lo : word `i' of `bin_lowers'
+        local up : word `i' of `bin_uppers'
+        local mp : word `i' of `bin_midpoints'
+        replace bin_lower    = `lo' if bin_idx == `i'
+        replace bin_upper    = `up' if bin_idx == `i'
+        replace bin_midpoint = `mp' if bin_idx == `i'
+    }
+    label var canton_code   "Canton (2-letter code, 1908)"
+    label var bin_idx       "Bin index (1=smallest, 9=largest)"
+    label var bin_lower     "Bin lower bound (cultivated ha; bin 9 = 30.01 nominally)"
+    label var bin_upper     "Bin upper bound (cultivated ha; missing for bin 9 = unbounded)"
+    label var bin_midpoint  "Bin midpoint (ha); bin 9 uses lower-bound cap = 30.0 (GMV 2009)"
+    label var farm_count    "Number of farms in canton-bin (1905, HSSO I.38)"
+
+    gen double area_imputed = farm_count * bin_midpoint
+    label var area_imputed  "Imputed cultivated area (ha) = farm_count * bin_midpoint (no observed bin areas in I.38)"
+
+    notes _dta: HSSO I.38 (1905 Federal Agricultural Census, canton x farm-size). Source: $Absinthe1Data/translated/I.38_EN.xlsx (Phase C.15 prep, 2026-05-13).
+    notes _dta: Methodology deviations from gini_methodology.md (1) 9 bins not 11 (2) only farm counts observed, areas imputed via bin midpoints throughout, top bin lower-bound cap = 30 ha (GMV 2009 primary).
+    notes _dta: BE/JU convention follows project canton_crosswalk: column C (combined BE+JU) used as 1908-historical BE; standalone BE (col D), JU (col AB), and CH (col AC) excluded.
+
+    sort canton_code bin_idx
+    isid canton_code bin_idx
+    assert c(N) == 25 * `nbins'
+    qui count if missing(farm_count)
+    assert r(N) == 0
+    compress
+    save "$MyProject/processed/i38_farm_size_long.dta", replace
+    di as result "Saved processed/i38_farm_size_long.dta (`=c(N)' obs, `=c(k)' vars)."
+
+    * --- Canton-level aggregates via tempfiles. ---
+    tempfile canton_totals top_bin
+    tempfile thr_3 thr_5 thr_10 thr_15 thr_20 thr_30
+
+    preserve
+        collapse (sum) farms_total = farm_count area_total_imp = area_imputed, by(canton_code)
+        save `canton_totals'
+    restore
+
+    preserve
+        keep if bin_idx == 9
+        keep canton_code area_imputed
+        rename area_imputed area_top_bin
+        save `top_bin'
+    restore
+
+    foreach X in 3 5 10 15 20 30 {
+        preserve
+            keep if bin_lower >= `X'
+            collapse (sum) area_above_`X' = area_imputed, by(canton_code)
+            save `thr_`X''
+        restore
+    }
+
+    * --- Build wide-format canton-level dataset. ---
+    use `canton_totals', clear
+    merge 1:1 canton_code using `top_bin', assert(match) nogenerate
+    gen double top_bin_area_share = 100 * area_top_bin / area_total_imp
+    gen byte top_bin_flag = top_bin_area_share > 20
+    drop area_top_bin
+
+    foreach X in 3 5 10 15 20 30 {
+        merge 1:1 canton_code using `thr_`X'', nogenerate
+        replace area_above_`X' = 0 if missing(area_above_`X')
+        gen double share_above_`X' = 100 * area_above_`X' / area_total_imp
+        drop area_above_`X'
+    }
+
+    * Consistency check: share_above_30 equals top_bin_area_share by construction.
+    qui count if abs(share_above_30 - top_bin_area_share) > 0.001
+    assert r(N) == 0
+
+    isid canton_code
+    assert c(N) == 25
+    order canton_code farms_total area_total_imp top_bin_area_share top_bin_flag ///
+          share_above_3 share_above_5 share_above_10 share_above_15 share_above_20 share_above_30
+
+    label var canton_code          "Canton (2-letter code, 1908)"
+    label var farms_total          "Total farms in canton (1905, HSSO I.38)"
+    label var area_total_imp       "Total imputed cultivated area (ha) = sum of farm_count x bin_midpoint"
+    label var top_bin_area_share   "Imputed area share of >30 ha bin (%, midpoint cap = 30)"
+    label var top_bin_flag         "1 if top_bin_area_share > 20% (trip-wire per gini_methodology.md)"
+    foreach X in 3 5 10 15 20 30 {
+        label var share_above_`X'  "Imputed area share of farms with cultivated area > `X' ha (%)"
+    }
+
+    notes _dta: HSSO I.38 canton-level concentration measures for Phase C.15 prep. 1905. All area-based shares use midpoint-imputed areas (no observed bin areas).
+    notes _dta: Top-bin convention lower-bound cap = 30.0 ha (GMV 2009 primary). Area-calibrated robustness alternative not yet computed.
+    notes _dta: top_bin_flag = 1 indicates top_bin_area_share > 20% (trip-wire per gini_methodology.md sec. 4).
+    notes _dta: share_above_30 = top_bin_area_share by construction.
+
+    compress
+    save "$MyProject/processed/i38_canton_concentration.dta", replace
+    di as result "Saved processed/i38_canton_concentration.dta (`=c(N)' obs, `=c(k)' vars)."
+
+    * --- Trip-wire diagnostic: top-bin area share table + count flagged. ---
+    qui count if top_bin_flag == 1
+    local nflagged = r(N)
+    di as result _n "==== I.38 TOP-BIN AREA-SHARE TRIP-WIRE (Phase C.15 prep) ===="
+    di as result "Canton-level imputed area share of the >30 ha bin (%, midpoint cap = 30)."
+    di as result "Flag = 1 if share > 20% (per gini_methodology.md sec. 4 trip-wire)."
+    list canton_code top_bin_area_share top_bin_flag, sep(0) noobs abb(20)
+    di as result _n "Cantons flagged (>20% top-bin share): `nflagged' of 25."
+    di as result "============================================================" _n
+
+    * --- Write notes file. ---
+    sort canton_code
+    cap file close i38fh
+    file open i38fh using "$MyProject/output/notes/2026-05-13_i38_extraction_and_topbin_diagnostic.md", write replace
+    file write i38fh "# I.38 Farm-Size Extraction + Top-Bin Trip-Wire Diagnostic (Phase C.15 prep)" _n _n
+    file write i38fh "**Phase**: C.15 prep / Phase 1.0 (verify_reconstruct_expand handoff)  " _n
+    file write i38fh "**Date**: 2026-05-13  " _n
+    file write i38fh "**Source**: HSSO I.38 (1905 Swiss Federal Agricultural Census, canton x farm-size)  " _n
+    file write i38fh "**Translated file**: research_data_raw/c-metrics-absinthe1/translated/I.38_EN.xlsx  " _n
+    file write i38fh "**Script**: 07_substrate_descriptives.do, section 9e  " _n _n
+    file write i38fh "---" _n _n
+
+    file write i38fh "## TL;DR" _n _n
+    file write i38fh "Two methodological deviations from analysis/documentation/methods/gini_methodology.md were identified during extraction. **The strategist should review and update that note before C.15 Phase 1.1.**" _n _n
+    file write i38fh "1. **NINE bins, not 11.** The 1905 Swiss census reports 9 cultivated-area size classes: 0.0-0.5, 0.5-1, 1.01-3, 3.01-5, 5.01-10, 10.01-15, 15.01-20, 20.01-30, >30 hectares. The methodology note's claim of 11 bins is incorrect. The Gini formula handles N=9 identically -- this is a numerology correction only." _n _n
+    file write i38fh "2. **No observed bin areas.** I.38 reports ONLY farm counts per canton-bin, NOT bin-level cultivated areas. The methodology note's statement that 'each canton-bin cell reports both the number of farms and the total cultivated area' is INCORRECT. Bin-level areas must be IMPUTED via bin midpoints throughout (not just the top bin, which the note already noted needs handling). The Gini construction must therefore operate on cumulative shares of IMPUTED areas, not observed areas." _n _n
+    file write i38fh "Trip-wire diagnostic table (deliverable): `nflagged' of 25 cantons exceed the 20-percent top-bin area-share threshold mandated by the project rule." _n _n
+
+    file write i38fh "## Source-data layout (I.38)" _n _n
+    file write i38fh "- Single worksheet ('Worksheet'); 146 rows x 29 columns." _n
+    file write i38fh "- Canton codes in row 4 (cols B-AC: ZH, BE+JU combined, BE, LU, UR, ..., GE, JU, CH). The combined BE+JU column (C) is used as 1908-historical BE per the project canton_crosswalk." _n
+    file write i38fh "- Section titles in column B at rows 6, 19, 32, 44, 56, 68, 80, 92, 104, 116, 128 (11 sections)." _n
+    file write i38fh "- Section row 6 = 'Total number of farms' (overall total, validation only)." _n
+    file write i38fh "- Section row 32 = 'Farms with cultivated area over 0.5 hectares' (cumulative subtotal of bins 2-9; **NOT** a standalone bin; skipped in extraction)." _n
+    file write i38fh "- The 9 standalone bin sections are at rows 19, 44, 56, 68, 80, 92, 104, 116, 128." _n
+    file write i38fh "- 1905 data row in each section = section_row + 2. Years covered: 1905, 1929, 1939, 1955, 1965, 1969, 1975, 1980, 1985, 1990. Only 1905 (the pre-vote year) is extracted." _n _n
+
+    file write i38fh "## Bin definitions and midpoint convention" _n _n
+    file write i38fh "| Bin | I.38 section row | 1905 data row | Range (ha) | Midpoint (ha) | Note |" _n
+    file write i38fh "|---:|---:|---:|---|---:|---|" _n
+    file write i38fh "| 1 |  19 |  21 | 0.00 - 0.50    |  0.25 |  |" _n
+    file write i38fh "| 2 |  44 |  46 | 0.50 - 1.00    |  0.75 |  |" _n
+    file write i38fh "| 3 |  56 |  58 | 1.01 - 3.00    |  2.00 |  |" _n
+    file write i38fh "| 4 |  68 |  70 | 3.01 - 5.00    |  4.00 |  |" _n
+    file write i38fh "| 5 |  80 |  82 | 5.01 - 10.00   |  7.50 |  |" _n
+    file write i38fh "| 6 |  92 |  94 | 10.01 - 15.00  | 12.50 |  |" _n
+    file write i38fh "| 7 | 104 | 106 | 15.01 - 20.00  | 17.50 |  |" _n
+    file write i38fh "| 8 | 116 | 118 | 20.01 - 30.00  | 25.00 |  |" _n
+    file write i38fh "| 9 | 128 | 130 | > 30.00 (open) | 30.00 | Lower-bound cap; GMV 2009 primary. Area-calibrated robustness alternative not yet computed (requires independent canton-total cultivated area from HSSO I.01 or similar). |" _n _n
+
+    file write i38fh "## Top-bin area-share trip-wire (deliverable)" _n _n
+    file write i38fh "Per-canton imputed area share of the unbounded top bin: top_bin_area_share_c = imputed_area_c_9 / sum_i imputed_area_c_i." _n _n
+    file write i38fh "Project rule .claude/rules/gini-from-binned-data.md sec. 4: flag any canton with top_bin_area_share > 20% for additional scrutiny in C.15 robustness work." _n _n
+    file write i38fh "| Canton | top_bin_area_share (%) | Flag (>20%) |" _n
+    file write i38fh "|---|---:|---:|" _n
+    forvalues i = 1/`=c(N)' {
+        local cc      = canton_code[`i']
+        local sh_num  = top_bin_area_share[`i']
+        local sh_str  : di %5.2f `sh_num'
+        local flag    = top_bin_flag[`i']
+        local flag_str "no"
+        if `flag' == 1 local flag_str "**YES**"
+        file write i38fh "| `cc' | `sh_str' | `flag_str' |" _n
+    }
+    file write i38fh _n "**Cantons flagged: `nflagged' of 25.**" _n _n
+
+    file write i38fh "## Threshold-share family (deliverable; area-based, midpoint-imputed)" _n _n
+    file write i38fh "share_above_X = (sum of imputed cultivated area in bins with lower bound >= X ha) / total imputed canton cultivated area." _n _n
+    file write i38fh "Note: share_above_30 is identical to top_bin_area_share by construction (only bin 9 has lower bound >= 30)." _n _n
+    file write i38fh "Available in `=char(96)'processed/i38_canton_concentration.dta`=char(96)' for X in {3, 5, 10, 15, 20, 30}. Stata variable names: share_above_3, share_above_5, share_above_10, share_above_15, share_above_20, share_above_30 (each in percent units, 0-100)." _n _n
+
+    file write i38fh "## Pending decisions for the strategist (before C.15 Phase 1.1)" _n _n
+    file write i38fh "1. **Methodology-note correction.** Update analysis/documentation/methods/gini_methodology.md to reflect (a) 9 not 11 bins, (b) midpoint imputation required throughout (not only at the top bin), and (c) the Gini formula now operates on cumulative shares of imputed areas, not observed areas. The literature references in the note (GMV 2009, Cinnirella-Hornung 2016) remain applicable; the GMV 2005 Brown WP Appendix B treatment of counts-only data is the closer-fit precedent than the GMV 2009 RES paper." _n _n
+    file write i38fh "2. **Area-calibrated robustness top-bin convention.** GMV 2005 proposes calibrating the top-bin representative size such that total imputed cultivated area equals a known canton total from an independent source. We need to identify that independent source. HSSO I.01 includes agricultural-land area per canton; the C.12 canton_substrate_availability workflow already extracted partial coverage. The area-calibrated robustness Gini and threshold shares can be added in a follow-up commit." _n _n
+    file write i38fh "3. **Trip-wire interpretation.** With `nflagged' cantons exceeding 20% top-bin share, the GMV (2009) 'top-bin sensitivity is negligible' defense may NOT transfer to the Swiss case. Implications for C.15:" _n
+    file write i38fh "   - Area-calibrated robustness must be computed and reported alongside the primary Gini." _n
+    file write i38fh "   - The empirical primary-measure selection (Gini vs. top-share family) should weight robustness of the threshold-share family more heavily, since those are immune to the unbounded-top-bin problem by construction." _n
+    file write i38fh "   - Consider reporting threshold-share family as PRIMARY in the main paper, with Gini as appendix/robustness." _n _n
+
+    file write i38fh "## Provenance" _n _n
+    file write i38fh "Computed in 07_substrate_descriptives.do section 9e (Phase C.15 prep / Phase 1.0). Source: HSSO I.38 (1905 Federal Agricultural Census; Schweizerisches Bauernsekretariat statistical surveys). BE/JU combined-column convention. Midpoint imputation throughout; top bin (>30 ha) capped at 30.0 (GMV 2009 primary convention)." _n
+    file close i38fh
+    di as result "Saved output/notes/2026-05-13_i38_extraction_and_topbin_diagnostic.md"
+
+    cap _inventory_append, sheet("datasets") ///
+        row("created|processed/i38_farm_size_long.dta|.|.|.|07_substrate_descriptives.do (C.15 prep)")
+    cap _inventory_append, sheet("datasets") ///
+        row("created|processed/i38_canton_concentration.dta|.|.|.|07_substrate_descriptives.do (C.15 prep)")
+    cap _inventory_append, sheet("outputs") ///
+        row("created|output/notes/2026-05-13_i38_extraction_and_topbin_diagnostic.md|.|.|.|07_substrate_descriptives.do (C.15 prep)")
+}
+
+
 **# 10. Post-credits: codebook + inventory
 *------------------------------------------------------------------------------*
 {
