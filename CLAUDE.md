@@ -9,8 +9,9 @@ Template repo. **Never work here directly.** Researchers clone → `/init-projec
 ## Read first (every session)
 
 1. **`CONTEXT.md`** — what this specific project is *about* (dataset, unit, outcome, ID strategy, key globals). If empty, ask the user to fill it before any analysis.
-2. **`.claude/rules/stata-gotchas.md`** — top critical Stata pitfalls (always loaded).
-3. **`.claude/MEMORY.md`** — persistent project facts and `[LEARN]` corrections.
+2. **`.claude/rules/methodology-integrity.md`** — never trade empirical/methodological precision to solve an engineering/runtime problem; always-loaded behavioral rule with project-specific binding parameters (RI=10k perms, HC3 SEs, etc.). Read this BEFORE relaxing any methodology dial.
+3. **`.claude/rules/stata-gotchas.md`** — top critical Stata pitfalls (always loaded).
+4. **`.claude/MEMORY.md`** — persistent project facts and `[LEARN]` corrections.
 
 ## Rule tiers
 
