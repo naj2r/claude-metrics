@@ -1,0 +1,836 @@
+collect title — Add a custom table title in a collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect title manages the creation of a custom table title in a collection.
+
+Quick start
+Specify a custom table title
+collect title ”Model comparison”
+Clear the current custom table title
+collect title, clear
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Syntax
+collect title ”string” [ , options ]
+
+options
+
+Description
+
+name(cname)
+clear
+
+specify custom table title for collection cname
+remove custom table title
+
+Options
+name(cname) specifies the collection to which the custom table title is added or removed. By default,
+the custom table title change is applied to the current collection.
+clear removes the existing custom table title.
+
+Remarks and examples
+When creating a table, you will likely want to add a custom title. With collect title, you can
+specify your custom title, and it will be added to the table in plain text. If your table layout generates
+multiple tables, the title added with collect title will be displayed for each table. You can also
+customize the appearance style of the title with collect style title. For example, you can specify
+the font, text color, and more.
+
+168
+
+collect title — Add a custom table title in a collection 169
+
+Example 1: Adding a custom table title
+Suppose that we want to create a table comparing regression results. First, we load data from the
+Second National Health and Nutrition Examination Survey (NHANES II) (McDowell et al. 1981), and we
+fit two models for systolic blood pressure:
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. quietly: collect _r_b: regress bpsystol i.agegrp
+. quietly: collect _r_b: regress bpsystol i.agegrp i.sex
+
+Then, we add our custom title and lay out our table:
+. collect title ”Models for systolic blood pressure”
+. collect layout (colname) (cmdset#result)
+Collection: default
+Rows: colname
+Columns: cmdset#result
+Table 1: 9 x 2
+Models for systolic blood pressure
+1
+2
+Coefficient Coefficient
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Male
+Female
+Intercept
+
+0
+2.89081
+9.597631
+18.32889
+24.17618
+30.82992
+117.3466
+
+0
+2.916153
+9.603552
+18.38803
+24.18566
+30.93702
+0
+-4.015163
+119.4303
+
+Stored results
+collect title stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect style title — Collection styles for table titles
+[TABLES] collect query — Query collection style properties
+
+collect use — Use a collection from disk
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect use loads a collection into memory from a saved file, making it the current collection. The
+collection name in the file is used for the collection in memory unless a new collection name is assigned.
+
+Quick start
+Load the collection from myfile.stjson, using the collection name in the file
+collect use myfile
+Same as above, but name this collection c2
+collect use c2 myfile
+Same as above, but replacing collection c2 if it exists
+collect use c2 myfile, replace
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Use collection
+
+Syntax
+Load a new collection from a file, using the collection name in the file
+collect use filename [ , options ]
+
+Load a new collection from a file, using a specified collection name
+collect use newcname filename [ , options ]
+
+where newcname is the new name to be assigned to the collection.
+If filename is specified without an extension, .stjson is assumed. If filename contains embedded spaces,
+enclose it in double quotes.
+options
+
+Description
+
+replace
+[ no ]warn
+
+overwrite existing collection
+display or suppress notes about tags that are not recognized;
+default is to display
+
+170
+
+collect use — Use a collection from disk 171
+
+Options
+replace permits collect use to overwrite an existing collection in memory. Whether you load a
+collection using the collection name in the file or specify a new collection name, replace is required
+if that collection already exists and is not empty.
+warn and nowarn control the display of notes when collect encounters a tag it does not recognize.
+warn, the default, specifies that collect show the notes.
+nowarn specifies that collect not show the notes.
+
+These options override the default behavior controlled by set collect warn; see [TABLES] set collect warn.
+
+Remarks and examples
+At times, you may not finalize your table of results in a single Stata session. In addition, you may
+wish to return to a collection to build another table from the same collected results or to export a table
+you have created to a publication-ready format. Saving a collection allows you to easily resume working
+with it later.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). Below, we fit a simple linear regression model and collect the
+coefficients ( r b). We also use the quietly prefix to suppress the output.
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect _r_b: regress bpsystol age
+
+Then, we arrange the items in our collection with collect layout. We place the variable names on
+the rows and the statistics (result) on the columns:
+. collect layout (colname) (result)
+Collection: default
+Rows: colname
+Columns: result
+Table 1: 2 x 1
+Coefficient
+Age (years)
+Intercept
+
+.6520775
+99.85603
+
+Then, we format the results to display only two digits after the decimal and shorten the label for the
+coefficients. We save our collection under the filename bp:
+. collect style cell, nformat(%5.2f)
+. collect label levels result _r_b ”Coef.”, modify
+. collect save bp
+(collection default saved to file bp.stjson)
+
+Now, let’s clear all collection information from memory:
+. collect clear
+
+collect use — Use a collection from disk 172
+
+To resume working on our collection, we load it into memory and then get a preview of the contents:
+. collect use bp
+(collection default read from file bp.stjson)
+. collect preview
+Coef.
+Age (years)
+Intercept
+
+0.65
+99.86
+
+Notice that the layout, appearance style, and labels are all saved with the collection. Also, while the filename is bp.stjson, the collection we saved was named default. collect use issues a note informing
+us of the collection and file name.
+If you want to load the collection with the name bp, you can instead type
+. collect use bp bp
+
+You can also rename the collection at a later time with collect rename.
+
+Stored results
+collect use stores the following in s():
+Macros
+s(current)
+s(filename)
+
+name of current collection
+name of the file used
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect save — Save a collection to disk
+
+collect layout — Specify table layout for the current collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+References
+
+Description
+collect layout builds a table from the current collection. With collect layout, you specify
+which of the values that were collected from other Stata commands are to appear in the table, and you
+specify how the table is to be arranged.
+
+The values in a collection are categorized into dimensions. These dimensions may represent types of
+statistics and covariate names. To specify a table layout, you specify which of these dimensions go on
+the rows and which of these dimensions go on the columns of your table.
+As you specify the table layout, you can also determine which levels of a dimension are to be included
+in the table. For instance, if a collection includes three types of statistics—means, standard deviations,
+and frequencies—you may specify that only means are to appear in the table.
+Table layouts can go beyond a single table with rows and columns. You can also specify dimensions
+that identify multiple tables.
+collect layout, typed without arguments, reports the current layout.
+
+Quick start
+Table with dimension dim1 on the rows and dim2 on the columns
+collect layout (dim1) (dim2)
+Same as above, but include levels lev1 and lev2 of dim1 instead of the levels automatically determined
+by collect
+collect layout (dim1[lev1 lev2]) (dim2)
+Table with interacted levels of dimension dim1 and dim2 on the rows and dim3 on the columns
+collect layout (dim1#dim2) (dim3)
+Table with levels of dimension dim1 and then the levels of dim2 on the rows and dim3 on the columns
+collect layout (dim1 dim2) (dim3)
+Separate tables for each level of dimension dim3, each with dim1 on the rows and dim2 on the columns
+collect layout (dim1) (dim2) (dim3)
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+173
+
+collect layout — Specify table layout for the current collection 174
+
+Syntax
+Basic syntax for specifying the table layout
+Single column layout with specified rows
+collect layout (rows)
+
+Single row layout with specified columns
+collect layout () (cols)
+
+Single table layout with specified rows and columns
+collect layout (rows) (cols)
+
+Multiple tables layout with specified rows and columns
+collect layout (rows) (cols) (tabs)
+
+Full syntax for specifying the table layout
+collect layout ([ rows ]) [ ([ cols ]) [ (tabs) ] ] [ , warn | nowarn ]
+
+Report the current layout
+collect layout
+
+Clear the layout information
+collect layout, clear
+
+rows, cols, and tabs are each composed of a taglist that selects dimensions and possibly levels within a
+dimension. Within the taglist, if tags are joined by #, their levels are interacted to identify rows, columns,
+or separate tables; if tags are separated by a space, their levels are appended to identify rows, columns
+or separate tables.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+levels are levels of the corresponding dimension.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+collect layout — Specify table layout for the current collection 175
+
+Options
+clear resets the collection’s layout information.
+warn and nowarn control the display of notes when collect encounters a tag it does not recognize.
+warn, the default, specifies that collect display notes when it encounters a tag it does not recognize.
+nowarn specifies that collect not show the notes.
+
+These options override the collect warn setting; see [TABLES] set collect warn.
+
+Remarks and examples
+After collecting results from Stata commands using collect get or the collect prefix, we can
+arrange results into a table using collect layout.
+The values in a collection are organized by their associated tags. These tags allow us to lay out a
+table by specifying which tags we wish to put on the rows and columns. More specifically, tags have
+two parts, the dimension and the level within the dimension. For example, the dimensions may represent
+types of statistics and covariate names. The levels within those dimensions may be coefficients, standard
+errors, and test statistics and x1, x2, and x3. The dimension for our statistics is called result, and the
+dimension for our covariates is called colname, so we can type
+. collect layout (colname) (result)
+
+to lay out a table with the covariates on the rows and the statistics on the columns. In this case, we
+specified only the dimension name, so the levels of each dimension that appear in the table are those that
+are selected as automatic levels. These automatic levels may be decided by the default collection style by
+specifying the levels you are interested in at the time you collect the results or by specifying automatic
+levels using collect style autolevels. If you want to see levels other than the automatic levels in
+your table, you can specify both the dimensions and their levels in your layout. For instance, we might
+type
+. collect layout (colname[x1 x2]) (result[_r_b _r_se])
+
+to lay out a table with variables x1 and x2 appearing on the rows and with statistics r b and r se,
+the coefficients and standard errors, appearing on the columns.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). Below, we fit a model for systolic blood pressure as a function of
+age and weight. We use the collect prefix to collect the results, and we specify the quietly prefix to
+suppress the output.
+
+collect layout — Specify table layout for the current collection 176
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect: regress bpsystol age weight
+. collect dims
+Collection dimensions
+Collection: default
+Dimension
+Layout, style, header, label
+cmdset
+coleq
+colname
+program_class
+result
+result_type
+rowname
+Style only
+
+border_block
+cell_type
+
+No. levels
+1
+1
+3
+1
+33
+3
+1
+4
+4
+
+After collecting the results, we used collect dims to list the dimensions in our collection. These
+can be used to specify the rows and columns of our table. Let’s put colname, the dimension containing
+covariates, on the rows and result, the dimension containing types of statistics, on the columns. If we
+type
+. collect layout (colname) (result)
+
+all covariates will be placed on the rows and all covariate-specific statistics will be reported on the
+columns. These statistics include the coefficient, confidence interval, test statistic, and 𝑝-value and more.
+This creates a wide table, and we likely want only a subset of these statistics reported.
+Say that we instead wanted to include both the coefficient and its standard error. We could use
+collect label list to find that the levels of result that represent the reported coefficients and standard errors are r b and r se. We request these levels by typing
+. collect layout (colname) (result[_r_b _r_se])
+Collection: default
+Rows: colname
+Columns: result[_r_b _r_se]
+Table 1: 3 x 2
+Coefficient Std. error
+Age (years)
+Weight (kg)
+Intercept
+
+.6379892
+.4069041
+71.27096
+
+.0111315
+.0124786
+1.041742
+
+Often we will want more than one dimension on the rows or columns. To demonstrate, we first collect
+results from another regression that includes the interaction between age and weight.
+. collect: quietly: regress bpsystol age weight c.age#c.weight
+
+Now we can place both the colname and result dimensions on the rows. We separate the dimension
+names by # to specify that the interacted levels should form the rows. If they were separated by a space,
+this would mean that we want to first see the levels of colname followed by the levels of result, but
+this is not what we want and would not uniquely identify the values corresponding to coefficients and
+
+collect layout — Specify table layout for the current collection 177
+
+standard errors in our collection. After collecting the results from the second regression, we have two
+levels of the dimension cmdset that identify the two commands we ran. We will put this dimension on
+the columns.
+. collect layout (colname#result[_r_b _r_se]) (cmdset)
+Collection: default
+Rows: colname#result[_r_b _r_se]
+Columns: cmdset
+Table 1: 12 x 2
+1
+Age (years)
+Coefficient
+Std. error
+Weight (kg)
+Coefficient
+Std. error
+Age (years) # Weight (kg)
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+2
+
+.6379892 .8898576
+.0111315 .0536198
+.4069041 .5733109
+.0124786 .0368295
+-.003581
+.0007458
+71.27096 59.60983
+1.041742 2.64211
+
+collect layout also allows you to build multiple tables. With this collection, we could, for instance,
+create a separate table for each of the models and again put variable names on the rows and statistics on
+the columns.
+. collect layout (colname) (result[_r_b _r_se]) (cmdset)
+Collection: default
+Rows: colname
+Columns: result[_r_b _r_se]
+Tables: cmdset
+Table 1: 3 x 2
+Table 2: 4 x 2
+1
+Coefficient Std. error
+Age (years)
+Weight (kg)
+Intercept
+
+.6379892
+.4069041
+71.27096
+
+.0111315
+.0124786
+1.041742
+
+2
+Coefficient Std. error
+Age (years)
+Weight (kg)
+Age (years) # Weight (kg)
+Intercept
+
+.8898576
+.5733109
+-.003581
+59.60983
+
+.0536198
+.0368295
+.0007458
+2.64211
+
+If you have a layout that you prefer to use for many of the tables you create, you can save the layout
+along with any preferred styles with collect style save. Then, after collecting new results, you can
+use collect style use to apply the same layout to the new collection.
+
+collect layout — Specify table layout for the current collection 178
+
+Stored results
+collect layout stores the following in s():
+Macros
+s(collection)
+s(rows)
+s(columns)
+s(tables)
+s(k tables)
+s(table#)
+
+name of collection
+rows specification
+columns specification
+tables specification
+number of tables
+layout for the #th table
+
+References
+Huber, C. 2021. Customizable tables in Stata 17, part 3: The classic table 1. The Stata Blog: Not Elsewhere Classified.
+https://blog.stata.com/2021/06/24/customizable-tables-in-stata-17-part-3-the-classic-table-1/.
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect get — Collect results from a Stata command
+[TABLES] collect preview — Preview the table in a collection
+[TABLES] collect style save — Save collection styles to disk
+[TABLES] collect style use — Use collection styles from disk
+
+collect preview — Preview the table in a collection
+Description
+Stored results
+
+Syntax
+Also see
+
+Options
+
+Remarks and examples
+
+Description
+collect preview displays a preview of a table in a collection based on the specified layout, labels,
+and styles.
+
+Syntax
+collect preview [ , name(cname) noblank ]
+
+where cname is the name of an existing collection.
+
+Options
+name(cname) specifies the collection for which a preview should be displayed. By default, the preview
+is for a table in the current collection.
+noblank prevents collect preview from putting a blank line before its output. By default, collect
+preview will insert a blank line before its output.
+
+Remarks and examples
+Building and customizing a table is often an iterative process. collect preview allows you to see
+what your table looks like at each step of that process.
+To demonstrate, we first collect results using the collect prefix and lay out a table using collect
+layout.
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect _r_b: regress bpsystol bmi
+. quietly: collect _r_b: regress bpsystol bmi age
+. collect layout (colname) (cmdset#result)
+Collection: default
+Rows: colname
+Columns: cmdset#result
+Table 1: 3 x 2
+1
+2
+Coefficient Coefficient
+Body mass index (BMI)
+Age (years)
+Intercept
+
+1.656894
+88.56855
+
+1.304128
+.5883367
+69.58451
+
+When we use collect layout, we automatically get a preview of our table. However, after other
+commands that we use to make changes to this table, we need to request a preview to see the results. For
+instance, we might change labels.
+179
+
+collect preview — Preview the table in a collection 180
+. collect label levels cmdset 1 ”Model 1” 2 ”Model 2”
+
+To see the effect of that change, we type
+. collect preview
+Model 1
+Model 2
+Coefficient Coefficient
+Body mass index (BMI)
+Age (years)
+Intercept
+
+1.656894
+88.56855
+
+1.304128
+.5883367
+69.58451
+
+There are many other style and label changes that we could make. For instance, here we hide
+Coefficient from column headers, add extra space between columns, and specify a numeric format.
+Following those changes, we again preview the table to see the results.
+. collect style header result, level(hide)
+. collect style column, extraspace(1)
+. collect style cell, nformat(%6.2f)
+. collect preview
+
+Body mass index (BMI)
+Age (years)
+Intercept
+
+Model 1
+
+Model 2
+
+1.66
+
+1.30
+0.59
+69.58
+
+88.57
+
+In fact, we might have typed collect preview after each of these commands to see the result.
+Alternatively, we could point and click to make changes to the table and automatically see a preview
+of the table with modifications in the Tables Builder.
+For information on style and label commands we used here, see [TABLES] collect label, [TABLES] collect style header, [TABLES] collect style column, and [TABLES] collect style cell.
+
+Stored results
+collect preview stores the following in s():
+Macros
+s(collection)
+s(rows)
+s(columns)
+s(tables)
+s(k tables)
+s(table#)
+
+name of collection
+rows specification
+columns specification
+tables specification
+number of tables
+layout for the #th table
+
+Also see
+[TABLES] Tables Builder — Tables Builder
+
+collect export — Export table from a collection
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+Also see
+
+Syntax
+
+Options
+
+Description
+collect export exports a table from a collection to a specified document type.
+
+You can also include a table in a report created by putdocx, putpdf, or putexcel; see [RPT] putdocx
+collect, [RPT] putpdf collect, and [RPT] putexcel.
+
+Quick start
+Export a table from the current collection to myfile.xlsx
+collect export myfile.xlsx
+Export a table from the collection c2 to myfile2.xlsx
+collect export myfile2.xlsx, name(c2)
+Same as above, but export the table to sheet Table1, instead of the default Sheet1
+collect export myfile2.xlsx, name(c2) sheet(Table1)
+Export a table from the current collection to table1.docx, replacing the file if it exists
+collect export table1.docx, replace
+Same as above, and save the putdocx commands used to export the table in table1.do
+collect export table1.docx, replace dofile(table1)
+Export a table from the current collection to table1.tex
+collect export table1.tex
+Same as above, but export the table only, instead of creating a complete LATEX document
+collect export table1.tex, tableonly
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+181
+
+collect export — Export table from a collection 182
+
+Syntax
+collect export filename.suffix [ , export options document options ]
+
+export options
+
+Description
+
+name(cname)
+as(fileformat )
+replace
+
+export collection cname
+specify document type
+overwrite existing file
+
+By default, collect export will try to determine the document type from suffix using the following
+table:
+suffix
+
+Implied
+option
+
+File type
+
+docx
+html
+pdf
+xlsx
+xls
+tex
+smcl
+txt
+markdown
+md
+
+as(docx)
+as(html)
+as(pdf)
+as(xlsx)
+as(xls)
+as(tex)
+as(smcl)
+as(txt)
+as(markdown)
+as(markdown)
+
+Microsoft Word
+HTML 5 with CSS
+PDF (Portable Document Format)
+Microsoft Excel 2007/2010 or newer
+Microsoft Excel 1997/2003
+LATEX
+SMCL (Stata Markup and Control Language)
+plain text
+Markdown
+Markdown
+
+document options
+
+Description
+
+docx options
+html options
+pdf options
+excel options
+tex options
+smcl option
+txt option
+md option
+
+when exporting to .docx files
+when exporting to .html files
+when exporting to .pdf files
+when exporting to .xls and .xlsx files
+when exporting to .tex files
+when exporting to .smcl files
+when exporting to .txt files
+when exporting to .markdown and .md files
+
+docx options
+
+Description
+
+noisily
+dofile(filename[, replace ])
+
+show the putdocx commands used to export to the .docx file
+save the putdocx commands used for exporting to the named
+do-file
+
+html options
+
+Description
+
+prefix(prefix)
+cssfile(cssfile)
+tableonly
+append
+
+use prefix to identify style classes
+define the styles in cssfile instead of filename
+export only the table to the specified file
+append to an existing file
+
+

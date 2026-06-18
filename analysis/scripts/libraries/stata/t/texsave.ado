@@ -129,7 +129,13 @@ program define texsave, nclass
 		if "`c(eolchar)'"=="mac" local eol_char = "\M"
 		else local eol_char = "\U"
 	}
-	else if "`c(os)'" == "Windows" local eol_char = "\W"
+	* WORKSHOP PATCH (Phase A'', 2026-05-22): force "\U" (Unix LF) even on
+	* Windows.  outsheet on Windows + MSYS/Git-Bash environments writes LF-
+	* only files; the original "\W" eol_char fails to match, leaving data
+	* rows without "\tabularnewline" terminators (LaTeX !cr error on compile).
+	* Forcing "\U" works because LF is a subset of the line-ending Stata
+	* actually writes through outsheet here.
+	else if "`c(os)'" == "Windows" local eol_char = "\U"
 	else local eol_char = "\U"
 	
 	*****************************

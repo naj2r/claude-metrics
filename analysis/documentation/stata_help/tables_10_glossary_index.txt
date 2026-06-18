@@ -1,0 +1,385 @@
+Example 7 — Table of regression results using survey data
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to use collect to create a table of regression results when
+working with complex survey data.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Introduction
+Table of regression results with complex survey data
+
+Introduction
+Throughout this manual, we have used data from the Second National Health and Nutrition Examination Survey (NHANES II) (McDowell et al. 1981), ignoring the fact that it was derived from a complex
+survey design. Below, we report the current survey settings:
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. svyset
+Sampling weights: finalwgt
+VCE: linearized
+Single unit: missing
+Strata 1: strata
+Sampling unit 1: psu
+FPC 1: <zero>
+
+Because the survey design has already been declared for these data, we can perform our analyses
+accounting for the complex survey design by prefixing our estimation commands with the svy prefix.
+We will use this prefix when fitting a regression model below.
+
+Table of regression results with complex survey data
+We would like to fit the model we fit in [TABLES] Example 5 but using the svy prefix to account
+for the complex survey design of our data. Also, we would like to include information about the survey
+design in our table, specifically the number of strata and primary sampling units. Below, we create a new
+collection named ex7. Then, we fit the model and use the collect prefix to collect all the results from
+e(). We also use the quietly prefix to suppress the output:
+. collect create ex7
+(current collection is ex7)
+. quietly: collect: svy: regress bpsystol bmi i.agegrp i.sex i.race
+
+349
+
+Example 7 — Table of regression results using survey data 350
+
+Then, we arrange the items in our collection with collect layout. We specify that the coefficients
+( r b) for each covariate (colname) be placed on the rows, along with the number of strata (N strata)
+and the primary sampling units (N psu). All collected results are stored in the dimension result, and
+we use brackets ([ ]) to refer to the levels of a dimension. On the columns, we place the results for
+each command (cmdset). In this case, we collected results from a single command, but including this
+dimension will allow us to add a label at the top.
+. collect layout (colname#result[_r_b] result[N_strata N_psu]) (cmdset)
+Collection: ex7
+Rows: colname#result[_r_b] result[N_strata N_psu]
+Columns: cmdset
+Table 1: 28 x 1
+1
+Body mass index (BMI)
+Coefficient
+20--29
+Coefficient
+30--39
+Coefficient
+40--49
+Coefficient
+50--59
+Coefficient
+60--69
+Coefficient
+70+
+Coefficient
+Male
+Coefficient
+Female
+Coefficient
+White
+Coefficient
+Black
+Coefficient
+Other
+Coefficient
+Intercept
+Coefficient
+Number of strata
+Number of sampled PSU
+
+1.314165
+0
+.9554468
+6.40242
+14.87049
+21.61949
+27.90405
+0
+-5.616304
+0
+1.397293
+-.3119783
+88.59293
+31
+62
+
+We can polish our table with a few modifications. First, we add a label to the level of cmdset, which
+will indicate the outcome variable. Then, because we are reporting only coefficients for each variable,
+we can hide the label Coefficient. This label is attached to the coefficients ( r b), which are a level
+of the dimension result. Below, we hide the label for this level of the dimension with collect style
+header.
+. collect label levels cmdset 1 ”Model for systolic BP”
+. collect style header result[_r_b], level(hide)
+
+If you are wondering why we do not just hide the labels for all levels of result, recall that our survey
+design statistics are also part of this dimension.
+
+Example 7 — Table of regression results using survey data 351
+
+Next, we omit the base levels for the factor variables with collect style showbase. We would like
+to include the labels for the factor variables and the labels for their levels in a single column. So we stack
+the row headers with collect style row, adding a blank line between the stacked row dimensions. By
+default, when we stack the row headers, the factor variables will be bound to their levels by an equal
+sign. We specify the nobinder option so that the levels will be stacked under the factor-variable labels,
+instead of bound by an equal sign.
+. collect style showbase off
+. collect style row stack, nobinder spacer
+
+Finally, we format the regression results to display only two digits to the right of the decimal. We do
+not need to apply this format to the survey design information, so we specify colname#result, which
+includes only the regression results. Additionally, we remove the border that is displayed on the right by
+default by setting the border pattern to nil. Then, we preview our finalized table:
+. collect style cell colname#result, nformat(%5.2f)
+. collect style cell border_block, border(right, pattern(nil))
+. collect preview
+Model for systolic BP
+Body mass index (BMI)
+
+1.31
+
+Age group
+30--39
+40--49
+50--59
+60--69
+70+
+
+0.96
+6.40
+14.87
+21.62
+27.90
+
+Sex
+Female
+
+-5.62
+
+Race
+Black
+Other
+
+1.40
+-0.31
+
+Intercept
+
+88.59
+
+Number of strata
+
+31
+
+Number of sampled PSU
+
+62
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect style header — Collection styles for hiding and showing header components
+[TABLES] collect style row — Collection styles for row headers
+
+Example 8 — Tables for ANOVA
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to use collect to store the results of anova and how to use a
+predefined style to produce an ANOVA table with these results.
+
+Remarks and examples
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES
+II) (McDowell et al. 1981). We wish to test whether the mean systolic blood pressure (bpsystol) is
+the same across males and females and across each category of race. To perform these tests, we use the
+anova command. We first create a new collection named ex8 and then use the collect prefix to collect
+the results from anova and store them in the new collection.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. collect create ex8
+(current collection is ex8)
+. quietly: collect : anova bpsystol sex race
+
+All results that anova returns in e() and r() will be collected. These results include the usual linear
+regression estimation results, sums of squares of the model terms, their degrees of freedom, 𝐹 statistics,
+and 𝑝-values.
+Stata ships with a predefined style named anova suitable for producing ANOVA tables after anova and
+oneway. Here we replace the default style with the anova style and call collect preview to report our
+ANOVA table.
+. collect style use anova, replace
+Collection: ex8
+Rows: term
+Columns: result[SS df MS F p]
+Tables: cmdset
+Table 1: 5 x 5
+. collect preview
+SS
+
+df
+
+MS
+
+F statistic
+
+Prob>F
+
+Model
+sex
+race
+Residual
+
+48978.71
+38166.29
+11316.64
+5585691.32
+
+3
+1
+2
+10,347
+
+16326.24
+38166.29
+5658.32
+539.84
+
+30.24
+70.70
+10.48
+
+<0.0001
+<0.0001
+<0.0001
+
+Total
+
+5634670.03
+
+10,350
+
+544.41
+
+Use collect style commands to make further style changes. Use the collect label levels command to make any necessary label changes. Once we are happy with our ANOVA table’s style and labels,
+we can export it to another format with collect export.
+
+352
+
+Example 8 — Tables for ANOVA 353
+
+Technical note
+If you collect results from multiple calls to anova and use the above predefined style, the default
+layout will produce a separate table for each collected call to anova. The cmdset dimension indexes
+the collected estimation results, and the above predefined style specifies it in the layout to produce the
+separate tables.
+Suppose we collected estimation results from a second ANOVA model.
+. quietly: collect: anova bpsystol sex##race
+
+To see how the estimation command results and cmdset levels are assigned, type
+. collect layout (cmdset) (result[cmdline])
+
+To restore the layout to show the above ANOVA tables, type
+. collect style use anova, layout
+
+If we want to publish the second model fit in our report, we can select it using collect style
+autolevels with the cmdset dimension without having to change collect layout by typing
+. collect style autolevels cmdset 2, clear
+. collect preview
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect style use — Use collection styles from disk
+[TABLES] Predefined styles — Predefined collection styles
+
+Glossary
+automatic levels. Automatic levels are levels of the result dimension (types of statistics) that are
+selected to be automatically included in the table if specific levels are not requested at the time the
+table is laid out. Automatic levels can be selected at the time results are collected by using collect
+get or the collect prefix. Alternatively, automatic results can be selected at any time by using
+collect style autolevels.
+automatic results. See automatic levels.
+collection. A collection contains results from one or more Stata commands. The results in a collection
+can be used to create a table. Within the collection, the values returned by the Stata commands are
+organized by tags, dimensions, and levels, which are used to determine how the values are arranged
+in a table.
+current collection. Stata can have many collections in memory at a time. The current collection is the
+active collection—the collection to which collect subcommands are applied. By default, any new
+results collected with the collect prefix are placed in the current collection. Any style changes and
+label changes are applied to this collection. A new table built using collect layout, exported using
+collect export, or saved using collect save is based on this collection.
+dimensions. See tags, dimensions, and levels.
+item. An item is a value in a collection. See value.
+layout. The layout is the arrangement of a table. The layout is determined by rows, columns, and separate
+tables. When creating a table from a collection, you specify the layout by identifying dimensions to
+be placed on the rows, columns, and potentially separate tables.
+levels. See tags, dimensions, and levels.
+tags. See tags, dimensions, and levels.
+tags, dimensions, and levels. Tags are assigned to all values in a collection when you either collect:
+or collect get results. Custom tags can be added when collecting results. You can retrieve any
+value from a collection by specifying its tags on a collect layout command. More typically, you
+specify lists of tags to create a table.
+Here are some examples of tags:
+result[r2]
+foreign[1]
+colname[mpg]
+
+specifies the 𝑅2 result
+specifies foreign = 1
+specifies the covariate mpg
+
+Tags comprise two parts, a dimension and level. Here are the parts of result[r2]:
+result[r2]
+result
+r2
+
+tag
+dimension—the dimension of tag result[r2]
+level—a level of dimension result
+
+Dimensions can contain multiple tags; each tag will have its own level. Consider the following:
+result[N]
+N
+
+another tag in dimension result
+another level of dimension result
+
+Dimensions must have valid names; see [U] 11.3 Naming conventions.
+354
+
+Glossary 355
+
+Levels can be integers or strings, and the strings may contain spaces. If a level contains spaces, it
+must be quoted, for example, “my level”.
+Some collect command arguments and options require a single tag:
+result[r2]
+
+Most collect command arguments and options accept tag lists, for example,
+result[r2] result[N]
+
+or, equivalently,
+result[r2 N]
+
+You can also just type a dimension name,
+result
+
+Wherever tag lists are allowed, a dimension name alone specifies a list of all the tags in the dimension.
+If result has levels r2, N, ll, rmse, then result is interpreted as
+result[r2] result[N] result[ll] result[rmse]
+
+value. In a collection, a value is a number that can be used to fill a cell in a table. The values are obtained
+from the stored results of Stata commands that are included in the collection. Values are organized by
+tags, dimensions, and levels.
+
+

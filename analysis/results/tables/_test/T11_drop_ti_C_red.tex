@@ -1,0 +1,29 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{T11 Panel C: RED wine, drop Ticino (N=24) \label{tab:T11\_C}}
+\begin{tabular}{l*{5}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}\\
+            &\multicolumn{1}{c}{(1) baseline}&\multicolumn{1}{c}{(2) +french}&\multicolumn{1}{c}{(3) +absinthe}&\multicolumn{1}{c}{(4) +protestant}&\multicolumn{1}{c}{(5) +geog (density)}\\
+            &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   \\
+\midrule
+RED wine, national share (\%)&       0.631** &       0.600   &       0.603   &       0.842   &       0.825   \\
+            &     (0.259)   &     (0.480)   &     (0.488)   &     (0.659)   &     (0.565)   \\
+French language share (\%)&               &      -0.229***&      -0.139** &      -0.146** &      -0.153** \\
+            &               &     (0.070)   &     (0.056)   &     (0.061)   &     (0.058)   \\
+Absinthe industry share (\%)&               &               &      -0.385   &      -0.296   &      -0.255   \\
+            &               &               &     (0.343)   &     (0.246)   &     (0.345)   \\
+Protestant share (\%)&               &               &               &      -0.097*  &      -0.063   \\
+            &               &               &               &     (0.051)   &     (0.061)   \\
+Log population density&               &               &               &               &      -2.507   \\
+            &               &               &               &               &     (3.517)   \\
+Constant    &      62.257***&      66.466***&      66.441***&      69.810***&      79.942***\\
+            &     (2.637)   &     (2.371)   &     (2.391)   &     (2.953)   &    (14.089)   \\
+\midrule
+N           &          24   &          24   &          24   &          24   &          24   \\
+R-squared   &       0.088   &       0.499   &       0.596   &       0.656   &       0.699   \\
+RMSE        &      11.616   &       8.813   &       8.106   &       7.672   &       7.379   \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize HC3 robust standard errors in parentheses.  RED cascade STRENGTHENS without TI (col 5 beta jumps from +0.39 to +0.83).  Dispatch predicted collapse; actual: doubles.}\\
+\end{tabular}
+\end{table}

@@ -1,0 +1,2246 @@
+Tables Builder — Tables Builder 73
+
+or like
+Sex
+Region
+Female
+East
+West
+North
+South
+Male
+East
+...
+
+Then choose between Compose factor-variable elements in a single cell and Split factor-variable
+elements into separate cells on the Compose row headers dialog.
+Similar choices can be made about column headers on the Compose column headers dialog.
+There are many other changes to row and column headers you can make from these dialog boxes. We
+suggest you launch the dialogs and explore.
+Appearance
+You can change many things about the appearance of row and column headers, including borders and
+horizontal or vertical rules, bolding, italics, font color, cell color, margins, and justification.
+To change any of these properties for the row headers, click on the Cell appearance styles button. In
+the resulting dialog, click on one of the check boxes for the dimension and level rows, and then select
+Table cell type (cell type) as the dimension. If you want to change the appearance of row headers,
+select row-header for the level. Alternately, if you want to change the appearance of column headers,
+select column-header for the level. Then click on any of the dialogs tabs—Borders, Diagonals, Fonts,
+Shading, Margins, Alignments, or Formats—and make any appearance changes you want on that tab.
+You can even target the appearance change to specific rows or columns. You do that by choosing a
+second dimension on the dialog. Choose one of the dimensions that is on the rows or columns of your
+table. Then, select the level of the dimension for the specific row or column header you want to change.
+Finally, make the appearance changes you want on one of the tabs.
+Show/hide factor-variable base levels and empty cells
+Many applications of factor variables require that one of the levels in the variable be declared a base
+level. In those applications, nothing is estimated for that level, making its coefficient effectively 0. By
+default, tables produced by the Builder include base levels for factor variables in the table with 0s for
+coefficients or means and blanks for standard errors and other statistics about the coefficient or mean.
+If you would rather have base categories dropped from a table, click on the Show/hide coefficient
+styles button. On the resulting dialog, select Show base levels for factor variables. You then have
+several choices for which base levels are shown. You can show base levels for factor variables but not
+for interactions, show base levels for both factor variables and for interaction, or remove all base levels.
+Factor variables can be interacted, and sometimes there are no observations in one of those interactions. Consider the interaction of race (which includes Aleut Eskimo) with city regions in Los Angeles
+(LA). If there are no Aleutians residing in East LA, then we say that cell of the interaction is empty.
+As with base categories, you can control whether empty cells are shown or hidden on the dialog
+launched by the Show/hide coefficient styles button.
+
+Tables Builder — Tables Builder 74
+
+We put this discussion in Changing row and column headers because showing or hiding factor-variable
+base levels adds or removes entire rows or columns from the table, including their headers.
+Show/hide omitted coefficients
+Regressions and other estimators require that covariates not be collinear. If they are, this is flagged
+in the output with a 0 coefficient and an (omitted) note. By default, tables produced by the Builder
+include collinear covariates with 0s for coefficients or means, and blanks for standard errors and other
+statistics about the coefficient or mean.
+You can specify that collinear covariates instead be dropped from the results by clicking on the
+Show/hide coefficient styles button. On the resulting dialog, select Show omitted coefficients, and
+then click on the Off radio button.
+
+Changing cell/results appearance
+You can change just about anything about how the values in your table look—numeric formats, borders, horizontal and vertical rules, bolding, italics, font, text color, cell color, margins, justification, and
+more. This is all done in the dialog launched by the Cell appearance styles button.
+If you want to change the default look of everything on the table, including the headers, click on
+the radio button labeled Edit base style. Then click on one of the tabs—Borders, Diagonals, Fonts,
+Shading, Margins, Alignments, or Formats. Whatever changes you make on those tabs will apply
+to all text or cells throughout the entire table, both cells in the body of the table and in the headers.
+Because you are modifying the base appearance, if you have previously made changes to more specific
+tags (dimensions and levels), those changes will still be applied.
+To make changes that override the default appearance for everything, first click on the radio button
+labeled Edit styles for specified tags.
+If you want to change the appearance of only the results and cells in the body of the table, and not
+the headers, then select the dimension Table cell type (cell type) and select the level item. Now any
+changes you make on the other tabs applies to all results and cells in the main body of the table, and not
+to any of the headers.
+You can be specific about which results are affected by the appearance changes you make on the other
+tabs. For example, if your table has regression results, you could select the Result (result) dimension,
+then select Coefficient ( r b). Any changes you make after that affect only the coefficients. You might
+then click on the Formats tab and change the format type to Fixed numeric with 2 digits to the right
+of the decimal. You could make the same changes to the Std. error ( r se) and 95% CI ( r ci) by
+repeating the process on those levels.
+You can get even more specific. So far, we have picked only one dimension. The Main tab of the
+dialog allows you to pick up to 10 dimensions. Continuing with the regression example from the prior
+paragraph, after selecting Coefficient ( r b) from the Result (result) dimension, we might now pick
+a second dimension, say, Covariate names and column names (colname). Imagine we are trying to
+highlight the results from one of the covariates in our regression. We would then select that covariate from
+the Level drop-down list. So we have two things: the coefficient and the covariate we want to emphasize.
+With those two tags chosen, any changes we make on the other tabs affect only the coefficient and our
+chosen covariate. We can highlight those results any way we wish—bold, italics, text color, cell color,
+etc. You could make the same changes to the Std. error ( r se) and 95% CI ( r ci) of the covariate
+by repeating the process on those levels.
+
+Tables Builder — Tables Builder 75
+
+It is important to realize that not all appearance edits can be rendered on all export formats. For
+example, plain text (.txt) is called “plain” for a reason. Aside from numeric formats and some horizontal
+and vertical rules, nothing from the appearance edits can be rendered in plain text. Most appearance edits
+can be rendered in HTML, PDF, Microsoft Word, and Microsoft Excel. Many, but fewer, can be rendered
+in LATEX. No export format can render all the changes you can make on this dialog.
+Because the Preview pane renders one of the exports, you also will not be able to see all appearance
+edits in the Preview pane. On Windows and Macintosh, the preview is HTML, so you will see most
+appearance edits. On Linux, the preview is plain text, so you will see almost none of your edits.
+Numeric formats
+Make changes to numeric formats on the Formats tab. There you can also specify the delimiters for
+confidence and credible intervals.
+Borders and horizontal or vertical rules
+Add or remove borders around cells on the Borders tab. You can create horizontal rules by specifying
+borders only on the top or bottom of cells. You can create vertical rules by specifying borders only on
+the left or right of cells.
+Bold, italics, text color, and such
+Make table text bold or italic, or change its color on the Fonts tab. You can also underline text on the
+Fonts tab, or render it with a strikeout. You can even put text in all capitals or initial capitals. There are
+also some special settings for LATEX and SMCL export. You can specify the font family, but that must be
+done in a way that is supported by your intended export format.
+Cell color
+Change background and foreground cell color on the Shading tab. You can also set fill patterns on
+that tab.
+Margins
+Set margins for the cells on the Margins tab. You can add “in”, “cm”, or “pt” to any value you type
+here to specify that the margin is to be in inches, centimeters, or printers points.
+Justification/alignment
+Align text to the left or right and to the top or bottom on the Alignments tab.
+
+Adding significance stars
+You can add significance stars to coefficients in the dialog launched by clicking on the Construct
+significance stars. In fact, you can add any text you like to any result you like using rules on the value
+of any result you like. You can even limit the application of the “stars” to selected tags. A tag is defined
+by a dimension and one of its levels.
+
+Adding a custom table title
+You can add a custom table title in the dialog launched by clicking on the Custom table title.
+
+Tables Builder — Tables Builder 76
+
+Changing table title appearance
+You can change the appearance of table titles in the dialog launched by the Table title styles button.
+Click on the Fonts tab to change the font, size, text color, bolding, italics, and more. Click on the Shading
+tab to change the background color, foreground color, and fill pattern.
+
+Adding table notes
+You can add table notes in the dialog launched by clicking on the Table notes.
+
+Changing table note appearance
+You can change the appearance of table notes in the dialog launched by the Table notes styles button.
+Click on the Fonts tab to change the font, size, text color, bolding, italics, and more. Click on the Shading
+tab to change the background color, foreground color, and fill pattern.
+
+Exporting a table
+Export your table by clicking on the Export ... button. You can choose from several export formats—
+Microsoft Word, Microsoft Excel, PDF, HTML, LATEX, SMCL, Markdown, and plain text.
+
+Advanced tools
+Position of intercept
+When your table contains regression results, the intercept is placed by default after all the other coefficients. If you prefer, you can have it placed before the other coefficients. Use the dialog launched from
+the Intercept position button.
+Automatic dimension levels
+If you requested specific results when creating your collection, the meaning of a dimension used alone
+in the Builder has been changed. For example, to collect results, you could type
+. collect _r_b _r_ci: regress ...
+
+If you then add the Result (result) dimension to one of the Rows or Columns boxes without choosing
+any levels from the Level list, that dimension will no longer represent the result dimension and all of
+its levels. It will instead represent only the levels you specified on dimension result when you collected
+the results.
+Another way automatic levels are defined is when your collection was created by the table command
+and you specified one or more command() options. table makes some choices on its own about what
+you would like to see in your table.
+Regardless of whether you requested specific results at collection time or table made some choices
+for you, you can change these “automatic” dimension levels by clicking on the Automatic dimension
+levels button. On that dialog, you can clear the automatic levels for any dimension. You can redefine the
+automatic levels for any dimension. Or you can create a new list of automatic levels for any dimension.
+
+Tables Builder — Tables Builder 77
+
+All of this can be tremendously helpful when typing commands to lay out a table. The Builder makes
+it so easy to select levels while you are choosing dimensions for the rows or columns that automatic
+levels are rarely helpful.
+The most likely surprise you will encounter in the Builder occurs after a table command that included
+regressions specified in the command() option. You might then place the Results (results) dimension
+into the Rows or Columns boxes without selecting specific levels. If you do, only the coefficients will be
+shown. That is because table set the automatic levels of dimension result to be just the coefficients.
+You could click on the Automatic dimension levels button and redefine the automatic levels for
+result. But why? You can just click on the on the
+term, select Edit, and click on whatever
+levels you want in the Modify term dialog.
+Rename dimension levels
+You can rename, or formally recode, any level from any dimension in the dialog launched by clicking
+on the Recode dimension levels button. That would rarely be done from the Builder.
+Remap tags
+Another, even more advanced, operation you can perform from the Builder is to remap dimensions
+and their tags. Click on the Remap tags button to launch a dialog. On that dialog, you can move a
+level from one dimension to another dimension, create new dimensions and populate them from existing
+levels in existing dimensions, and rename a dimension. You can even limit this remapping to values
+where combinations of other tags are set.
+
+collect get — Collect results from a Stata command
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Also see
+
+Syntax
+
+Description
+The collect get command and collect prefix put results into a collection. Collected results are
+scalars, macros, and matrices from e() and r() as well as scalar and matrix expressions. Tables can be
+constructed from the results in the collection.
+The collect get command identifies results from a previous Stata command that are to be put into
+a collection. The collect prefix puts results returned by the prefixed command into a collection.
+Both the collect get command and the collect prefix allow you to specify a list of results to add
+to the automatic result levels (automatic levels) for subsequent table layouts. Specifying automatic
+levels at the time you collect results is an alternative to selecting the results to include at the time you lay
+out your table; see [TABLES] collect layout.
+
+Quick start
+Consume results from the regression model, and place them in the current collection
+collect: regress y x
+Same as above, and also add coefficients r b and standard errors r se to the list of automatic results
+collect _r_b _r_se: regress y x
+Fit a linear regression for each level of catvar, collect e() results from each regression, and add statistics
+e(r2) and e(r2 a) to the automatically included results
+by catvar: collect e(r2) e(r2_a): regress y x
+Consume results from r() results, and add statistics r(stat1) and r(stat2) to the list of automatic
+levels
+collect get r(stat1) r(stat2)
+Same as above, but place the results in collection c2
+collect get r(stat1) r(stat2), name(c2)
+Same as above, and attach the tags dim1[lev1] and dim2[”lev 2”] to r(stat1) and r(stat2)
+collect get r(stat1) r(stat2), name(c2) tags(dim1[lev1] dim2[”lev 2”])
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Collect results
+
+78
+
+collect get — Collect results from a Stata command 79
+
+Syntax
+Basic prefix syntax to consume results from Stata commands
+collect [ get ]: command
+
+Full prefix syntax to consume results from Stata commands
+[ prefix ...: ] collect [ get ] [ resultlist ] [ if ] [ in ] [ , tags(tags)
+commands(commands) ]: command
+
+Consume results after running a Stata command
+collect get resultlist [ , name(cname) tags(tags) commands(commands) ]
+
+where prefix may be by, capture, frame, noisily, quietly, or version.
+where resultlist is
+result [ result [ . . . ] ]
+result, when specified with the collect prefix, identifies individual results to be added to the list of
+automatic results.
+result, when specified with collect get, indicates the type of results to be stored and identifies the
+results to add to the list of automatic results.
+result may be one of the following:
+result
+
+Description
+
+r()
+e()
+explist
+
+all r() results
+all e() results
+returned results and named expressions
+
+Specifying any r() result will also cause collect to consume all r() results. Specifying any e()
+result will also cause collect to consume all e() results.
+explist specifies which results to collect. explist may include result identifiers and named expressions.
+
+collect get — Collect results from a Stata command 80
+
+result identifiers are results stored in r() and e() by the command. For instance, result identifiers could be r(mean), r(C), or e(chi2). After estimation commands, result identifiers
+also include the following:
+Identifier
+r b
+r se
+r z
+r z abs
+r df
+r p
+r lb
+r ub
+r ci
+r cri
+r crlb
+r crub
+
+Result
+coefficients or transformed coefficients reported by command
+standard errors of r b
+test statistics for r b
+absolute values of r z
+degrees of freedom for r b
+𝑝-values for r b
+lower bounds of confidence intervals for r b
+upper bounds of confidence intervals for r b
+confidence intervals for r b
+credible interval (CrI) of Bayesian estimates
+lower bound of CrI of Bayesian estimates
+upper bound of CrI of Bayesian estimates
+
+named expressions are specified as name = exp, where name may be any valid Stata name and
+exp is an expression, typically an expression that involves one or more result identifiers.
+Expressions with spaces must be bound in parentheses. Examples of named expressions are
+diff = (r(mean 2) - r(mean 1)) and sd = sqrt(r(variance)).
+tags is a dimension and its corresponding level, or it is a space-separated list of dimensions and their
+corresponding levels:
+dimname[levvalue] [ dimname[levvalue] ... ]
+If levvalue contains spaces, it must be enclosed in double quotes.
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection into which results will be saved, instead of the current collection.
+
+
+
+
+
+Options
+
+tags(tags) specifies additional tags to attach to the results being consumed. Each tag takes on the
+form dimname [levvalue]; to specify multiple tags separate them with a space. The following dimension names are not allowed in tags(): border block, cell type, program class, and
+result type.
+commands(commands) specifies command names that posted the results being consumed but does not
+change what results are collected. This option exists to aid the search for command-specific result
+labels.
+
+Unlike the collect: prefix, collect get cannot determine the command that posted the results
+being collected, so this option allows you to help it search for command-specific result labels. This
+option is also allowed by the collect: prefix; this is useful, for example, when the prefixed command
+is a custom program that employs official Stata commands to post its results.
+
+collect get — Collect results from a Stata command 81
+
+Remarks and examples
+Remarks are presented under the following headings:
+Introduction
+Support for other prefix commands
+Fully supported
+Partially supported
+Not supported
+Collecting results from margins, contrast, and pwcompare
+Results not collected by default
+
+Introduction
+The first step in creating a table using collect is to collect the results that you wish to display in the
+table from Stata commands. The collect get command and the collect prefix consume results from
+a Stata command and place them in a collection.
+To collect results, we can type either
+. command
+. collect get results
+
+or
+. collect: command
+
+These two methods are almost equivalent. They differ in how they determine which results are to
+be collected. The collect prefix determines which results are stored by the command and puts all of
+their values into the collection. On the other hand, when collect get is used after command, we must
+specify results that are to be collected. We can do this in a generic way. For instance, to fit a regression
+model with command and collect results, we can type
+. command
+. collect get e()
+
+and all results stored in e() will be collected. However, we can be more specific about the results to
+be collected. If we wish to include coefficients, referred to as r b, and standard errors, referred to as
+r se, in the tables we are about to create, we can indicate this by typing
+. command
+. collect get _r_b _r_se
+
+All the results in e() will still be added to the collection. The difference is that we have now flagged
+r b and r se as results to be automatically included in the tables we create. For instance, if we now
+specify a table layout by typing
+. collect layout (colname) (result)
+
+the coefficients and standard errors will appear in the table. See [TABLES] collect layout for information
+on specifying the table layout. For our purposes here, the important issue is that we have specified that
+the statistics, denoted by result, are going to be placed on the columns. Because we specified r b
+and r se in our collect get command, these are the two statistics that will be reported. We refer to
+these selected levels as “automatic levels”. The automatic levels simplify the table layout specification,
+but we are not limited by the results we flag as automatic levels. If we, for instance, decide that we
+want to include confidence intervals ( r ci) instead of standard errors, we can state this directly in our
+collect layout command.
+. collect layout (colname) (result[_r_b _r_ci])
+
+collect get — Collect results from a Stata command 82
+
+Above, we selected automatic levels using collect get after fitting a model. We can similarly select
+automatic levels with the collect prefix. For instance, we can type
+. collect _r_b _r_se: command
+
+The effects of specifying automatic levels with the prefix are the same as specifying automatic levels with the collect get command. Automatic levels can be changed at any time via the command
+collect style autolevels; see [TABLES] collect style autolevels.
+
+Support for other prefix commands
+Some prefix commands are supported as a prefix to collect, others are supported as a prefix to the
+command being executed, and a few are not supported in either form. The following sections provide
+more details on which prefix commands are supported with the collect prefix.
+Fully supported
+
+The following prefix commands can be specified as a prefix to the collect prefix or as a prefix
+within command.
+Command name
+
+Entry
+
+by
+noisily
+quietly
+version
+
+[D] by
+[P] quietly
+[P] quietly
+[P] version
+
+For example, you can type
+by var1: collect: regress y x1 x2
+
+or
+collect: by var1, sort: regress y x1 x2
+
+Likewise, noisily, quietly, and version may be specified before or after the collect prefix.
+For the by prefix, the levels of the by variables are also collected as part of each results set. by is not
+allowed to be specified simultaneously as a prefix to the collect prefix and within command.
+Partially supported
+
+The following commands are allowed to be specified as a prefix to the collect prefix but are not
+allowed as a prefix in command.
+Command name
+
+Entry
+
+capture
+frame
+
+[P] capture
+[D] frame prefix
+
+collect get — Collect results from a Stata command 83
+
+For example, you can type
+frame fr1: collect: regress y x1 x2
+
+but not
+collect: frame fr1: regress y x1 x2
+
+The following commands are not allowed to be specified as a prefix to the collect prefix but are
+allowed as a prefix in command.
+Command name
+
+Entry
+
+bayes
+bootstrap
+fmm
+fp
+jackknife
+mfp
+mi estimate
+permute
+svy
+
+[BAYES] bayes
+[R] bootstrap
+[FMM] fmm
+[R] fp
+[R] jackknife
+[R] mfp
+[MI] mi estimate
+[R] permute
+[SVY] svy
+
+For example, you can type
+collect: bayes: regress y x1 x2
+
+but not
+bayes: collect: regress y x1 x2
+
+Not supported
+
+The following commands are not allowed to be specified as a prefix to the collect prefix, nor are
+they allowed as a prefix in command.
+Command name
+
+Entry
+
+nestreg
+rolling
+simulate
+statsby
+stepwise
+
+[R] nestreg
+[TS] rolling
+[R] simulate
+[D] statsby
+[R] stepwise
+
+Collecting results from margins, contrast, and pwcompare
+margins, contrast, and pwcompare return results in r() by default. They can also store results in
+e() when the post option is specified.
+
+When the post option is specified, collect get and the collect prefix work just as they would
+with any estimation command.
+
+collect get — Collect results from a Stata command 84
+
+However, when margins, contrast, and pwcompare are specified without post, their interaction
+with collect get and the collect prefix is unique. Specifically, if you use collect get after one of
+these commands, you will need to specify r() to indicate that stored results should be collected from
+r(), just as you would with any command that stores results in r(). However, you can also specify the
+following identifiers if you wish to collect some of the statistics reported in the table and add them to the
+list of automatic results.
+Identifier
+r b
+r se
+r z
+r z abs
+r p
+r lb
+r ub
+r ci
+r df
+
+Result
+coefficients or transformed coefficients reported by command
+standard errors of r b
+test statistics for r b
+absolute values of r z
+𝑝-values for r b
+lower bounds of confidence intervals for r b
+upper bounds of confidence intervals for r b
+confidence intervals for r b
+degrees of freedom for r b
+
+If you use the collect prefix with margins, contrast, and pwcompare, it can determine whether
+post was specified and, thus, whether results should be collected from r() or e(). In either case, the
+identifiers above can be specified with the collect prefix to add selected statistics reported by these
+commands to the list of automatic results.
+
+collect get — Collect results from a Stata command 85
+
+Results not collected by default
+Above, we told you that if you type
+. collect: command
+
+all results that command stores will be added to the collection. This is almost true. However, the following results are not stored by default.
+e(b)
+r(b)
+e(V)
+r(V)
+e(b fitorder)
+e(b idx)
+e(b keep)
+e(b sd)
+e(Cns)
+e(gauss hasbeta)
+e(gauss V)
+e(ilog)
+e(gradient)
+e(Jacobian)
+e(table)
+r(table)
+e(V modelbased)
+e(V sd)
+e(V vs)
+
+In addition, any stored result with a name that begins with datasignature, filename, or simtime
+will not be collected by default.
+Finally, any hidden results, the results you see only if you type
+. ereturn list, all
+
+or
+. return list, all
+
+are not collected by default.
+You can collect these results if you specifically request them. You will need to give them a name at
+the time of collection. For instance, if you want to collect e(V) after a regression model, you can type
+. collect V=e(V): regress y x
+
+collect get — Collect results from a Stata command 86
+
+Also see
+[TABLES] collect create — Create a new collection
+[TABLES] collect layout — Specify table layout for the current collection
+[TABLES] collect set — Set the current (active) collection
+[TABLES] collect unget — Remove results from a collection
+[R] table intro — Introduction to tables of frequencies, summaries, and command results
+
+collect unget — Remove results from a collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect unget removes results from a collection.
+
+Quick start
+Remove coefficients and standard errors identified with omitted predictor variable x1
+collect unget _r_b _r_se, fortags(colname[o.x1])
+Remove all frequency results
+collect unget frequency
+Remove frequency results that are tagged with any level of dimension group
+collect unget frequency, fortags(group)
+Remove frequency results that are tagged with level hide of dimension group
+collect unget frequency, fortags(group[_hide])
+Remove frequency results that are tagged with code1[first] or code2[last]
+collect unget frequency, fortags(code1[first] code2[last])
+Remove frequency results that are tagged with code1[first] and code2[last]
+collect unget frequency, fortags(code1[first]#code2[last])
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Remove results
+
+87
+
+collect unget — Remove results from a collection 88
+
+Syntax
+collect unget results [ , options ]
+
+results is a list of one or more result levels that identify values to be removed from the collection.
+options
+
+Description
+
+Main
+
+name(cname)
+
+remove results from collection cname
+
+Options
+
+fortags(taglist)
+
+only add tags to values with tags in taglist
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection from which to remove results. If this option is not specified, the
+change is made in the current collection.
+
+
+
+
+
+Options
+
+fortags(taglist) specifies conditions for selecting the results to be removed from the collection. Results
+with tags in taglist will be removed from the collection.
+
+Within the taglist, if tags are joined by #, results having all of these tags are selected; if tags are
+separated by a space, results with any of these tags are selected.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+levels are levels of the corresponding dimension.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+collect unget — Remove results from a collection 89
+
+Remarks and examples
+After collecting results, we may want to remove or replace some results to accommodate special
+requirements for the table we wish to create. collect unget allows you to remove results from a collection.
+One example is a coefficient table with factor-variable coefficients, where we want to identify base
+levels with the string “(base)” in the column of standard errors.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). We fit a model for systolic blood pressure, then arrange the fitted
+coefficients and standard errors into a table.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. quietly: collect: regress bpsystol weight i.diabetes i.sex
+. collect layout (colname) (result[_r_b _r_se])
+Collection: default
+Rows: colname
+Columns: result[_r_b _r_se]
+Table 1: 6 x 2
+Coefficient Std. error
+Weight (kg)
+Not diabetic
+Diabetic
+Male
+Female
+Intercept
+
+.4340474
+0
+14.34115
+0
+1.107633
+98.40567
+
+.0153533
+0
+1.019611
+0
+.4710559
+1.235476
+
+We want to replace the zero-valued standard errors with the string “(base)”. First, we use collect
+unget to remove the standard error results for the base levels of diabetes and sex. Then, we use
+collect preview to verify our intended change.
+. collect unget _r_se , fortags(colname[0.diabetes 1.sex])
+(2 items removed from collection default)
+. collect preview
+Coefficient Std. error
+Weight (kg)
+Not diabetic
+Diabetic
+Male
+Female
+Intercept
+
+.4340474
+0
+14.34115
+0
+1.107633
+98.40567
+
+.0153533
+1.019611
+.4710559
+1.235476
+
+collect unget — Remove results from a collection 90
+
+Now let’s add some string results to replace the zero values we just removed.
+. collect get _r_se=”(base)”, tag(colname[0.diabetes])
+. collect get _r_se=”(base)”, tag(colname[1.sex])
+. collect preview
+Coefficient Std. error
+Weight (kg)
+Not diabetic
+Diabetic
+Male
+Female
+Intercept
+
+.4340474
+0
+14.34115
+0
+1.107633
+98.40567
+
+.0153533
+(base)
+1.019611
+(base)
+.4710559
+1.235476
+
+Stored results
+collect unget stores the following in s():
+Macros
+s(collection)
+s(k removed)
+
+name of collection
+number of items removed
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect get — Collect results from a Stata command
+
+collect addtags — Add tags to items in a collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect addtags adds tags to existing items in a collection.
+
+Quick start
+Add the tag newdim[level1] to values with the current tag olddim[oldlevel]
+collect addtags newdim[level1], fortags(olddim[oldlevel])
+Add the tag newdim[level1] to values with the current tags dim1[level1] and dim2[level2]
+collect addtags newdim[level1], fortags(dim1[level1]#dim2[level2])
+Replace the tag dim1[oldlevel] with dim1[newlevel]
+collect addtags dim1[newlevel], fortags(dim1[oldlevel])
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+91
+
+collect addtags — Add tags to items in a collection 92
+
+Syntax
+collect addtags tags [ , options ]
+
+tags is a dimension and its corresponding level, or it is a space-separated list of dimensions and their
+corresponding levels:
+dimname[levvalue] [ dimname[levvalue] ... ]
+If levvalue contains spaces, it must be enclosed in double quotes.
+options
+
+Description
+
+Main
+
+name(cname)
+replace
+
+add tags to items in collection cname
+replace the items’ tags when in conflict
+
+Options
+
+fortags(taglist)
+
+only add tags to values with tags in taglist
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection in which to add tags. If this option is not specified, the change is
+made in the current collection.
+replace specifies that the new tags replace the items’ tags where they are in conflict.
+
+
+
+
+
+Options
+
+fortags(taglist) specifies conditions for selecting the values to which tags will be added. Values with
+tags in taglist will have the specified tags added to them.
+
+Within the taglist, if tags are joined by #, values having all of these tags are selected; if tags are
+separated by a space, values with any of these tags are selected.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+levels are levels of the corresponding dimension.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+collect addtags — Add tags to items in a collection 93
+
+Remarks and examples
+After collecting results, we may need to add tags to certain items to lay out the table that we wish to
+create. collect addtags allows you to add tags to existing items in a collection.
+One instance where you may need to add tags is when you want to use different levels of a dimension
+to define both the rows and columns of a table. While you cannot use the same dimension to define both
+the rows and columns, you can add tags to certain levels, use the new dimension to identify the rows,
+and use the old dimension to identify the columns and vice versa.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). We fit two models for systolic blood pressure:
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. quietly: collect: regress bpsystol weight i.diabetes i.sex
+. quietly: collect: regress bpsystol weight diabetes##sex
+
+Our goal is to create the following table, in which coefficients and standard errors are placed on
+separate columns and model statistics are placed on rows beneath the covariates.
+1
+
+2
+
+Weight (kg)
+Diabetic
+Female
+Diabetic # Female
+Intercept
+
+0.43
+14.34
+1.11
+
+(0.02)
+(1.02)
+(0.47)
+
+98.41
+
+(1.24)
+
+R-squared
+N
+
+0.0998
+10349
+
+0.43
+12.57
+0.95
+3.15
+98.52
+
+(0.02)
+(1.54)
+(0.48)
+(2.05)
+(1.24)
+
+0.1000
+10349
+
+The top portion of the table has rows defined by covariate names (colname) and columns defined by
+levels r b and r se of dimension result, for each model. To align the N and R-squared values as
+shown above, they need to be tagged with level r b of dimension result and with levels of another
+dimension that we can place on the rows.
+First, we will add tags to the model statistics corresponding with a new dimension called extra.
+. collect addtags extra[Rsquared], fortags(result[r2])
+(2 items changed in collection default)
+. collect addtags extra[N], fortags(result[N])
+(2 items changed in collection default)
+
+The 𝑅2 value is currently tagged with level r2 of dimension result, and now it is also tagged with
+level Rsquared of dimension extra. Similarly, the number of observations for each model is now tagged
+with level N of dimension extra.
+To place these statistics in the same column as the coefficients, we recode them so that they are now
+tagged with the level r b of dimension result.
+. collect recode result r2=_r_b N=_r_b
+(4 items recoded in collection default)
+
+collect addtags — Add tags to items in a collection 94
+
+Now we can lay out our table with the covariates (colname) and extra statistics (extra) on the rows
+and the results for each command on the columns:
+. collect layout (colname extra) (cmdset#result[_r_b _r_se])
+Collection: default
+Rows: colname extra
+Columns: cmdset#result[_r_b _r_se]
+Table 1: 12 x 4
+1
+1
+2
+2
+Coefficient Std. error Coefficient Std. error
+Weight (kg)
+Not diabetic
+Diabetic
+Male
+Female
+Not diabetic # Male
+Not diabetic # Female
+Diabetic # Male
+Diabetic # Female
+Intercept
+Rsquared
+N
+
+.4340474
+0
+14.34115
+0
+1.107633
+
+.0153533
+0
+1.019611
+0
+.4710559
+
+98.40567
+.0997888
+10349
+
+1.235476
+
+.4335342
+0
+12.57211
+0
+.9520999
+0
+0
+0
+3.146466
+98.5238
+.099994
+10349
+
+.0153559
+0
+1.538361
+0
+.4817911
+0
+0
+0
+2.048958
+1.237787
+
+The curious reader might wonder why we did not simply tag these statistics with levels of dimension
+colname. By adding them to a new dimension, we are able to place them at the end of the table, after all
+the covariates.
+We obtained the layout we want, and now we will use a few collect style commands to polish the
+table. First, we load one of the predefined styles that are installed with Stata. This style hides the labels
+for the levels of dimension result, and it centers headers that are repeated across columns. Then, we
+use collect style showbase to hide all the base levels from the table.
+. collect style use table-reg2-fv1
+Collection: default
+Rows: colname extra
+Columns: cmdset#result[_r_b _r_se]
+Table 1: 9 x 4
+. collect style showbase off
+
+Next, we define a label for the 𝑅2 value:
+. collect label levels extra Rsquared ”R-squared”
+
+Below, we format the coefficients to display two digits after the decimal and align them to the right.
+We also place the standard errors in parentheses.
+. collect style cell result[_r_b], halign(right) nformat(%6.2f)
+. collect style cell result[_r_se], halign(left) nformat(%6.2f) sformat(”(%s)”)
+
+Then, we format the model statistics and align them to the right.
+. collect style cell extra[Rsquared]#result, halign(right) nformat(%6.4f)
+. collect style cell extra[N]#result, halign(right) nformat(%4.0f)
+
+collect addtags — Add tags to items in a collection 95
+
+Finally, we add a border below the constant to separate the 𝑅2 value and number of observations from
+the rest of the table.
+. collect style cell colname[_cons], border(bottom, pattern(single))
+
+After these style changes, we have the following table:
+. collect preview
+1
+
+2
+
+Weight (kg)
+Diabetic
+Female
+Diabetic # Female
+Intercept
+
+0.43
+14.34
+1.11
+
+(0.02)
+(1.02)
+(0.47)
+
+98.41
+
+(1.24)
+
+R-squared
+N
+
+0.0998
+10349
+
+0.43
+12.57
+0.95
+3.15
+98.52
+
+(0.02)
+(1.54)
+(0.48)
+(2.05)
+(1.24)
+
+0.1000
+10349
+
+Stored results
+collect addtags stores the following in s():
+Macros
+s(collection)
+s(k changed)
+
+name of collection
+number of changed items
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect remap — Remap tags in a collection
+[TABLES] collect recode — Recode dimension levels in a collection
+
+collect clear — Clear all collections in memory
+
+Description
+collect clear clears all collection information from memory. clear collect is a synonym for
+collect clear.
+
+Syntax
+collect clear
+
+Remarks and examples
+collect clear clears all collection information from memory.
+
+Results collected using the collect prefix or the collect get command are stored in memory. To
+see the collections currently in memory, you can type collect dir. collect clear removes all of
+these collections from memory. If you wish to remove only some of the collections from memory, see
+collect drop and collect keep.
+
+Also see
+[TABLES] collect get — Collect results from a Stata command
+[TABLES] collect drop — Drop collections from memory
+
+96
+
+collect combine — Combine collections
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Also see
+
+Description
+collect combine combines separate collections into a single new collection.
+
+Quick start
+Create new collection newc by combining existing collections c1, c2, and c3
+collect combine newc = c1 c2 c3
+Same as above, but use the layout defined in the rightmost collection, c3
+collect combine newc = c1 c2 c3, layout(right)
+Same as above, but use the style defined in the rightmost collection, c3
+collect combine newc = c1 c2 c3, layout(right) style(right)
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Combine collections
+
+97
+
+collect combine — Combine collections 98
+
+Syntax
+collect combine newcname = cnamelist [ , options ]
+
+where newcname is the name of the new collection and cnamelist is a list of names of existing collections.
+options
+
+Description
+
+Main
+
+replace
+
+overwrite newcname if it exists
+
+Options
+
+layout(left | right)
+style(left | right)
+label(left | right)
+
+[ no ]warn
+
+specify the collection whose layout is to be used; default is
+layout(left)
+specify the collection whose style is to be used; default is
+style(left)
+specify the collection whose labels are to be used; default is
+label(left)
+display notes when encountering unrecognized tags
+
+Options
+
+
+
+
+Main
+
+replace permits collect combine to overwrite newcname if it already exists. This option is required
+if the new collection already exists and is not empty.
+
+
+
+
+
+Options
+
+layout(left | right) specifies the collection whose layout will be used in the new collection.
+layout(left) is the default; it applies the layout from the leftmost collection in cnamelist to the
+new collection.
+layout(right) applies the layout from the rightmost collection in cnamelist to the new collection.
+style(left | right) specifies the collection whose style will be used in the new collection.
+style(left) is the default; it applies the style definitions from the leftmost collection in cnamelist
+to the new collection.
+style(right) applies the style definitions from the rightmost collection in cnamelist to the new
+collection.
+label(left | right) specifies the collection whose labels will be used in the new collection.
+label(left) is the default; it applies the labels from the leftmost collection in cnamelist to the new
+collection.
+label(right) applies the labels from the rightmost collection in cnamelist to the new collection.
+warn and nowarn control the display of notes when collect encounters a tag it does not recognize.
+warn, the default, specifies that collect show the notes.
+nowarn specifies that collect not show the notes.
+
+These options override the collect warn setting; see [TABLES] set collect warn.
+
+collect combine — Combine collections 99
+
+Remarks and examples
+collect combine combines existing collections into a new collection. The new collection becomes
+the current collection.
+
+The label(), layout(), and style() options specify whether collect should apply the labels,
+layout, and style from the leftmost or rightmost collection specified. The default is to apply the style,
+layout, and labels from the leftmost collection in cnamelist to the new collection. This is equivalent to
+specifying label(left), layout(left), and style(left). If any of these attributes is not defined in
+the leftmost collection, collect will search for that attribute in the collections listed in cnamelist, from
+left to right. However, if the rightmost collection is specified with any of these options, and that attribute
+is not defined in the rightmost collection, collect will search for that attribute in the collections listed,
+from right to left.
+For example, we create a collection called new by combining the collections c1, c2, c3, and c4.
+. collect combine new = c1 c2 c3 c4
+
+If collection c1 has an empty style, collect will apply the style from c2 to the new collection. If c2
+also has an empty style, collect will apply the style from c3.
+Suppose that we instead type the following:
+. collect combine new = c1 c2 c3 c4, style(right)
+
+collect will apply the style from collection c4 to the collection new. If collection c4 has an empty
+style, collect will apply the style from c3 to the new collection.
+
+Stored results
+collect combine stores the following in s():
+Macros
+s(current)
+name of new collection
+s(collections) list of combined collections
+
+Also see
+[TABLES] collect use — Use a collection from disk
+[TABLES] collect save — Save a collection to disk
+
+collect composite — Manage composite results in a collection
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Reference
+
+Syntax
+Also see
+
+Description
+collect composite manages the creation and removal of composite results in a collection. A composite result is composed from a list of levels in dimension result.
+
+Quick start
+Define a result composed from a coefficient and its standard error estimate
+collect composite define bse = _r_b _r_se
+Drop the above composite result
+collect composite drop bse
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+100
+
+collect composite — Manage composite results in a collection 101
+
+Syntax
+Define a composite result
+collect composite define composite = elements [ , options ]
+
+Drop a composite result
+collect composite drop composite [ , name(cname) ]
+
+composite is the name for a composite result.
+elements are levels in the result dimension and previously defined composite results.
+options
+
+Description
+
+name(cname)
+delimiter(char)
+[ no ]trim
+[ no ]override
+replace
+
+add composite result definition to collection cname
+use character as delimiter between elements
+preserve or trim extra spaces from numeric formats
+preserve or override trim property of elements
+overwrite composite if it already exists
+
+Options
+name(cname) specifies the collection to add or remove the composite result. By default, changes are
+applied to the current collection.
+delimiter(char) changes the delimiter between elements. The default is delimiter(” ”).
+notrim and trim control the handling of extra spaces caused by numeric formats applied to the elements.
+notrim, the default, preserves the extra spaces; trim removes the extra spaces.
+
+Note that the trim and notrim options do not apply to results r ci and r cri.
+nooverride and override control handling of the trim property when an element is a composite result. nooverride, the default, does not change the trim property of elements; override applies the
+specified trim property to all elements.
+replace permits collect composite define to overwrite the definition of an existing composite result.
+
+Remarks and examples
+collect composite is used to create a single result from multiple results. This can be useful when
+you want to display multiple results in a single cell. For example, you may want to place standard
+deviations right next to means or confidence intervals right next to coefficients. Any formatting applied
+to the individual results will persist in the composite result. For example, you may format confidence
+intervals by enclosing them in brackets. If you then create a composite result with coefficients and
+confidence intervals, the result will contain coefficients followed by the confidence intervals enclosed in
+brackets.
+
+collect composite — Manage composite results in a collection 102
+
+You can also build a result from existing composite results. For example, you might first decide to
+create a composite result from means and standard deviations and call it meansd. As you are working,
+you may decide you want to add on medians to the composite result. You can then create a new composite
+result with meansd and the medians.
+Remarks are presented under the following headings:
+Example 1: Table of means and standard deviations
+Example 2: Table of means, medians, standard deviations, and confidence intervals
+Example 3: Table of regression results
+
+Example 1: Table of means and standard deviations
+We have data from the Second National Health and Nutrition Examination Survey (NHANES II) (McDowell et al. 1981), and we want to create a table reporting the mean and standard deviation of systolic
+blood pressure, cholesterol, and triglycerides for males and females. Additionally, we want to display
+the 𝑝-value for the mean-comparison test.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+
+We can use the ttest command to perform a mean-comparison test and then create a table with its
+stored results. The table command allows us to issue multiple commands and create a table with their
+results in a single step. For example, below we create a table with only two variables of interest to
+prevent the table from wrapping. We specify each ttest command in the command() option, and we
+place results from each command on a separate column. While ttest reports multiple statistics, we will
+display only the means (mu 1 and mu 2) and 𝑝-values.
+. table (result[mu_1 mu_2 p]) (command),
+> command(ttest bpsystol, by(sex))
+> command(ttest tcresult, by(sex))
+ttest bpsystol, by(sex)
+
+ttest tcresult, by(sex)
+
+132.8877
+129.0679
+8.03e-17
+
+213.1731
+221.7353
+1.10e-18
+
+x1 mean for population 1
+x2 mean for population 2
+Two-sided p-value
+
+Notice that the commands are used to label the output for each variable. We will now create our table
+with all three variables, but we will use the quietly prefix to suppress our output:
+. quietly: table () (command),
+> command(ttest bpsystol, by(sex))
+> command(ttest tcresult, by(sex))
+> command(ttest tgresult, by(sex))
+
+Below, we use collect label levels to label the output from each command with the variable
+label. Then, we use collect style header to suppress the labels for the results; we will modify them
+shortly.
+. collect label levels command 1 ”Systolic BP”
+> 2 ”Cholesterol (mg/dL)” 3 ”Triglycerides (mg/dL)”, modify
+. collect style header result, level(hide)
+
+collect composite — Manage composite results in a collection 103
+
+Next, we will format all results to two decimal places and the 𝑝-values to three. Then, we will lay out
+our table with the results on the columns and the variables on the rows. Each command corresponds to
+a different variable, so we specify command as the row identifier. We are interested only in the means,
+standard deviations, and 𝑝-values, so we list the levels of result that we want in our table.
+. collect style cell result, nformat(%6.2f)
+. collect style cell result[p], nformat(%7.3f)
+. collect layout (command) (result[mu_1 sd_1 mu_2 sd_2 p])
+Collection: Table
+Rows: command
+Columns: result[mu_1 sd_1 mu_2 sd_2 p]
+Table 1: 3 x 5
+Systolic BP
+Cholesterol (mg/dL)
+Triglycerides (mg/dL)
+
+132.89
+213.17
+154.63
+
+20.99
+45.98
+112.30
+
+129.07
+221.74
+133.85
+
+25.13
+51.95
+77.58
+
+0.000
+0.000
+0.000
+
+We would like to display the standard deviations right next to the means, using a plus–minus sign as
+the delimiter. Below, we combine the means and standard deviations for males (mu 1 and sd 1) into
+one result and the means and standard deviations for females (mu 2 and sd 2) into another.
+The means and standard deviations have a numeric format of %6.2f, which means a total output
+width of 6 with only 2 digits displayed after the decimal. However, you will notice that all the standard
+deviations for females in the above fourth column have a total width of five: two digits before the decimal,
+two digits after, and the decimal point. This means we will have an extra space between the plus–minus
+sign and those standard deviations. Therefore, we use the trim option to remove those extra spaces.
+Then, we label the results as Males and Females and modify the label for the 𝑝-values. Now that we
+have customized labels, we use collect style header to display the labels for our results.
+. collect composite define msd1 = mu_1 sd_1, delimiter(±) trim
+. collect composite define msd2 = mu_2 sd_2, delimiter(±) trim
+. collect label levels result msd1 ”Males” msd2 ”Females” p ”p-value”, modify
+. collect style header result, level(label)
+
+Finally, we can lay out our table using our composite results, msd1 and msd2:
+. collect layout (command) (result[msd1 msd2 p])
+Collection: Table
+Rows: command
+Columns: result[msd1 msd2 p]
+Table 1: 3 x 3
+
+Systolic BP
+Cholesterol (mg/dL)
+Triglycerides (mg/dL)
+
+Males
+
+Females
+
+p-value
+
+132.89±20.99
+213.17±45.98
+154.63±112.30
+
+129.07±25.13
+221.74±51.95
+133.85±77.58
+
+0.000
+0.000
+0.000
+
+We could customize this table further by, for example, modifying how 𝑝-values are displayed and
+removing some borders, but our focus here is solely on displaying these combined results.
+
+collect composite — Manage composite results in a collection 104
+
+Example 2: Table of means, medians, standard deviations, and confidence intervals
+Suppose we want to create a table similar to the one above, but instead of 𝑝-values, we now want to include medians and confidence intervals for the means. We can obtain these statistics from the summarize
+and ci means commands. First, we clear the collection information in memory:
+. collect clear
+
+To create our table, we loop over our variables of interest and the values of sex (1 and 2). We will use
+collect get to collect the stored results of interest from each command.
+First, we obtain our means and standard deviations from ttest. Recall that ttest stores the means
+and standard deviations for the groups separately, in mu 1 and sd 1 and mu 2 and sd 2. We wish to
+store all the means in one result, mymean, and all the standard deviations in another result, mysd. To
+identify whether they belong to males or females, we will tag each result with the variable and level of
+sex.
+Next, we will collect the upper (r(ub)) and lower (r(lb)) bounds of the confidence intervals from
+ci means and the median from summarize. Note that we also tag these results with the variable and
+level of sex.
+. foreach x of varlist bpsystol tcresult tgresult {
+2.
+ttest ‘x’, by(sex)
+3.
+collect get mymean=r(mu_1) mysd=r(sd_1), tags(var[‘x’] sex[1])
+4.
+collect get mymean=r(mu_2) mysd=r(sd_2), tags(var[‘x’] sex[2])
+5.
+.
+forvalues i = 1/2 {
+6.
+ci means ‘x’ if sex==‘i’
+7.
+collect get r(lb) r(ub), tags(var[‘x’] sex[‘i’])
+8.
+.
+summarize ‘x’ if sex==‘i’, detail
+9.
+collect get r(p50), tags(var[‘x’] sex[‘i’])
+10.
+}
+11. }
+
+(output omitted )
+
+We have now collected all of our results, and we can begin building our table. First, let’s create a
+composite result from the upper and lower bounds of the confidence intervals. This result, meanci, will
+use a dash as the delimiter:
+. collect composite define meanci = lb ub, delimiter(-) trim
+
+We will format all results to two decimal places and center them. Then, we will place the confidence
+intervals in brackets:
+. collect style cell result, nformat(%6.2f) halign(center)
+. collect style cell result[meanci], sformat(”[%s]”)
+
+Next, we will join the means and standard deviations, as we did with the previous example. Before
+we combine the medians with the composite result, meansd, we enclose them in parentheses. We then
+create a new composite result called msdmed.
+. collect composite define meansd = mymean mysd, delimiter(±) trim
+. collect style cell result[p50], sformat(”(%s)”)
+. collect composite define msdmed = meansd p50
+
+collect composite — Manage composite results in a collection 105
+
+Before we lay out our table, we will hide the labels for the results with collect style header. Then,
+we will use collect layout to lay out our table with the mean, standard deviation, and median for each
+variable on one row and the confidence interval on the following row. The columns will be defined by
+the levels of sex.
+. collect style header result, level(hide)
+. collect layout (var#result[msdmed meanci]) (sex)
+Collection: default
+Rows: var#result[msdmed meanci]
+Columns: sex
+Table 1: 6 x 2
+Male
+Systolic blood pressure
+Serum cholesterol (mg/dL)
+Serum triglycerides (mg/dL)
+
+Female
+
+132.89±20.99 (130.00) 129.07±25.13 (124.00)
+[132.30-133.47]
+[128.40-129.74]
+213.17±45.98 (209.00) 221.74±51.95 (217.00)
+[211.89-214.46]
+[220.35-223.12]
+154.63±112.30 (128.00) 133.85±77.58 (115.00)
+[150.17-159.09]
+[130.87-136.83]
+
+Our table looks great; we just need to modify the headers. Below, we center the column headers, add
+a descriptive title, and then preview our table:
+. collect style cell cell_type[column-header], halign(center)
+. collect title ”Mean, SD, median, and confidence interval values for health me
+> asures”
+. collect preview
+Mean, SD, median, and confidence interval values for health measures
+Male
+Systolic blood pressure
+Serum cholesterol (mg/dL)
+Serum triglycerides (mg/dL)
+
+Female
+
+132.89±20.99 (130.00) 129.07±25.13 (124.00)
+[132.30-133.47]
+[128.40-129.74]
+213.17±45.98 (209.00) 221.74±51.95 (217.00)
+[211.89-214.46]
+[220.35-223.12]
+154.63±112.30 (128.00) 133.85±77.58 (115.00)
+[150.17-159.09]
+[130.87-136.83]
+
+Example 3: Table of regression results
+Creating composite results can also be useful when creating a table of regression results. For example,
+we wish to create a table with the coefficients, confidence intervals, and 𝑝-values from a linear regression
+model. Below, we create a new collection and collect the results from our model:
+. collect create regress
+(current collection is regress)
+. quietly: collect: regress bpsystol i.agegrp bmi i.sex
+
+collect composite — Manage composite results in a collection 106
+
+Before laying out our table, we format the results to two decimal places and center the coefficients
+and 𝑝-values. We also place the confidence intervals in brackets and use a comma to separate the upper
+and lower bounds.
+. collect style cell result[_r_b _r_p], nformat(%5.2f) halign(center)
+. collect style cell result[_r_ci], nformat(%9.2f) sformat(”[%s]”)
+> cidelimiter(,)
+
+Now that we have formatted our confidence intervals and coefficients, we can combine them into a
+single result. We create a composite result called coefci and trim the extra spaces resulting from the
+numeric format. Then, we lay out our table with our composite result and the 𝑝-values.
+. collect composite define coefci = _r_b _r_ci, trim
+. collect layout (colname) (result[coefci _r_p])
+Collection: regress
+Rows: colname
+Columns: result[coefci _r_p]
+Table 1: 10 x 2
+Coefficient [95% CI] p-value
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Body mass index (BMI)
+Male
+Female
+Intercept
+
+0.87 [-0.37,
+6.69 [5.36,
+14.75 [13.42,
+20.99 [19.91,
+28.00 [26.55,
+1.36 [1.28,
+-4.07 [-4.82,
+87.08 [85.03,
+
+0.00
+2.10]
+8.03]
+16.09]
+22.06]
+29.45]
+1.44]
+0.00
+-3.32]
+89.12]
+
+0.17
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+
+Notice that we have a lot of extra space preceding the upper bounds of the confidence intervals. We
+set the output width to 9 (%9.2f), but our bounds require at most a width of 5. We chose this format for
+r ci to illustrate that the trim option does not work with this result or with r cri if you are working
+with credible intervals. The reason is that the collect system has already composed these from upper
+and lower bounds; in a sense, these are composite results. To prevent having this extra space, we have
+two options. One option is to specify a smaller width, perhaps %5.2f, for our intervals. When creating
+your own tables, you may find that several results have a numeric format that is too large. You can use
+collect query cell to query the appearance styles for your results. The other option is to build your
+own composite result with the confidence intervals to which you can then apply the trim option. This
+is the method we will use. Below, we create a new composite result with the lower ( r lb) and upper
+( r ub) bounds and then enclose these results in brackets.
+. collect composite define myci = _r_lb _r_ub, delimiter(,)
+. collect style cell result[myci], nformat(%9.2f) sformat(”[%s]”)
+
+Now, we can create our composite result with the coefficients and composite result; we call it
+coefci2. We trim these results and specify the override option; this allows us to apply this trim
+property to the composite result, myci. Then, we label coefci2 by referring to LEVEL , which is
+the confidence level that is recorded when results are consumed; in our case, the level is 95, but our
+notation avoids us having to check whether that is the case. If you issue collect label list result,
+you will see that this notation is used for r lb, r ub, and r ci. After labeling our new result, we
+lay out our table with the new composite result:
+
+collect composite — Manage composite results in a collection 107
+. collect composite define coefci2 = _r_b myci, trim override
+. collect label levels result coefci2 ”Coef. [__LEVEL__% CI]”
+. collect layout (colname) (result[coefci2 _r_p])
+Collection: regress
+Rows: colname
+Columns: result[coefci2 _r_p]
+Table 1: 10 x 2
+Coef. [95% CI] p-value
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Body mass index (BMI)
+Male
+Female
+Intercept
+
+0.00
+0.87 [-0.37,2.10]
+6.69 [5.36,8.03]
+14.75 [13.42,16.09]
+20.99 [19.91,22.06]
+28.00 [26.55,29.45]
+1.36 [1.28,1.44]
+0.00
+-4.07 [-4.82,-3.32]
+87.08 [85.03,89.12]
+
+0.17
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+
+Here we can see that the intervals were in fact trimmed of the extra spaces.
+Combining our coefficients and confidence intervals into a single result is particularly useful when
+displaying results from multiple models. For example, below we refit our model but add indicator variables for race. Then, we lay out our table once more:
+. quietly: collect: regress bpsystol i.agegrp bmi i.sex i.race
+. collect layout (colname) (cmdset#result[coefci2 _r_p])
+Collection: regress
+Rows: colname
+Columns: cmdset#result[coefci2 _r_p]
+Table 1: 13 x 4
+1
+1
+Coef. [95% CI] p-value
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Body mass index (BMI)
+Male
+Female
+White
+Black
+Other
+Intercept
+
+0.00
+0.87 [-0.37,2.10]
+6.69 [5.36,8.03]
+14.75 [13.42,16.09]
+20.99 [19.91,22.06]
+28.00 [26.55,29.45]
+1.36 [1.28,1.44]
+0.00
+-4.07 [-4.82,-3.32]
+
+87.08 [85.03,89.12]
+
+0.17
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+
+0.00
+
+2
+2
+Coef. [95% CI] p-value
+0.00
+0.93 [-0.30,2.16]
+6.80 [5.46,8.13]
+14.84 [13.51,16.18]
+21.12 [20.04,22.20]
+28.12 [26.67,29.58]
+1.35 [1.27,1.42]
+0.00
+-4.08 [-4.82,-3.33]
+0.00
+2.61 [1.39,3.84]
+2.07 [-0.65,4.78]
+87.01 [84.96,89.06]
+
+0.14
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.14
+0.00
+
+Note that we did not have to create another composite result for the coefficients and confidence intervals for the second model we fit. The composite result (coefci2) will be built from all existing values
+of r b, r lb, and r ub.
+
+collect composite — Manage composite results in a collection 108
+
+We can give the table a neater look with just a couple of modifications. First, we suppress the base
+levels from the output. Then, we specify that duplicate headers should be displayed only once and
+centered. Finally, we label the group of results from each set of commands as Model 1 and Model 2
+and preview our table:
+. collect style showbase off
+. collect style column, dups(center)
+. collect label levels cmdset 1 ”Model 1” 2 ”Model 2”
+. collect preview
+Model 1
+Coef. [95% CI] p-value
+30--39
+40--49
+50--59
+60--69
+70+
+Body mass index (BMI)
+Female
+Black
+Other
+Intercept
+
+0.87 [-0.37,2.10]
+6.69 [5.36,8.03]
+14.75 [13.42,16.09]
+20.99 [19.91,22.06]
+28.00 [26.55,29.45]
+1.36 [1.28,1.44]
+-4.07 [-4.82,-3.32]
+
+0.17
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+
+87.08 [85.03,89.12]
+
+0.00
+
+Model 2
+Coef. [95% CI] p-value
+0.93 [-0.30,2.16]
+6.80 [5.46,8.13]
+14.84 [13.51,16.18]
+21.12 [20.04,22.20]
+28.12 [26.67,29.58]
+1.35 [1.27,1.42]
+-4.08 [-4.82,-3.33]
+2.61 [1.39,3.84]
+2.07 [-0.65,4.78]
+87.01 [84.96,89.06]
+
+0.14
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.14
+0.00
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect label — Manage custom labels in a collection
+[TABLES] collect levelsof — List levels of a dimension
+[TABLES] collect style cell — Collection styles for cells
+[TABLES] collect query — Query collection style properties
+
+collect copy — Copy a collection
+
+Description
+collect copy copies a collection in memory into a new collection.
+
+Quick start
+Copy existing collection c1 into collection c2
+collect copy c1 c2
+Same as above, but overwrite c2 if it exists
+collect copy c1 c2, replace
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Copy collection
+
+Syntax
+collect copy cname newcname [ , replace ]
+
+where cname is the name of an existing collection and newcname is the name of the collection to be
+created.
+
+Option
+replace permits collect copy to overwrite an existing collection. replace is required if newcname
+already exists and is not empty.
+
+Remarks and examples
+collect copy copies an existing collection into a new collection. This new collection becomes the
+current collection, the collection to which subsequent collect subcommands will be applied.
+
+Stored results
+collect copy stores the following in s():
+Macros
+s(current)
+
+name of current collection
+
+Also see
+[TABLES] collect create — Create a new collection
+[TABLES] collect drop — Drop collections from memory
+109
+
+collect create — Create a new collection
+
+Description
+collect create creates a new, empty collection.
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Create collection
+
+Syntax
+collect create newcname [ , replace ]
+
+where newcname is the name of the new collection.
+
+Option
+replace permits collect create to overwrite an existing collection.
+
+Remarks and examples
+collect create creates a new, empty collection. This new collection becomes the current collection.
+After creating the collection, you can use collect get or the collect prefix to store results from Stata
+commands into the new collection and then build, customize, and export tables.
+
+Stored results
+collect create stores the following in s():
+Macros
+s(current)
+
+name of current collection
+
+Also see
+[TABLES] collect combine — Combine collections
+[TABLES] collect copy — Copy a collection
+
+110
+
+collect dims — List dimensions in a collection
+Description
+Stored results
+
+Syntax
+Reference
+
+Option
+Also see
+
+Remarks and examples
+
+Description
+collect dims lists the dimensions in a collection.
+
+Syntax
+collect dims [ , name(cname) ]
+
+Option
+name(cname) specifies the collection for which dimensions should be listed, instead of the current collection.
+
+Remarks and examples
+After you use the collect get command or collect prefix, the values stored from the command
+results into the collection are categorized according to their tags. For example, a regression coefficient
+of 5.36 on variable x1 would have tags including result[ r b] and colname[x1]. Here result
+and colname are known as dimensions, and they contain the type of results and the covariate names
+respectively. Within each dimension, there are multiple levels. These tags correspond to the r b level
+of the result dimension and the x1 level of the colname dimension.
+Once you have collected results, you can see a list of all the dimensions in your collection using
+collect dims. For instance, after typing
+. use https://www.stata-press.com/data/r19/nhanes2
+. collect _r_b _r_se: regress bpsystol age weight i.region i.sex
+(output omitted )
+
+111
+
+collect dims — List dimensions in a collection 112
+
+you see a list of dimensions as follows:
+. collect dims
+Collection dimensions
+Collection: default
+Dimension
+Layout, style, header, label
+cmdset
+coleq
+colname
+colname_remainder
+program_class
+region
+result
+result_type
+rowname
+sex
+Style only
+
+border_block
+cell_type
+
+No. levels
+1
+1
+9
+1
+1
+4
+33
+3
+1
+2
+4
+4
+
+These are the dimensions in your collection. You will often need to know their names to specify them
+in other collect subcommands. The output is divided into sections, which tell you the types of collect
+subcommands that each dimension will be useful with.
+For example, when arranging the collected values into a table by using collect layout, you can look
+at the section of the output labeled Layout, style, header, label to determine which dimensions can
+be used with this command. To build a table, you specify the dimensions that correspond to the rows and
+columns of your table. With this collection, you could type
+. collect layout (colname) (result)
+
+After you look at the list provided by collect dims, it might not have been obvious that you wanted
+result and colname. After learning the names of the dimensions, you may want to further explore
+each one. You can use collect levelsof to list the levels of a particular dimension. You can also use
+collect label list to list the label for the dimension and the labels for its levels.
+Occasionally, you may want to explore the dimensions of another collection without making it the
+current collection. collect dims with option name() lists the dimensions of the collection specified
+within this option.
+
+Stored results
+collect dims stores the following in s():
+Macros
+s(collection)
+s(dimnames)
+s(dimsizes)
+
+name of collection
+list of dimension names in collection
+list of dimension sizes in collection
+
+collect dims — List dimensions in a collection 113
+
+Reference
+Huber, C. 2021. Customizable tables in Stata 17, part 2: The new collect command. The Stata Blog: Not Elsewhere
+Classified. https://blog.stata.com/2021/06/07/customizable-tables-in-stata-17-part-2-the-new-collect-command/.
+
+Also see
+[TABLES] collect label — Manage custom labels in a collection
+[TABLES] collect levelsof — List levels of a dimension
+
+collect dir — Display names of all collections in memory
+
+Description
+collect dir lists all collections in memory and identifies the current collection. collect by itself
+is a synonym for collect dir.
+
+Syntax
+collect dir
+collect
+
+Remarks and examples
+After creating one or more collections, you can use collect dir to learn about the collections you
+have in memory.
+collect dir provides a report such as
+. collect dir
+Collections in memory
+Current: means
+Name
+default
+means
+regressions
+
+No. items
+14
+12
+134
+
+Above the table, we find that means is the name of our current collection. In the table, we learn that
+we have three collections in memory named default, means, and regressions. For each of these
+collections, collect dir reports the number of items in the collection. These items are the values
+collected from results of Stata commands, values that we can include in the cells of a table that we
+construct.
+By default, new results collected by the collect prefix or collect get command will be stored in
+the current collection. Likewise, new table layouts, styles, and labels will apply to the current collection.
+Also, any exported tables will be based on the current collection. If you would like to work with a
+different collection, you can use collect set to specify that another collection from this list become
+the current collection.
+To learn about commands for exploring the contents of one of these collections, see [TABLES] collect
+dims and [TABLES] collect levelsof.
+
+Also see
+[TABLES] collect dims — List dimensions in a collection
+[TABLES] collect get — Collect results from a Stata command
+[TABLES] collect set — Set the current (active) collection
+114
+
+collect drop — Drop collections from memory
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+Also see
+
+Syntax
+
+Description
+collect drop eliminates collections from memory.
+collect keep works the same way as collect drop, except that you specify the collections to be
+kept rather than the collections to be deleted.
+
+Quick start
+Drop collection c1 from memory
+collect drop c1
+Same as above, and drop collection c2
+collect drop c1 c2
+Drop all collections from memory
+collect drop _all
+Drop all collections, except for c2
+collect keep c2
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Drop or keep collections
+
+Syntax
+Drop specified collections
+collect drop cname [ cname [ . . . ] ]
+
+Drop all but the specified collections
+collect keep cname [ cname [ . . . ] ]
+
+where cname is the name of an existing collection.
+
+115
+
+collect drop — Drop collections from memory 116
+
+Remarks and examples
+Results collected using the collect prefix or the collect get command are stored in memory. To
+see the collections currently in memory, you can type collect dir. collect drop is used to remove
+selected collections from memory. Alternatively, collect keep removes all but the specified collections
+from memory.
+When collect drop or collect keep drops the current collection from memory, a new collection
+named default will be created and will become the current collection.
+You can drop all collections by typing collect drop all. collect clear can also be used to
+remove all collections from memory. The difference between collect clear and collect drop all
+is that collect drop all will post the list of dropped collections to macro s(collections).
+
+Stored results
+collect drop and collect keep store the following in s():
+Macros
+s(current)
+name of current collection
+s(collections) list of dropped collections
+
+Also see
+[TABLES] collect clear — Clear all collections in memory
+
+collect label — Manage custom labels in a collection
+Description
+Syntax
+Stored results
+
+Quick start
+Options
+References
+
+Menu
+Remarks and examples
+Also see
+
+Description
+collect label dim defines the label for a dimension. If the label is specified as an empty string,
+any existing label for the dimension is removed.
+collect label levels defines labels for the levels of a dimension. If the label is specified as an
+empty string, any existing label for the level is removed.
+collect label save saves label definitions to the specified file.
+collect label use adds the labels defined in an external file to a collection.
+collect label drop drops the dimension label and the labels for its levels.
+collect label list lists the dimension label and the labels for its levels.
+
+All collect label subcommands operate on the current collection by default.
+
+Quick start
+In the current collection, label dimension dim1 as “First dimension”, overwriting the default label
+collect label dim dim1 ”First dimension”, modify
+Clear the label for dimension dim1
+collect label dim dim1 ””
+Redefine the labels for the levels of dimension dim1
+collect label levels dim1 level1 ”Level 1” level2 ”Level 2”, modify
+Save all defined labels from the current collection to mylabels.stjson for use with other collections
+collect label save mylabels
+Same as above, but save labels from the collection c2 to mylabels2.stjson
+collect label save mylabels2, name(c2)
+Drop the dimension label and level labels from dimension dim1
+collect label drop dim1
+List all labels for dimension dim1
+collect label list dim1
+
+117
+
+

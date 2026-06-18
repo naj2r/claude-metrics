@@ -1,0 +1,36 @@
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{R4 mechanism (Panel A: Wine volume share) --- OLS HC3}
+\label{tab:T5_X2}
+\begin{tabularx}{\linewidth}{@{}lCC@{}}
+
+\toprule
+&{(1)}&{(2)} \tabularnewline
+ & (1) col 5 & (2) + French $\times$ Producer \tabularnewline 
+\midrule \addlinespace[\belowrulesep]
+Wine volume, national share (\%)&0.454&0.466 \tabularnewline
+&(0.297)&(0.279) \tabularnewline
+French language share (\%)&--0.224**&--0.788*** \tabularnewline
+&(0.0885)&(0.253) \tabularnewline
+Absinthe-producer indicator&&3.36 \tabularnewline
+&&(7.05) \tabularnewline
+French $\times$ Absinthe-producer&&0.529* \tabularnewline
+&&(0.261) \tabularnewline
+Absinthe industry share (\%)&--0.207&--0.239 \tabularnewline
+&(0.364)&(0.255) \tabularnewline
+Protestant share (\%)&--0.0278&0.00122 \tabularnewline
+&(0.0661)&(0.0711) \tabularnewline
+Log population density&--2.16&--3.02 \tabularnewline
+&(2.76)&(2.62) \tabularnewline
+Constant&78.5***&81.6*** \tabularnewline
+&(11.4)&(10.6) \tabularnewline
+\midrule R-squared&0.618&0.660 \tabularnewline
+N&25&25 \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Col 1 = primary col 5 spec (no interaction). Col 2 = adds French $\times$ Absinthe-producer interaction. N=25 cantons. Robust standard errors in parentheses. * p\(<\)0.10, ** p\(<\)0.05, *** p\(<\)0.01.}
+\end{table}

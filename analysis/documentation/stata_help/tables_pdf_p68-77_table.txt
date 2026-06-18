@@ -1,0 +1,544 @@
+Tables Builder — Tables Builder
+Description
+
+Menu
+
+Remarks and examples
+
+Description
+After you have collected results using collect get, collect:, etable, dtable, or table, use the
+Tables Builder to create tables of the results. In the Tables Builder, you can
+• choose which results go in a table,
+• lay out the rows and columns,
+• change how row and column headers are arranged,
+• change the look of anything, and
+• export a table to Microsoft Word, Microsoft Excel, PDF, HTML, LATEX, SMCL, Markdown, and
+plain text.
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Remarks and examples
+Remarks are presented under the following headings:
+Overview
+Laying out a table
+Laying out a multiway table
+Modifying the layout
+Laying out stacked dimensions
+Placing multiple results in a cell
+Multiple tables
+Changing row and column headers
+Text/labels
+Layout
+Appearance
+Show/hide factor-variable base levels and empty cells
+Show/hide omitted coefficients
+Changing cell/results appearance
+Numeric formats
+Borders and horizontal or vertical rules
+Bold, italics, text color, and such
+Cell color
+Margins
+Justification/alignment
+Adding significance stars
+Adding a custom table title
+Changing table title appearance
+Adding table notes
+Changing table note appearance
+Exporting a table
+
+63
+
+Tables Builder — Tables Builder 64
+Advanced tools
+Position of intercept
+Automatic dimension levels
+Rename dimension levels
+Remap tags
+
+Overview
+The Tables Builder works with an existing collection. You create a collection by collecting results
+from commands using collect get, collect, etable, dtable, and table. The Tables Builder lets
+you choose which results go in a table, lay out the rows and columns of a table, change how row and
+column headers are arranged, change the look of anything in the table, and export a table to Microsoft
+Word, Microsoft Excel, PDF, HTML, LATEX, SMCL, Markdown, and plain text.
+You launch the Tables Builder by selecting the menu item Statistics > Summaries, tables, and tests
+> Tables and collections > Build and style table
+You can see the major components of the Tables Builder in this diagram.
+
+To use the Builder, you will need a basic understanding of what a collection is. In particular, if
+seeing the words Dimensions and Levels above leaves you confused, read Tags, dimensions, and levels
+in [TABLES] Intro 2.
+
+Tables Builder — Tables Builder 65
+
+If you are creating a table only to understand your data, you probably just need to lay out your table.
+If you are creating a table for publication or to otherwise share with others, that is likely to be an iterative
+process. It may take several steps to get the layout you want, then some steps to get the headers exactly
+as you want them, and yet more steps to adjust numeric formats and text styles.
+
+Laying out a table
+The first step in creating a table is deciding what goes on the table’s rows and columns. We cannot
+help you with that. The second step is getting those things onto the rows and columns, and the Builder
+can help with that. The dimensions listed in the Dimensions list represent categories of values pulled
+from results you collected. Each line in the list is a dimension description followed by the dimension
+name in parentheses.
+Choose which category you want to place on the rows of your table by clicking on one of the dimensions in the list. If you want all the values associated (tagged) with that dimension, then just click on the
+to the left of the Rows box. If you do that, all the levels of that category become potential rows in the
+table. And you will see a term added to the Rows box. That term will be identified with the name of the
+dimension.
+If you want only a subset of the dimension’s levels, then select them from the Levels list before hitting
+the
+control. As with the dimensions, each line in the list is a level description followed by the level
+name in parentheses. You can click one level, then shift-click another to select a range. You can controlclick levels to select levels that are not neighbors in the list. If you select levels, their names will become
+part of the description in the added term.
+Do not worry too much about selecting the levels; you can modify the selected levels later.
+We say “potential rows” because you must identify specific stored values using your selected dimensions, or the Builder cannot create a table. For a detailed discussion of what is required to properly
+specify a layout, see How collect layout processes tag specifications in [TABLES] Collection principles.
+If your table can be represented by a single dimension, you will see results in the Preview pane, and
+you are done with the basic layout. This might be the case if you are using the Builder to pretty up the
+results from a one-way tabulation command such as table rep78.
+More likely, you are creating a two-way, or even multiway, table. To create a two-way table, you will
+need to put a dimension into the Columns box. Again, click on the dimension, optionally select some
+levels, and then click on the
+beside the Columns box. A term for that dimension will appear in the
+Columns box.
+If two dimensions are enough to lay out your table, you will see a table with the results you want in
+the Preview pane. If two dimensions are not enough for your table, you will see one of two things in the
+Preview pane.
+1. You might see a message with some suggestions for other dimensions that may help lay out your
+table. If so, try adding one of those dimensions to one of the terms in your Rows or Columns
+box. (See Laying out a multiway table.)
+2. You might see a table with results you are not interested in, and either the rows or columns
+have labels that may confuse you but certainly do not interest you. What has happened? This is
+really the same problem. You need a multiway table to present your results, and you have only
+laid out a two-way table. Let’s tell you how to proceed and then tell you why it happened.
+
+Tables Builder — Tables Builder 66
+
+First, think about the table you are trying to create. One, or more, of the dimensions you have not yet
+put into the Rows or Columns box is required to identify the super-rows or super-columns of a multiway
+table.
+If you cannot think of any dimensions that you should add, clear your current layout by clicking on
+the
+button in the lower left of the Builder. Repeat the process of selecting and adding dimensions
+to your layout, but this time carefully select only the levels you are interested in. Now you will see a
+message in the Preview pane, and you can go back and proceed from item 1 above.
+So what happened to create that useless table? The commands that collect results collect everything
+by default, including things you may not want on your table. You may have noticed this when selecting
+dimensions for your table. You may have seen levels like c1 and c2 that do not interest you. Regardless,
+they are in the collection, as are the values they tag. When the Builder laid out your table by searching
+over all the levels in the dimensions you selected for rows and columns, it found results that exactly
+matched some of the row/column tag combinations. That happened because you asked for a two-way
+table when you wanted to ask for a three-way or higher multiway table. Once you add the dimensions
+for a multiway table, the results found for the mistaken two-way table will no longer be found—they
+only match the unwanted two-way table. For more details than you probably want about what is required
+to properly specify a layout, see How collect layout processes tag specifications in [TABLES] Collection
+principles.
+
+Laying out a multiway table
+A multiway table has super-rows, super-columns, or both to present results that require more than two
+dimensions. Consider a cross-tabulation of frequencies by the categorical variables sex, region, and
+agegrp. Those counts form a cube with dimensions for each of the categorical variables. We cannot
+put three-way results directly on a two-way table. What we can do is create a three-way table using
+super-columns or super-rows for one of the dimensions. Here is what that looks like with super-rows for
+sex:
+
+Tables Builder — Tables Builder 67
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. table (sex agegrp) (region)
+
+Sex
+Male
+Age group
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Total
+Female
+Age group
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Total
+Total
+Age group
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Total
+
+NE
+
+MW
+
+Region
+S
+
+W
+
+Total
+
+204
+169
+122
+146
+290
+87
+1,018
+
+340
+199
+182
+141
+333
+115
+1,310
+
+290
+200
+175
+170
+381
+116
+1,332
+
+282
+202
+131
+145
+365
+130
+1,255
+
+1,116
+770
+610
+602
+1,369
+448
+4,915
+
+240
+165
+124
+146
+297
+106
+1,078
+
+344
+234
+194
+166
+388
+138
+1,464
+
+299
+243
+190
+215
+430
+144
+1,521
+
+321
+210
+154
+162
+376
+150
+1,373
+
+1,204
+852
+662
+689
+1,491
+538
+5,436
+
+444
+334
+246
+292
+587
+193
+2,096
+
+684
+433
+376
+307
+721
+253
+2,774
+
+589
+443
+365
+385
+811
+260
+2,853
+
+603
+412
+285
+307
+741
+280
+2,628
+
+2,320
+1,622
+1,272
+1,291
+2,860
+986
+10,351
+
+There are several ways to lay out a three-way table in the Builder.
+Method 1. The easiest way is to start by laying out a two-way table using just two of your three
+required dimensions. You do that exactly as we did in Laying out a table. At that point, you
+probably have a message in the Preview pane that you need to add more dimensions. Or you
+might have a useless table that is not what you want. Either is to be expected. Ignore that and
+move on.
+Time to add your third dimension. Click on the
+in one of the two terms you just created.
+If you want a table with super-rows, click on the
+on the term in the Rows box. If you
+want a table with super-columns, click on the
+on the term in the Columns box. From the
+resulting drop-down list, select Edit. You will be presented with a Modify term dialog that
+looks something like
+
+Tables Builder — Tables Builder 68
+
+This dialog box looks and acts a lot like the Dimensions and Levels list from the main Builder
+window. Note that there will be a check mark in the box beside the dimension you previously
+selected for the term. That means the checked dimension is part of this term. If you had selected
+specific levels when creating the term, those will have check marks beside their lines in the
+Levels list of the dialog.
+Now add your third dimension—the one you have not yet used—to this term. To do that, just
+click on the box beside the third dimension in the dialog. If you only want some of the levels
+on your table, you can click on the boxes beside the levels you want on the table. Now click
+on OK. You will see your term updated in the Rows or Columns box. More importantly, if
+the three dimensions you have selected do indeed identify the table, you will see a table in the
+Preview pane.
+The term you modified will now look something like
+where colname and result are the names of the dimensions you selected for the term. Your
+dimension names will probably not be colname and result unless you happen to be creating a
+comparative regression table. They will be the names of the dimensions that define your table.
+The term might also look like
+if you specifically selected the levels frequency and percent from the levels of dimension
+result.
+The # is actually part of the language for specifying table layouts when you use the command
+collect layout instead of the Tables Builder. # instructs layout or the Builder to interact the
+levels of the dimensions. If you think about how dimensions in the Rows and Columns boxes
+are used, they too are interacted. In the case of the rows and columns of a two-way table, we
+want all possible pairings of the levels from the row and column dimensions. Those pairings
+form the cells in the table. When we created the interaction in our term, we were requesting
+all possible triplets of the levels of the three dimensions. The third dimension is organized as
+super-rows or super-columns.
+
+Tables Builder — Tables Builder 69
+
+Method 2. We can create a term with an interaction directly from the Dimensions list. We
+start as we always do. Pick a dimension, and possibly select levels; then, use one of the
+controls to put it into the Rows or Columns box. Then, click on that newly added term. It will
+be highlighted. Then, select the third dimension from the Dimension list, and click on the
+control for the Rows or Columns box where the term is highlighted. The new dimension will
+be added to the highlighted term, and it will become an interaction term. Finally, add one or
+more other dimensions to the empty Rows or Columns box.
+Other methods. We did not have to perform all the steps in method 1 or method 2 in exactly
+the order as written. And we can mix and match the methods from method 1 and method 2.
+Put one term into the Rows box and then another into the Columns box; then use method 2 to
+create interaction terms. We can delete terms and start over.
+Moreover, we can create four-way tables, five-way tables, all the way up to silly-way tables. We
+can use method 1 and method 2 to create as complex a multiway table as we like. The important
+thing is to get our the interaction terms that specify our rows, super-rows, super-super-rows, . . . ;
+and our columns, super-columns, . . . built so that we get the table we want.
+
+Modifying the layout
+There are four main things we might want to change in a layout:
+1. Make the rows columns and the columns rows.
+2. Make super-rows rows and rows super-rows.
+3. Make super-columns columns and columns super-columns.
+4. Add or remove levels from a dimension.
+1. Make the rows columns and the columns rows. Swapping rows and columns is both a
+common desire and easy. You might accidentally put a
+dimension on the columns and realize
+that 87 cities makes for a truly wide table. Drag the cities dimension to the Rows box, where you
+always wanted it, and drag whatever dimension is in the Rows box to the Columns box. Done.
+This works with terms that have interactions too. If you drag an interaction term from the Rows
+box into the Columns box, you are simply converting the whole super-row/row structure into a supercolumn/column structure. And vice versa when dragging from the Columns box to the Rows box.
+2. Make super-rows rows and rows super-rows. This is a little more subtle, and you may have
+already encountered it if you tried your own example when we discussed multiway tables above. We
+showed a table in Laying out a multiway table. It had levels of the dimension sex as super-rows and
+levels of the dimension agegrp as rows. That makes the comparison of age groups within sex easy. What
+if you really wanted to compare females and males within age groups?
+We need to swap the dimensions that are on the rows and super-rows. First, click on the
+on the
+term in the Rows box, and select Edit to launch the Modify term dialog. You would see
+that the sex and agegrp dimensions are checked and that sex appears above agegrp. Simply clickand-hold on the agegrp dimension, and drag it above the sex dimension. Or click-and-hold on the sex
+dimension, and drag it below agegrp. Click on OK. The dimensions on the rows and super-rows have
+been swapped. The rows for females and males are now adjacent.
+That is the general idea, and it also works for multiway terms where more than two dimensions are
+interacted.
+
+Tables Builder — Tables Builder 70
+
+3. Make super-columns columns and columns super-columns. This is really just step 2.
+Reread step 2, and substitute “column” everywhere you see “row”.
+4. Add or remove levels from a dimension. You have rows you do not want, or columns that
+you want are missing. You may have done this to yourself when creating terms by selecting too few or
+too many levels for a dimension. Or you may have a collection from table that makes pretty draconian
+assumptions about which result dimensions you want from any command() options.
+If you have been reading along, you may have guessed the answer to this one. Click on the
+of the
+term for which you want to add or remove levels, and select Edit to launch the Modify term dialog. In
+the dialog, click on the dimension for which you want to change the list of levels. Then check or uncheck
+levels until all the levels you want are checked, and only the levels you want are checked.
+
+Laying out stacked dimensions
+There are cases where you do not want to interact a dimension with another dimension on the rows or
+columns as we did in Laying out a multiway table. Instead, you want to stack some results below some
+other results. (Or perhaps stack them to the right if the original results are on the columns.)
+Consider a table comparing two regressions. Each regression appears in a column, so you already have
+the term
+in the Columns box. The coefficients and perhaps their standard errors and confidence intervals appear on the rows. The values for these statistics require that you also know the covariates. That means the Rows box will have an interaction term that looks like
+.
+Suppose you also want to place some of the model-level statistics below the coefficients and their
+statistics. Say you want the 𝑅-square, the model 𝐹 statistic, and the 𝑝-value of the model 𝐹 statistic.
+To add these statistics to the bottom of each regression, click on Result (result) in the Dimensions list,
+and then control-click on R-square (r2), Model F test (F), and Model test p-value (p) in the Levels
+list. Then, after making sure that nothing is selected in the Rows box, click on the
+beside the Rows
+box. You will see a new term added to the Rows box, and the model-level statistics will be added to the
+bottom of the table.
+
+Placing multiple results in a cell
+Rather than stacking results or placing them on adjacent columns, you may prefer to place multiple
+results in a single cell. For example, suppose you have a table comparing regression results. You currently
+have
+in the Columns box and
+in the Rows box, but you would rather
+place the confidence intervals in the same cell as the coefficients. You can create this layout by creating
+a composite result from the coefficients and confidence intervals. Click on Manage composite results,
+and provide a name for this new composite result; for example, you might name this result coefci.
+Then, for the Composite result elements, you would select Coefficient ( r b) and 95% CI ( r ci).
+You can then lay out your table by interacting colname with the level coefci of dimension result.
+
+Multiple tables
+We have thus far completely ignored the Tables box. It has just one job. Instead of creating super-rows
+or super-columns, any dimension placed in the Tables box creates multiple tables—one for each level of
+the dimension. If you place or create an interaction term in the Tables box, a new table will be produced
+for all combinations of the levels in the term.
+
+Tables Builder — Tables Builder 71
+
+What is more, you already know how to use it. Placing dimensions into the Tables box or creating
+interaction terms in the Tables box works exactly as it works in the Rows and Columns boxes. You can
+also drag terms into the Tables box from the Rows or Columns boxes, and vice versa.
+
+Changing row and column headers
+Row headers are the descriptions of the rows that you see along the left of a table. Column headers are
+the descriptions of the columns that you see along the top of a table. These headers are the reader’s guide
+to understanding your table. If the headers are good, your table will be easy to read and understand. If
+the headers are bad, readers will be left scratching their heads.
+Perhaps you are lucky, and your variable labels along with the default result labels and the default
+header composition will be just what you want. Perhaps not. If not, there is plenty of control for the
+headers in the Builder. You just have to know where to look.
+Let’s start with the easiest part, the text actually written in the headers.
+Text/labels
+You can change the label for any dimension on your table. This is the label for the dimension itself,
+not for the levels of the dimension. It is the levels that actually form the rows and columns of your table.
+Sometimes, the dimension label is shown in the header; sometimes, it is not. See Layout for a discussion.
+To change one or more of your dimension labels, click on the button Edit dimension labels to launch
+the dimension labels dialog. There you can select dimensions, see their current label, and change that
+label.
+You can also change the labels for levels in a dimension. These labels almost always appear on the
+table because they identify the rows and columns. An exception is comparative regression tables that
+sometimes identify standard errors by placing them in parentheses and confidence intervals by placing
+them in brackets. Such tables often dispense with labeling the statistics, the levels, altogether. Regardless,
+if you want to change labels for levels, click on the Edit level labels button to launch a dialog for editing
+labels. In that dialog, you can choose the dimension with the levels you want to change, choose the level
+you want to change, see the current label for the level, and change that label.
+Layout
+There are two components to header layout—what things are shown and hidden, and how the labels
+and names are composed to form the header.
+Let’s start with what is shown and hidden. In Text/labels, we alluded to cases where dimension labels
+themselves might or might not be shown. Consider a dimension created from a birth sex variable. The
+two levels in that dimension would likely be labeled Female and Male. Those labels are self-explanatory
+and do not need any additional labeling to be clear. We do not need, and probably do not want, the label
+for the dimension itself. We would be perfectly happy with row headers that look like this:
+Female ...
+Male ...
+
+Now consider a variable from a Likert scale. Say we are talking about websites, and the label on
+the dimension is “Easy to navigate”. The levels are labeled “Strongly agree”, “Agree”, “Neutral”, “Disagree”, and “Strongly disagree”. Those level labels do not mean anything by themselves. We need the
+dimension label—“Easy to navigate”. We now need row headers that look like this:
+
+Tables Builder — Tables Builder 72
+Easy to navigate
+Strongly agree ...
+Agree ...
+Neutral ...
+Disagree ...
+Strongly disagree ...
+
+Click on the Show/hide header content to launch a dialog that lets you control which labels or names
+are shown. You can choose to show labels, show names, or show nothing (hide). You can make this
+decision for dimensions, for all levels in a dimension, or for individual levels in a dimension. You can
+even set the default behavior across all dimensions and levels.
+Once your header content is set, you can change how row and column headers are composed or
+constructed. You do that by clicking on the Compose row headers or Compose column headers button.
+That word “composed” encompasses a lot of choices. Let’s consider a few.
+Do you want cross-tabulation row headers that look like
+Female
+Female
+Female
+Female
+Male
+...
+
+East
+West
+North
+South
+East
+
+or like
+Female
+East
+West
+North
+South
+Male
+East
+...
+
+Then choose either Split elements across columns or Stack elements in a single column on the
+Compose row headers dialog.
+Do you want your factor-variable interactions to look like
+Sex # Region
+Female # East
+Female # West
+Female # North
+Female # South
+Male # East
+...
+
+

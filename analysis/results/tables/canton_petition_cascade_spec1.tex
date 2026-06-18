@@ -1,0 +1,33 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Petition cascade 1: Per-capita vineyard area (X1)  (Y = pet\_per\_eligible) \label{tab:petcasc1}}
+\begin{tabular}{l*{5}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}\\
+            &\multicolumn{1}{c}{(1) baseline}&\multicolumn{1}{c}{(2) +french}&\multicolumn{1}{c}{(3) +absinthe}&\multicolumn{1}{c}{(4) +protestant}&\multicolumn{1}{c}{(5) +geog}\\
+            &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   \\
+\midrule
+X1          &      -0.066   &      -0.166   &      -0.144   &      -0.194   &      -0.179   \\
+            &     (0.384)   &     (0.460)   &     (0.486)   &     (0.295)   &     (0.315)   \\
+cov1        &               &       0.078   &       0.050   &       0.072   &       0.080   \\
+            &               &     (0.089)   &     (0.129)   &     (0.111)   &     (0.152)   \\
+cov2\_total\_share&               &               &       0.110   &      -0.057   &      -0.077   \\
+            &               &               &     (0.430)   &     (0.635)   &     (1.102)   \\
+cov3        &               &               &               &       0.162** &       0.163** \\
+            &               &               &               &     (0.061)   &     (0.065)   \\
+cov\_land    &               &               &               &               &      -0.566   \\
+            &               &               &               &               &     (2.241)   \\
+ln\_pop\_1900 &               &               &               &               &               \\
+            &               &               &               &               &               \\
+\_cons      &      20.905***&      20.209***&      20.124***&      13.765***&      17.377   \\
+            &     (2.493)   &     (2.333)   &     (2.382)   &     (2.626)   &    (14.423)   \\
+\midrule
+N           &          25   &          25   &          25   &          25   &          25   \\
+R-squared   &       0.005   &       0.065   &       0.077   &       0.396   &       0.401   \\
+RMSE        &       9.718   &       9.630   &       9.796   &       8.116   &       8.295   \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize HC3 robust standard errors in parentheses.}\\
+\multicolumn{6}{l}{\footnotesize Y = pet\_per\_eligible (petition signatures per 100 eligible voters, vote 65 denom).}\\
+\multicolumn{6}{l}{\footnotesize Spec set 1. Cascade columns 1-5.}\\
+\end{tabular}
+\end{table}

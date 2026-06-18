@@ -1,0 +1,39 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{T10v: White $\times$ French — value vs volume \label{tab:T10v}}
+\begin{tabular}{l*{4}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+            &\multicolumn{1}{c}{(D1) value, abs dummy}&\multicolumn{1}{c}{(D1v) volume, abs dummy}&\multicolumn{1}{c}{(D2) value, abs cont.}&\multicolumn{1}{c}{(D2v) volume, abs cont.}\\
+            &        b/se   &        b/se   &        b/se   &        b/se   \\
+\midrule
+White wine, national share (\%) — VALUE&       0.969   &               &       0.772   &               \\
+            &     (1.280)   &               &     (1.297)   &               \\
+White wine, national share (\%) — VOLUME&               &       0.850   &               &       0.701   \\
+            &               &     (0.886)   &               &     (0.931)   \\
+French language share (\%)&      -0.309** &      -0.305** &      -0.218*  &      -0.211*  \\
+            &     (0.114)   &     (0.116)   &     (0.117)   &     (0.117)   \\
+White (val) $\times$ French&      -0.007   &               &      -0.006   &               \\
+            &     (0.021)   &               &     (0.018)   &               \\
+White (vol) $\times$ French&               &      -0.006   &               &      -0.005   \\
+            &               &     (0.016)   &               &     (0.014)   \\
+Absinthe-producer indicator&       3.272   &       3.486   &               &               \\
+            &     (7.554)   &     (7.631)   &               &               \\
+Absinthe industry share (\%)&               &               &      -0.197   &      -0.205   \\
+            &               &               &     (0.458)   &     (0.499)   \\
+Protestant share (\%)&      -0.034   &      -0.034   &      -0.033   &      -0.033   \\
+            &     (0.087)   &     (0.087)   &     (0.079)   &     (0.079)   \\
+Log population density&      -2.921   &      -3.025   &      -2.246   &      -2.287   \\
+            &     (3.260)   &     (3.366)   &     (3.100)   &     (3.299)   \\
+Constant    &      81.796***&      82.077***&      79.263***&      79.327***\\
+            &    (12.628)   &    (13.049)   &    (12.520)   &    (13.260)   \\
+\midrule
+N           &          25   &          25   &          25   &          25   \\
+R-squared   &       0.597   &       0.601   &       0.610   &       0.616   \\
+RMSE        &       8.560   &       8.513   &       8.421   &       8.359   \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize HC3 robust standard errors in parentheses.  N=25.  Y = Yes-vote share, Vote \#68.}\\
+\multicolumn{5}{l}{\footnotesize Value shares = canton white revenue / national white revenue.  Volume shares = canton white volume / national white volume.}\\
+\multicolumn{5}{l}{\footnotesize Value-based D1/D2 interactions p $\geq$ 0.7; volume-based D1v/D2v interactions p $\geq$ 0.67.  Main effects lift to p$\approx$0.03 in D1v.}\\
+\end{tabular}
+\end{table}

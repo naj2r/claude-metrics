@@ -11,6 +11,10 @@ _Auto-updated by _codebook_update.ado_
 - _ln — natural log
 - _lnp1 — natural log of (x+1)
 
+## Variable provenance notes
+
+- **Milliet absinthe variables** (the cov2 family — cov2_total_share, cov2_dom, cov2_exp — and the underlying purchases/exports/domestic kg and share columns): these are an **absinthe proxy**, NOT general spirits. Source: Milliet 1907 Federal Alcohol Administration annex (BBl 1907 VI 360-363) — firms identified as absinthe makers/exporters (by monopoly-tax-refund-on-absinthe-exports or Commercial-Register listing; 40 firms, 8 cantons), and their purchases of 95-degree monopoly spirit, summed per canton. Milliet's signed caveat: this is NOT a reliable measure of absinthe production (the firms also make other products from the same spirit; middleman sourcing is uncaptured; cold-process essence makers are omitted); exports are the more reliable figure. Input-side absinthe-industry proxy, not kilograms manufactured. The terse "spirit purchases" wording in the entries below is the raw-source label. Full provenance: **producer_variable_disambiguation.md** (section "Source & proxy construction") and **08_setup_cohort_1908.do** section 7.
+
 ## Datasets
 
 
@@ -802,4 +806,261 @@ _Updated: 12 May 2026 21:11:09 by 07_substrate_descriptives.do_
 | wine_total_qty | int | %10.0g | Wine Total production (1000 hl, HSSO I.21a) |
 
 <!-- codebook:processed/intermediate/i21a_quantities_long.dta:end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- codebook:processed/cohort_1908.dta:start -->
+### processed/cohort_1908.dta
+
+_Updated: 17 Jun 2026 19:11:06 by 08_setup_cohort_1908.do_
+
+**N = 25, vars = 53**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_iso | str2 | %9s | Canton (2-letter code, 1908) |
+| pct_yes_67 | float | %9.0g | Vote 67 yes-share (%, 1908 cohort) |
+| pct_yes_68 | float | %9.0g | Vote 68 yes-share (%, 1908 cohort) |
+| pct_yes_69 | float | %9.0g | Vote 69 yes-share (%, 1908 cohort) |
+| wine_area_canton_ha | float | %9.0g | Wine cultivated area, canton (ha, 1907) |
+| wine_volume_canton_hl | float | %9.0g | Wine total yield, canton (hl, 1907) |
+| wine_revenue_canton_fr | long | %12.0g | Wine total value, canton (Fr, 1907) |
+| wine_yield_canton_hl_per_ha | float | %9.0g | Wine yield, canton (hl/ha, 1907) |
+| wine_revenue_share_canton | float | %9.0g | Wine revenue share of CH total (0-1, 1907) |
+| pop_1900 | float | %9.0g | Resident population per canton (HSSO B.01a, 1900 federal census) |
+| pop_1910 | float | %9.0g | Resident population per canton (HSSO B.01a, 1910 federal census) |
+| pop_density_1900 | float | %9.0g | Population density 1900 (persons/km^2; HSSO B.01b; excludes lake area for GE/NE) |
+| canton_area_km2 | double | %10.0g | Canton land area, km^2 (= pop_1900 / pop_density_1900; excludes lake area for GE |
+| ln_canton_area_km2 | double | %10.0g | Natural log of canton land area (M1A regressor; canton-size control) |
+| german_1900 | float | %9.0g | German speakers (HSSO B.32, 1900 census, persons) |
+| french_1900 | float | %9.0g | French speakers (HSSO B.32, 1900 census, persons) |
+| german_share | double | %10.0g | German share of Ger.+Fr. speakers (1900, subset denom) |
+| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900, subset denom) |
+| protestant_1900 | float | %9.0g | Protestant population (HSSO B.27, 1900 census, persons; incl. Protestant sects) |
+| catholic_1900 | float | %9.0g | Catholic population (HSSO B.27, 1900 census, persons; Roman + Old Catholic) |
+| protestant_share | double | %10.0g | Protestant share of Christian pop. (1900, subset denom = Cath + Prot) |
+| catholic_share | double | %10.0g | Catholic share of Christian pop. (1900, subset denom = Cath + Prot) |
+| prior_canton_ban | byte | %12.0g | =1 if canton had pre-1908 sub-federal absinthe ban (VD-1906 statute, GE-1907 law |
+| n_firms_purchases | byte | %8.0g | Number of firms contributing to canton purchases (non-missing purchase cell; mis |
+| n_firms_exports | byte | %8.0g | Number of firms with non-missing rebate-claim exports in canton (15 firms with b |
+| purchases_kg95_canton | long | %10.0g | Spirit purchases, 5y total 1902-1906, canton (kg @ 95 deg ABV; Milliet; missing  |
+| exports_kg95_canton | long | %10.0g | Rebate-eligible exports, 5y total 1902-1906, canton (kg @ 95 deg ABV; subset of  |
+| domestic_kg95_canton | long | %10.0g | Domestic spirit retained = purchases - exports, 5y total, canton (kg @ 95 deg AB |
+| share_of_total_purchases | double | %10.0g | Canton share of national spirit purchases (0-1; Milliet 1902-06; missing for non |
+| share_of_total_exports | double | %10.0g | Canton share of national rebate-eligible exports (0-1; Milliet 1902-06; missing  |
+| share_of_total_domestic | double | %10.0g | Canton share of national domestic spirit retention (0-1; Milliet 1902-06; missin |
+| purchases_kg95_canton_yr | double | %10.0g | Spirit purchases, 1y mean (= 5y/5), canton (kg @ 95 deg ABV; Milliet; missing fo |
+| exports_kg95_canton_yr | double | %10.0g | Rebate-eligible exports, 1y mean (= 5y/5), canton (kg @ 95 deg ABV; Milliet; mis |
+| domestic_kg95_canton_yr | double | %10.0g | Domestic spirit retained, 1y mean (= 5y/5), canton (kg @ 95 deg ABV; missing for |
+| yes_count_67 | long | %12.0g | Vote 67 yes votes |
+| no_count_67 | int | %12.0g | Vote 67 no votes |
+| turnout_67 | float | %9.0g | Vote 67 turnout (%) |
+| eligible_67 | long | %12.0g | Vote 67 eligible voters |
+| total_votes_67 | long | %12.0g | Vote 67 total ballots cast |
+| yes_count_68 | long | %12.0g | Vote 68 yes votes |
+| no_count_68 | int | %12.0g | Vote 68 no votes |
+| turnout_68 | float | %9.0g | Vote 68 turnout (%) |
+| eligible_68 | long | %12.0g | Vote 68 eligible voters |
+| total_votes_68 | long | %12.0g | Vote 68 total ballots cast |
+| yes_count_69 | long | %12.0g | Vote 69 yes votes |
+| no_count_69 | int | %12.0g | Vote 69 no votes |
+| turnout_69 | float | %9.0g | Vote 69 turnout (%) |
+| eligible_69 | long | %12.0g | Vote 69 eligible voters |
+| total_votes_69 | long | %12.0g | Vote 69 total ballots cast |
+| pop_1907 | long | %12.0g | Resident population per canton (Statistical Yearbook annual estimate, 1907) |
+| pop_density_1907 | double | %10.0g | Population density (persons/km^2, 1907 = pop_1907 / fixed 1900 land area) |
+| ln_pop_1907 | double | %10.0g | Log canton population (1907 yearbook estimate) |
+| pop_1906 | long | %12.0g | Resident population per canton (Statistical Yearbook annual estimate, 1906) |
+
+<!-- codebook:processed/cohort_1908.dta:end -->
+
+
+<!-- codebook:processed/cohort_1908_workshop.dta:start -->
+### processed/cohort_1908_workshop.dta
+
+_Updated: 17 Jun 2026 19:11:12 by 09_canton_reg1_workshop.do_
+
+**N = 25, vars = 90**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_iso | str2 | %9s | Canton (2-letter code, 1908) |
+| pct_yes_67 | float | %9.0g | Vote 67 yes-share (%, 1908 cohort) |
+| Y1 | float | %9.0g | Yes-vote share, vote #68 (pct, 0-100) [pct_yes_68] |
+| pct_yes_69 | float | %9.0g | Vote 69 yes-share (%, 1908 cohort) |
+| wine_ha | float | %9.0g | Wine cultivated area, canton (ha, 1907) |
+| X2_num | float | %9.0g | Wine volume, canton (hl, 1907) [wine_volume_canton_hl] |
+| X3_num | long | %12.0g | Wine revenue, canton (Fr, 1907) [wine_revenue_canton_fr] |
+| X4 | float | %9.0g | Wine yield (hl/ha) |
+| wine_revenue_share_canton | float | %9.0g | Wine revenue share of CH total (0-1, 1907) |
+| pop_1900 | float | %9.0g | Resident population per canton (HSSO B.01a, 1900 federal census) |
+| pop_1910 | float | %9.0g | Resident population per canton (HSSO B.01a, 1910 federal census) |
+| pop_density_1900 | float | %9.0g | Population density 1900 (persons/km^2; HSSO B.01b; excludes lake area for GE/NE) |
+| canton_area_km2 | double | %10.0g | Canton land area, km^2 (= pop_1900 / pop_density_1900; excludes lake area for GE |
+| cov_land | double | %10.0g | Log canton area (km^2) |
+| german_1900 | float | %9.0g | German speakers (HSSO B.32, 1900 census, persons) |
+| french_1900 | float | %9.0g | French speakers (HSSO B.32, 1900 census, persons) |
+| german_share | double | %10.0g | German share of Ger.+Fr. speakers (1900, subset denom) |
+| french_share | double | %10.0g | French share of Ger.+Fr. speakers (1900, subset denom) |
+| protestant_1900 | float | %9.0g | Protestant population (HSSO B.27, 1900 census, persons; incl. Protestant sects) |
+| catholic_1900 | float | %9.0g | Catholic population (HSSO B.27, 1900 census, persons; Roman + Old Catholic) |
+| protestant_share | double | %10.0g | Protestant share of Christian pop. (1900, subset denom = Cath + Prot) |
+| catholic_share | double | %10.0g | Catholic share of Christian pop. (1900, subset denom = Cath + Prot) |
+| prior_canton_ban | byte | %12.0g | =1 if canton had pre-1908 sub-federal absinthe ban (VD-1906 statute, GE-1907 law |
+| n_firms_purchases | byte | %8.0g | Number of firms contributing to canton purchases (non-missing purchase cell; mis |
+| n_firms_exports | byte | %8.0g | Number of firms with non-missing rebate-claim exports in canton (15 firms with b |
+| purchases_kg95_canton | long | %10.0g | Spirit purchases, 5y total 1902-1906, canton (kg @ 95 deg ABV; Milliet; missing  |
+| exports_kg95_canton | long | %10.0g | Rebate-eligible exports, 5y total 1902-1906, canton (kg @ 95 deg ABV; subset of  |
+| domestic_kg95_canton | long | %10.0g | Domestic spirit retained = purchases - exports, 5y total, canton (kg @ 95 deg AB |
+| dom_share_total | double | %10.0g | Canton share of national spirit purchases (0-1; Milliet 1902-06; missing for non |
+| exp_share_abs | double | %10.0g | Canton share of national rebate-eligible exports (0-1; Milliet 1902-06; missing  |
+| dom_share_abs | double | %10.0g | Canton share of national domestic spirit retention (0-1; Milliet 1902-06; missin |
+| purchases_kg95_canton_yr | double | %10.0g | Spirit purchases, 1y mean (= 5y/5), canton (kg @ 95 deg ABV; Milliet; missing fo |
+| exports_kg95_canton_yr | double | %10.0g | Rebate-eligible exports, 1y mean (= 5y/5), canton (kg @ 95 deg ABV; Milliet; mis |
+| domestic_kg95_canton_yr | double | %10.0g | Domestic spirit retained, 1y mean (= 5y/5), canton (kg @ 95 deg ABV; missing for |
+| yes_count_67 | long | %12.0g | Vote 67 yes votes |
+| no_count_67 | int | %12.0g | Vote 67 no votes |
+| turnout_67 | float | %9.0g | Vote 67 turnout (%) |
+| eligible_67 | long | %12.0g | Vote 67 eligible voters |
+| total_votes_67 | long | %12.0g | Vote 67 total ballots cast |
+| yes_count_68 | long | %12.0g | Vote 68 yes votes |
+| no_count_68 | int | %12.0g | Vote 68 no votes |
+| turnout_68 | float | %9.0g | Vote 68 turnout (%) |
+| eligible_68 | long | %12.0g | Vote 68 eligible voters |
+| total_votes_68 | long | %12.0g | Vote 68 total ballots cast |
+| yes_count_69 | long | %12.0g | Vote 69 yes votes |
+| no_count_69 | int | %12.0g | Vote 69 no votes |
+| turnout_69 | float | %9.0g | Vote 69 turnout (%) |
+| eligible_69 | long | %12.0g | Vote 69 eligible voters |
+| total_votes_69 | long | %12.0g | Vote 69 total ballots cast |
+| pop_1907 | long | %12.0g | Resident population per canton (Statistical Yearbook annual estimate, 1907) |
+| pop_density_1907 | double | %10.0g | Population density (persons/km^2, 1907 = pop_1907 / fixed 1900 land area) |
+| pop_1906 | long | %12.0g | Resident population per canton (Statistical Yearbook annual estimate, 1906) |
+| eligible_1906 | long | %12.0g | Vote 65 eligible voters (Lebensmittelgesetz, 10 Jun 1906; petition denom) |
+| pet_total | long | %10.0gc | Petition signatures submitted, canton (AbsinthePetition.xlsx) |
+| pet_valid | long | %10.0gc | Petition signatures valid, canton (AbsinthePetition.xlsx) |
+| pet_invalid | int | %10.0gc | Petition signatures invalid, canton (AbsinthePetition.xlsx) |
+| X1 | float | %9.0g | Wine area per 1,000 pop. (ha) |
+| X1_share | float | %9.0g | Wine area, national share (%) |
+| X2_share | float | %9.0g | Wine volume, national share (%) |
+| X3_share | float | %9.0g | Wine revenue, national share (%) |
+| wine_volume_red | double | %10.0g | Wine volume, canton — RED (hL, 1907) [Phase 10b vol-share test] |
+| wine_volume_white | double | %10.0g | Wine volume, canton — WHITE (hL, 1907) [Phase 10b vol-share test] |
+| X3_red_num | long | %10.0gc | Wine revenue, canton — RED (Fr, 1907) [Cahannes substitution test] |
+| X3_white_num | long | %10.0gc | Wine revenue, canton — WHITE (Fr, 1907) [Cahannes substitution test] |
+| X3_white_share | double | %10.0g | Wine revenue, white, national share (%) [Cahannes substitute] |
+| X3_red_share | double | %10.0g | Wine revenue, red, national share (%) [no substitution channel] |
+| cov1 | double | %10.0g | French language share (%, 1900 census — nearest available) |
+| cov2_dom | double | %10.0g | Absinthe domestic, national share (%) |
+| cov2_exp | double | %10.0g | Absinthe exports, national share (%) |
+| cov2_total_share | double | %10.0g | Absinthe trade share (%) |
+| cov3 | double | %10.0g | Protestant share (%, 1900 census — nearest available) |
+| ln_pop_1900 | double | %10.0g | Log canton population (1900 census; retained, NOT the scale control) |
+| ln_pop_1907 | double | %10.0g | Log canton population (1907 yearbook estimate; scale control) |
+| ln_density | double | %10.0g | Log population density (1907 pop / fixed 1900 land area) |
+| wine_vol_log | double | %10.0g | Log wine volume |
+| abs_log | double | %10.0g | Log absinthe purchases |
+| abs_nfirms | byte | %8.0g | N absinthe firms |
+| abs_producer | byte | %8.0g | Absinthe-trade-interest canton (Milliet any-purchase; headline) |
+| fr_x_producer | double | %10.0g | French x Absinthe-producer |
+| X3_white_x_cov1 | double | %10.0g | White wine national share x French language share |
+| X3_white_x_absprod | double | %10.0g | White wine national share x Absinthe-producer indicator |
+| X3_white_x_cov2 | double | %10.0g | White wine national share x Absinthe trade share |
+| X3_white_vol_share | double | %10.0g | Canton share of national white wine volume (%, 1907) |
+| X3_red_vol_share | double | %10.0g | Canton share of national red wine volume (%, 1907) |
+| X3_white_vol_ratio | double | %10.0g | White vol / (White+Red vol), canton-internal color mix |
+| X3_white_vol_x_cov1 | double | %10.0g | White wine vol-share x French language share |
+| pet_per_eligible | double | %10.0g | Petition signatures per 100 eligible voters |
+| pet_per_cap | double | %10.0g | Petition signatures per 100 pop. (1906 pop; petition is a 1906 event) |
+| pet_natshare | double | %10.0g | Petition canton share of national (%) |
+| pct_yes_68 | double | %10.0g | Yes-vote, Vote #68 (absinthe ban) |
+
+<!-- codebook:processed/cohort_1908_workshop.dta:end -->
+
+<!-- codebook:processed/cohort_1908_workshop_replication.dta:start -->
+### processed/cohort_1908_workshop_replication.dta
+
+_Updated: 17 Jun 2026 20:33:21 by 18_workshop_replication_strip.do_
+
+**N = 25, vars = 42**
+
+| Variable | Type | Format | Label |
+|---|---|---|---|
+| canton_iso | str2 | %9s | Canton (2-letter code, 1908) |
+| pct_yes_67 | float | %9.0g | Vote 67 yes-share (%, 1908 cohort) |
+| Y1 | float | %9.0g | Yes-vote share, vote #68 (pct, 0-100) [pct_yes_68] |
+| pct_yes_69 | float | %9.0g | Vote 69 yes-share (%, 1908 cohort) |
+| pop_1900 | float | %9.0g | Resident population per canton (HSSO B.01a, 1900 federal census) |
+| pop_density_1900 | float | %9.0g | Population density 1900 (persons/km^2; HSSO B.01b; excludes lake area for GE/NE) |
+| canton_area_km2 | double | %10.0g | Canton land area, km^2 (= pop_1900 / pop_density_1900; excludes lake area for GE |
+| cov_land | double | %10.0g | Log canton area (km^2) |
+| turnout_67 | float | %9.0g | Vote 67 turnout (%) |
+| yes_count_68 | long | %12.0g | Vote 68 yes votes |
+| no_count_68 | int | %12.0g | Vote 68 no votes |
+| turnout_68 | float | %9.0g | Vote 68 turnout (%) |
+| turnout_69 | float | %9.0g | Vote 69 turnout (%) |
+| eligible_1906 | long | %12.0g | Vote 65 eligible voters (Lebensmittelgesetz, 10 Jun 1906; petition denom) |
+| pet_total | long | %10.0gc | Petition signatures submitted, canton (AbsinthePetition.xlsx) |
+| pet_valid | long | %10.0gc | Petition signatures valid, canton (AbsinthePetition.xlsx) |
+| pet_invalid | int | %10.0gc | Petition signatures invalid, canton (AbsinthePetition.xlsx) |
+| X1 | float | %9.0g | Wine area per 1,000 pop. (ha) |
+| X2_share | float | %9.0g | Wine volume, national share (%) |
+| X3_share | float | %9.0g | Wine revenue, national share (%) |
+| wine_volume_red | double | %10.0g | Wine volume, canton — RED (hL, 1907) [Phase 10b vol-share test] |
+| wine_volume_white | double | %10.0g | Wine volume, canton — WHITE (hL, 1907) [Phase 10b vol-share test] |
+| X3_red_num | long | %10.0gc | Wine revenue, canton — RED (Fr, 1907) [Cahannes substitution test] |
+| X3_white_num | long | %10.0gc | Wine revenue, canton — WHITE (Fr, 1907) [Cahannes substitution test] |
+| X3_white_share | double | %10.0g | Wine revenue, white, national share (%) [Cahannes substitute] |
+| X3_red_share | double | %10.0g | Wine revenue, red, national share (%) [no substitution channel] |
+| cov1 | double | %10.0g | French language share (%, 1900 census — nearest available) |
+| cov2_total_share | double | %10.0g | Absinthe trade share (%) |
+| cov3 | double | %10.0g | Protestant share (%, 1900 census — nearest available) |
+| ln_pop_1900 | double | %10.0g | Log canton population (1900 census; retained, NOT the scale control) |
+| ln_density | double | %10.0g | Log population density (1907 pop / fixed 1900 land area) |
+| abs_producer | byte | %8.0g | Absinthe-trade-interest canton (Milliet any-purchase; headline) |
+| fr_x_producer | double | %10.0g | French x Absinthe-producer |
+| X3_white_x_cov1 | double | %10.0g | White wine national share x French language share |
+| X3_white_x_absprod | double | %10.0g | White wine national share x Absinthe-producer indicator |
+| X3_white_x_cov2 | double | %10.0g | White wine national share x Absinthe trade share |
+| X3_white_vol_share | double | %10.0g | Canton share of national white wine volume (%, 1907) |
+| X3_red_vol_share | double | %10.0g | Canton share of national red wine volume (%, 1907) |
+| X3_white_vol_ratio | double | %10.0g | White vol / (White+Red vol), canton-internal color mix |
+| X3_white_vol_x_cov1 | double | %10.0g | White wine vol-share x French language share |
+| pet_per_eligible | double | %10.0g | Petition signatures per 100 eligible voters |
+| pct_yes_68 | double | %10.0g | Yes-vote, Vote #68 (absinthe ban) |
+
+<!-- codebook:processed/cohort_1908_workshop_replication.dta:end -->
 

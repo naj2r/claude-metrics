@@ -1,0 +1,18 @@
+| Vote cascade (Panel A: Wine revenue share) — FL |                      |             |               |                 |                     |         |
+|-------------------------------------------------|----------------------|-------------|---------------|-----------------|---------------------|---------|
+|                                                 | (1)                  | (2)         | (3)           | (4)             | (5)                 |         |
+|                                                 | (1) baseline         | (2) +french | (3) +absinthe | (4) +protestant | (5) +geog (density) |         |
+|                                                 | b/se                 | b/se        | b/se          | b/se            | b/se                |         |
+| ="Wine revenue                                  | national share (\%)" | -0.192      | 0.531***      | 0.391**         | 0.514***            | 0.434** |
+|                                                 | (0.154)              | (0.178)     | (0.154)       | (0.164)         | (0.195)             |         |
+| French language share (\%)                      |                      |             |               |                 |                     |         |
+|                                                 |                      |             |               |                 |                     |         |
+| Absinthe industry share (\%)                    |                      |             |               |                 |                     |         |
+|                                                 |                      |             |               |                 |                     |         |
+| Protestant share (\%)                           |                      |             |               |                 |                     |         |
+|                                                 |                      |             |               |                 |                     |         |
+| Log population density                          |                      |             |               |                 |                     |         |
+|                                                 |                      |             |               |                 |                     |         |
+| Constant                                        |                      |             |               |                 |                     |         |
+|                                                 |                      |             |               |                 |                     |         |
+| N                                               | 25                   | 25          | 25            | 25              | 25                  |         |

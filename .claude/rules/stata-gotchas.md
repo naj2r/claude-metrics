@@ -22,6 +22,30 @@ When writing or editing `.do` files, ALWAYS follow these rules. They are loaded 
 - Use `i.` prefix for categorical variables in regressions — bare numeric vars are treated as continuous.
 - Use `///` for line continuation, not `\`.
 
+## Built-in function limits and quirks
+
+### `inlist()` string-arg cap: max 10 args total (variable + 9 values)
+
+For STRING arguments, `inlist(z, s1, s2, ...)` accepts at most 10 args total — the variable plus 9 values. For NUMERIC args, the cap is 255. The error message when over (`r(130) expression too long`) does NOT mention the type-specific cap, so it's easy to assume the script is broken when really you've just exceeded the string limit.
+
+```stata
+* BAD: 10 values + 1 variable = 11 args, fails for strings
+list ... if inlist(canton_iso, "UR","SZ","OW","NW","LU","ZG","FR","VS","TI","AI")
+* r(130) expression too long
+
+* GOOD: split into two OR'd inlist calls
+list ... if inlist(canton_iso, "UR","SZ","OW","NW","LU") ///
+         | inlist(canton_iso, "ZG","FR","VS","TI","AI")
+
+* ALTERNATIVE: build a categorical flag once, then filter on the flag
+gen byte _grp = 0
+replace _grp = 1 if inlist(canton_iso, "UR","SZ","OW","NW","LU") ///
+                 | inlist(canton_iso, "ZG","FR","VS","TI","AI")
+list ... if _grp == 1
+```
+
+The flag approach scales to arbitrarily many groupings and makes the grouping intent visible in the data. The OR-chained approach is leaner for one-off filters. Found during `08_setup_cohort_1908.do` religion verification, May 2026.
+
 ## `local x "..."` vs `local x = "..."` — expression-evaluation gotcha
 
 Stata's `local` command has two different parse modes:
@@ -43,6 +67,46 @@ Stata's `local` command has two different parse modes:
   - **Symptom**: `_codebook_update` (or any program that round-trips a markdown file) crashes on the second invocation, succeeding only the first time.
   - **Fix**: in markdown output, use bold (`**path**`) or HTML `<code>path</code>` instead of backtick code-quotes. Reserve backticks for human-only docs that no Stata program will read back.
   - **Symmetric rule for input**: when reading user-provided text via `file read`, sanitize backticks before passing through `macval()` or compound quotes.
+
+## Comment-block nesting: `/*` inside `/* ... */` is treated as a NESTED open
+
+Stata's parser treats any `/*` substring inside an open block comment as a nested-comment opener. The first `*/` only unwinds ONE level, so everything after stays in comment-mode silently. The script appears to run cleanly (rc=0) but the body never executed — no error, no warning, just nothing happens after the comment block.
+
+**Trigger pattern**: a long header docstring `/* ... */` that contains a glob like `analysis/scripts/*.do` (the `*.do` glob produces a literal `/*` substring inside the open comment) silently consumes the rest of the file as comment text.
+
+**Symptom**: the do-file runs without complaint, but globals don't get set, programs don't get sourced, output files don't appear. Downstream scripts then fail with cryptic errors like `\$MyProject not set` or `_codebook_update not found`.
+
+**Fix**: avoid `/*` substrings inside block comments. Rephrase path examples to use placeholders:
+- Bad inside `/* ... */`: `analysis/scripts/*.do`
+- Good inside `/* ... */`: `analysis/scripts/NN_slug.do`
+
+Or use line comments (`*` or `//`) for the entire docstring — they don't have nesting behavior. Add a `MAINTAINER NOTE` to any docstring that's been bitten by this so future editors know not to reintroduce the glob.
+
+Found during `stata_absinthe_init.do` session-init helper development, May 2026 (silent rc=0 failure consumed 4+ debug cycles before the `/*` glob was identified as the trigger).
+
+## `subinstr` with literal backslash: `"\"` is parsed as escaped quote (.do-file only)
+
+When a `.do` file is sourced (not typed at the interactive prompt), Stata's parser treats `"\"` as the START of an escaped-quote string literal, NOT as a one-character backslash string. `subinstr("path", "\", "/", .)` then silently aborts the do-file without producing an error message or even reaching the next line.
+
+**Trigger pattern**: any normalization of a Windows path that needs to convert `\` → `/`:
+
+```stata
+* This works at the Stata prompt but SILENTLY ABORTS inside a .do file:
+global HOME = subinstr("`raw_home'", "\", "/", .)
+```
+
+**Symptom**: the `.do` file exits with no error message, no log entry past that line, and no globals set. Downstream code crashes with `\$MyProject not set` or similar. The killer detail: it WORKS perfectly when typed line-by-line at the Stata prompt, so manual debug-stepping doesn't reproduce the failure.
+
+**Fix**: use `char(92)` for the backslash literal:
+
+```stata
+local bs = char(92)
+global HOME = subinstr("`raw_home'", "`bs'", "/", .)
+```
+
+`char(92)` returns the literal backslash character without triggering the parser's escape-quote handling. Same trick works in any string-literal context where you need a backslash inside a `.do` file (regex patterns, file-path manipulation, etc.).
+
+Found during `stata_absinthe_init.do` session-init helper development, May 2026. Distinct from the MCP-Stata-transport backslash mangling documented below (that one corrupts `\` → `/` in inline MCP code; this one is a Stata-native parser quirk affecting any `.do` file regardless of how it's invoked).
 
 ## File-write formatting gotchas
 
@@ -108,6 +172,8 @@ Found during C.16 (07_substrate_descriptives.do § 9d) and C.6c (05_expansion.do
 - All add-on packages live in `analysis/scripts/libraries/stata/`. Never `ssc install` inline — use `/add-package`.
 - Numbered scripts use the `N_description.do` pattern. New scripts go through `/new-script`.
 - Each script ends with a post-credits block that calls `_codebook_update` and `_inventory_append`. See template at `analysis/scripts/programs/_template_script.do`.
+- **`_codebook_update` is upsert-safe**; **`_inventory_append` is append-only.** `_codebook_update` refreshes the existing entry in `codebook.md` in place (the program looks for a matching dataset path and replaces that section), so it's safe to call on every iteration. `_inventory_append` always appends a new row to `_inventory.xlsx` with no dedupe — calling it on every iteration during dev accumulates duplicate rows that pollute the shared pipeline-state tracker. For scripts that may be iterated repeatedly, gate `_inventory_append` behind `if "${RUN_POSTCREDITS}" == "1"` so canonical inventory rows are added only on release runs (set `global RUN_POSTCREDITS = 1` before `do "<script>"` when you want the canonical row to land).
+- **Terminology**: reserve "bootstrap" for econometric resampling (bootstrap SEs, wild-cluster bootstrap, pairs/wild bootstrap, etc.). For script-init mechanisms that load globals or rebuild from a disk checkpoint, prefer "session-init helper", "standalone-run preamble", or "standalone setup" (per `_template_script.do`). Calling a session-init script a "bootstrap" causes confusion in code review and methodology discussion.
 
 ## Independent (background / batch) vs manual (interactive) Stata runs
 
@@ -231,6 +297,56 @@ Wrap long code chunks in `{ ... }` braces so they're foldable in the editor:
 ```
 
 The header rule (`*-----*`) is decorative; the `**#` line is what Stata indexes as a bookmark.
+
+## Standalone-preamble pattern for chunked iteration (Ctrl+D workflows)
+
+When a script is structured for section-by-section Ctrl+D execution in the do-file editor (the PI development pattern), each `**# N.` section that consumes upstream output should begin with a **standalone-run preamble** that detects partial / empty in-memory state and auto-loads the upstream checkpoint from disk:
+
+```stata
+**# 5.0 Standalone-run preamble: load §1-§4 output if memory is empty / re-runnable
+{
+    cap confirm variable pop_1910         // sentinel = predecessor §4's last-added var
+    if _rc {
+        cap confirm file "$MyProject/processed/cohort_1908.dta"
+        if _rc {
+            di as error "  §5 needs §1-§4 output (pop_1910) but cohort_1908.dta not found."
+            di as error "  Run §1-§4 first, OR run the whole script end-to-end."
+            error 601
+        }
+        use "$MyProject/processed/cohort_1908.dta", clear
+        di as text "  (standalone-run preamble: loaded cohort_1908.dta from disk)"
+    }
+    foreach v in <vars_this_section_adds> {    // idempotency: drop colliding vars
+        cap drop `v'
+    }
+}
+```
+
+### Critical: sentinel choice
+
+The variable in `cap confirm variable <X>` MUST be the **last var added by the immediately-preceding section**, NOT a base-state var like `canton_iso`. The two choices have very different semantics:
+
+| Sentinel | Catches | Misses |
+|---|---|---|
+| `canton_iso` (base ID) | Empty memory | Partial state from older script version or skipped section |
+| Predecessor's last var | Empty memory AND partial state | Nothing (transitively implies full upstream chain) |
+
+**Why predecessor's-last-var works**: in a linearly-built dataset where `§N (save)` writes the union of all sections, the on-disk file always represents the canonical complete state. If the predecessor's last var is missing from memory, the in-memory state is partial — reload from disk to restore the complete chain. If the predecessor's last var IS present, all earlier vars must also be present (linear-build invariant), and no reload is needed.
+
+**Bug 2026-05-18** during `08_setup_cohort_1908.do` chunked review: §5.0 used `canton_iso` as the sentinel, which was present in the PI's session (from an older script version that ran §1+§2+§3 only). §5 proceeded but §6.1 crashed on `assert pop_1900 > 0 & !missing(pop_1900)` because pop_1900 was never loaded. Switching the sentinel to `pop_1910` (§4's last var) made §5.0 auto-load from disk, restoring pop_1900/1910 alongside everything else. Retrofitted to §2.0/§3.0/§4.0/§6.0 for consistency.
+
+### Recommended safeguards for standalone-preamble changes
+
+When you add or modify a standalone-preamble, run BOTH of these regression tests before reporting done:
+
+1. **End-to-end**: `clear all; do "<script>"` — simulates a fresh session with empty memory. The preamble's auto-load branch fires (memory is empty, so the sentinel var is absent). All downstream sections see the freshly-loaded state.
+2. **Partial-state**: load the complete output dataset, drop a downstream var family (e.g., `drop pop_1900 pop_1910`), then run the chunk in question. The preamble should detect the missing sentinel and auto-load from disk to restore the dropped vars. If the preamble's sentinel is too weak (e.g., `canton_iso` instead of `pop_1910`), it will NOT trigger the auto-load and the chunk will crash downstream — exactly the bug the partial-state test is designed to catch.
+
+A single end-to-end pass is NOT sufficient: end-to-end always builds from scratch, so all upstream vars are guaranteed present regardless of sentinel weakness. Only the partial-state test surfaces sentinel choice errors. Skip the partial-state test → ship the bug (this is the 2026-05-18 lesson).
+
+### Idempotency: drop section-output vars before re-building
+
+The `foreach v in <vars_this_section_adds> { cap drop `v' }` block at the end of the preamble lets the section be re-run cleanly even if a prior partial run left some of its output vars in memory. Without it, the section's `gen` and `merge` commands will error with "variable already exists" on the second Ctrl+D pass. `cap drop` is no-op if the var doesn't exist, so it costs nothing on fresh runs.
 
 ## Variable suffix conventions (Ouellet/Toffel §7a)
 

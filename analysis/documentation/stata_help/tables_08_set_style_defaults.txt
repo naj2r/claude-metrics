@@ -1,0 +1,359 @@
+Predefined styles — Predefined collection styles 304
+
+lcstats smcl
+
+This style defines SMCL properties. It is part of the definition for the lcstats style and is defined
+using the following commands:
+. collect style clear
+. collect style cell cell_type[item], smcl(result)
+. collect style smcl, wrapnotes
+
+This style is saved in style-lcstats smcl.stjson and can be accessed by typing
+. collect style use lcstats smcl
+
+as one step in building your own style.
+lcstats txt
+
+This style defines plain text properties. It is part of the definition for the lcstats style and is defined
+using the following commands:
+. collect style clear
+. collect style txt, wrapnotes
+
+This style is saved in style-lcstats txt.stjson and can be accessed by typing
+. collect style use lcstats txt
+
+as one step in building your own style.
+
+Predefined styles — Predefined collection styles 305
+
+table cidelimiter
+
+This style defines the delimiters for confidence intervals and credible intervals. It is part of the definition for the table style and is defined using the following commands:
+. collect style clear
+. collect style cell, basestyle cidelimiter(”
+
+”) cridelimiter(”
+
+”)
+
+This style is saved in style-table cidelimiter.stjson and can be accessed by typing
+. collect style use table cidelimiter
+
+as one step in building your own style.
+table headers
+
+This style defines header properties. It is part of the definition for the table style and is defined using
+the following commands:
+. collect style clear
+. collect style header, basestyle title(label) level(label)
+. collect style column, dups(center) extraspace(1)
+. collect style header across, title(hide)
+. collect style header coleq, title(hide)
+. collect style header colname, title(hide)
+. collect style header command, title(hide)
+. collect style header result, title(hide)
+. collect style header roweq, title(hide)
+. collect style header rowname, title(hide)
+. collect style header stars, title(hide) level(hide)
+. collect style header statcmd, title(hide)
+. collect style header var, title(hide)
+. collect style row stack
+
+This style is saved in style-table headers.stjson and can be accessed by typing
+. collect style use table headers
+
+as one step in building your own style.
+
+Predefined styles — Predefined collection styles 306
+
+table nformats
+
+This style defines numeric format properties similar to default nformats but adds numeric formats
+for targeted statistics of the table command. It is part of the definition for the table style and is defined
+using the following commands:
+. collect style clear
+. collect style cell, basestyle nformat(%9.0g)
+. collect style cell result[_r_b _r_se _r_lb _r_ub _r_ci _r_crlb _r_crub _r_cri] ///
+, nformat(%9.0g)
+. collect style cell result[_r_z _r_z_abs], nformat(%8.2f)
+. collect style cell result[_r_p], nformat(%5.3f)
+. collect style cell result[count frequency fvrawfrequency], nformat(%18.0fc)
+. collect style cell result[fvpercent fvrawpercent percent rawpercent] ///
+, nformat(%9.2f)
+. collect style cell result[fvproportion fvrawproportion proportion rawproportion] ///
+, nformat(%9.4g)
+. collect style cell result[rawtotal sumw total fvfrequency], nformat(%18.6gc)
+
+This style is saved in style-table nformats.stjson and can be accessed by typing
+. collect style use table nformats
+
+as one step in building your own style.
+tabulate borders
+
+This style defines cell border properties. It is part of the definition for the tabulate style and is
+defined using the following commands:
+. collect style clear
+. collect style cell border_block[corner], border(top)
+. collect style cell border_block[column-header], border(top)
+. collect style cell border_block[row-header], border(top bottom)
+. collect style cell border_block[item], border(top bottom)
+. collect style cell border_block[row-header]#item_type[overall] ///
+, border(top bottom, pattern(none))
+. collect style cell border_block[item]#item_type[overall] ///
+, border(top bottom, pattern(none))
+
+This style is saved in style-tabulate borders.stjson and can be accessed by typing
+. collect style use tabulate borders
+
+as one step in building your own style.
+tabulate headers
+
+This style defines header properties. It is part of the definition for the tabulate style and is defined
+using the following commands:
+. collect style clear
+. collect style header, basestyle title(label) level(label)
+. collect style header result, title(hide)
+. collect style header _overall item_type, title(hide) level(hide)
+. collect style column, dups(center) extraspace(1)
+. collect style row stack
+
+This style is saved in style-tabulate headers.stjson and can be accessed by typing
+. collect style use tabulate headers
+
+as one step in building your own style.
+
+Predefined styles — Predefined collection styles 307
+
+tabulate nformats
+
+This style defines numeric format properties. It is part of the definition for the tabulate style and is
+defined using the following commands:
+. collect style clear
+. collect style cell, basestyle nformat(%18.0g)
+. collect style cell result[frequency count], nformat(%18.0fc)
+. collect style cell result[mean sd sumw expected cchi2 clrchi2], nformat(%18.1fc)
+. collect style cell result[ CramersV ///
+ase_gam ase_taub ///
+chi2 chi2_lr ///
+gamma taub ///
+F_Pear F_Penl ///
+cun_Pear cun_Penl ///
+cun_LR cun_LRnl ///
+F_LR F_LRnl ///
+F_Wald F_LLW ///
+Fun_Wald Fun_LLW ///
+cun_Wald cun_LLW ///
+mgdeff cvgdeff ///
+], nformat(%18.4fc)
+. collect style cell result[ p p_exact p1_exact p_lr ///
+p_Pear p_Penl ///
+p_LR p_LRnl ///
+p_Wald p_LLW ///
+pun_Wald pun_LLW ///
+], nformat(%18.4fc) minimum(.0001)
+. collect style cell result[proportion row_proportion column_proportion] ///
+, nformat(%18.4fc)
+. collect style cell result[ row column cell ///
+percent cumulative ///
+row_percent column_percent ///
+] , nformat(%9.2f)
+. collect style cell result[deff deft] , nformat(%9.3f)
+. collect style cell result[ cv ///
+df1_Pear df2_Pear ///
+df1_Penl df2_Penl ///
+df1_LR df2_LR ///
+df1_LRnl df2_LRnl ///
+], nformat(%18.2f)
+. collect style header cmdset, title(hide) level(hide)
+. collect style header var, title(hide) level(label)
+
+This style is saved in style-tabulate nformats.stjson and can be accessed by typing
+. collect style use tabulate nformats
+
+as one step in building your own style.
+
+Modifying the default style
+If you routinely change your style to one of the styles installed with Stata or to one you have created, you can consider changing the style used by default. For information on changing the default
+style used by collect, see [TABLES] set collect style. For information on changing the default style
+used by etable, see [TABLES] set etable style. For information on changing the default style used by
+dtable, see [TABLES] set dtable style. For information on changing the default style used by table,
+see [TABLES] set table style. For information on changing the default style used by tabulate and svy:
+tabulate, see [TABLES] set tabulate style.
+
+Predefined styles — Predefined collection styles 308
+
+Also see
+[TABLES] collect style use — Use collection styles from disk
+[TABLES] set collect style — Style settings for collections
+[TABLES] set dtable style — Default style settings for dtable
+[TABLES] set etable style — Default style settings for etable
+[TABLES] set table style — Default style settings for table
+[TABLES] set tabulate style — Default style settings for tabulate
+
+set collect double — Storage type settings for collections
+
+Description
+set collect double controls the storage type for numeric values that are saved in collections when
+using collect save. The default setting is on, which saves numeric values using double precision.
+When set collect double is off, numeric values are converted to single precision before they are
+saved.
+
+Syntax
+set collect double { on | off } [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+Remarks and examples
+set collect double controls the storage type for numeric values that are saved in collections when
+using collect save. If you wish to save your collection with values in single precision, you can type
+. set collect_double off
+
+The default setting is on, which saves numeric values using double precision. To apply the setting
+above permanently, meaning that it will be remembered when you invoke Stata, you can type
+. set collect_double off, permanently
+
+To see the current setting, you can type
+. display c(collect_double)
+
+Also see
+[TABLES] collect save — Save a collection to disk
+
+309
+
+set collect label — Label settings for collections
+Description
+
+Syntax
+
+Option
+
+Remarks and examples
+
+Also see
+
+Description
+set collect label controls the default labels used in tables created by collect. The default setting
+is default, which means that collect uses the labels defined in the file label-default.stjson. This
+file can be found in the ado-path.
+
+Syntax
+Use the system default labels in tables
+set collect label default [ , permanently ]
+
+Specify a label set to be used as default labels in tables
+set collect label label [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Overview
+Labels for e-class results
+Labels for r-class results
+Labels for other results
+
+Overview
+set collect label controls the default labels used in tables created by collect. The default setting
+is default, which means that collect uses the labels defined in the file label-default.stjson. This
+file can be found in the ado-path.
+
+However, if you have a set of labels that you plan to use with many of the tables that you will be
+creating, you can save those labels to a file with collect label save. For example, you can save your
+labels under the filename mylabels.stjson by typing the following:
+. collect label save mylabels.stjson
+
+Then, to use these labels by default when creating tables with collect, you would type
+. set collect_label mylabels
+
+310
+
+set collect label — Label settings for collections 311
+
+set collect label will then search for label-mylabels.stjson in the ado-path. If labelmylabels.stjson is not found, it will search the ado-path for mylabels.stjson.
+
+To see the current setting, type
+. display c(collect_label)
+
+In the following sections, we outline the logic that collect uses to determine the labels to be used
+when there is not a label for the result that was collected.
+
+Labels for e-class results
+When collecting an e-class result, which we will call e(res), collect will use the label from the
+collection that corresponds to that result. If that label does not exist, then a label is determined using the
+following steps:
+1. If macro e(res
+
+CL) exists, the label is pulled from this macro.
+
+2. Search the system labels for a command-specific label attached to result res. If results are
+collected using the collect prefix, the prefixed command name is used. If results are collected
+using the collect get command, the command name is taken from macro e(cmd).
+3. Search the system labels for a global (command-agnostic) label attached to result res.
+
+Labels for r-class results
+When collecting an r-class result, which we will call r(res), collect will use the label from the
+collection that corresponds to that result. If that label does not exist, then a label is determined using the
+following steps:
+1. If macro r(res
+
+CL) exists, the label is pulled from this macro.
+
+2. Search the system labels for a command-specific label attached to result res. If results are
+collected using the collect prefix, the prefixed command name is used. If results are collected
+using the collect get command, the command name is taken from macro r(cmd).
+3. Search the system labels for a global (command-agnostic) label attached to result res.
+
+Labels for other results
+When collecting results from other commands, collect will use the label from the collection if one
+exists. If there is no label for this result, then a label is determined by searching the system labels for a
+global (command-agnostic) label attached to that result.
+
+Also see
+[TABLES] collect label — Manage custom labels in a collection
+
+set collect style — Style settings for collections
+
+Description
+set collect style controls the default styles used in tables created by collect. The default setting
+is default, which means that collect uses the styles defined in the file style-default.stjson. This
+file can be found in the ado-path.
+
+Syntax
+Use the system default styles in tables
+set collect style default [ , permanently ]
+
+Specify a style set to be used as the default in tables
+set collect style style [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+Remarks and examples
+set collect style controls the default style used in tables created by collect. The default setting
+is default, which means that collect uses the styles defined in the file style-default.stjson. This
+file can be found in the ado-path.
+
+However, if you have a style that you plan to use with many of the tables that you will be creating,
+you can save that style to a file with collect style save. For example, you can save your style as
+mystyle.stjson by typing the following:
+. collect style save mystyle.stjson
+
+Then, to use that style by default with tables created by collect, you would type
+. set collect_style mystyle
+
+set collect style will then search for style-mystyle.stjson in the ado-path. If stylemystyle.stjson is not found, it will search the ado-path for mystyle.stjson.
+
+To see the current setting, type
+. display c(collect_style)
+
+Also see
+[TABLES] collect style save — Save collection styles to disk
+
+312
+
+

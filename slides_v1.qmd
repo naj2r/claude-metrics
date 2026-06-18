@@ -1,0 +1,74 @@
+---
+title: "Bootleggers Behind the Baptists"
+subtitle: "Historical Political Economy of Switzerland's Absinthe Ban"
+author: "Nick Jensen"
+institute: "Wabash College"
+date: today
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    incremental: false
+    code-fold: false
+    fig-align: center
+    embed-resources: true   # self-contained HTML, easy to email/host
+  beamer:
+    aspectratio: 169        # 16:9; use 43 for 4:3
+    theme: metropolis
+    fontsize: 10pt
+    slide-level: 2          # h2 (##) starts a new slide
+    incremental: false
+    fig-align: center
+    keep-tex: true          # leaves the .tex if you need to hand-tune
+execute:
+  echo: false
+  warning: false
+  message: false
+#bibliography: refs.bib      # delete if you don't want citations
+---
+
+
+## Background & Context
+* **The Problem:** 
+    * 1908 Swiss absinthe ban — 63.5% yes, second European country, first by popular vote.
+    *  National-aggregate story: 
+        *  temperance, 
+        *  Lanfray and absinthism.
+    * **What the literature can't explain:**
+      *  **Cross-Canton heterogeneity** (NE 35%, GE 41%, VD 56%, ZH 76%, UR 71%).
+
+
+## What Makes this study matter?
+* **Current State: What  we already know**
+    * "Absinthism" is scientifically disproven
+        * ...but adulteration was a concern for bootleg absinthe
+
+* **We don't know:**
+    * ...whether Absinthe's banning was supported by:
+        * "Baptists" (protestant temperance movement),
+        * "Bootleggers" (wine industry)
+        * ... or *both*
+
+---
+
+## A Slide with Two Columns
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Left side: text, equations, whatever.
+
+$$ y_{it} = \beta D_{it} + \alpha_i + \lambda_t + \varepsilon_{it} $$
+:::
+
+::: {.column width="50%"}
+Right side: a figure or table.
+:::
+
+::::
+
+
+## References
+
+%%::: {#refs}
+%%:::

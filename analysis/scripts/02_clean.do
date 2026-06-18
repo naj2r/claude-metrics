@@ -250,6 +250,18 @@ run "$MyProject/scripts/programs/_config.do"
     label var yes_frac "Yes-vote share (fractional, 0-1)"
     assert inrange(yes_frac, 0, 1)
 
+    * ========================================================================
+    * NAME-TRAP WARNING (producer-variable disambiguation, 2026-06-09)
+    *   The `absinthe_dummy*` indicators below are INVESTIGATION-STAGE ROBUSTNESS
+    *   tiers, hardcoded canton lists. Despite the name, `absinthe_dummy` is
+    *   literally (canton_code=="NE") — NOT a generic "produces absinthe" 0/1.
+    *   The HEADLINE producer-coalition treatment is `abs_producer` (8 cantons,
+    *   = cov2_total_share>0, "any Milliet absinthe purchase"; an absinthe-TRADE-
+    *   INTEREST set, not manufacturers) in cohort_1908_workshop.dta
+    *   (09_canton_reg1_workshop.do:411), reported in T_producer_cascade. These
+    *   NE-tiers are the manufacturing-heartland robustness ladder.
+    *   Canonical: analysis/documentation/producer_variable_disambiguation.md
+    * ========================================================================
     * absinthe_dummy: tiered indicators for cantons with absinthe-production
     * history (1797-1910). Swiss production was concentrated in three cantons:
     *   - NE (Val-de-Travers): the heartland. Pernod Fils founded the first

@@ -6,6 +6,22 @@ This file is the project-level "what is this about" — distinct from `CLAUDE.md
 
 ---
 
+## 0. Current specification (workshop paper) — READ FIRST
+
+⚠️ **The current paper is the WORKSHOP analysis** (`processed/cohort_1908_workshop.dta`; scripts `08_*_workshop` → `09_*_workshop` → … → `22`/`23`). The vineyard-area / French+Catholic replication described in §1–§5 below is the **superseded original** (`absinthe_analysis.dta`, scripts `01`–`04`), retained as project history — do **not** read it as the current spec.
+
+| | Original (superseded — §1–§5 below) | **Current paper (workshop)** |
+|---|---|---|
+| Outcome | `yes_pct` (#68) | `Y1` = #68 yes-share (FL fractional `Y1_frac = Y1/100`) |
+| Wine measure (focal) | `vineyard_per_cap` (ha/person), coef [300,600] | **`X3_share`** = canton share of national wine **revenue** |
+| Headline | OLS vineyard coef ~+484 | **FL average marginal effect ≈ 0.43 pp/pp** (OLS twin ≈ 0.47); RI p ≈ 0.05–0.09 |
+| Col-5 controls | French + **Catholic** | **French (`cov1`) + Absinthe-trade share (`cov2_total_share`) + Protestant (`cov3`) + log density (`ln_density`)** |
+| Religion control | Catholic share | **Protestant share** (`cov3`) — Catholic is its exact complement (they sum to 1), so only one can ever enter the regression |
+
+**The current col-5 spec never includes "Catholic."** The religion control is **Protestant** (`cov3`); `cov2_total_share` is the **absinthe-trade** share (Milliet purchases), *not* a religion variable. A "+ Catholic" label that appeared in some older inference-table footnotes was a mislabel of the absinthe-trade control — corrected 2026-06-09. See `analysis/documentation/producer_variable_disambiguation.md` and `analysis/documentation/robustness_status.md` for the current spec's full provenance.
+
+---
+
 ## 1. Dataset(s)
 
 > _Name(s), source(s), sample period, N observations, refresh cadence._
@@ -143,6 +159,7 @@ parcels_per_farm_1905    = I.39c "Anzahl Parzellen je Betrieb" 1905 row, by cant
 - **BE/JU handling**: Jura (JU) separated from Bern (BE) in 1979. For the 1908 cross-section, use the combined BE+JU value from HSSO (column C, labeled "BE,JU") and drop the BE-only column (D) and JU-only column (AB). N = 25, not 26.
 - **Vineyard unit choice (frontmatter convention)**: `vineyard_per_cap` is in **hectares per person**, not per 1000 pop. The raw coefficient (~+484 in KEY spec) is mathematically correct but reads as absurd to a non-specialist (no canton has 1 ha/person). The substantive translation is in `t11_magnitudes.tex`: a one-SD increase in `vineyard_per_cap` ≈ 4 pp higher yes-vote; comparing wine-richest Vaud (0.023 ha/person) to no-vineyard Uri predicts ~11 pp higher yes-vote, holding language and religion constant. **Whenever the headline coefficient appears in prose, ALWAYS pair it with a substantive-magnitude sentence drawn from t11.**
 - **Absinthe-canton tiering**: three definitions are computed for robustness. `absinthe_dummy` = NE only (heartland; Pernod 1797–; matches prior analysis). `absinthe_dummy_broad` = NE + VD (incl. Yverdon Kübler & Wyss). `absinthe_dummy_any` = NE + VD + GE (any documented production). Used as robustness in `t12_absinthe_tier.tex`.
+- **⚠️ Producer-variable disambiguation**: the *headline* producer-coalition treatment is **`abs_producer`** (8 cantons; `cov2_total_share>0` = "any Milliet absinthe purchase"; an **absinthe-trade-interest** set — handles/sells, *not* strictly manufacturers) in `cohort_1908_workshop.dta`, reported in `T_producer_cascade`. The `absinthe_dummy*` tiers above are **robustness only** (the manufacturing-heartland ladder). The names collide — `absinthe_dummy` is literally `canton_code=="NE"`, not a generic "produces absinthe" — so always read the realized treated set, not the name. Details: `analysis/documentation/producer_variable_disambiguation.md`. Do not promote the NE-tiers to headline without strategist sign-off.
 - **Language confound — two approaches**: (a) binary subsample (`if french_share < 0.5`, N=20 German-only cantons; in `t05` cols 1-3) — arbitrary 0.5 cutoff; (b) **continuous weighting** (`[aweight = (1-french_share_total)]`, N=25; in `t05` cols 4-5) — preferred because no observations dropped. Both yield the same direction; the continuous version is more defensible.
 - **Naturalization data not yet imported**: HSSO Table B.15 (canton × gender × nationality, 1900) exists in the original Brainstorm-Absinthe data folder but is not in `$Absinthe1Data`. If naturalization shares matter for an interpretation (e.g., immigrant attitudes toward federal temperance), B.15 would need to be added to `01_import.do`.
 - **Verification target**: After conditioning on French/Catholic shares (either denominator), the coefficient on `vineyard_per_cap` should be in [300, 600] positive. With subset denominators p~0.02; with total-pop denominators p~0.06. The bivariate coefficient is negative. Both targets are guarded by `assert` in `04_tables.do`.

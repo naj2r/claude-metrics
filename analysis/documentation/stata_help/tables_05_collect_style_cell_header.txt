@@ -1,0 +1,1173 @@
+collect export — Export table from a collection 183
+
+pdf options
+
+Description
+
+noisily
+dofile(filename[, replace ])
+
+show the putpdf commands used to export to the PDF file
+save the putpdf commands used for exporting to the named
+do-file
+
+excel options
+
+Description
+
+noisily
+dofile(filename[, replace ])
+
+show the putexcel commands used to export to the Excel file
+save the putexcel commands used for exporting to
+the named do-file
+specify the Excel upper-left cell as the starting position to
+export the table; the default is cell(A1)
+modify Excel file
+specify the worksheet to use; the default sheet name
+is Sheet1
+do not open Excel file in memory
+
+cell(cell)
+modify
+sheet(sheetname [, replace ])
+noopen
+noopen does not appear in the dialog box.
+
+tex options
+
+Description
+
+tableonly
+append
+
+export only the table to the specified file
+append to an existing file
+
+smcl option
+
+Description
+
+append
+
+append to an existing file
+
+txt option
+
+Description
+
+append
+
+append to an existing file
+
+md option
+
+Description
+
+append
+
+append to an existing file
+
+collect export — Export table from a collection 184
+
+Options
+Options are presented under the following headings:
+export options
+docx options
+html options
+pdf options
+excel options
+tex options
+smcl option
+txt option
+md option
+
+export options
+name(cname) specifies a collection to export instead of the current collection.
+as(fileformat ) specifies the file format to which the collection is to be exported. This option is rarely
+specified because, by default, collect export determines the format from the suffix of the file being
+created.
+replace permits collect export to overwrite an existing file.
+
+docx options
+noisily specifies that collect export show the putdocx commands used to export to the .docx file.
+dofile(filename[ , replace ]) specifies that collect export save to filename the putdocx commands used to export to the .docx file. If filename already exists, it can be overwritten by specifying
+replace. If filename is specified without an extension, .do is assumed.
+
+html options
+prefix(prefix) specifies that collect export use prefix to identify style classes for the exported HTML
+table.
+cssfile(cssfile) specifies that collect export define the styles in cssfile instead of filename.
+tableonly specifies that only the table be exported to the specified file. With this option, the produced
+file may be included in other HTML documents. By default, collect export produces a complete
+HTML document.
+
+If option cssfile() is not specified, a CSS filename is constructed from filename, with the extension
+replaced with .css.
+append specifies that collect export append the table to an existing file.
+
+This option implies option tableonly.
+If the target CSS file already exists, collect export will also append to it.
+
+pdf options
+noisily specifies that collect export show the putpdf commands used to export to the PDF file.
+
+collect export — Export table from a collection 185
+
+dofile(filename[ , replace ]) specifies that collect export save to filename the putpdf commands
+used to export to the PDF file. If filename already exists, it can be overwritten by specifying replace.
+If filename is specified without an extension, .do is assumed.
+
+excel options
+noisily specifies that collect export show the putexcel commands used to export to the .xls or
+.xlsx file.
+dofile(filename[ , replace ]) specifies that collect export save to filename the putexcel commands used to export to the .xls or .xlsx file. If filename already exists, it can be overwritten by
+specifying replace. If filename is specified without an extension, .do is assumed.
+cell(cell) specifies an Excel upper-left cell as the starting position to publish the table. The default is
+cell(A1).
+modify permits putexcel set to modify an Excel file. For more information about this option, see
+[RPT] putexcel.
+sheet(sheetname [ , replace ]) saves to the worksheet named sheetname. For more information about
+this option, see [RPT] putexcel.
+noopen prevents collect export from using option open in the call to putexcel set.
+
+By default, collect export uses the putexcel set option open to open the Excel file in memory
+for modification. This tends to improve the speed of the export if many cells or style edits are in the
+collection. For more information about the open option, see [RPT] putexcel.
+noopen is necessary only when you need to force collect export to produce do-files as it did when
+collect export was first introduced in Stata 17.
+
+tex options
+tableonly specifies that only the table be exported to the specified file. With this option, the produced
+file may be included in other LATEX documents via the \input or \include macro.
+append specifies that collect export append the table to an existing file.
+
+This option implies option tableonly.
+
+smcl option
+append specifies that collect export append the table to an existing file.
+
+txt option
+append specifies that collect export append the table to an existing file.
+
+md option
+append specifies that collect export append the table to an existing file.
+
+collect export — Export table from a collection 186
+
+Remarks and examples
+Remarks are presented under the following headings:
+Introduction
+Styles for different documents
+Creating more extensive documents
+
+Introduction
+One goal of creating a customized table may be to present your findings to others. With collect
+export, you can export a collection to a variety of file types. For example, after creating a table from
+a collection of results and making styling edits to obtain the look you want, you can export a table from
+the current collection to an Excel file by typing the following:
+. collect export myfile.xlsx
+
+By specifying the .xlsx suffix, we have indicated that we want to export our work to a Microsoft Excel
+file. Equivalently, we could have instead specified the document type as follows:
+. collect export myfile, as(xlsx)
+
+Either way, we would have exported a table from the current collection to the file myfile.xlsx.
+
+Styles for different documents
+The collect suite of commands has many formatting features that can be applied to any collection of
+results, regardless of the document you may be exporting your table to. For example, you may specify the
+numeric formatting for your results or modify the labels for the dimensions. But there are also some style
+specifications that are specific to the type of document you will be exporting to. For example, you can
+use collect style html to specify whether adjacent cell borders should be collapsed in the resulting
+HTML file. If you will be exporting a table to a .docx or .pdf file, you can see collect style putdocx
+and collect style putpdf for some style specifications specific to those types of documents.
+Additionally, you can add a custom table title with collect title and notes with collect notes.
+These commands add the title and notes in plain text, but you can specify the appearance style for the title
+and notes, respectively, with collect style title and collect style notes. Certain appearance
+edits can be rendered only on certain types of documents. For example, you can specify the font size and
+color if you will export your table to a Microsoft Excel, an HTML, or a LATEX file.
+
+Creating more extensive documents
+With collect export, you can export a customized table to the file format of your choice. If you
+are exporting to an HTML, a LATEX, a SMCL, a Markdown, or a plain text file, you can export multiple
+tables to a single file with the append option. But you may want to create documents with more than
+these customized tables.
+For example, when you export a table to an HTML or a LATEX file, collect export creates a complete
+document with the table from the current collection. If you want to incorporate this table in a more
+extensive document, you can use the tableonly option to export just the table to the specified file.
+Additionally, suppose that you wish to export your table to a .docx or .pdf file but you want that
+table to be part of a report that also includes graphs, text, and other results from Stata. By using the
+putdocx and putpdf suites, you can incorporate the customized table in the active document with
+putdocx collect and putpdf collect.
+
+collect export — Export table from a collection 187
+
+Similarly, if you want to create an Excel file with the table from the current collection and other Stata
+results or graphs, you can incorporate the table in the active Excel file by using the collect output type
+with putexcel.
+
+Stored results
+collect export stores the following in s():
+Macros
+s(filename)
+s(collection)
+s(noisily)
+s(dofile)
+s(cssfile)
+
+name of the file
+name of collection
+1 if option noisily specified, 0 otherwise
+name of the new do-file
+name of the new css-file
+
+Also see
+[TABLES] collect style html — Collection styles for HTML files
+[TABLES] collect style putdocx — Collection styles for putdocx
+[TABLES] collect style putpdf — Collection styles for putpdf
+[TABLES] collect style smcl — Collection styles for SMCL files
+[TABLES] collect style tex — Collection styles for LATEX files
+[TABLES] collect style txt — Collection styles for plain text files
+[RPT] putdocx collect — Add a table from a collection to an Office Open XML (.docx) file
+[RPT] putexcel — Export results to an Excel file
+[RPT] putpdf collect — Add a table from a collection to a PDF file
+
+collect style autolevels — Collection styles for automatic dimension levels
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Also see
+
+Description
+collect style autolevels specifies the levels of a dimension that will be automatically displayed
+when the dimension is included in a table.
+
+Quick start
+Display levels lev1, lev2, and lev3 automatically when dimension dim1 is included in the table
+collect style autolevels dim1 lev1 lev2 lev3
+Display coefficients r b and standard errors r se automatically when dimension result is included
+in the table after collecting results from a regression model
+collect style autolevels result _r_b _r_se
+Display means mu 1 and mu 2 and 𝑝-value p automatically when dimension result is included in the
+table, and clear previous automatic results
+collect style autolevels result mu_1 mu_2 p, clear
+Clear automatic levels for dimension result
+collect style autolevels result, clear
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Syntax
+collect style autolevels dim [ levels ] [ , name(cname) clear ]
+
+where cname is a collection name, dim is a dimension in the specified collection, and levels specifies one
+or more levels of this dimension.
+
+Options
+name(cname) specifies a collection cname to which the style is applied. By default, the style is applied
+to the current collection.
+clear removes existing collect style autolevels properties.
+
+188
+
+collect style autolevels — Collection styles for automatic dimension levels 189
+
+Remarks and examples
+collect style autolevels determines the levels of a dimension to be included in a table when
+no levels are specified in collect layout and when no automatic levels were specified using collect
+get or the collect prefix at the time results were collected.
+
+When results are collected using collect get or the collect prefix, no automatic levels are applied to the dimensions in the collection by default.
+When you use the table command to create a table, its results are automatically stored in a collection.
+When the command() option is specified with table, it will run another Stata command and include the
+results in the table. If the specified command is an r-class command, all scalars stored in r() are set as
+automatic levels. If the specified command is an estimation (e-class) command, the reported coefficients
+( r b) are set as automatic levels.
+As an example, we consider results collected from regress. At the time we collect results, we can
+specify automatic levels for the result dimension. For instance, we could type
+. collect _r_b _r_ci: regress y x1 x2
+
+or
+. regress y x1 x2
+. collect get _r_b _r_ci
+
+to specify that the reported coefficients and confidence intervals should be reported in the table.
+However, we may instead collect results without specifying automatic levels. We might type
+. collect: regress y x1 x2
+
+or
+. regress y x1 x2
+. collect get e()
+
+Now, there are no automatic levels for the result dimension. Therefore, if we include this dimension
+in a table layout by typing, for instance,
+. collect layout (colname) (result)
+
+all levels of result with values that can be identified by the colname and result dimensions will be
+included in the table. If we want only the coefficients and confidence intervals in our tables, we can
+specify this with collect layout.
+. collect layout (colname) (result[_r_b _r_ci])
+
+This is convenient enough if we are building a single table. However, if we plan to build multiple tables
+from this collection and we want to display coefficients and confidence intervals in each one, we could
+instead type
+. collect style autolevels result _r_b _r_ci
+
+to specify the automatic levels to be included for this dimension.
+
+collect style autolevels — Collection styles for automatic dimension levels 190
+
+Now, we can simply type
+. collect layout (colname) (result)
+
+to create the desired table.
+Moreover, if we create many similar tables even with different collections of results, we can use
+collect style save to save a file with this autolevels style along with any others we prefer. Then,
+with future collections, we can use collect style use to apply this style to future collections and
+tables.
+
+Stored results
+collect style autolevels stores the following in s():
+Macros
+s(collection)
+s(dimname)
+s(levels)
+
+name of collection
+specified dimension
+specified dimension levels
+
+Also see
+[TABLES] collect get — Collect results from a Stata command
+[TABLES] collect layout — Specify table layout for the current collection
+[TABLES] collect query — Query collection style properties
+[TABLES] collect style save — Save collection styles to disk
+[TABLES] collect style use — Use collection styles from disk
+
+collect style cell — Collection styles for cells
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+References
+
+Syntax
+Also see
+
+Options
+
+Description
+collect style cell specifies the cell appearance styles in the collection. This includes numeric
+formats, borders, bolding, italics, font, text color, cell color, margins, justification, and more. These
+styles can be applied to all cells in the collection, to cells of a particular dimension, or to specific cells of
+a particular dimension. Certain appearance edits can be rendered only on certain export formats.
+
+Quick start
+Use a comma as the delimiter for the upper and lower bounds of confidence intervals
+collect style cell result[_r_ci], cidelimiter(,)
+Set the cell margin for all cells in the collection to 10 points on the left and right
+collect style cell, margin(left right, width(10))
+Format standard errors and coefficients with two decimal places
+collect style cell result[_r_se _r_b], nformat(%8.2f)
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Syntax
+collect style cell [ taglist ] [ , options ]
+
+taglist is a list of tags that identify table cells to which styles are to be applied. Within the taglist, if tags
+are joined by #, cells identified by all of these specified tags are selected; if tags are separated by a space,
+cells identified by any of these tags are selected. If no taglist is specified, styles are applied to all cells.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+191
+
+collect style cell — Collection styles for cells 192
+
+levels are levels of the corresponding dimension.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+options
+
+Description
+
+Main
+
+name(cname)
+basestyle
+[ no ]warn
+
+apply cell appearance styles to collection cname
+update base style
+display or suppress notes about tags that are not recognized;
+default is to display
+
+Borders
+
+border(bspec)
+
+set pattern, color, and width for cell border; option may
+be repeated
+
+Diagonals
+
+dborder(dbspec)
+
+set direction, pattern, and color for cell diagonal border
+
+Fonts
+
+font([ fontfamily ][ , font opts ])
+smcl(smcl)
+latex(latex)
+
+set font style for cell text
+specify formatting for SMCL files
+specify LATEX macro
+
+Shading
+
+shading(sspec)
+
+set background color, foreground color, and fill pattern for cells
+
+Margins
+
+margin(mspec)
+
+set margins for cells; option may be repeated
+
+Alignments
+
+halign(hvalue)
+valign(vvalue)
+
+set horizontal alignment for cells
+set vertical alignment for cells
+
+Formats
+
+nformat(% fmt )
+sformat(sfmt)
+minimum([ # ][ , label(string ) ])
+maximum([ # ][ , label(string ) ])
+empty(string )
+cidelimiter(char)
+cridelimiter(char)
+
+specify numeric format for cell text
+specify string format for cell text
+specify minimum value to report
+specify maximum value to report
+specify text to place in empty cells
+use character as delimiter for confidence interval limits
+use character as delimiter for credible interval limits
+
+font opts
+
+Description
+
+size(# [ unit ])
+color(color)
+variant(variant)
+[ no ]bold
+[ no ]italic
+[ no ]strikeout
+underline(upattern)
+
+specify font size
+specify font color
+specify font variant and capitalization
+specify whether to format text as bold
+specify whether to format text as italic
+specify whether to strike out text
+specify whether to underline text
+
+collect style cell — Collection styles for cells 193
+
+bspec is
+[ borders ] [ , width(bwidth) pattern(bpattern) color(bcolor) ]
+borders specifies one or more border locations and identifies where to apply the border style edits.
+bwidth is defined as # [ unit ] and specifies the border line width. If # is specified without the
+optional unit, points is assumed.
+bpattern is a keyword specifying the look of the border. The default is single. For a complete
+list of border patterns, see Border patterns of [TABLES] Appendix. To remove an existing border,
+specify nil as the bpattern.
+bcolor specifies the border color.
+dbspec is
+direction [ , pattern(dbpattern) color(dbcolor) ]
+direction specifies the diagonal border direction and may be one of down, up, or both.
+dbpattern is a keyword specifying the look of the diagonal border. The default is thin. For a
+complete list of diagonal border patterns, see Diagonal border patterns of [TABLES] Appendix.
+dbcolor specifies the diagonal border line color.
+sspec is
+[ background(bgcolor) foreground(fgcolor) pattern(fpattern) ]
+bgcolor specifies the background color.
+fgcolor specifies the foreground color.
+fpattern specifies the fill pattern. A complete list of fill patterns is shown in Shading patterns of
+[TABLES] Appendix.
+fontfamily specifies a valid font family.
+unit may be in (inch), pt (point), or cm (centimeter). An inch is equivalent to 72 points and 2.54 centimeters. The default is pt.
+variant may be allcaps, smallcaps, or normal.
+variant(allcaps) changes the text to all uppercase letters; applicable when publishing items from
+a collection to Microsoft Word, PDF, LATEX, and HTML files.
+variant(smallcaps) changes the text to use large capitals for uppercase letters and smaller capitals
+for lowercase letters; applicable when publishing items from a collection to Microsoft Word, LATEX,
+and HTML files.
+variant(normal) changes the font variant back to normal and leaves the capitalization unchanged
+from the original text; applicable when publishing items from a collection to Microsoft Word, PDF,
+LATEX, and HTML files.
+bcolor, dbcolor, bgcolor, fgcolor, and color may be one of the colors listed in Colors of [TABLES] Appendix; a valid RGB value in the form ### ### ###, for example, 171 248 103; or a valid RRGGBB
+hex value in the form ######, for example, ABF867.
+
+collect style cell — Collection styles for cells 194
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies a collection cname to which appearance styles are applied.
+basestyle indicates that the appearance styles be applied to the base style, instead of overriding the
+current style for the specified cells.
+
+Each cell begins with baseline style properties. (You can view your table with these baseline style
+properties by first clearing out the collection styles with collect style clear.) The appearance of
+the cells is then updated with any changes specified in the default style used by collect and table.
+Any collect style cell command you issue will override the current style for the specified cells.
+If you specify the basestyle option, the style changes will instead apply to the baseline style and
+they will not override any current style edits targeted to specific tags.
+For example, suppose you have created a table with coefficients, standard errors, 𝑝-values, confidence intervals, and 𝑅2 values. You then format your coefficients to display only two digits after the
+decimal. If you then decide to format all other statistics to display only three digits, you can type
+collect style cell result, basestyle nformat(%9.3f) to apply this change while retaining
+the formatting you applied to the coefficients.
+warn and nowarn control the display of notes when collect encounters a tag it does not recognize.
+The notes are displayed by default unless you used set collect warn off to suppress them. warn
+specifies that collect show the notes. nowarn specifies that collect not show the notes. These
+options override the collect warn setting; see [TABLES] set collect warn.
+
+
+
+
+
+Borders
+
+border([ borders ] [ , width(bwidth) pattern(bpattern) color(bcolor) ]) specifies line styles for
+cell borders. borders specifies one or more border locations and identifies where to apply the border
+style edits. The border locations are left, right, top, bottom, or all. If borders is not specified,
+all is assumed. You may change the width, pattern, and color for the border by specifying bwidth,
+bpattern, and bcolor.
+
+This option may be specified multiple times in a single command to accommodate different border
+settings. If multiple border() options are specified, they are applied in the order specified from
+left to right. Additionally, these border style properties are applicable when publishing items from a
+collection to all file types, except Markdown.
+
+
+
+
+
+Diagonals
+
+dborder(direction [ , pattern(dbpattern) color(dbcolor) ]) specifies line styles for diagonal cell
+borders. The direction of the diagonal border is specified by direction, which may be down, up, or
+both. Optionally, you may change the pattern and color for the border by specifying dbpattern and
+dbcolor.
+
+
+
+These diagonal border style properties are applicable when publishing items from a collection to a
+Microsoft Excel file.
+
+Fonts
+
+font([ fontfamily ] [ , size(# [ unit ]) color(color) variant(variant) [ no ]bold [ no ]italic
+[ no ]strikeout [ no ]underline underline(upattern) ]) specifies the font style for the cell text.
+
+collect style cell — Collection styles for cells 195
+
+These font style properties are applicable when publishing items from a collection to Microsoft Word,
+Microsoft Excel, PDF, LATEX, and HTML files, unless otherwise specified.
+fontfamily specifies a valid font family. This font style property is applicable when publishing items
+from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+size(# [ unit ]) specifies the font size as a number optionally followed by units. If # is specified
+without the optional unit, points is assumed. This font style property is applicable when publishing
+items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+variant(variant) specifies the font variant and capitalization.
+bold and nobold specify the font weight. bold changes the font weight to bold; nobold changes the
+font weight back to normal.
+italic and noitalic specify the font style. italic changes the font style to italic; noitalic
+changes the font style back to normal.
+strikeout and nostrikeout specify whether to add a strikeout mark to the text. strikeout adds
+a strikeout mark to the text; nostrikeout changes the text back to normal.
+
+Only one of strikeout or underline is allowed when publishing to HTML files.
+underline(upattern), underline, and nounderline specify how to underline the text.
+underline(upattern) adds an underline to the text using a specified pattern. upattern may
+be any of the patterns listed in Underline patterns of [TABLES] Appendix. For example,
+underline(none) removes the underline from the text, and underline(single) underlines
+the test. All other upatterns are available only when publishing items from a collection to Microsoft Word.
+
+Only one of strikeout or underline is allowed when publishing to HTML files; underline patterns are not allowed when publishing to HTML files.
+smcl(smcl) specifies how to render cell text for SMCL output. The supported SMCL directives are input,
+error, result, and text. This style property is applicable only when publishing items from a
+collection to a SMCL file.
+latex(latex) specifies the name of a LATEX macro to render cell text for LATEX output. This style property
+is applicable only when publishing items from a collection to a LATEX file.
+
+Example LATEX macro names are textbf, textsf, textrm, and texttt. Custom LATEX macros are
+also allowed. If value is the value for a given cell, then latex is translated to the following when
+exporting to LATEX:
+
+
+
+
+
+\latex {value}
+
+Shading
+
+shading([ background(bgcolor) foreground(fgcolor) pattern(fpattern) ]) sets the background
+color, foreground color, and fill pattern for cells. The background color is applicable when exporting
+the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LATEX files. The foreground color and
+fill pattern are applicable when exporting the table to Microsoft Word and Microsoft Excel.
+
+
+
+
+
+Margins
+
+margin([ margins ] [ , width(# [ unit ]) ]) specifies margins inside the cell.
+
+These margin style properties are applicable when publishing items from a collection to PDF and HTML
+files.
+
+collect style cell — Collection styles for cells 196
+
+margins specifies one or more margin locations and identifies where to apply the margin style edits.
+The margin locations are left, right, top, bottom, and all. If margins is not specified, all is
+assumed.
+width(# [ unit ]) specifies the margin width as a number optionally followed by units.
+
+
+
+
+
+Alignments
+
+halign(hvalue) specifies the horizontal alignment for the cell text. hvalue may be left, center, and
+right.
+
+These alignment style properties are applicable when publishing items from a collection to all file
+types, except Markdown.
+valign(vvalue) specifies the vertical alignment for the cell text. vvalue may be top, bottom, or center.
+
+These alignment style properties are applicable when publishing items from a collection to all file
+types, except Markdown.
+
+
+
+
+
+Formats
+
+nformat(% fmt ) applies the Stata numeric format % fmt to cell text constructed from numeric items.
+sformat(sfmt) applies a string format to cell text. You can, for instance, add symbols or text to the
+values reported in the collection by modifying the string format.
+
+sfmt may contain a mix of text and %s. Here %s refers to the numeric value that is formatted as
+specified using nformat(). The text will be placed around the numeric values in the collection as it
+is placed around %s in this option. For instance, to place parentheses around results, you can specify
+sformat(”(%s)”).
+Two text characters must be specified using a special character sequence if you want them to be
+displayed in your collection. To include %, type %%. To include \, type \\. For instance, to place a
+percent sign after results, you can specify sformat(”%s%%”).
+minimum([ # ][ , label(string ) ]) specifies that numeric items less than # be displayed as “<#”, where
+# is formatted according to nformat().
+
+If suboption label(string) is specified, then “string” is used instead of “<#”. If string contains %s,
+then %s is replaced by # formatted according to nformat().
+If suboption label() is not specified, it effectively defaults to label(”<%s”).
+maximum([ # ][ , label(string ) ]) specifies that numeric items greater than # be displayed as “>#”,
+where # is formatted according to nformat().
+
+If suboption label(string) is specified, then “string” is used instead of “>#”. If string contains %s,
+then %s is replaced by # formatted according to nformat().
+If suboption label() is not specified, it effectively defaults to label(”>%s”).
+empty(string) specifies text to place in empty cells.
+cidelimiter(char) changes the delimiter between confidence interval limits.
+cidelimiter(” ”).
+
+The default is
+
+cridelimiter(char) changes the delimiter between credible interval limits.
+cridelimiter(” ”).
+
+The default is
+
+collect style cell — Collection styles for cells 197
+
+Remarks and examples
+collect style cell allows you to specify the cell appearance styles for tables built from the collection. These styles include the numeric format for results, borders around cells, font, and much more.
+If you do not specify a tag, your appearance style will be applied to all cells in the table, including those
+in the body of the table and the headers.
+
+Stored results
+collect style cell stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+References
+Huber, C. 2021a. Customizable tables in Stata 17, part 2: The new collect command. The Stata Blog: Not Elsewhere
+Classified. https://blog.stata.com/2021/06/07/customizable-tables-in-stata-17-part-2-the-new-collect-command/.
+———. 2021b. Customizable tables in Stata 17, part 3: The classic table 1. The Stata Blog: Not Elsewhere Classified.
+https://blog.stata.com/2021/06/24/customizable-tables-in-stata-17-part-3-the-classic-table-1/.
+
+Also see
+[TABLES] collect query — Query collection style properties
+[TABLES] collect style column — Collection styles for column headers
+[TABLES] collect style row — Collection styles for row headers
+
+collect style clear — Clear all collection styles
+
+Description
+collect style clear clears all collection styles defined in the current (active) collection, including
+the default style, and specifies that collect use an empty style.
+
+Syntax
+collect style clear
+
+Remarks and examples
+collect style clear clears all collection styles defined in the current collection, including the
+default style, and specifies that collect use an empty style. Note that this command does not affect the
+styles for other collections you have in memory. This command is rarely used because a table produced
+using the empty style will typically need many style edits to be complete. For instance, with the empty
+style, a table will display the title for each dimension, which is typically not needed.
+
+If you are in the process of creating a table and have made several changes to the appearance style but
+you wish to return to the default style, you can load the default style with collect style use.
+
+Stored results
+collect style clear stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Also see
+[TABLES] collect style use — Use collection styles from disk
+
+198
+
+collect style column — Collection styles for column headers
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+Reference
+
+Syntax
+Also see
+
+Options
+
+Description
+collect style column specifies column header style properties. collect style column determines how factor variables are displayed in column headers, how duplicates are reported, whether headers are filled from top to bottom or from bottom to top, and the width and spacing of columns.
+
+Quick start
+Specify that repeating headers be displayed only once and centered horizontally
+collect style column, dups(center)
+Same as above, and set all the columns to have the same width
+collect style column, dups(center) width(equal)
+Use an x to delimit interaction terms
+collect style column, delimiter(” x ”)
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+199
+
+collect style column — Collection styles for column headers 200
+
+Syntax
+collect style column [ , options ]
+
+options
+
+Description
+
+Main
+
+name(cname)
+nodelimiter
+delimiter(delim)
+atdelimiter(atdelim)
+bardelimiter(bardelim)
+binder(binder)
+dups(dups)
+position(colpos)
+
+specify column header styles for collection cname
+place factor-variable and interaction elements in separate
+cells without a delimiter
+use delim to delimit interaction terms composed
+in a single cell
+use atdelim to delimit interaction terms containing
+the @ symbol
+use bardelim to delimit interaction terms containing
+the | symbol
+use binder to separate factor variables from their levels
+specify how duplicate headers are displayed
+specify the position of the column header to be filled first
+
+SMCL/Text
+
+extraspace(#)
+width(widthspec)
+
+specify the number of extra spaces between columns in
+SMCL and plain text
+specify how to distribute column widths
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection to which column header style properties are to be applied. By
+default, properties are applied to the current collection.
+nodelimiter, delimiter(), atdelimiter(), and bardelimiter() control how to compose factorvariable and interaction terms in headers.
+nodelimiter specifies that factor-variable and interaction term elements (matrix stripe elements) be
+split into separate cells.
+delimiter(delim) specifies that factor-variable and interaction term elements (matrix stripe elements) be composed in a single cell.
+
+The variables in an interaction term are composed in a single cell using delim as the delimiter.
+Factor-variable terms serve as their own dimension nested within the stripe dimensions coleq,
+colname, roweq, and rowname. Option binder() controls how levels of factor variables are
+composed within a single cell.
+atdelimiter(atdelim) specifies that atdelim be used to delimit interaction terms containing the @
+symbol. This option is applicable when, for example, working with results from contrast, mean,
+proportion, ratio, and total.
+bardelimiter(bardelim) specifies that bardelim be used to delimit interaction terms containing the
+| symbol. This option is applicable when, for example, working with results from anova and
+manova.
+
+collect style column — Collection styles for column headers 201
+
+binder(binder) specifies how to compose levels of factor variables within a single cell. binder will be
+used to separate factor variables from their levels.
+
+The binder will be applied as long as the factor variable and its levels are not hidden. Note that the
+default style used by collect, which is style-default.stjson, will hide the dimension title from
+the headers. You can use collect style header to specify whether to display the label or name for
+a dimension and whether to display the label or value for the level of a dimension.
+dups(dups) controls how to handle duplicate header elements. dups is one of repeat, first, or
+center.
+dups(repeat), the default, specifies that collect repeat duplicate header elements.
+dups(first) specifies that collect hide all duplicate header elements, except the first.
+dups(center) specifies that collect horizontally center duplicate header elements, where the
+header element spans the duplicate header cell locations. When this style is not supported, such as
+when exporting to Markdown, dups(first) is used instead.
+position(colpos) specifies how column headers are filled in when one or more levels of a dimension
+occupy more than one cell. This option is used when factor variables are displayed in the column
+headers. colpos may be top or bottom.
+position(top) is the default and specifies that collect fill in column headers starting with the
+topmost cell. This will result in some empty cells on the bottom for unbalanced column dimensions.
+position(bottom) specifies that collect shift the column header cells to the bottom so that the
+cells in the last row are all filled in. This will result in some empty cells on the top for unbalanced
+column dimensions.
+
+
+
+
+
+SMCL/Text
+
+extraspace(#) specifies extra spaces to pad columns when exporting to SMCL and plain text. The first
+and middle columns get # extra spaces added on both sides. The last column gets # extra spaces added
+on the left. The default is extraspace(0).
+width(widthspec) specifies how to distribute the column widths for the items. Row header widths are
+not affected by this option.
+width(asis), the default, specifies that column widths be determined separately, with each column
+being as wide as necessary to accommodate the widest cell contents within that column.
+width(equal) specifies that the item column widths all be equal to the widest cell contents among
+the items and column headers in all columns.
+
+Remarks and examples
+collect style column determines how factor variables are displayed in column headers, how duplicates are reported, whether headers are filled from top to bottom or from bottom to top, and the width
+and spacing of columns.
+
+In the following examples, we explore some styles for column headers that may be of interest when
+working with factor variables and interactions.
+
+collect style column — Collection styles for column headers 202
+
+Example 1: Working with factor variables
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES II)
+(McDowell et al. 1981). We begin by fitting a model for systolic blood pressure as a function of agegrp.
+We collect the coefficients ( r b) and use the quietly prefix to suppress the output. Then, we arrange the items in our collection with collect layout. We place the variable names (colname) on the
+columns and the statistics (result) on the rows:
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect _r_b: regress bpsystol i.agegrp
+. collect layout (result) (colname)
+Collection: default
+Rows: result
+Columns: colname
+Table 1: 1 x 7
+Age group Age group Age group Age group Age group Age group Intercept
+20--29
+30--39
+40--49
+50--59
+60--69
+70+
+Coefficient
+
+0
+
+2.89081
+
+9.597631
+
+18.32889
+
+24.17618
+
+30.82992
+
+117.3466
+
+Instead of having the repeated header for agegrp, let’s specify that it be displayed only once and
+centered horizontally across the columns it applies to. Then, we will get a preview of our table:
+. collect style column, dups(center)
+. collect preview
+20--29
+Coefficient
+
+30--39
+
+Age group
+40--49
+50--59
+
+60--69
+
+70+
+
+0 2.89081 9.597631 18.32889 24.17618 30.82992
+
+Intercept
+117.3466
+
+Example 2: Working with interactions
+When working with models that contain interactions, you may want to specify the delimiter for the
+interaction terms. For example, below we create a new collection called interaction, which then becomes the current collection. Then, we fit a model with an interaction between race and sex, collecting
+only the coefficients. To keep the table from becoming too wide, we use collect style cell to format the coefficients to display only two digits after the decimal, and we suppress the display of the base
+levels.
+. collect create interaction
+(current collection is interaction)
+. quietly: collect _r_b: regress bpsystol sex##race
+. collect style cell, nformat(%6.2f)
+. collect style showbase off
+
+collect style column — Collection styles for column headers 203
+
+Then, we specify the same layout as we did in the previous example:
+. collect layout (result) (colname)
+Collection: interaction
+Rows: result
+Columns: colname
+Table 1: 1 x 6
+Sex Race Race
+Sex
+Sex Intercept
+Female Black Other Female Female
+Race
+Race
+Black Other
+Coefficient
+
+-4.32
+
+0.84 -2.18
+
+4.48
+
+0.37
+
+132.85
+
+Instead of having the levels of sex and race in separate cells, we may prefer to place them in a single
+cell, delimited by an x. We make that change below and center the results horizontally:
+. collect style column, delimiter(” x ”)
+. collect style cell result, halign(center)
+. collect preview
+Female Black Other Female x Black Female x Other Intercept
+Coefficient
+
+-4.32
+
+0.84 -2.18
+
+4.48
+
+0.37
+
+132.85
+
+One last thing we can do to make this table even better would be to set the columns to have equal
+widths. Currently, the width of each column is determined by its contents. We will not make the change
+here, because it would make the table wrap. But you can experiment by adding the width(equal) option
+to the collect style column command from above.
+
+Example 3: Binders for factor variables and their levels
+For some tables, you may want to present the label for the factor variable and its level in a single cell.
+For example, in example 1 we may have wanted to display Age group: 20-29, Age group: 30-39, and
+such. To make this change, you may be tempted to simply type
+. collect style column, binder(”:”)
+
+However, you will not see the change applied, because dimension titles are hidden with the default style
+used by collect. Factor variables are treated as their own dimension, so you will not see the title for the
+factor variables. To obtain headers such as Age group: 20-29, first we make the collection default the
+current collection. (Our first example was executed in the collection called default.) Then, we need to
+specify that we want to see the title for the age group dimension; specifically, we want to see its label.
+Then, we can get a preview of the table.
+. collect set default
+. collect style column, binder(”:”)
+. collect style header agegrp, title(label)
+. collect preview
+
+We do not include the output here, because the resulting table is rather wide. However, you can run
+these commands to view the resulting table.
+
+collect style column — Collection styles for column headers 204
+
+Stored results
+collect style column stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect query — Query collection style properties
+[TABLES] collect style header — Collection styles for hiding and showing header components
+[TABLES] collect style row — Collection styles for row headers
+
+collect style cons — Collection styles for intercept position
+Description
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Option
+Also see
+
+Description
+collect style cons specifies the position of the intercept for estimation results included in tables.
+The intercept may be placed at the end of the list of covariates or at the beginning.
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Syntax
+collect style cons { first | last } [ , name(cname) ]
+
+where cname is a collection name.
+
+Option
+name(cname) specifies a collection cname to which the style for the intercept position is applied. By
+default, the style is applied to the current collection.
+
+Remarks and examples
+collect style cons specifies whether the intercept is displayed at the beginning of the list of
+covariates or at the end of the list of covariates. This appearance style is applicable when the results of
+estimation commands are included in the table produced by collect.
+
+For example, we have data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). Below, we fit a simple model with a single independent variable, and we collect the coefficients ( r b). We use the quietly prefix to suppress the output. Then,
+we arrange the results with the variable names on the rows and the statistics (result) on the columns:
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect _r_b: regress bpsystol bmi
+. collect layout (colname) (result)
+Collection: default
+Rows: colname
+Columns: result
+Table 1: 2 x 1
+Coefficient
+Body mass index (BMI)
+Intercept
+
+1.656894
+88.56855
+
+205
+
+collect style cons — Collection styles for intercept position 206
+
+Here we see that by default the intercept is displayed at the end of the list of covariates. Below, we
+specify that we want it listed first, and then we get a preview of the table:
+. collect style _cons first
+. collect preview
+Coefficient
+Intercept
+Body mass index (BMI)
+
+88.56855
+1.656894
+
+Stored results
+collect style cons stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect query — Query collection style properties
+[TABLES] collect style cell — Collection styles for cells
+
+

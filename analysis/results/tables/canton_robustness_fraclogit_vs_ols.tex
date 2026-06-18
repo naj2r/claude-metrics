@@ -1,0 +1,37 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Fraclogit AME vs OLS at cascade col 5 (4 wine variants) \label{tab:flvsols}}
+\begin{tabular}{l*{8}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}&\multicolumn{1}{c}{(7)}&\multicolumn{1}{c}{(8)}\\
+            &\multicolumn{1}{c}{OLS X1}&\multicolumn{1}{c}{FL X1}&\multicolumn{1}{c}{OLS X2}&\multicolumn{1}{c}{FL X2}&\multicolumn{1}{c}{OLS X3}&\multicolumn{1}{c}{FL X3}&\multicolumn{1}{c}{OLS X4}&\multicolumn{1}{c}{FL X4}\\
+            &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   \\
+\midrule
+X1          &       0.148   &       0.002   &               &               &               &               &               &               \\
+            &     (0.337)   &     (0.002)   &               &               &               &               &               &               \\
+X2\_share    &               &               &       0.449   &       0.004*  &               &               &               &               \\
+            &               &               &     (0.364)   &     (0.002)   &               &               &               &               \\
+X3\_share    &               &               &               &               &       0.459   &       0.004** &               &               \\
+            &               &               &               &               &     (0.349)   &     (0.002)   &               &               \\
+X1\_share    &               &               &               &               &               &               &       0.325   &       0.003   \\
+            &               &               &               &               &               &               &     (0.418)   &     (0.003)   \\
+cov1        &      -0.201** &               &      -0.225** &               &      -0.242** &               &      -0.196** &               \\
+            &     (0.080)   &               &     (0.090)   &               &     (0.103)   &               &     (0.071)   &               \\
+cov2\_total\_share&      -0.244   &               &      -0.205   &               &      -0.179   &               &      -0.241   &               \\
+            &     (0.145)   &               &     (0.391)   &               &     (0.341)   &               &     (0.224)   &               \\
+cov3        &      -0.044   &               &      -0.029   &               &      -0.040   &               &      -0.019   &               \\
+            &     (0.064)   &               &     (0.068)   &               &     (0.070)   &               &     (0.072)   &               \\
+cov\_land    &       1.764   &               &       2.180   &               &       2.145   &               &       2.544   &               \\
+            &     (2.027)   &               &     (3.030)   &               &     (2.944)   &               &     (2.957)   &               \\
+ln\_pop\_1900 &               &               &      -2.077   &               &      -1.822   &               &      -2.378   &               \\
+            &               &               &     (3.090)   &               &     (3.030)   &               &     (3.363)   &               \\
+\_cons      &      57.938***&               &      77.493***&               &      75.509***&               &      78.157** &               \\
+            &    (13.443)   &               &    (26.212)   &               &    (25.121)   &               &    (28.935)   &               \\
+\midrule
+N           &          25   &          25   &          25   &          25   &          25   &          25   &          25   &          25   \\
+R-squared   &       0.583   &               &       0.619   &               &       0.624   &               &       0.601   &               \\
+RMSE        &       8.475   &               &       8.327   &               &       8.269   &               &       8.518   &               \\
+\bottomrule
+\multicolumn{9}{l}{\footnotesize Cascade col 5 (full controls).  OLS HC3 robust SEs.  FL = fracreg logit average marginal effects via margins (sandwich SEs).  FL columns show only the wine-treatment AME because margins, dydx(${X\_spec`k'}) post stores only that variable.}\\
+\end{tabular}
+\end{table}

@@ -1,0 +1,4956 @@
+STATA CUSTOMIZABLE TABLES
+AND COLLECTED RESULTS
+REFERENCE MANUAL
+RELEASE 19
+
+®
+
+A Stata Press Publication
+StataCorp LLC
+College Station, Texas
+
+®
+
+Copyright © 1985–2025 StataCorp LLC
+All rights reserved
+Version 19
+
+Published by Stata Press, 4905 Lakeway Drive, College Station, Texas 77845
+ISBN-10: 1-59718-447-0
+ISBN-13: 978-1-59718-447-2
+This manual is protected by copyright. All rights are reserved. No part of this manual may be reproduced, stored in a
+retrieval system, or transcribed, in any form or by any means—electronic, mechanical, photocopy, recording, or otherwise—without the prior written permission of StataCorp LLC unless permitted subject to the terms and conditions of
+a license granted to you by StataCorp LLC to use the software and documentation. No license, express or implied, by
+estoppel or otherwise, to any intellectual property rights is granted by this document.
+StataCorp provides this manual “as is” without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. StataCorp may make improvements
+and/or changes in the product(s) and the program(s) described in this manual at any time and without notice.
+The software described in this manual is furnished under a license agreement or nondisclosure agreement. The software
+may be copied only in accordance with the terms of the agreement. It is against the law to copy the software onto DVD,
+CD, disk, diskette, tape, or any other medium for any purpose other than backup or archival purposes.
+The automobile dataset appearing on the accompanying media is Copyright © 1979 by Consumers Union of U.S., Inc.,
+Yonkers, NY 10703-1057 and is reproduced by permission from CONSUMER REPORTS, April 1979.
+Stata,
+
+, Stata Press, Mata,
+
+, NetCourse, and NetCourseNow are registered trademarks of StataCorp LLC.
+
+Stata and Stata Press are registered trademarks with the World Intellectual Property Organization of the United Nations.
+StataNow is a trademark of StataCorp LLC.
+Other brand and product names are registered trademarks or trademarks of their respective companies.
+For copyright information about the software, type help copyright within Stata.
+
+The suggested citation for this software is
+StataCorp. 2025. Stata 19. Statistical software. StataCorp LLC.
+The suggested citation for this manual is
+StataCorp. 2025. Stata 19 Customizable Tables and Collected Results Reference Manual. College Station, TX: Stata
+Press.
+
+www.stata.com
+
+Contents
+Intro . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Introduction
+Intro 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . How to read this manual
+Intro 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . A tour of concepts and commands
+Intro 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Workflow outline
+Intro 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Overview of commands
+Intro 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Other tabulation commands
+
+1
+6
+7
+53
+56
+62
+
+Tables Builder . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Tables Builder
+
+63
+
+collect get . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collect results from a Stata command
+collect unget . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Remove results from a collection
+
+78
+87
+
+collect addtags . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Add tags to items in a collection
+collect clear . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Clear all collections in memory
+collect combine . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Combine collections
+collect composite . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Manage composite results in a collection
+collect copy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Copy a collection
+collect create . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Create a new collection
+collect dims . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . List dimensions in a collection
+collect dir . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Display names of all collections in memory
+collect drop . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Drop collections from memory
+collect label . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Manage custom labels in a collection
+collect levelsof . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . List levels of a dimension
+collect notes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Add table notes in a collection
+collect query . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Query collection style properties
+collect recode . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Recode dimension levels in a collection
+collect remap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Remap tags in a collection
+collect rename . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Rename a collection
+collect save . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Save a collection to disk
+collect set . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Set the current (active) collection
+collect stars . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Add stars for significant results in a collection
+collect title . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Add a custom table title in a collection
+collect use . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Use a collection from disk
+
+91
+96
+97
+100
+109
+110
+111
+114
+115
+117
+123
+125
+137
+146
+150
+155
+157
+159
+161
+168
+170
+
+collect layout . . . . . . . . . . . . . . . . . . . . . . . . . . . . Specify table layout for the current collection 173
+collect preview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Preview the table in a collection 179
+collect export . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Export table from a collection 181
+collect style autolevels . . . . . . . . . . . . . . . . . . . Collection styles for automatic dimension levels
+collect style cell . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for cells
+collect style clear . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Clear all collection styles
+collect style column . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for column headers
+collect style cons . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for intercept position
+collect style header . . . . . . . . . . . . Collection styles for hiding and showing header components
+collect style html . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for HTML files
+collect style notes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for table notes
+collect style putdocx . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for putdocx
+collect style putpdf . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for putpdf
+i
+
+188
+191
+198
+199
+205
+207
+212
+214
+219
+223
+
+Contents ii
+
+collect style row . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for row headers
+collect style save . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Save collection styles to disk
+collect style showbase . . . . . . . . . . . . . . . . . . . . . . . Collection styles for displaying base levels
+collect style showempty . . . . . . . . . . . . . . . . . . . . . . Collection styles for displaying empty cells
+collect style showomit . . . . . . . . . . . . . . . . Collection styles for displaying omitted coefficients
+collect style smcl . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for SMCL files
+collect style table . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for table headers
+collect style tex . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for LATEX files
+collect style title . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for table titles
+collect style txt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Collection styles for plain text files
+collect style use . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Use collection styles from disk
+Appendix . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Appendix
+
+226
+235
+237
+240
+243
+245
+247
+251
+253
+258
+260
+264
+
+Collection principles . . . . . . . . . . . . . Tags, dimensions, levels, and layout from first principles 267
+Predefined styles . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Predefined collection styles 283
+set collect double . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Storage type settings for collections
+set collect label . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Label settings for collections
+set collect style . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Style settings for collections
+set collect warn . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Warning settings for collections
+set dtable style . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Default style settings for dtable
+set etable style . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Default style settings for etable
+set table style . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Default style settings for table
+set tabulate style . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Default style settings for tabulate
+
+309
+310
+312
+313
+314
+315
+316
+317
+
+Example 1
+Example 2
+Example 3
+Example 4
+Example 5
+Example 6
+Example 7
+Example 8
+
+319
+325
+328
+334
+338
+341
+349
+352
+
+. . . . . . . . . . . . . . . . . . . . . . . . Table of means, standard deviations, and correlations
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Table of medians and rank-sum test results
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Table of comparative summary statistics
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Table of 𝑡 test results
+. . . . . . . . . . . . . . . . . . . . . Table of regression coefficients and confidence intervals
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Table comparing regression results
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Table of regression results using survey data
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Tables for ANOVA
+
+Glossary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+354
+
+Subject and author index . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+356
+
+Cross-referencing the documentation
+When reading this manual, you will find references to other Stata manuals, for example,
+[U] 27 Overview of Stata estimation commands; [R] regress; and [D] reshape. The first example
+is a reference to chapter 27, Overview of Stata estimation commands, in the User’s Guide; the second
+is a reference to the regress entry in the Base Reference Manual; and the third is a reference to the
+reshape entry in the Data Management Reference Manual.
+All the manuals in the Stata Documentation have a shorthand notation:
+[GSM]
+[GSU]
+[GSW]
+[U]
+[R]
+[ADAPT]
+[BAYES]
+[BMA]
+[CAUSAL]
+[CM]
+[D]
+[DSGE]
+[ERM]
+[FMM]
+[FN]
+[G]
+[H2OML]
+[IRT]
+[LASSO]
+[XT]
+[META]
+[ME]
+[MI]
+[MV]
+[PSS]
+[P]
+[RPT]
+[SP]
+[SEM]
+[SVY]
+[ST]
+[TABLES]
+[TS]
+[I]
+
+Getting Started with Stata for Mac
+Getting Started with Stata for Unix
+Getting Started with Stata for Windows
+Stata User’s Guide
+Stata Base Reference Manual
+Stata Adaptive Designs: Group Sequential Trials Reference Manual
+Stata Bayesian Analysis Reference Manual
+Stata Bayesian Model Averaging Reference Manual
+Stata Causal Inference and Treatment-Effects Estimation Reference Manual
+Stata Choice Models Reference Manual
+Stata Data Management Reference Manual
+Stata Dynamic Stochastic General Equilibrium Models Reference Manual
+Stata Extended Regression Models Reference Manual
+Stata Finite Mixture Models Reference Manual
+Stata Functions Reference Manual
+Stata Graphics Reference Manual
+Machine Learning in Stata Using H2O: Ensemble Decision Trees Reference Manual
+Stata Item Response Theory Reference Manual
+Stata Lasso Reference Manual
+Stata Longitudinal-Data/Panel-Data Reference Manual
+Stata Meta-Analysis Reference Manual
+Stata Multilevel Mixed-Effects Reference Manual
+Stata Multiple-Imputation Reference Manual
+Stata Multivariate Statistics Reference Manual
+Stata Power, Precision, and Sample-Size Reference Manual
+Stata Programming Reference Manual
+Stata Reporting Reference Manual
+Stata Spatial Autoregressive Models Reference Manual
+Stata Structural Equation Modeling Reference Manual
+Stata Survey Data Reference Manual
+Stata Survival Analysis Reference Manual
+Stata Customizable Tables and Collected Results Reference Manual
+Stata Time-Series Reference Manual
+Stata Index
+
+[M]
+
+Mata Reference Manual
+
+iii
+
+Intro — Introduction
+Description
+Reference
+
+Remarks and examples
+
+Acknowledgments
+
+Description
+This is the [TABLES] manual. What is surprising is that, used alone, the commands in this manual
+cannot create a table. The tables created here are all based on results collected from other commands,
+commands not documented in this manual, commands like regress, margins, bayes, ttest, mi, mean,
+table, and so on.
+This manual documents the commands that collect results from other commands; lay out those results
+into one-way, two-way, or multiway tables; customize the headers of those tables; change the appearance
+of the results; and export the tables to Microsoft Word, Microsoft Excel, PDF, HTML, LATEX, SMCL, or
+Markdown.
+We call the collected results from one or more commands collections. The purpose of this manual is
+to explain how to create collections, manage collections, create tables from collections, and export those
+tables.
+For more details about how to create tables step by step, see Mitchell (2025).
+
+Remarks and examples
+Remarks are presented under the following headings:
+What is in this manual?
+What are collections?
+Do you need collections?
+The dtable and etable commands
+The table command
+
+What is in this manual?
+Presenting results is the final step for most research, and a major part of presenting results is creating
+effective tables.
+
+1
+
+Intro — Introduction 2
+
+Here are some tables created with the collection system:
+. use https://www.stata-press.com/data/r19/nhanes2l
+. table ...
+...
+...
+...
+. collect layout ...
+. collect preview
+Male
+
+Female
+
+Diabetes status
+Not diabetic
+Diabetic
+
+4698.0
+217.0
+
+(95.6)
+(4.4)
+
+5152.0
+282.0
+
+(94.8)
+(5.2)
+
+Age, mean (sd)
+BMI, mean (sd)
+
+47.4
+25.5
+
+(17.2)
+(4.0)
+
+47.7
+25.6
+
+(17.3)
+(5.6)
+
+Health status
+Excellent
+Very good
+Good
+Fair
+Poor
+
+1252.0
+1213.0
+1340.0
+722.0
+382.0
+
+(25.5)
+(24.7)
+(27.3)
+(14.7)
+(7.8)
+
+1155.0
+1378.0
+1598.0
+948.0
+347.0
+
+(21.3)
+(25.4)
+(29.5)
+(17.5)
+(6.4)
+
+Systolic BP, mean (sd)
+
+132.9
+
+(21.0)
+
+129.1
+
+(25.1)
+
+. use https://www.stata-press.com/data/r19/nhanes2l
+. collect: ...
+...
+...
+...
+. collect layout ...
+. collect preview
+
+Age (years)
+Odds ratio
+SE
+Weight (kg)
+Odds ratio
+SE
+Female
+Odds ratio
+SE
+Intercept
+Odds ratio
+SE
+
+NE
+
+MW
+
+Region
+S
+
+W
+
+All
+
+1.07
+(0.01)
+
+1.06
+(0.01)
+
+1.06
+(0.01)
+
+1.06
+(0.01)
+
+1.06
+(0.00)
+
+1.03
+(0.01)
+
+1.03
+(0.01)
+
+1.02
+(0.01)
+
+1.02
+(0.01)
+
+1.03
+(0.00)
+
+1.93
+(0.44)
+
+1.41
+(0.27)
+
+1.48
+(0.26)
+
+1.25
+(0.25)
+
+1.48
+(0.15)
+
+0.00
+(0.00)
+
+0.00
+(0.00)
+
+0.00
+(0.00)
+
+0.00
+(0.00)
+
+0.00
+(0.00)
+
+This manual is a little bit about the collect: prefix. It is a lot about the
+...
+...
+...
+
+you saw above in the command listings.
+
+Intro — Introduction 3
+
+What are collections?
+Collections are the collected results from one or more commands. They contain every result stored by
+the commands. They also contain labels for everything in the collection. Some labels are system default
+labels such as “Coefficient” for regression coefficients or 𝜒2 for chi-squared statistics. Some labels come
+from you and your dataset. If the collected commands reference variables, such as regression coefficients,
+the variables will be labeled with the variable labels from the dataset. If the collected commands use
+categorical variables that are value labeled, those labels become part of the collection.
+Collections also contain styles. Styles determine how everything looks on the tables you create. Styles
+determine how row and column headers are composed. Styles determine what numeric format is used.
+Styles determine whether text is bolded, italicized, colored, etc. When you create a collection, it will
+have the default system styles unless you specified that it start from a set of styles you previously saved.
+You have great control over which values or labels are affected by styles. You can choose an overall
+numeric format for all values or a custom numeric format for coefficients, their standard errors, and their
+confidence intervals. All of this while using a different format for their 𝑧 statistics and a yet different
+format for their 𝑝-values. And the control can be even finer still. You can choose to have all coefficient
+statistics for the variable weight highlighted by giving their cells a light-blue background.
+You can modify anything in a collection. You can modify any label. You can modify any style.
+You cannot modify values. Those were produced by your commands, and they are sacrosanct. You
+can modify anything that identifies, labels, formats, or presents those values.
+You reference everything stored in a collection using tags. Those tags are created automatically for
+you when you collect results. You can also specify additional tags while collecting, and you can even
+remap tags in a collection. Tags are organized into groupings called dimensions; this organization makes
+it easier to specify what you want on the rows and columns of your tables.
+For an illustrative look “under the hood” of the collection system, see Mitchell (2025, chap. 5).
+
+Do you need collections?
+There are three primary reasons you may need collections.
+1. You want to create a table showing the results from more than one command.
+2. You want to customize how a table looks—layout, headers, numeric formats, bolding, italics,
+colors, etc.
+3. You want to present your results in Microsoft Word, Microsoft Excel, PDF, HTML, LATEX, SMCL,
+or Markdown.
+Other commands in Stata are built for creating specific kinds of tables from data. Conversely, collections do not create results from data. They give you a framework to format the results you have collected
+from other commands.
+Collecting results is easy; simply prefix almost any command with collect:, or type collect get
+after the command has run. You have created a collection. Every time you type collect: or collect
+get again, you are adding to a collection.
+
+Intro — Introduction 4
+
+The dtable and etable commands
+The collection system was designed to give you the flexibility to create a table specific to your style
+and needs. However, there are certain tables that are used so commonly that they necessitated their own
+special commands. These commands are dtable and etable, and they are designed for creating and
+exporting tables all in a single step, without any knowledge of the commands in this manual.
+dtable is designed to create a table of descriptive statistics, such as summary statistics for continuous
+and categorical variables, summary statistics for groups of your data, and tests of equality. etable is
+designed to create a table of estimation results, from one or more models. You can use it to create a table
+with the active estimation results, results from a preceding margins command, or results you stored with
+estimates store.
+
+Both dtable and etable allow you to create a table complete with a title and notes, and export it
+to Microsoft Word, Microsoft Excel, PDF, HTML, LATEX, SMCL, or Markdown. Additionally, they automatically store the results in a collection, allowing you to customize the table further with the collect
+suite of commands. To learn more, see [R] dtable and [R] etable.
+If your goal is to create a table with a combination of estimation results, summary statistics, and other
+results, you will benefit from learning about the table command below.
+
+The table command
+Stata has a couple of different commands that produce tabular results. If your intent is to summarize
+data to understand them, you may need only these commands and not need collections. However, if you
+want to customize the layout and appearance of the results from these commands, you will need to collect
+their results.
+The table command is unique in that it creates a stunningly large range of tables and stores the results
+in a collection. If you came here to do any of the following things, you should begin with the table
+command:
+• One-way tabulations of frequencies, percentages, and proportions
+• Two-way tabulations of frequencies, percentages, and proportions
+• Multiway tabulations of frequencies, percentages, and proportions
+• One-way, two-way, and multiway tables of summary statistics
+• Tables of hypothesis tests
+• Tables of regression results (this includes the possibility of multiple regression commands)
+• Combinations of the above
+If you want to customize the results of table or export them, simply start with a table command,
+and then use any of the collection commands in this manual to customize and export the results. You
+may find that you need to combine the results of several table commands to create a collection with
+all the results you need on a table. You can do that by using collect combine or the append option
+of table. You can even combine the results from the table command with other commands such as
+regression commands, lincom, nlcom, ttest, margins, and more.
+
+Intro — Introduction 5
+
+Acknowledgments
+We are grateful to the authors of community-contributed commands for creating and exporting tables.
+We thank John Luke Gallup of Portland State University for outreg; Ian Watson, freelance researcher
+and of the University of New South Wales, for tabout; Ben Jann of the University of Bern for estout;
+Roy Wada of the Boston Public Health Commission for outreg2; Attaullah Shah of the Institute of
+Management Sciences for asdoc; and many more for their previous and ongoing contributions to Stata’s
+reporting capabilities.
+
+Reference
+Mitchell, M. N. 2025. Create and Export Tables Using Stata. College Station, TX: Stata Press.
+
+Intro 1 — How to read this manual
+
+Description
+A brief overview of the manual and suggested reading order.
+
+Remarks and examples
+If you are new to collections, read almost all the intros in order. In particular, read these intros in
+order:
+[TABLES] Intro
+[TABLES] Intro 1
+[TABLES] Intro 2
+[TABLES] Intro 3
+
+Introduction
+How to read this manual (this entry)
+A tour of concepts and commands
+Workflow outline
+
+[TABLES] Intro 3 also serves as a reference. The workflow is both a workflow and an overview of
+the commands within that workflow.
+We did not list [TABLES] Intro 4 and [TABLES] Intro 5 for immediate reading. If you would like to
+see all the commands organized by their function, then read
+[TABLES] Intro 4
+
+Overview of commands
+
+Finally, to see a list of all the tabulation commands that we do not address in this manual, see
+[TABLES] Intro 5
+
+Other tabulation commands
+
+A few of the commands listed here return some of their results, but not their tabulations, in r(), and
+those results can be collected.
+After reading the introduction entries on the reading list, you will be ready to start any tables project.
+You will need the remaining entries as reference.
+
+Also see
+[TABLES] Intro 2 — A tour of concepts and commands
+[TABLES] Intro 3 — Workflow outline
+
+6
+
+Intro 2 — A tour of concepts and commands
+Description
+
+Remarks and examples
+
+Also see
+
+Description
+There is one key concept on which the collection system is built—tags.
+In this entry, we introduce tags and how they are created and used by the collect commands. Along
+the way, we will introduce several of the most important collect commands. Our focus here is on
+concepts and general features. We will not attempt to cover everything. See [TABLES] Intro 3 for the
+quickest overview of the features.
+We make no attempt in this entry to create pretty or interesting tables. Our sole purpose is to introduce
+concepts and commands.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Tags, dimensions, and levels
+Introducing collect:
+Introducing collect layout
+Introducing collect recode
+Using collect layout
+Selecting specific levels of a dimension
+What is in my collection?
+Introducing collect levelsof
+Introducing collect label list
+Where do result labels come from?
+Introducing collect label levels
+Introducing collect label save
+Introducing collect label use
+Interactions in collect layout
+Introducing collect style cell
+Introducing collect preview
+Reordering columns
+More layout
+Introducing collect style autolevels
+What is in my collection, regression edition
+The result levels r b, r se, ...
+The colname dimension
+Labels on levels of dimension colname
+collect layout with regression results
+Introducing collect style showbase
+Tables of model statistics
+What is in my collection, multiple-equation models (dimension coleq)
+What is in my collection, collecting results from multiple commands (dimension cmdset)
+Seeing what is my collection
+Introducing collect dims
+Factor variables in regressions and other commands
+Special dimensions created by table
+Dimension variables
+Variables from statistic() option—dimension var
+Dimension colname and matching to regressions
+Index of command() options—dimension command
+Index of command() and statistic() options—dimension statcmd
+Other dimensions
+
+7
+
+Intro 2 — A tour of concepts and commands 8
+Let’s talk styles
+Overview
+Basic targeting
+Advanced targeting
+Saving and using
+Exporting
+Saving collections
+Managing collections
+
+Tags, dimensions, and levels
+Your goal is to construct tables from the results of one or more commands. You need something to
+organize results from commands in such a way that you can conveniently place the results onto the rows
+and columns of tables. You would also like to control how everything looks, from the row and column
+headers to numeric formats, or even to the background color of an emphasized result. You do all that
+using the collection system, and the collection system needs to do lots of bookkeeping. The bookkeeping
+system for collect is tags.
+We start by collecting results. Collecting results is as simple as placing the prefix collect in front
+of any command that returns results. Let’s also place a by prefix in front of our command so we have
+results by each level of the by variables.
+
+Intro 2 — A tour of concepts and commands 9
+
+Introducing collect:
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. collect clear
+. sort sex region
+. collect: by sex region: summarize weight
+-> sex = Male, region = NE
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,018
+
+78.15295
+
+12.89267
+
+47.17
+
+129.84
+
+-> sex = Male, region = MW
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,310
+
+78.24791
+
+13.50132
+
+41.5
+
+139.03
+
+-> sex = Male, region = S
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,332
+
+77.5923
+
+14.27054
+
+30.84
+
+158.53
+
+-> sex = Male, region = W
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,255
+
+77.98812
+
+13.6871
+
+44.11
+
+175.88
+
+-> sex = Female, region = NE
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,078
+
+65.50096
+
+14.0839
+
+39.12
+
+148.21
+
+-> sex = Female, region = MW
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,464
+
+66.50488
+
+14.7564
+
+34.93
+
+159.44
+
+-> sex = Female, region = S
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,521
+
+67.16907
+
+15.19103
+
+35.27
+
+138.91
+
+-> sex = Female, region = W
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+weight
+
+1,373
+
+66.11902
+
+14.66786
+
+36.06
+
+134.61
+
+So we have computed means, standard deviations, and the minimum and maximum of weight for
+each combination of the levels of variables sex and region. By placing the collect: prefix in front
+of the by: command, we have collected those results into the default collection. We collect cleared
+first to be sure we were starting clean and not adding to an existing collection.
+For readers more familiar with pounds, these weights are in kilograms; you can double these numbers
+in your head. Or multiply by 2.2 to be more accurate.
+
+Intro 2 — A tour of concepts and commands 10
+
+What do we mean by “collected”? The results have been stored, but more importantly they have been
+tagged. Let’s trim down all of that by: output and focus on the means. Here is a “picture” of what
+collect: has done.
+===============================
+by sex region: summarize weight
+===============================
+
+-->
+
+==========================================
+Collection
+==========================================
+
+Or, more specifically,
+===============================
+Variable |
+...
+Mean
+----------+--------------------
+
+==========================================
+value
+tags
+------ -----------------------------------
+
+sex = Male, region = NE
+weight |
+... 78.15295 ...
+
+-->
+
+78.15 sex[Male]
+
+region[NE] result[mean]
+
+sex = Male, region = MW
+weight |
+... 78.24791 ...
+
+-->
+
+78.25 sex[Male]
+
+region[MW] result[mean]
+
+sex = Male, region = S
+weight |
+...
+77.5923 ...
+
+-->
+
+77.59 sex[Male]
+
+region[S]
+
+result[mean]
+
+sex = Male, region = W
+weight |
+... 77.98812 ...
+
+-->
+
+77.99 sex[Male]
+
+region[W]
+
+result[mean]
+
+sex = Female, region = NE
+weight |
+... 65.50096 ...
+
+-->
+
+65.50 sex[Female] region[NE] result[mean]
+
+sex = Female, region = MW
+weight |
+... 66.50488 ...
+
+-->
+
+66.50 sex[Female] region[MW] result[mean]
+
+sex = Female, region = S
+weight |
+... 67.16907 ...
+
+-->
+
+67.17 sex[Female] region[S]
+
+-->
+
+66.11 sex[Female] region[W] result[mean]
+==========================================
+
+sex = Female, region = W
+weight |
+... 66.11902 ...
+===============================
+
+result[mean]
+
+Consider the first mean, 78.15. In the collection, it is tagged with sex[Male], region[NE],
+result[mean]. The second mean is tagged with sex[Male], region[MW], result[mean]. So one
+of its tags is the same as the first value—both are tagged sex[Male]. The region tags differ across the
+two means— region[MW] and region[NE]. All the values are tagged with result[mean].
+Scanning the “picture”, it is clear that each value is tagged with the levels of the sex and region
+variables from its by group. That seems sensible.
+Each tag has two parts—part1[part2]. Having two parts lets us group related things using part1.
+Having two parts also lets us refer to all the tags with the same part1 by just saying the name of part1
+and not having to enumerate all the names in part2.
+In the collection system, we do not call them “part1” and “part2”. We could, but eventually this entry
+would start to sound like a Dr. Seuss children’s book. We call “part1” dimension, and we call “part2”
+level, or level within dimension, dimension[level].
+Every tag always has this two-part structure.
+In our collection, we have considered three dimensions— sex, region, and result. Dimension sex
+has two levels— Male and Female. Dimension region has four levels— NE, MW, S, and W.
+We can specify all levels in the sex dimension by typing either sex[Male] sex[Female] or just sex.
+
+Intro 2 — A tour of concepts and commands 11
+
+Introducing collect layout
+
+Let’s take advantage of referring to groups of tags by just their dimension name and create our first
+table. The command for laying out tables is collect layout, and it wants us to specify what goes on
+the rows and columns of the table. We computed means across two categorical variables, and collect
+tagged those means with the categories of those variables. Those tags seem like the natural things to put
+on the rows and columns of our table.
+The basic syntax of collect layout is
+collect layout (row tags) (column tags) (table tags)
+
+We will specify all the sex tags for the rows and all the region tags for the columns. Recalling that
+the dimension names typed alone represent all the tags in the dimension, we type
+. collect layout (sex) (region) (result[mean])
+Collection: default
+Rows: sex
+Columns: region
+Tables: result[mean]
+Table 1: 2 x 4
+NE
+Male
+Female
+
+MW
+
+S
+
+W
+
+78.15 78.25 77.59 77.99
+65.50 66.50 67.17 66.12
+
+The row headers in the table result from enumerating all the tags in dimension sex — Male and
+Female. The column headers result from enumerating all the tags in the dimension region — NE, MW,
+S, and W. Each cell in the table is identified by the intersection of the levels of sex and region from
+the cell’s row and column headers. So the first cell is identified by sex[Male] and region[NE], and
+it is filled in with the value in the collection that has those two tags (78.15). Continuing down the first
+column, we see the cell at the bottom left of the table gets its tags from its row and column and is thus
+sex[Female] and region[NE], which is 65.50 from the collection. And so on. That is how collect
+layout fills in a simple table like ours.
+The only thing a bit surprising is that we specified something for the table tags, result[mean], when
+we wanted only one table. We have not discussed it yet, but summarize stored multiple results, and the
+collect prefix collected all of them. In addition to the means, our collection contains the standard
+deviation, the minimum, the maximum, and several other results. So we needed to tell collect layout
+which statistic we wanted, and we did that by specifying a table tag. We wanted only one statistic, means,
+and only one table, so we specified only one tag— result[mean].
+We have been telling a little fib about the names of some dimension levels. The by variables sex and
+region are numeric variables in the dataset, and their values are labeled with the labels we see on the
+by results and in the table we produced— Male, Female, NE, MW, S, and W. To ease in mapping the results
+of our by: summarize command to the tags in the collection, we pretended that the levels of sex and
+region were the level labels. In truth, the collection mirrors the dataset. The levels of sex are actually
+numeric— 1 for Male and 2 for Female. The same is true for the levels of region— 1 for NE, 2 for MW, 3
+for S, and 4 for W. The collection stores the labels for the levels separately.
+We were not fibbing about mean in dimension result. mean really is the name of the level for the
+means. Dimension levels can be either numeric or string. If the string contains spaces, you must enclose
+it in quotes wherever it is used.
+
+Intro 2 — A tour of concepts and commands 12
+
+So to be more truthful, the collection looks more like
+==========================================
+Collection
+==========================================
+value
+tags
+--------------------------------------78.15
+
+sex[1] region[1] result[mean]
+
+78.25
+
+sex[1] region[2] result[mean]
+
+77.59
+
+sex[1] region[3] result[mean]
+
+77.99
+
+sex[1] region[4] result[mean]
+
+65.50
+
+sex[2] region[1] result[mean]
+
+66.50
+
+sex[2] region[2] result[mean]
+
+67.17
+
+sex[2] region[3] result[mean]
+
+66.12 sex[2] region[4] result[mean]
+-----------------------------------------dimension
+--------sex
+
+level
+----1
+2
+
+label
+-----Male
+Female
+
+region
+
+1
+NE
+2
+MW
+3
+S
+4
+W
+result
+mean
+Mean
+==========================================
+
+From here on, we will use the actual numeric levels created by collect for dimensions sex and
+region.
+Introducing collect recode
+
+As a sidebar, with a small collection like ours, we could have easily turned our fib into the truth. The
+command collect recode recodes dimension levels from one value to another. Were we to type
+. collect recode sex 1=Male 2=Female
+. collect recode region 1=NE 2=MW 3=S 4=W
+
+then everything we said above would be true. And we could use terms like sex[Female] rather than
+sex[2] in everything we type below.
+
+Using collect layout
+You might be thinking that you can do everything we have done so far with the table command, and
+you are right. In fact, you could have created a collection that is very similar to the one we are working
+with by typing
+. table (sex) (region), statistic(mean weight)
+
+Intro 2 — A tour of concepts and commands 13
+
+Let’s start doing things that you cannot do with table directly.
+By the way, the collection that table creates is so similar to the one we created with collect: by:
+that you could do everything we do below after either the table command above or the collect: by:
+command we started with. The main difference you would see is that table computed subtotals for sex
+and region and created levels for those totals in the sex and region dimensions. You can prevent that
+by adding the option nototals.
+First, let’s transpose our table by swapping where sex and region appear in the command.
+. collect layout (region) (sex) (result[mean])
+Collection: default
+Rows: region
+Columns: sex
+Tables: result[mean]
+Table 1: 4 x 2
+Male Female
+NE
+MW
+S
+W
+
+78.15
+78.25
+77.59
+77.99
+
+65.50
+66.50
+67.17
+66.12
+
+Wait! You say, “I could have done that with table by typing”.
+. table (region) (sex), statistic(mean weight)
+
+That is not the same thing. table went back through the dataset, recomputed statistics, and then
+presented them in tabular form. If your dataset had 1 billion observations, that could take some time. We
+just told collect layout to show us the existing collection in a different way.
+Let’s go on.
+Selecting specific levels of a dimension
+
+We have been using dimensions sex and region to represent all the tags associated with their levels.
+That implies that we did not need to use all the levels of sex and region in our layout command. And,
+indeed, that is true. We could type just a few tags specifically, or even one.
+. collect layout (region[1] region[3] region[4]) (sex[2]) (result[mean])
+Collection: default
+Rows: region[1] region[3] region[4]
+Columns: sex[2]
+Tables: result[mean]
+Table 1: 3 x 1
+Female
+NE
+S
+W
+
+65.50
+67.17
+66.12
+
+Intro 2 — A tour of concepts and commands 14
+
+We explicitly typed out the list of region tags. There is a shorthand for specifying lists of levels
+within a dimension—type the list within the brackets. The following would have produced an identical
+table:
+. collect layout (region[1 3 4]) (sex[2]) (result[mean])
+
+Taken to extremes, collect layout is the way to pull a single value out of a collection.
+. collect layout (region[3]) (sex[2]) (result[mean])
+Collection: default
+Rows: region[3]
+Columns: sex[2]
+Tables: result[mean]
+Table 1: 1 x 1
+Female
+S
+
+67.17
+
+What is in my collection?
+We have been ignoring that result dimension. Let’s rectify that.
+Introducing collect levelsof
+
+First, let’s list the levels of result.
+. collect levelsof result
+Collection: default
+Dimension: result
+Levels: N Var max mean min sd sum sum_w
+
+If you use summarize much, that list of levels may look familiar. Let’s use that list to be a little
+more explicit about what values collect actually collects. It collects everything that is returned by your
+command in e() or r(). The final summarize from our by command is the last r-class command we
+have run. Here are the results returned by that summarize.
+. return list
+scalars:
+
+r(sum) =
+r(max) =
+r(min) =
+r(sd) =
+r(Var) =
+r(mean) =
+r(sum_w) =
+r(N) =
+
+90781.40996932983
+134.6100006103516
+36.06000137329102
+14.66785984772278
+215.1461125124382
+66.11901672930068
+1373
+1373
+
+The names of the r() results returned by summarize are a one-to-one match with the level names in
+dimension result. They are ordered differently because collect keeps the levels sorted alphabetically
+(with capitals first). Regardless, the names of the levels are exactly the names of the r() results, with
+“r()” stripped away. The same would be true if we collected results from a command that returns in
+e(). Every result is collected, and it is tagged with its r() or e() name. Well, almost every result; we
+will amend that in collect get, but you will not care.
+
+Intro 2 — A tour of concepts and commands 15
+
+As we saw earlier, every collected value has multiple tags, but one of them will always be its
+result[name], where name is taken from its e() or r() name.
+The simple list of levels from collect levelsof does not tell us much. We can learn a bit more
+about the levels by listing their labels.
+Introducing collect label list
+. collect label list result, all
+Collection: default
+Dimension: result
+Label: Result
+Level labels:
+N Number of observations
+Var Variance
+max Maximum
+mean Mean
+min Minimum
+sd Std. dev.
+sum Sum of variable
+sum_w Sum of the weights
+
+Now we are getting somewhere. Those results are everything that was reported on the summarize output
+plus a “Sum of variable”, “Sum of the weights”, and a “Variance”.
+Where do result labels come from?
+
+Where did those labels come from? They are system default labels for collections. There is a default
+label for nearly every result returned in r() or e() by official commands.
+Introducing collect label levels
+
+It is easy for you to change a label. Perhaps you think “Number of observations” is too verbose,
+particularly if you want to make it a column in a table. Let’s make it way shorter; lots of folks just go
+with “N”.
+. collect label levels result N ”N”, modify
+
+Maybe we should also shorten the other two long labels.
+. collect label levels result sum ”Sum” sum_w ”Sum wts.”, modify
+
+Introducing collect label save
+
+Later, after you have made lots of label changes, you can save your preferred labels in a file. Type
+. collect label save mylabels
+
+where mylabels is whatever filename you prefer. Over time, you may override most of the default
+system labels.
+
+Intro 2 — A tour of concepts and commands 16
+
+Introducing collect label use
+
+You can later apply those labels to a collection by typing
+. collect label use mylabels
+
+You do not have to worry if your collection does not contain some of the things you are labeling. The
+labels exist separately, and there is no harm in labeling things not in your collection. In fact, if those
+things are later created in your collection because you collect more results, they will get your labels
+automatically. So you can type collect label use mylabels when you first create a collection or
+right before you create a table; it makes no difference.
+Now that we know what other results are tagged by dimension result, let’s put some of those in a
+table. One possibility that comes to mind is to remove the shackles of result[mean] from our earlier
+layout command and ask for all levels of result as tables.
+. collect layout (region) (sex) (result)
+Collection: default
+Rows: region
+Columns: sex
+Tables: result
+Table 1: 4 x 2
+Table 2: 4 x 2
+Table 3: 4 x 2
+Table 4: 4 x 2
+Table 5: 4 x 2
+Table 6: 4 x 2
+Table 7: 4 x 2
+Table 8: 4 x 2
+N
+Male
+NE
+MW
+S
+W
+
+Female
+
+1018.00 1078.00
+1310.00 1464.00
+1332.00 1521.00
+1255.00 1373.00
+
+Variance
+Male Female
+NE
+MW
+S
+W
+
+166.22 198.36
+182.29 217.75
+203.65 230.77
+187.34 215.15
+
+(output omitted )
+Sum wts.
+Male
+NE
+MW
+S
+W
+
+Female
+
+1018.00 1078.00
+1310.00 1464.00
+1332.00 1521.00
+1255.00 1373.00
+
+Intro 2 — A tour of concepts and commands 17
+
+Interactions in collect layout
+Well, that was easy to type but not very interesting. For a table like this, it is time to learn about
+interactions.
+First, let’s consider our collection for a minute. We chose this particular problem earlier because it
+was two dimensional, just like many tables. We chose region for the rows and sex for the columns.
+The interaction of those two dimensions produces the cells in the table. By “interaction”, we mean all
+combinations of the levels of region with the levels of sex. In one cell, you must be both male and in
+the Northeast. In another cell, you must be both female and in the South.
+But wait. Our collection does not really have just two dimensions. That was an artifact of our considering only the mean. We have a whole other dimension— result. Our results really form a cube— region
+X sex X result. There is a value in every cell of that cube. Now you see the reason we call part1 of our
+tags a dimension.
+collect layout automatically interacts the row and column specifications. For our current example,
+each row represents a level of dimension region, and each column represents a level of sex. Each cell
+results from the interaction of the levels of its row and column. When we added the result dimension
+to create separate tables, each sex, region, and result triad represented one of the cells in one of the
+tables. Each cell was the result of a three-way interaction.
+
+There is a term for interactions that you place on the rows of tables—“super rows”. Likewise, tables
+can have super columns. If a table has either super rows or super columns, it is representing an underlying
+three-dimensional set of results. If it has both super rows and super columns, it is representing a fourdimensional set of results. You might have super-super rows or super-super columns. collect allows
+over 20 supers in each of the row, column, and table specifications; so you can represent up to sillydimensional results.
+Adding a super row or a super column is as easy as explicitly interacting two dimensions in the
+collect layout specification. You interact two dimensions by placing a # between them. Let’s put our
+original row and column dimensions both onto the rows.
+. collect layout (sex#region) (result[mean])
+Collection: default
+Rows: sex#region
+Columns: result[mean]
+Table 1: 10 x 1
+Mean
+Male
+NE
+MW
+S
+W
+Female
+NE
+MW
+S
+W
+
+78.15
+78.25
+77.59
+77.99
+65.50
+66.50
+67.17
+66.12
+
+Now the levels of dimension sex form super rows and the levels of region form rows within sex.
+These are the same results from our very first table, just organized differently.
+
+Intro 2 — A tour of concepts and commands 18
+
+We moved result[mean] to the column specification because there was no longer a reason to specify
+a tables dimension.
+We could have specified a tables dimension and typed
+. collect layout (sex#region) () (result[mean])
+
+Note that an empty () is perfectly acceptable. It indicates that there are no tags for the columns.
+We could even have pulled the interaction of dimension result into the rows specification and not
+specified any columns or tables.
+. collect layout (sex#region#result[mean])
+
+All of these commands produce a single column of results. Type them and see. The labels change a
+bit because collect layout tries to keep you informed of what you are seeing.
+Now we are ready to put our three-dimensional data onto a table. Let’s try result on the columns of
+the table.
+. collect layout (sex#region) (result)
+Collection: default
+Rows: sex#region
+Columns: result
+Table 1: 10 x 8
+N Variance Maximum
+Male
+NE
+MW
+S
+W
+Female
+NE
+MW
+S
+W
+
+Mean Minimum Std. dev.
+
+Sum Sum wts.
+
+1018.00
+1310.00
+1332.00
+1255.00
+
+166.22
+182.29
+203.65
+187.34
+
+129.84 78.15
+139.03 78.25
+158.53 77.59
+175.88 77.99
+
+47.17
+41.50
+30.84
+44.11
+
+12.89 79559.70
+13.50 1.0e+05
+14.27 1.0e+05
+13.69 97875.09
+
+1018.00
+1310.00
+1332.00
+1255.00
+
+1078.00
+1464.00
+1521.00
+1373.00
+
+198.36
+217.75
+230.77
+215.15
+
+148.21 65.50
+159.44 66.50
+138.91 67.17
+134.61 66.12
+
+39.12
+34.93
+35.27
+36.06
+
+14.08 70610.03
+14.76 97363.14
+15.19 1.0e+05
+14.67 90781.41
+
+1078.00
+1464.00
+1521.00
+1373.00
+
+We hope that is what you were expecting.
+Introducing collect style cell
+
+Some of the numbers are oddly formatted, for example, two decimal places on the observation count!
+This is a good time to admit that we cheated a bit at the outset. We changed the default formatting to get
+pretty numbers we could talk about. If you have been following along, you were already onto us because
+your tables showed more decimal places than ours.
+Here is what we typed earlier but did not tell you about:
+. collect style cell result, nformat(%8.2f)
+
+Intro 2 — A tour of concepts and commands 19
+
+Styles control literally everything about how a table looks. Without getting too much into styles right
+now, what our style command “said” was, “Set the numeric format for all results to be %8.2f.” Let’s set
+it back to its system default and redraw our table.
+. collect style cell result, nformat(%9.0g)
+. collect preview
+N Variance Maximum
+Male
+NE
+MW
+S
+W
+Female
+NE
+MW
+S
+W
+
+Mean Minimum Std. dev.
+
+Sum Sum wts.
+
+1018 166.221
+1310 182.2857
+1332 203.6484
+1255 187.3368
+
+129.84 78.15295
+139.03 78.24791
+158.53 77.5923
+175.88 77.98812
+
+47.17
+41.5
+30.84
+44.11
+
+12.89267 79559.7
+13.50132 102504.8
+14.27054 103352.9
+13.6871 97875.09
+
+1018
+1310
+1332
+1255
+
+1078 198.3562
+1464 217.7513
+1521 230.7675
+1373 215.1461
+
+148.21 65.50096
+159.44 66.50488
+138.91 67.16907
+134.61 66.11902
+
+39.12
+34.93
+35.27
+36.06
+
+14.0839 70610.03
+14.7564 97363.14
+15.19103 102164.2
+14.66786 90781.41
+
+1078
+1464
+1521
+1373
+
+Introducing collect preview
+
+collect preview! That is a new command. We were not changing the layout, so there was no need
+to specify a new layout. We just asked collect to preview our existing layout using the style settings
+currently in effect.
+
+Even so, “preview” seems an odd word. What we see in the Results window is often not our end goal.
+Often, we are creating a table to be exported to Microsoft Word, HTML, LATEX, or some other format.
+Moreover, some of the styles we use cannot be shown in the Results window. So this is just a preview
+of what you might ultimately obtain when you export your results.
+Note that collect preview does not display the report about the structure of the table that collect
+layout displays. collect preview provides cleaner output—just the table.
+With the “new” numeric format, our table shows the numbers we should have been seeing all along.
+
+Intro 2 — A tour of concepts and commands 20
+
+Reordering columns
+
+Continuing with collect layout, you can select the levels of dimension result you want, and in
+any order you want, perhaps,
+. collect layout (sex#region) (result[mean sd min max N])
+Collection: default
+Rows: sex#region
+Columns: result[mean sd min max N]
+Table 1: 10 x 5
+Mean Std. dev. Minimum Maximum
+Male
+NE
+MW
+S
+W
+Female
+NE
+MW
+S
+W
+
+N
+
+78.15295
+78.24791
+77.5923
+77.98812
+
+12.89267
+13.50132
+14.27054
+13.6871
+
+47.17
+41.5
+30.84
+44.11
+
+129.84 1018
+139.03 1310
+158.53 1332
+175.88 1255
+
+65.50096
+66.50488
+67.16907
+66.11902
+
+14.0839
+14.7564
+15.19103
+14.66786
+
+39.12
+34.93
+35.27
+36.06
+
+148.21 1078
+159.44 1464
+138.91 1521
+134.61 1373
+
+Change the order of the levels specified to collect layout, and you change the order of the columns
+on the table.
+. collect layout (sex#region) (result[N min mean max sd N])
+
+You can even repeat levels.
+. collect layout (sex#region) (result[max max max max max max])
+
+(Tabulus maximus?)
+Type either command and see.
+We could even present just the counts as a frequency cross-tabulation. Feel free to type
+. collect layout (region) (sex) (result[N])
+
+You can also organize the rows and columns differently. You might type any of these layouts or try
+some of your choosing.
+. collect layout (sex#result[mean N]) (region)
+. collect layout (region#result[mean min max]) (sex)
+. collect layout (region#result[mean min max]) (sex)
+
+Intro 2 — A tour of concepts and commands 21
+
+More layout
+
+Our result options increase dramatically if we collect summarize, detail.
+. collect clear
+. collect: by sex region: summarize weight, detail
+
+Let’s see what our result choices are now.
+. collect label list result, all
+Collection: default
+Dimension: result
+Label: Result
+Level labels:
+N Number of observations
+Var Variance
+kurtosis Kurtosis
+max Maximum
+mean Mean
+min Minimum
+p1 1st percentile
+p10 10th percentile
+p25 25th percentile
+p5 5th percentile
+p50 50th percentile
+p75 75th percentile
+p90 90th percentile
+p95 95th percentile
+p99 99th percentile
+sd Std. dev.
+skewness Skewness
+sum Sum of variable
+sum_w Sum of the weights
+
+We could create a table of whatever percentile distributions interest us, perhaps the quartiles,
+. collect layout (sex#region) (result[min p25 p50 p75 max])
+
+or a finer grain,
+. collect layout (sex#region) (result[p5 p10 p25 p50 p75 p90 p95])
+
+Intro 2 — A tour of concepts and commands 22
+
+The authors typed that and found that the labels on the percentiles are far too long. So let’s shorten
+them.
+. collect label levels result p5 ”5th” p10 ”10th” p25 ”25th”
+> p50 ”50th” p75 ”75th” p90 ”90th” p95 ”95th”, modify
+. collect preview
+5th
+Male
+NE
+MW
+S
+W
+Female
+NE
+MW
+S
+W
+
+10th
+
+25th
+
+50th
+
+59.42 62.82 69.63 76.89
+58.97 62.655 69.17 77.055
+57.49 60.56 67.19 76.43
+57.95 62.03 68.49 76.77
+47.51
+48.31
+47.74
+47.85
+
+50.24 55.45
+50.69 56.59
+50.8 56.36
+50.69 56.25
+
+75th
+
+90th
+
+95th
+
+85.62 95.82 101.61
+85.16 95.2 102.97
+85.84 95.03 103.19
+85.96 95.03 101.49
+
+62.88 72.24 84.48
+63.62 73.425 85.39
+64.41
+75.3 86.98
+63.39 72.92 85.96
+
+91.74
+94.46
+95.82
+95.6
+
+We would like to have that %8.2f format back about now.
+If you are a fan of third and fourth moments, you could assess and compare all the distributions using
+skewness and kurtosis.
+. collect layout (sex#region) (result[mean sd skewness kurtosis])
+Collection: default
+Rows: sex#region
+Columns: result[mean sd skewness kurtosis]
+Table 1: 10 x 4
+Mean Std. dev. Skewness Kurtosis
+Male
+NE
+MW
+S
+W
+Female
+NE
+MW
+S
+W
+
+78.15295
+78.24791
+77.5923
+77.98812
+
+12.89267 .5601461 3.705207
+13.50132 .7798423 4.354643
+14.27054 .6834379 4.384609
+13.6871 .8854262 5.942613
+
+65.50096
+66.50488
+67.16907
+66.11902
+
+14.0839 1.154802 5.090129
+14.7564 1.327805 6.098792
+15.19103 1.100521 4.796148
+14.66786 1.231803 5.036233
+
+Introducing collect style autolevels
+
+There is an alternative way to specify the levels on dimension result that we used in the last two
+tables. Instead of specifying them directly in the collect layout command, we can preset levels to be
+used when a dimension name is specified without levels. If you type
+. collect style autolevels result mean sd skewness kurtosis
+
+then whenever result appears alone in a collect layout command, only levels mean, sd, skewness,
+and kurtosis will be enumerated. We call these levels “automatic levels”. It is just as though you typed
+result[mean sd skewness kurtosis].
+
+Intro 2 — A tour of concepts and commands 23
+
+So typing
+. collect style autolevels result mean sd skewness kurtosis
+. collect layout (sex#region) (result)
+
+produces exactly the same result as
+. collect layout (sex#region) (result[mean sd skewness kurtosis])
+
+Every time you type collect style autolevels on the same dimension, it adds whatever levels
+you type to any existing autolevels for the dimension. So typing
+. collect style autolevels result p5 p10 p25
+. collect style autolevels result p50 p75 p90 p95
+
+is equivalent to typing
+. collect style autolevels result p5 p10 p25 p50 p75 p90 p95
+
+Typing
+. collect style autolevels result, clear
+. collect style autolevels result p5 p10 p25 p50 p75 p90 p95
+. collect layout (sex#region) (result)
+
+produces exactly the same table we created earlier when we typed
+. collect layout (sex#region) (result[p5 p10 p25 p50 p75 p90 p95])
+
+collect style autolevels can be particularly convenient when you are exploring several table
+layouts and you want to use the same result levels on all the tables. Or, for that matter, the same levels
+of any dimension used in the table.
+
+What is in my collection, regression edition
+We have already seen one unusual dimension— result. The dimensions representing categorical
+variables, sex and region, are easy to understand. Anyone who has created a cross-tabulation has used
+categorical variables as the rows and columns of a table. Dimension result was a little bit different.
+It is just a place where we are keeping related identifiers (levels)—in this case, all the names of results
+returned in r() and e().
+We warn you, collect uses other unusual dimensions. And it uses a few unusual levels.
+Consider the output from a regression.
+. regress bpsystol age weight i.sex
+Source
+
+SS
+
+df
+
+MS
+
+Number of obs
+F(3, 10347)
+Prob > F
+R-squared
+Adj R-squared
+Root MSE
+
+=
+=
+=
+=
+=
+=
+
+10,351
+1501.75
+0.0000
+0.3033
+0.3031
+19.478
+
+Model
+Residual
+
+1709209.9
+3925460.13
+
+3
+10,347
+
+569736.633
+379.381476
+
+Total
+
+5634670.03
+
+10,350
+
+544.412563
+
+bpsystol
+
+Coefficient
+
+Std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+age
+weight
+
+.6374325
+.4170339
+
+.0111334
+.013474
+
+57.25
+30.95
+
+0.000
+0.000
+
+.6156088
+.3906221
+
+.6592562
+.4434456
+
+sex
+Female
+_cons
+
+.8244702
+70.13615
+
+.4140342
+1.187299
+
+1.99
+59.07
+
+0.046
+0.000
+
+.0128832
+67.80881
+
+1.636057
+72.46348
+
+Intro 2 — A tour of concepts and commands 24
+
+The result levels r b, r se, . . .
+
+The results are already laid out as a table with the coefficient names on the rows and the coefficient
+statistics on the columns. Neither the rows nor the columns fit into the dimension and level names we
+have been using.
+Let’s consider the columns first—the coefficient statistics. We certainly have an appropriate dimension where we can place these: the result dimension. What is tricky is how to name their levels. The
+coefficients themselves are saved as a row vector named e(b), so we could name their level b in result,
+as we have all the other stored results. Spoiler alert, we do not.
+The problem is we do not store vectors for the standard error, the 𝑡 statistic, the 𝑝-value, or the confidence interval. These are stored in hidden places or can be derived from other results. You do not care
+about that; you want to use what you see in the regress results in your own tables. So we gave these
+results special level names— r b for the regression coefficients, r se for the standard errors, and so
+on. Here is the full list of special level names for regression and regressionlike results:
+Identifier
+r b
+r se
+r z
+r z abs
+r df
+r p
+r lb
+r ub
+r ci
+r cri
+r crlb
+r crub
+
+Result
+coefficients or transformed coefficients reported by command
+standard errors of r b
+test statistics for r b
+absolute values of r z
+degrees of freedom for r b
+𝑝-values for r b
+lower bounds of confidence intervals for r b
+upper bounds of confidence intervals for r b
+confidence intervals for r b
+credible interval (CrI) of Bayesian estimates
+lower bound of CrI of Bayesian estimates
+upper bound of CrI of Bayesian estimates
+
+We admit the r is a bit much to type and requires explanation. There is a reason for the leading
+underscore. collect will collect all the results from e() and r() for any official command or from any
+command written by you or by other users. Those results could have any valid name. By convention, we
+have told users that anything with a leading underscore is reserved for official names. There is also the
+precedence of b[coefname] and se[coefname] being supported in expressions to retrieve coefficients
+and their standard errors.
+As an aside, all the r names you see above are now supported in expressions. After the regression
+command above, you could type
+. display _r_b[age] / _r_se[age]
+
+to compute the 𝑡 statistic by hand and display it.
+
+Intro 2 — A tour of concepts and commands 25
+
+There is also a reason we chose r. Consider the logistic regression
+. logistic highbp age weight i.sex
+Logistic regression
+
+Number of obs = 10,351
+LR chi2(3)
+= 2326.44
+Prob > chi2
+= 0.0000
+Pseudo R2
+= 0.1650
+
+Log likelihood = -5887.5446
+highbp
+
+Odds ratio
+
+Std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+age
+weight
+
+1.052054
+1.044683
+
+.0014852
+.001759
+
+35.95
+25.96
+
+0.000
+0.000
+
+1.049147
+1.041242
+
+1.054969
+1.048137
+
+sex
+Female
+_cons
+
+1.036659
+.002525
+
+.0498306
+.0004077
+
+0.75
+-37.05
+
+0.454
+0.000
+
+.9434528
+.0018401
+
+1.139074
+.003465
+
+Note: _cons estimates baseline odds.
+
+The default “coefficients” displayed after logistic are the odds ratios, not the raw coefficients.
+You can see the raw coefficients instead by adding the option coef. The “r” in r b stands for “reported”. After our logistic regression, the odds ratios, not the raw coefficients, are collected. In this case,
+result[ r b] tags the odds ratios. If we add coef to our command, or even if we replay the results
+with the option coef,
+. logistic, coef
+
+the raw coefficients are collected. r b then stands for the raw coefficient estimates. You can collect
+whichever transformation you prefer. When transformations are available, whatever you are reporting
+is what is collected. Type two collect commands if you want to collect both transformed and raw
+coefficients.
+There are quite a few commands that report transformations of their coefficients—incidence rate
+ratios for poisson, hazard ratios for stcox, standardized coefficients for sem, and several others. Many
+of these estimators also have panel-data and multilevel commands.
+The r results are collected after all regression and regression-like commands. The regression-like
+commands include mean, proportion, ratio, bayesmh, margins, contrast, and others.
+The colname dimension
+
+There is still the issue of what dimension name we should use for the rows of a regression table. They
+look like variables, so why not variable? Because those rows can contain lots of things that are not
+variables: for example, the ancillary parameters for variance on many regression commands, parameters
+on latent variables in sem and gsem, contrasts or expressions in margins, and so on.
+collect uses the dimension colname to hold these variable/parameter/estimate tags. There truly is
+no good meaningful name for all the things this dimension can hold.
+
+There is also a technical reason for using colname. The r results are all related to e(b), and e(b)
+is a row vector. Let’s list e(b) for our logistic regression.
+. matrix list e(b)
+e(b)[1,5]
+highbp:
+
+highbp:
+
+age
+.05074447
+
+weight
+.04371396
+
+y1
+
+highbp:
+highbp:
+highbp:
+1b.
+2.
+sex
+sex
+_cons
+0 .03600346 -5.981495
+
+Intro 2 — A tour of concepts and commands 26
+
+Those labels immediately above the matrix values are the column names for the matrix. All matrices
+in Stata have row and column names. That way, you can refer to the rows and columns by name as well
+as by index number. The matrix’s column names collectively are called its colname. We can use a macro
+function to display just the column names.
+. display ”‘: colname e(b)’”
+age weight 1b.sex 2.sex _cons
+
+Considering just e(b) ( r b), collect is really collecting a matrix. To identify a cell in a matrix
+collect not only needs a tag for the whole matrix, result[ r b], but also needs tags for the specific
+row and specific column that identify a particular cell. The column tags are placed in dimension colname
+because that is what Stata calls the column names of a matrix. For our logistic model, the colname
+tags associated with all the r results are colname[age], colname[weight], colname[1.sex],
+colname[2.sex], and colname[ cons].
+If you guessed from the matrix we listed that there would be a rowname tag for the r b “matrix”
+that we collected, you would be right. That tag is rowname[y]. You won’t use the rowname dimension
+nearly so often as you will use the colname dimension.
+Labels on levels of dimension colname
+
+There is something else special about colname. We discussed earlier that the levels of the result
+dimension are labeled using a set of system default labels. collect can also automatically label most
+levels of colname. That is because most levels of colname are variable names. If a variable is labeled,
+collect picks up that label and uses it to label the level. What is more, if a level represents a factor
+variable, such as 2.sex, then collect labels that level of the factor variable with the appropriate value
+label from the dataset. It sounds complicated, but it is really just doing what you want. When we type
+. quietly collect: mean weight, over(sex)
+. collect style autolevels result _r_b _r_se _r_ci
+. collect layout (colname) (result)
+Collection: default
+Rows: colname
+Columns: result
+Table 1: 2 x 3
+Coefficient Std. error
+Weight (kg) @ Male
+Weight (kg) @ Female
+
+77.98423
+66.39418
+
+95% CI
+
+.1945289 77.60292
+.1998523 66.00243
+
+78.36555
+66.78593
+
+we see “Male” and “Female” as part of our row headers, not “1” and “2”.
+Note too that we just used some of the r levels of result and that we used dimension colname too.
+No need for fanfare. They are just other levels and dimensions that we can use to lay out our tables.
+colname is not the only dimension that picks up labels from variables. Dimensions rowname, coleq,
+roweq, var, and across also fetch variable labels for the levels and factor-variable levels whenever they
+can.
+
+It turns out the r levels and the colname dimension are not truly unusual. They work just the way
+any other levels or dimensions work. Their names are just arbitrary.
+If you are not liking the row headers in the table above, you can change them. See collect style
+row.
+
+Intro 2 — A tour of concepts and commands 27
+
+collect layout with regression results
+
+We claimed this subsection was about regression collections, so we should at least create a basic table
+of regression results from our first regression. First, we type
+. collect clear
+. collect: regress bpsystol age weight i.sex
+
+Then, we type
+. collect style autolevels result _r_b _r_se _r_z _r_p
+. collect layout (colname) (result)
+Collection: default
+Rows: colname
+Columns: result
+Table 1: 5 x 4
+Coefficient Std. error
+Age (years)
+Weight (kg)
+Male
+Female
+Intercept
+
+.6374325
+.4170339
+0
+.8244702
+70.13615
+
+t p-value
+
+.0111334 57.25
+.013474 30.95
+0
+.4140342 1.99
+1.187299 59.07
+
+0.000
+0.000
+0.046
+0.000
+
+We used autolevels to specify the automatic levels for result. That looks a lot like the regression
+output, except we did not ask for the confidence intervals, there is less column spacing, and this table
+uses labels rather than variable names on the row headers.
+Introducing collect style showbase
+
+There is a lot we could do to make this table prettier, but let’s at least get rid of the row for Male. Male
+is the base level for the factor variable i.sex and we do not need to see its zero coefficient. To turn off
+displaying base levels for factor variables, we type
+. collect style showbase off
+
+Recall that we do not have to respecify our layout just to see the effect of style changes. We just type
+. collect preview
+Coefficient Std. error
+Age (years)
+Weight (kg)
+Female
+Intercept
+
+.6374325
+.4170339
+.8244702
+70.13615
+
+t p-value
+
+.0111334 57.25
+.013474 30.95
+.4140342 1.99
+1.187299 59.07
+
+0.000
+0.000
+0.046
+0.000
+
+The base level is gone.
+That is all we are going to style on this table. We will have much more to say about styles in section
+Let’s talk styles.
+
+Intro 2 — A tour of concepts and commands 28
+
+At this point, it should come as no surprise that we can transpose the table by swapping the position
+of colname and result in our layout.
+. collect layout (result) (colname)
+Collection: default
+Rows: result
+Columns: colname
+Table 1: 4 x 4
+Age (years) Weight (kg)
+Coefficient
+Std. error
+t
+p-value
+
+.6374325
+.0111334
+57.25
+0.000
+
+Sex Intercept
+Female
+
+.4170339 .8244702
+.013474 .4140342
+30.95
+1.99
+0.000
+0.046
+
+70.13615
+1.187299
+59.07
+0.000
+
+Let’s clear the automatic levels so they does not surprise us later.
+. collect style autolevels result, clear
+
+Okay, it did bite the authors when they were writing this entry, and we do not want you to be surprised
+in the same way. It is pretty easy to convince yourself that collections are broken when you have an
+autolevels set that is at odds with levels you are trying to report.
+Tables of model statistics
+
+Before we leave this simple regression, let’s look at one more thing. You may think that the regression
+coefficients are the only “tabular” results we have collected. But there is another set of results lurking in
+our collection, the model-level statistics. They are all about this one model, so collectively they are a set
+of one-dimensional results. Even so, a one-dimensional table is still a table.
+
+Intro 2 — A tour of concepts and commands 29
+
+We can also tell that the model statistics have been collected by listing the labels of dimension result.
+. collect label list result
+Collection: default
+Dimension: result
+Label: Result
+Level labels:
+F F statistic
+N Number of observations
+_r_b Coefficient
+_r_ci __LEVEL__% CI
+_r_df df
+_r_lb __LEVEL__% lower bound
+_r_p p-value
+_r_se Std. error
+_r_ub __LEVEL__% upper bound
+_r_z t
+_r_z_abs |t|
+beta Standardized coefficient
+cmd Command
+cmdline Command line as typed
+depvar Dependent variable
+df_m Model DF
+df_r Residual DF
+estat_cmd Program used to implement estat
+ll Log likelihood
+ll_0 Log likelihood, constant-only model
+marginsok Predictions allowed by margins
+model Model
+mss Model sum of squares
+predict Program used to implement predict
+properties Command properties
+r2 R-squared
+r2_a Adjusted R-squared
+rank Rank of VCE
+rmse RMSE
+rss Residual sum of squares
+sum_w Sum of the weights
+title Title of output
+vce SE method
+
+It takes a bit of scanning, but about midway down we see the Model DF, the Residual DF, and the
+Log likelihood. A bit farther down, we see the R-squared, the Adjusted R-squared, and the RMSE.
+Do not be distracted by the LEVEL %; that is just the way labels obtain the confidence level that
+can be specified using the level() option of regression commands.
+Previously, we pulled out the coefficient statistics by interacting dimensions result and colname.
+How do we ask for just model-level results? They are a one-way table (listing) of results, so we do not
+need to specify anything for our columns. We just ask for dimension result on the rows.
+
+Intro 2 — A tour of concepts and commands 30
+. collect layout (result)
+Collection: default
+Rows: result
+Table 1: 23 x 1
+F statistic
+Number of observations
+Command
+Command line as typed
+Dependent variable
+Model DF
+Residual DF
+Program used to implement estat
+Log likelihood
+Log likelihood, constant-only model
+Predictions allowed by margins
+Model
+Model sum of squares
+Program used to implement predict
+Command properties
+R-squared
+Adjusted R-squared
+Rank of VCE
+RMSE
+Residual sum of squares
+Sum of the weights
+Title of output
+SE method
+
+1501.751
+10351
+regress
+regress bpsystol age weight i.sex
+bpsystol
+3
+10347
+regress_estat
+-45420.36
+-47291.07
+XB default
+ols
+1709210
+regres_p
+b V
+.3033381
+.3031361
+4
+19.47772
+3925460
+10351
+Linear regression
+ols
+
+Well, we certainly have our model statistics, but we have a lot of other “junk” too—the Dependent
+variable, a flag for Predictions allowed by margins, the Rank of VCE, and even the Program
+used to implement predict and the Command line as typed. We are going to have to be specific
+with collect layout about the levels of result we want.
+. collect layout (result[N r2 rmse df_m df_r F])
+Collection: default
+Rows: result[N r2 rmse df_m df_r F]
+Table 1: 6 x 1
+Number of observations
+R-squared
+RMSE
+Model DF
+Residual DF
+F statistic
+
+10351
+.3033381
+19.47772
+3
+10347
+1501.751
+
+In explaining how we ask for the model statistics compared with how we ask for the coefficient
+statistics, we said, “They are a one-way table (listing) of results, so we do not need to specify anything
+for our columns.” That is true, but it is also a pretty fast explanation. If it seems logical to you, you are
+good to go. If you would like to understand more fully why it is true, see section How collect layout
+processes tag specifications in [TABLES] Collection principles.
+
+Intro 2 — A tour of concepts and commands 31
+
+What is in my collection, multiple-equation models (dimension coleq)
+Another “unusual” dimension that is useful for multivariate models is coleq. Let’s collect the results
+from a simple multivariate regression.
+. collect clear
+. collect:
+
+mvreg bpsystol bpdiast = age weight
+
+Equation
+
+Obs
+
+Parms
+
+RMSE
+
+”R-sq”
+
+F
+
+P>F
+
+bpsystol
+bpdiast
+
+10,351
+10,351
+
+3
+3
+
+19.48051
+11.51474
+
+0.3031
+0.2067
+
+2250
+1348.469
+
+0.0000
+0.0000
+
+Coefficient
+
+Std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+.6379892
+.4069041
+71.27096
+
+.0111315
+.0124786
+1.041742
+
+57.31
+32.61
+68.42
+
+0.000
+0.000
+0.000
+
+.6161692
+.3824435
+69.22894
+
+.6598091
+.4313646
+73.31297
+
+.187733
+.3116502
+50.37585
+
+.0065797
+.007376
+.615764
+
+28.53
+42.25
+81.81
+
+0.000
+0.000
+0.000
+
+.1748355
+.2971918
+49.16884
+
+.2006306
+.3261086
+51.58287
+
+bpsystol
+
+age
+weight
+_cons
+
+bpdiast
+
+age
+weight
+_cons
+
+What is new about this regression is that it has multiple equations—one for bpsystol and one for
+bpdiast. It is sensible to tag each equation in the model and to put those tags into a dimension where
+they can be referenced together. That is just what collect does.
+What does it name that dimension? Let’s look at the e(b) matrix again.
+. matrix list e(b)
+e(b)[1,6]
+bpsystol: bpsystol: bpsystol:
+bpdiast:
+bpdiast:
+bpdiast:
+age
+weight
+_cons
+age
+weight
+_cons
+y1 .63798917 .40690407 71.270956 .18773302 .31165024 50.375852
+
+We see that there are colnames on this matrix, as there were on the simple regression. But we also
+see bpsystol: and bpdiast: above the colnames. Those are the dependent variables of our equation,
+and they also label the columns of the matrix. Collectively, we call bpsystol and bpdiast the matrix’s
+coleqs, and there are matrix commands for setting and fetching the coleq. So coleq is the name
+collect gives to the dimension that holds the tags for the equations. In our model, the levels of those
+tags are the dependent variable names— bpsystol and bpdiast. Let’s confirm
+. collect label list coleq, all
+Collection: default
+Dimension: coleq
+Label: Depvars, parameters, and column equations
+Level labels:
+bpdiast Diastolic blood pressure
+bpsystol Systolic blood pressure
+
+Indeed coleq is a dimension. It has its own nice, long label— Depvars, parameters, and
+column equations. Its levels are indeed the dependent variable names from our multivariate regression— bpdiast and bpsystol. And those dimensions have their own nice, long labels— Diastolic
+blood pressure and Systolic blood pressure.
+
+Intro 2 — A tour of concepts and commands 32
+
+collect label list can tell us a lot about what is in a dimension, how we might use it in a layout,
+and whether we are likely to want to change its labels for our table.
+
+We clearly cannot use our univariate regression layout specification.
+. collect layout (colname) (result)
+
+Every cell in that table would have two values, one for the bpdiast dependent variable and one for
+the bpsystol dependent variable. That specification does not uniquely identify the cells in the table.
+We need to add dimension coleq. Let’s try it in the tables specification first.
+. collect style autolevels result _r_b _r_ci _r_se _r_z _r_p
+. collect layout (colname) (result) (coleq)
+Collection: default
+Rows: colname
+Columns: result
+Tables: coleq
+Table 1: 3 x 5
+Table 2: 3 x 5
+Systolic blood pressure
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+95% CI
+
+.6379892 .6161692
+.4069041 .3824435
+71.27096 69.22894
+
+.6598091
+.4313646
+73.31297
+
+Std. error
+
+t p-value
+
+.0111315 57.31
+.0124786 32.61
+1.041742 68.42
+
+0.000
+0.000
+0.000
+
+Diastolic blood pressure
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+95% CI
+
+.187733 .1748355
+.3116502 .2971918
+50.37585 49.16884
+
+.2006306
+.3261086
+51.58287
+
+Std. error
+
+t p-value
+
+.0065797 28.53
+.007376 42.25
+.615764 81.81
+
+0.000
+0.000
+0.000
+
+We have presented our regression results in two tables.
+That is not the best arrangement if we want to compare across the two regressions. Let’s shuffle the
+equations onto the columns and put both the colnames and the result dimensions on the rows.
+
+Intro 2 — A tour of concepts and commands 33
+. collect layout (colname#result) (coleq)
+Collection: default
+Rows: colname#result
+Columns: coleq
+Table 1: 18 x 2
+Systolic blood pressure Diastolic blood pressure
+Age (years)
+Coefficient
+95% CI
+Std. error
+t
+p-value
+Weight (kg)
+Coefficient
+95% CI
+Std. error
+t
+p-value
+Intercept
+Coefficient
+95% CI
+Std. error
+t
+p-value
+
+.6161692
+
+.3824435
+
+69.22894
+
+.6379892
+.6598091
+.0111315
+57.31
+0.000
+.4069041
+.4313646
+.0124786
+32.61
+0.000
+71.27096
+73.31297
+1.041742
+68.42
+0.000
+
+.1748355
+
+.2971918
+
+49.16884
+
+.187733
+.2006306
+.0065797
+28.53
+0.000
+.3116502
+.3261086
+.007376
+42.25
+0.000
+50.37585
+51.58287
+.615764
+81.81
+0.000
+
+Now it is easy to compare the regression coefficients and their statistics across dependent variables.
+Again, there is a lot we could do to make this table prettier. The justification makes the CIs jut out. As
+we predicted, the labels on bpsystol and bpdiast are too long for column headers. There are too many
+digits in the results. And more. We will address those types of concerns in Let’s talk styles.
+
+What is in my collection, collecting results from multiple commands (dimension
+cmdset)
+We have been collecting results from a single command. It is just as easy to collect and tabulate results
+from several commands.
+Let’s collect results from two regressions.
+. collect clear
+. collect: regress bpsystol age weight
+. collect: regress bpsystol age weight i.hlthstat
+
+In the second regression, we added a factor variable that records self-reported health status.
+With two regressions in our collection, we have two coefficients for age and weight. We have
+two of every statistic associated with those coefficients. That is painfully obvious, but important when
+specifying a layout. Because we have two of nearly everything, we need another dimension to tell the
+coefficients in the regression apart.
+
+Intro 2 — A tour of concepts and commands 34
+
+If only we had a dimension that identified the specific commands from which we collected results.
+We do, dimension cmdset. Let’s look at its levels.
+. collect label list cmdset, all
+Collection: default
+Dimension: cmdset
+Label: Command results index
+Level labels:
+1
+2
+
+Well, that is minimalist. The levels are 1 and 2 and they are unlabeled. Regardless, cmdset is a
+counter (or index) for each command from which we collected results. That is enough. Let’s put that on
+the columns and put both the colname and result dimensions on the rows. To keep things short, let’s
+just show the coefficients and their standard errors.
+. collect style autolevels result _r_b _r_se
+. collect layout (colname#result) (cmdset)
+Collection: default
+Rows: colname#result
+Columns: cmdset
+Table 1: 24 x 2
+1
+Age (years)
+Coefficient
+Std. error
+Weight (kg)
+Coefficient
+Std. error
+Excellent
+Coefficient
+Std. error
+Very good
+Coefficient
+Std. error
+Good
+Coefficient
+Std. error
+Fair
+Coefficient
+Std. error
+Poor
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+2
+
+.6379892 .6071483
+.0111315 .0119737
+.4069041 .4039598
+.0124786 .012471
+0
+0
+.715111
+.5519263
+2.233169
+.5453581
+4.133798
+.6492333
+3.549244
+.8558511
+71.27096 71.22963
+1.041742 1.073791
+
+And we need not stop there. We can add the results of as many commands as we like to a collection.
+Let’s add a third regression with one more covariate.
+. collect: regress bpsystol age weight i.hlthstat i.sex
+
+Intro 2 — A tour of concepts and commands 35
+
+To see those results on our table, we do not have to respecify our layout. We still want the commands
+on the columns. We have just added one more command. All we need to do is repreview the table.
+. collect preview
+1
+Age (years)
+Coefficient
+Std. error
+Weight (kg)
+Coefficient
+Std. error
+Excellent
+Coefficient
+Std. error
+Very good
+Coefficient
+Std. error
+Good
+Coefficient
+Std. error
+Fair
+Coefficient
+Std. error
+Poor
+Coefficient
+Std. error
+Male
+Coefficient
+Std. error
+Female
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+2
+
+3
+
+.6379892 .6071483 .6070032
+.0111315 .0119737 .011973
+.4069041 .4039598 .4122565
+.0124786 .012471 .0134793
+0
+0
+
+0
+0
+
+.715111 .6759903
+.5519263 .5524101
+2.233169 2.184542
+.5453581 .5461395
+4.133798 4.062105
+.6492333 .6506867
+3.549244 3.537842
+.8558511 .8558125
+0
+0
+.6725152
+.4148375
+71.27096 71.22963 70.32292
+1.041742 1.073791 1.210646
+
+Just what we expected.
+We could make this table prettier; see section Let’s talk styles.
+
+Intro 2 — A tour of concepts and commands 36
+
+Let’s at least get rid of the base levels of the factor variables and make the column headers a bit more
+informative.
+. collect style showbase off
+. collect label levels cmdset 1 ”Base” 2 ”Partial” 3 ”Full”
+. collect preview
+Base
+Age (years)
+Coefficient
+Std. error
+Weight (kg)
+Coefficient
+Std. error
+Very good
+Coefficient
+Std. error
+Good
+Coefficient
+Std. error
+Fair
+Coefficient
+Std. error
+Poor
+Coefficient
+Std. error
+Female
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+Partial
+
+Full
+
+.6379892 .6071483 .6070032
+.0111315 .0119737 .011973
+.4069041 .4039598 .4122565
+.0124786 .012471 .0134793
+.715111 .6759903
+.5519263 .5524101
+2.233169 2.184542
+.5453581 .5461395
+4.133798 4.062105
+.6492333 .6506867
+3.549244 3.537842
+.8558511 .8558125
+.6725152
+.4148375
+71.27096 71.22963 70.32292
+1.041742 1.073791 1.210646
+
+You cannot only collect from multiple commands but also collect from multiple sets of related commands. In the current example, we could have collected results from test commands for the additional
+covariates in the Partial and Full models. Or we could have collected the results of lrtest for the
+same purpose. Or we could have collected the results of margins commands that might have estimated
+the effect of dropping weight by 10%. Any or all of these results could have been collected and added
+below the coefficients in the table above. For an example, see [TABLES] Example 6.
+
+Seeing what is my collection
+We have been pulling dimension names out of thin air and using them. Let’s do more. You can ask
+your collection about its dimensions at any time.
+
+Intro 2 — A tour of concepts and commands 37
+
+Introducing collect dims
+. collect dims
+Collection dimensions
+Collection: default
+Dimension
+Layout, style, header, label
+cmdset
+coleq
+colname
+colname_remainder
+hlthstat
+program_class
+result
+result_type
+rowname
+sex
+Style only
+
+border_block
+cell_type
+
+No. levels
+3
+1
+10
+1
+5
+1
+33
+3
+1
+2
+4
+4
+
+We read from the output that the current collection is the default collection. And we see a list of
+dimensions in groups.
+Header Layout, style, header, label is telling you that you can do anything in the collection
+system with the dimensions in that group. You can lay out tables using collect layout. You can set
+cell styles on specific dimensions and levels using collect style cell. (Cell styles are all the styles
+for how things look—bolding, numeric formats, color, etc.) You can set whether the headers show labels,
+names or nothing for dimensions, or levels of dimensions, using collect style header. You can set
+the content of the labels used in the row and column headers using collect label.
+The second grouping reads Style only. The only thing you can do with these dimensions and their
+levels is set cell styles.
+A third grouping, not shown here but appearing between the above two, reads Header, label. You
+can do only two things with the dimensions in this group. You can set whether labels or names are shown
+in the headers, and you can change the content of the labels used in the headers. This group is populated
+by factor variables found in dimension coleq, roweq, or rowname but not colname or var.
+It is not a syntax error to use any of these dimensions on one of the commands that are not in its usage
+group. Style and label commands are always allowed so long as their syntax is legal. The dimensions
+and levels that they reference do not need to exist in the current collection.
+Let’s return to the output of collect dims. In the first grouping of dimensions, we immediately
+recognize cmdset, colname, coleq, and result. They need no further explanation. That leaves three
+dimensions in the first group that we do not recognize— colname remainder, program class, and
+result type. Let’s list their levels and labels to search for clues.
+
+Intro 2 — A tour of concepts and commands 38
+
+First, colname remainder,
+. collect label list colname_remainder, all
+Collection: default
+Dimension: colname_remainder
+Label: Covariate names with factors removed
+Level labels:
+_cons
+
+colname remainder is not interesting in this example. This dimension is created when collect
+augments the tags on a result with the factor variables from dimensions colname and var already in
+the tag. colname remainder is the remaining (nonfactor) elements of interactions or cons when the
+colname level is a single factor variable. This dimension might be necessary to help uniquely match
+items when you specify factor variables directly in collect layout instead of using them as levels
+within dimension colname or var.
+
+Second, program class,
+. collect label list program_class, all
+Collection: default
+Dimension: program_class
+Label: Result program class
+Level labels:
+eclass
+
+Well, that could not be more boring. The single, unlabeled level is eclass. We collected results from
+two commands, two regress commands, and regress returns only results in e(). Results returned in
+e() are called e-class results, ergo, eclass. Had we also collected results from summarize, or even
+margins, then we would see a second level here— rclass.
+We cannot think of a reason to use dimension program class in the collect system. You could set
+the background to red for results returned by e-class commands and set the background to blue for results
+returned by r-class commands. We do not know why you would, but you could. Perhaps you are writing
+Stata documentation and want to emphasize where the results came from.
+Third, result type,
+. collect label list result_type, all
+Collection: default
+Dimension: result_type
+Label: Result type
+Level labels:
+macro Macro
+matrix Matrix
+scalar Scalar
+
+The levels are macro, matrix, and scalar. Those are the types of results that can be returned in
+e() or r(). Again, not something you would use often in specifying a layout or styling cells. But you
+could. If you added the interaction #result type[scalar] to any term in the row, column, or table
+specification in collect layout, you would limit the table to include only scalar results.
+Factor variables in regressions and other commands
+
+In the first group, we see the two dimensions, hlthstat and sex. Those are the two factor variables
+from our regressions. collect creates dimensions for factor variables from regressions and from other
+commands that accept factor variables in the varlist.
+
+Intro 2 — A tour of concepts and commands 39
+
+These dimensions are similar to the dimensions that are named after the by variables in our very
+first example in this entry. All of these dimensions can be used to specify rows and columns in
+collect layout. Even dimensions hlthstat and sex can be used; however, they must be specified as
+i.hlthstat and i.sex when used in the colname dimension.
+One way to tag regression results is colname[i.hlthstat]. So we do get a table by typing
+. collect layout (colname[i.hlthstat]#result) (cmdset)
+Collection: default
+Rows: colname[i.hlthstat]#result
+Columns: cmdset
+Table 1: 12 x 2
+Partial
+Very good
+Coefficient
+Std. error
+Good
+Coefficient
+Std. error
+Fair
+Coefficient
+Std. error
+Poor
+Coefficient
+Std. error
+
+Full
+
+.715111 .6759903
+.5519263 .5524101
+2.233169 2.184542
+.5453581 .5461395
+4.133798 4.062105
+.6492333 .6506867
+3.549244 3.537842
+.8558511 .8558125
+
+We have selected just the i.hlthstat levels of dimension colname. Note that the “Base” column is
+no longer in the table. Factor variable i.hlthstat was not in the base regression, so there is no “Base”
+column to report when the table is limited to colname[i.hlthstat].
+We can even limit the table to just some of the levels of the factor variable i.hlthstat. To do that,
+we use standard factor-variable notation.
+. collect layout (colname[2.hlthstat 4.hlthstat]#result) (cmdset)
+Collection: default
+Rows: colname[2.hlthstat 4.hlthstat]#result
+Columns: cmdset
+Table 1: 6 x 2
+Partial
+Very good
+Coefficient
+Std. error
+Fair
+Coefficient
+Std. error
+
+Full
+
+.715111 .6759903
+.5519263 .5524101
+4.133798 4.062105
+.6492333 .6506867
+
+You can use full factor-variable notation, so typing
+. collect layout (colname[i(2 4).hlthstat]#result) (cmdset)
+
+would produce the same table.
+
+Intro 2 — A tour of concepts and commands 40
+
+Another thing we can do with dimensions hlthstat and sex is change their labels and the labels on
+their levels. Let’s relabel the 4th level of hlthstat, and then repreview our most recent table.
+. collect label levels hlthstat 4 ”Between Very good and Poor”, modify
+. collect preview
+Partial
+Very good
+Coefficient
+Std. error
+Between Very good and Poor
+Coefficient
+Std. error
+
+Full
+
+.715111 .6759903
+.5519263 .5524101
+4.133798 4.062105
+.6492333 .6506867
+
+That leaves the two dimensions in the Style only group of collect dims — border block and
+cell type. These dimensions are for advanced use, but let’s list the levels and labels for cell type
+anyway.
+. collect label list cell_type, all
+Collection: default
+Dimension: cell_type
+Label: Table cell type
+Level labels:
+column-header
+corner
+item
+row-header
+
+The levels row-header, column-header, item, and corner are referring to the cells in the four
+parts of a table—the cells in the row headers, the cells in the column headers, the item cells in the body
+of the table, and the no mans land of the upper-left corner. When you type
+. collect style cell cell_type[row-header], shading(background(blue))
+
+you are changing the background color of all the cells in the row-header region to blue.
+See [TABLES] Example 4 for an example using dimension cell type.
+Surprisingly, the levels of dimension border block are exactly the same as the levels of cell type.
+Whereas dimension cell type refers to the cells in the table regions, dimension border block refers
+to the entire block of the region.
+
+Special dimensions created by table
+We have covered the most important special dimensions that can be created when you collect results.
+There may be others if your collection was created by table. The nomenclature is familiar now, so let’s
+cover these dimensions quickly. Not because they are unimportant but because you are now ready to
+drink from the fire hose. Our examples will be terse and intended solely to demonstrate features, not to
+be interesting or meaningful.
+The table command is built on top of the collection system. The table command builds a collection
+to hold all the results you request, customizes some styles, creates a layout, and then previews the table.
+table names the collection it creates Table. If you run another table command, the collection
+Table is replaced with the collection created by the new table command. Collection Table, when it
+exists, always contains the collection for the most recent table command.
+
+Intro 2 — A tour of concepts and commands 41
+
+Dimension variables
+
+We mentioned much earlier that there is not much difference in the collection created by a command
+like collect: by region: summarize . . . and a command like table region . . . . Both create a dimension named region, and its levels are the distinct values that the variable region takes on in the dataset.
+We discussed this type of dimension at length in Tags, dimensions, and levels through Interactions in
+collect layout and will say no more here.
+Variables from statistic() option—dimension var
+
+When you specify statistics using the statistic() option of table, table creates a dimension
+named var whose levels are the names of the variables for which statistics were computed. Take the
+simple table,
+. table region, statistic(mean age lead) statistic(sd age lead)
+
+Region
+NE
+MW
+S
+W
+Total
+
+Age (years)
+
+Mean
+Lead (mcg/dL)
+
+47.81584
+46.52776
+48.19068
+47.83828
+47.57965
+
+14.83784
+14.78544
+13.29985
+14.52686
+14.32033
+
+Standard deviation
+Age (years)
+Lead (mcg/dL)
+17.01692
+17.37627
+16.86443
+17.53498
+17.21483
+
+5.782612
+6.698146
+6.200866
+5.704972
+6.166468
+
+We can learn more about this table by typing collect layout:
+. collect layout
+Collection: Table
+Rows: region
+Columns: result#var
+Table 1: 6 x 4
+
+Region
+NE
+MW
+S
+W
+Total
+
+Age (years)
+
+Mean
+Lead (mcg/dL)
+
+47.81584
+46.52776
+48.19068
+47.83828
+47.57965
+
+14.83784
+14.78544
+13.29985
+14.52686
+14.32033
+
+Standard deviation
+Age (years)
+Lead (mcg/dL)
+17.01692
+17.37627
+16.86443
+17.53498
+17.21483
+
+5.782612
+6.698146
+6.200866
+5.704972
+6.166468
+
+When specified without arguments, collect layout redisplays the most recent table it created, and
+yes, table used collect layout to create its table. Let’s focus on the header that we have heretofore
+ignored. It tells us what the row specification was— region. And it tells us what the column specification
+was—result#var. Knowing those specifications can be truly convenient. If we want to rearrange the
+table rows and columns, we know which dimensions to use.
+
+Intro 2 — A tour of concepts and commands 42
+
+Dimension var is the new player in that specification. Let’s look at var a little more closely.
+. collect label list var
+Collection: Table
+Dimension: var
+Label: Statistic option variable
+Level labels:
+age Age (years)
+lead Lead (mcg/dL)
+
+We see levels age and lead. Those are the names of the variables we specified in the statistic()
+option. Dimension var looks a lot like the dimension colname, which we saw when collecting regression
+results. Great we know how to use dimensions like that. Let’s shuffle our table so that the means and
+standard deviations are near each other.
+. collect layout (var#result) (region)
+Collection: Table
+Rows: var#result
+Columns: region
+Table 1: 6 x 5
+
+Age (years)
+Mean
+Standard deviation
+Lead (mcg/dL)
+Mean
+Standard deviation
+
+NE
+
+MW
+
+47.81584
+17.01692
+14.83784
+5.782612
+
+Region
+
+S
+
+W
+
+Total
+
+46.52776
+17.37627
+
+48.19068
+16.86443
+
+47.83828
+17.53498
+
+47.57965
+17.21483
+
+14.78544
+6.698146
+
+13.29985
+6.200866
+
+14.52686
+5.704972
+
+14.32033
+6.166468
+
+Dimension colname and matching to regressions
+
+We said that dimension var looked a lot like dimension colname. In fact, they serve exactly the same
+purpose. So much so that table also creates dimension colname, which is identical to dimension var.
+This can be useful if you are trying to put results from table on the same rows or columns as results
+from regressions or regressionlike commands. Recall that collect puts covariate names into dimension
+colname.
+Here is a silly example using colname to align the results from table and regress.
+First, we type the table command.
+. table, statistic(mean age lead) statistic(sd age lead)
+Mean
+Age (years)
+Lead (mcg/dL)
+Standard deviation
+Age (years)
+Lead (mcg/dL)
+
+47.57965
+14.32033
+17.21483
+6.166468
+
+Intro 2 — A tour of concepts and commands 43
+
+Then, we add our regression results to the table results.
+. collect, name(Table): regress bpsystol age lead
+Source
+
+SS
+
+df
+
+MS
+
+Number of obs
+F(2, 4945)
+Prob > F
+R-squared
+Adj R-squared
+Root MSE
+
+=
+=
+=
+=
+=
+=
+
+4,948
+775.82
+0.0000
+0.2388
+0.2385
+20.31
+
+Model
+Residual
+
+640033.944
+2039746.25
+
+2
+4,945
+
+320016.972
+412.486602
+
+Total
+
+2679780.19
+
+4,947
+
+541.698038
+
+bpsystol
+
+Coefficient
+
+Std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+age
+lead
+_cons
+
+.6517974
+.2680019
+96.0544
+
+.0168645
+.0468828
+1.057516
+
+38.65
+5.72
+90.83
+
+0.000
+0.000
+0.000
+
+.6187355
+.1760907
+93.9812
+
+.6848593
+.359913
+98.1276
+
+Note that we used the collect option name(), which we used to place our results into collection
+Table—the collection produced by the table command.
+Behind the scenes, table sets the automatic levels of results to be only the results you have specified on the table command or what table thinks are sensible results to show if you have included a
+command() option. We need to add the regression results we wanted displayed to the automatic levels.
+Let’s add coefficients and their standard errors.
+. collect style autolevels result _r_b _r_se
+
+All that is left is to specify how we want our table to look.
+. collect layout (colname) (result)
+Collection: Table
+Rows: colname
+Columns: result
+Table 1: 3 x 4
+
+Age (years)
+Lead (mcg/dL)
+Intercept
+
+Mean
+
+Standard deviation
+
+Coefficient
+
+Std. error
+
+47.57965
+14.32033
+
+17.21483
+6.166468
+
+.6517974
+.2680019
+96.0544
+
+.0168645
+.0468828
+1.057516
+
+We have both our table and regress results in one table.
+
+Intro 2 — A tour of concepts and commands 44
+
+We could organize the table as one column.
+. collect layout (colname#result)
+Collection: Table
+Rows: colname#result
+Table 1: 13 x 1
+Age (years)
+Mean
+Standard deviation
+Coefficient
+Std. error
+Lead (mcg/dL)
+Mean
+Standard deviation
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+47.57965
+17.21483
+.6517974
+.0168645
+14.32033
+6.166468
+.2680019
+.0468828
+96.0544
+1.057516
+
+Why would we want the results in one column? Perhaps we would like to compare the results across
+groups.
+If we just add the region variable as the row specification to our table command, we will compute
+the means by the levels of region.
+. table region, statistic(mean age lead) statistic(sd age lead) nototal
+
+If we insert by region: into the command that collects regression results, the regression results will
+also be computed by the levels of region.
+. collect, name(Table): by region, sort: regress bpsystol age lead
+
+We still need to add to the automatic levels.
+. collect style autolevels result _r_b _r_se
+
+Intro 2 — A tour of concepts and commands 45
+
+All that is left is to add dimension region as our column specification.
+. collect layout (colname#result) (region)
+Collection: Table
+Rows: colname#result
+Columns: region
+Table 1: 13 x 4
+NE
+Age (years)
+Mean
+Standard deviation
+Coefficient
+Std. error
+Lead (mcg/dL)
+Mean
+Standard deviation
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+Region
+MW
+
+S
+
+W
+
+47.81584
+17.01692
+.6819023
+.0390149
+
+46.52776
+17.37627
+.6143461
+.0305406
+
+48.19068
+16.86443
+.6761958
+.034739
+
+47.83828
+17.53498
+.6459431
+.0319899
+
+14.83784
+5.782612
+.3411097
+.1148679
+
+14.78544
+6.698146
+.26796
+.0796156
+
+13.29985
+6.200866
+.3455647
+.0934401
+
+14.52686
+5.704972
+.1104092
+.0969654
+
+93.83657
+2.50846
+
+97.91132
+1.837282
+
+93.83902
+2.150045
+
+98.2411
+2.09812
+
+Index of command() options—dimension command
+
+The table command itself can collect results from multiple commands. Here is an example of two
+nested regressions.
+. table, command(regress bpsystol age lead)
+>
+command(regress bpsystol age lead weight)
+regress bpsystol age lead
+Age (years)
+Lead (mcg/dL)
+Intercept
+regress bpsystol age lead weight
+Age (years)
+Lead (mcg/dL)
+Weight (kg)
+Intercept
+
+.6517974
+.2680019
+96.0544
+.6373174
+.1183383
+.3998766
+70.08091
+
+Clearly, table is keeping track of the commands we typed; the full commands are shown right there on
+the table. The commands are the super rows, and the regression coefficients from the result dimension
+are the rows. table creates the dimension command and uses it to hold a level for each command()
+option.
+. collect label list command
+Collection: Table
+Dimension: command
+Label: Command option index
+Level labels:
+1 regress bpsystol age lead
+2 regress bpsystol age lead weight
+
+Intro 2 — A tour of concepts and commands 46
+
+We can put the commands on the columns for a more conventional regression comparison table.
+. collect layout (colname#result) (command)
+Collection: Table
+Rows: colname#result
+Columns: command
+Table 1: 4 x 2
+regress bpsystol age lead
+
+regress bpsystol age lead weight
+
+.6517974
+.2680019
+
+.6373174
+.1183383
+.3998766
+70.08091
+
+Age (years)
+Lead (mcg/dL)
+Weight (kg)
+Intercept
+
+96.0544
+
+We should clearly shorten the labels on the levels of command using the collect label levels
+command. We might also want to add the standard errors of the coefficients or other coefficient statistics
+using collect style autolevels result. We leave that as an exercise.
+Index of command() and statistic() options—dimension statcmd
+
+What if our table command has both command() and statistic() options?
+. table region, statistic(mean age lead) statistic(sd age lead) ///
+command(regress bpsystol age lead) nototal
+
+We are not going to show the output from that command because it would wrap on this page. Let’s
+instead see how the table was laid out.
+. collect layout
+Collection: Table
+Rows: region
+Columns: statcmd#result#colname
+Table 1: 5 x 7
+
+(output omitted )
+
+We again omit the table from the output because it would wrap. Let’s focus on the header. The only
+dimension we do not recognize is statcmd in the Columns: listing. Let’s look at statcmd.
+. collect label list statcmd
+Collection: Table
+Dimension: statcmd
+Label: Statistic/command option index
+Level labels:
+1 Mean
+2 Standard deviation
+3 regress bpsystol age lead
+
+Intro 2 — A tour of concepts and commands 47
+
+So each level of statcmd represents one of our statistic() or command() option. Let’s transpose
+our row and column specifications so we can finally see a table.
+. collect layout (statcmd#result#colname) (region)
+Collection: Table
+Rows: statcmd#result#colname
+Columns: region
+Table 1: 13 x 4
+Region
+MW
+
+NE
+Mean
+Mean
+Age (years)
+Lead (mcg/dL)
+Standard deviation
+Standard deviation
+Age (years)
+Lead (mcg/dL)
+regress bpsystol age lead
+Coefficient
+Age (years)
+Lead (mcg/dL)
+Intercept
+
+S
+
+W
+
+47.81584
+14.83784
+
+46.52776
+14.78544
+
+48.19068
+13.29985
+
+47.83828
+14.52686
+
+17.01692
+5.782612
+
+17.37627
+6.698146
+
+16.86443
+6.200866
+
+17.53498
+5.704972
+
+.6819023
+.3411097
+93.83657
+
+.6143461
+.26796
+97.91132
+
+.6761958
+.3455647
+93.83902
+
+.6459431
+.1104092
+98.2411
+
+Other dimensions
+
+One other dimension that table sometimes creates automatically is across(). That dimension holds
+all the combinations of any across() options that are specified to determine over which groups percentages and proportions are computed. You will not use this dimension often.
+table also creates any dimensions that collect would create for any commands that appear in
+command() options. Which is to say, any of the dimensions we have discussed in this entry and more.
+We already saw such dimensions when we included command(regress . . .) in some of our examples
+above.
+
+Let’s talk styles
+Overview
+
+Styles affect how almost everything on your table looks, is organized, or composed. Even so, we are
+not going to categorize all the styles or even discuss what you can do with styles. That is done in the
+individual style entries. This entry is about concepts and how you use those concepts. For a categorization
+of styles with links to their entries, go to [TABLES] Intro 4 and see these sections:
+
+Change styles—formats, bolding, colors, and more
+Control display of zero coefficients in regression results
+Modify labels in row and column headers
+There is a bit of labeling in that last section, but it also links to styles. In row and column headers,
+both content and format matter.
+
+Intro 2 — A tour of concepts and commands 48
+
+Basic targeting
+
+What is common to all styles is changing what you want changed and not changing what you do not
+want changed. You may want to make all coefficients italicized but not any of the other results. You may
+want to emphasize all the statistics on the coefficient age by making them bold but not change the rest
+of the covariates. Hitting your target is what matters. So we will call this targeting.
+We are going to use numeric format to demonstrate. Changes to numeric format can be seen in all
+export formats and in the Results window. Changes to numeric formats can even be seen in the Linux
+console version of Stata.
+Let’s use a table created from one of our simple regressions from earlier. We will not show the
+regression results,
+. collect clear
+. collect: regress bpsystol age weight lead
+
+but we will show the table we lay out.
+. collect layout (colname) (result[_r_b _r_ci _r_se _r_z _r_p])
+Collection: default
+Rows: colname
+Columns: result[_r_b _r_ci _r_se _r_z _r_p]
+Table 1: 4 x 5
+Coefficient
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+95% CI
+
+.6373174 .6057546
+.3998766 .3644918
+.1183383 .0296721
+70.08091 67.04886
+
+Std. error
+
+.6688803
+.4352614
+.2070044
+73.11296
+
+t p-value
+
+.0160998 39.59
+.0180494 22.15
+.0452276 2.62
+1.546613 45.31
+
+0.000
+0.000
+0.009
+0.000
+
+Command collect style cell has option nformat(), which lets us set the numeric format. Let’s
+change all numeric formats on the entire table to %7.4f.
+. collect style cell, nformat(%7.4f)
+
+We did not specify anything after cell, so we are changing the format for everything. Let’s see the
+effect of that change.
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+95% CI
+
+0.6373 0.6058 0.6689
+0.3999 0.3645 0.4353
+0.1183 0.0297 0.2070
+70.0809 67.0489 73.1130
+
+Std. error
+
+t p-value
+
+0.0161 39.5853
+0.0180 22.1546
+0.0452 2.6165
+1.5466 45.3125
+
+0.0000
+0.0000
+0.0089
+0.0000
+
+Intro 2 — A tour of concepts and commands 49
+
+Everything has four decimals. What if we want to change the format of only the coefficients? Recall
+that the coefficients are level r b in dimension result. We simply specify the tag result[ r b] as
+the only value for which we want to change the format.
+. collect style cell result[_r_b], nformat(%7.2f)
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+95% CI
+
+Std. error
+
+0.64 0.6058 0.6689
+0.40 0.3645 0.4353
+0.12 0.0297 0.2070
+70.08 67.0489 73.1130
+
+t p-value
+
+0.0161 39.5853
+0.0180 22.1546
+0.0452 2.6165
+1.5466 45.3125
+
+0.0000
+0.0000
+0.0089
+0.0000
+
+Only the coefficients have two decimal places.
+The format for the coefficients, their confidence intervals, and their standard errors is usually the
+same. Here is how we specify all of those results to have two decimal places.
+. collect style cell result[_r_b _r_ci _r_se], nformat(%7.2f)
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+95% CI
+
+0.64 0.61
+0.40 0.36
+0.12 0.03
+70.08 67.05
+
+Std. error
+
+0.67
+0.44
+0.21
+73.11
+
+t p-value
+
+0.02 39.5853
+0.02 22.1546
+0.05 2.6165
+1.55 45.3125
+
+0.0000
+0.0000
+0.0089
+0.0000
+
+We typed result[ r b r ci r se] to target all three of the results, just as we would type
+result[ r b r ci r se] on collect layout to select the three results for rows or columns. Styles
+are yet another reason why tags, dimensions, and levels are so important in the collection system.
+We could go on formatting results, but you get the idea.
+We can target any dimension that tags any value or label on our table. If we wanted to draw our reader’s
+attention to the results for covariate lead, we might change the color of its row to red, or we might bold
+the text. Instead, we will change the numeric format as a proxy for one of those more reasonable changes.
+. collect style cell colname[lead], nformat(%7.5f)
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+95% CI
+
+0.64
+0.61
+0.67
+0.40
+0.36
+0.44
+0.11834 0.02967 0.20700
+70.08
+67.05
+73.11
+
+Std. error
+
+t p-value
+
+0.02 39.5853 0.0000
+0.02 22.1546 0.0000
+0.04523 2.61651 0.00891
+1.55 45.3125 0.0000
+
+And now the results for lead are “emphasized”.
+Let’s fit this same regression on males, females, and all data. The table command makes that easy.
+We will not show the results of table.
+. table sex, command(regress bpsystol age weight lead)
+
+Intro 2 — A tour of concepts and commands 50
+
+Instead, we will show some tidier results.
+. collect layout (colname#result[_r_b _r_se]) (sex)
+Collection: Table
+Rows: colname#result[_r_b _r_se]
+Columns: sex
+Table 1: 8 x 3
+
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+Male
+
+Sex
+Female
+
+Total
+
+.4756206
+.0221995
+.3499395
+.0281172
+.1154999
+.0580126
+81.09842
+2.700181
+
+.783255
+.023314
+.440647
+.0262451
+.1008595
+.0850915
+61.13921
+2.133394
+
+.6373174
+.0160998
+.3998766
+.0180494
+.1183383
+.0452276
+70.08091
+1.546613
+
+It is hard to tell the standard errors from the coefficients on that table. We could use a header style to
+add row labels for the coefficient and standard error, but let’s instead put parentheses around the standard
+errors. That can be done using the sformat() option of collect style cell.
+. collect style cell result[_r_se], sformat((%s))
+. collect preview
+
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+Male
+
+Sex
+Female
+
+Total
+
+.4756206
+(.0221995)
+.3499395
+(.0281172)
+.1154999
+(.0580126)
+81.09842
+(2.700181)
+
+.783255
+(.023314)
+.440647
+(.0262451)
+.1008595
+(.0850915)
+61.13921
+(2.133394)
+
+.6373174
+(.0160998)
+.3998766
+(.0180494)
+.1183383
+(.0452276)
+70.08091
+(1.546613)
+
+Yes, somewhat surprisingly, you can apply both a numeric and a string format to a value. Once the
+value is numerically formatted, it is then passed through a string format. For numeric values, that string
+format is primarily used just as we used it here—to adorn the result.
+Advanced targeting
+
+What if we want to emphasize just one result in this whole table? What if the age coefficient
+for females was of particular import to our research? We saw just above that we could specify multiple tags by including multiple levels in a dimension using styles. We can also use tag interactions when applying styles. It takes three tags to identify the result we described—result[ r b],
+colname[age], and sex[2]. The way we specify that all of those tags are required is to interact them—
+result[ r b]#colname[age]#sex[2]. The translation of that interaction term into English is literally
+result must be coefficient and covariate must be age and sex must be female. We put that term as the
+argument to collect style cell and type the command.
+. collect style cell result[_r_b]#colname[age]#sex[2], nformat(%7.2f)
+
+Intro 2 — A tour of concepts and commands 51
+
+Previewing our table gives
+. collect preview
+
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+Male
+
+Sex
+Female
+
+Total
+
+.4756206
+(.0221995)
+.3499395
+(.0281172)
+.1154999
+(.0580126)
+81.09842
+(2.700181)
+
+0.78
+(.023314)
+.440647
+(.0262451)
+.1008595
+(.0850915)
+61.13921
+(2.133394)
+
+.6373174
+(.0160998)
+.3998766
+(.0180494)
+.1183383
+(.0452276)
+70.08091
+(1.546613)
+
+Our desired coefficient has been “highlighted”.
+More likely, we want to “highlight” both the coefficient and its standard error. That just requires that
+we specify the tags for both coefficient and standard error, rather than just for the coefficient.
+. collect style cell result[_r_b _r_se]#colname[age]#sex[2], nformat(%7.2f)
+. collect preview
+
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+Male
+
+Sex
+Female
+
+Total
+
+.4756206
+(.0221995)
+.3499395
+(.0281172)
+.1154999
+(.0580126)
+81.09842
+(2.700181)
+
+0.78
+(0.02)
+.440647
+(.0262451)
+.1008595
+(.0850915)
+61.13921
+(2.133394)
+
+.6373174
+(.0160998)
+.3998766
+(.0180494)
+.1183383
+(.0452276)
+70.08091
+(1.546613)
+
+Okay, we will do one thing just for looks. Let’s get rid of that obnoxious vertical rule. You never see
+those in publications.
+. collect style cell border_block, border(right, pattern(nil))
+. collect preview
+
+Age (years)
+Weight (kg)
+Lead (mcg/dL)
+Intercept
+
+Male
+
+Sex
+Female
+
+Total
+
+.4756206
+(.0221995)
+.3499395
+(.0281172)
+.1154999
+(.0580126)
+81.09842
+(2.700181)
+
+0.78
+(0.02)
+.440647
+(.0262451)
+.1008595
+(.0850915)
+61.13921
+(2.133394)
+
+.6373174
+(.0160998)
+.3998766
+(.0180494)
+.1183383
+(.0452276)
+70.08091
+(1.546613)
+
+We specified the border block dimension, but we did not need to target a specific level. We turned
+off right borders on every block in the table, which includes those that were creating that vertical rule.
+pattern(nil) is a programmery way of saying no line.
+
+Intro 2 — A tour of concepts and commands 52
+
+Saving and using
+
+Do not forget you can save and use styles; see [TABLES] collect style save.
+If you get a table styled just the way you want, you can save its style and apply that style to other
+similar tables. There is also nothing wrong with keeping all your style commands in their own do-file
+and running that do-file before you preview a similar table.
+Either way works fine. The advantage of keeping your style commands in a do-file is that you can
+review and change them in the do-file. Keeping a do-file is more challenging if you are using the Table
+Builder to style your table.
+
+Exporting
+We are not going to say much about exporting, which seems odd given that exporting will be the end
+goal for many tables. There just is not much to say. You type collect export, followed by a filename
+with the format you want as the file suffix. That’s about it. This is an entry about concepts, and exporting
+does not have many concepts to explain.
+What we will tell you is that not all styles export to all export formats. If you are exporting to Microsoft
+Word or to HTML, you are in luck. Almost all styles export to those formats. If you are exporting to plain
+text (.txt), you are out of luck. Aside from numeric formats and some text positioning, almost no styles
+export to plain text.
+To learn more about exporting tables from a collection, see collect export.
+
+Saving collections
+You can save and restore collections. There is not anything conceptually interesting to add to that.
+We do recommend that if you are typing collect commands interactively that you do save your work
+by saving your collection.
+
+Managing collections
+You can list the collections in memory, set the current collection, copy collections, combine collections, rename collections, and drop collections. All of those operations can be useful. None of those
+operations is fraught with conceptual challenges.
+Just to be clear: combining collections is no different from adding to an existing collection using
+repeated collect prefixes or collect get commands without collect clearing.
+
+Also see
+[TABLES] Intro 3 — Workflow outline
+[TABLES] Intro 4 — Overview of commands
+
+Intro 3 — Workflow outline
+Description
+
+Remarks and examples
+
+References
+
+Also see
+
+Description
+We outline the basic steps and reference the key commands in creating tables using collections.
+
+Remarks and examples
+We do not discuss the commands below, but you can click on the links to learn more about any
+command.
+
+Outline of basic steps and key commands
+1. Collect results from Stata commands.
+. collect: command ...
+. collect get ...
+. table ...
+. dtable ...
+. etable ...
+
+Every time you type collect: or collect get, you are adding the results to a collection. So
+collections may contain the results from multiple commands.
+2. Perhaps combine collections.
+. collect combine ...
+
+3. See what is in the collection.
+. collect levelsof ...
+. collect dims ...
+. collect label list ...
+
+4. Lay out the rows and columns of your table.
+. collect layout ...
+
+Or use the Tables Builder.
+Then, reconsider your layout. And repeat until you have what you want.
+5. Remove any unwanted results from the collection.
+. collect unget ...
+
+53
+
+Intro 3 — Workflow outline 54
+
+6. Decide you do not like the default labels or titles in the headers, and change them.
+. collect label ...
+. collect style header ...
+. collect style row ...
+. collect style col ...
+
+7. Customize your table—formats, bolding, italics, colors, and more.
+. collect style cell ...
+. collect stars ...
+
+This often requires several steps.
+This might involve applying a style shipped with Stata or one that you have previously saved.
+Some customizations are specific to your intended export format.
+8. Export your table.
+. collect export ...
+
+9. Perhaps save your layout, headers, and customizations as a style file.
+. collect style save ...
+. collect label save ...
+
+Save your labels too.
+You can now skip or abbreviate steps 5 and 6 on future tables that are similar to this table.
+Even if those styles and labels do not get you all the way with a new table, they may save you
+a number of steps.
+10. Perhaps save the collection.
+. collect save ...
+
+You can now come back to the collection and continue making changes to this table or create a
+different table from the same results.
+Before you can effectively perform steps 3 through 6 you will need a working knowledge of tags,
+dimensions, and the levels that identify tags in a dimension. See [TABLES] Intro 2.
+It is also helpful to have a basic understanding of how collect layout lays out a table. You need
+this to effectively handle the inevitable surprises that occur when performing step 4–lay out the rows and
+columns of your table.
+To see examples demonstrating this workflow, see [TABLES] Example 1–[TABLES] Example 7. Also,
+see Juul and Frydenberg (2021, chap. 15) and Mitchell (2025).
+
+References
+Juul, S., and M. Frydenberg. 2021. An Introduction to Stata for Health Researchers. 5th ed. College Station, TX: Stata
+Press.
+Mitchell, M. N. 2025. Create and Export Tables Using Stata. College Station, TX: Stata Press.
+
+Intro 3 — Workflow outline 55
+
+Also see
+[TABLES] Intro 4 — Overview of commands
+
+Intro 4 — Overview of commands
+Description
+
+Remarks and examples
+
+Also see
+
+Description
+We give an overview of all commands in the collect suite, organized by their intended use.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Introduction
+Prepare to collect results
+Collect results
+Combine collections
+Explore the collection
+Modify the collection
+Lay out rows and columns of the table
+Preview the table
+Modify labels in row and column headers
+Control display of zero coefficients in regression results
+Change styles—formats, bolding, colors, and more
+Add a title and notes
+Query collection style properties
+Export the table
+Save styles and labels
+Save the collection
+Manage collections
+
+Introduction
+In [TABLES] Intro 3, we introduced the basic workflow for creating a table using collect. Here we
+provide a more detailed overview of all the commands in the collect suite and information on how
+each one may be useful in the process of creating a table.
+
+Prepare to collect results
+Before collecting results for a new table, you will want to start with an empty collection. There are
+two ways to do this. You can create a new empty collection or clear all collections from memory.
+collect create
+
+Create a new collection
+
+collect clear
+
+Clear all collections in memory
+
+If you have not collected any results since you opened Stata, you can skip this step—the collected
+results will be placed in the empty default collection.
+
+56
+
+Intro 4 — Overview of commands 57
+
+Collect results
+The next step in creating a table is to collect results from one or more Stata commands.
+collect prefix
+
+Collect results from the prefixed command
+
+collect get
+
+Collect results from a previously run command
+
+Alternatively, you can use the table, dtable, and etable commands to create an initial table and
+place the results in a collection in one step.
+
+Combine collections
+You can work with multiple collections at once by iteratively using collect create followed by
+collect get or the collect prefix. If you want to create a single table with results from multiple
+collections, you can first combine the collections.
+collect combine
+
+Collect results from existing collections
+
+Explore the collection
+Values in the collection are organized according to their associated tags (comprising dimensions and
+levels within the dimensions). Before creating and modifying a table, you will need to know about the
+tags, dimensions, and levels of those dimensions in your collection. These will be used in subsequent
+collect commands.
+collect dims
+
+List dimensions in a collection
+
+collect levelsof
+
+List levels of a dimension
+
+collect label list
+
+List the levels of a dimension along with their labels
+
+Modify the collection
+After collecting results, you may want to modify the tags that are associated with the values in your
+collection. This allows you to customize the way values will later align in row and column headers when
+you lay out the table. Additionally, you can create composite results if you would like to display multiple
+results in a single cell.
+collect addtags
+
+Add tags to items in a collection
+
+collect unget
+
+Remove results from a collection
+
+collect recode
+
+Recode dimension levels in a collection
+
+collect remap
+
+Remap tags in a collection
+(modifying tags within or across dimensions)
+
+collect composite
+
+Manage composite results in a collection
+
+Intro 4 — Overview of commands 58
+
+Lay out rows and columns of the table
+With results stored in a collection, you can construct a table by identifying what belongs on the rows
+and columns (and possibly even separate tables).
+collect layout
+
+Arrange values in the collection into a table
+
+collect style autolevels
+
+Specify statistics to be automatically added to the table
+
+Preview the table
+At the time you lay out your table, you will see a preview of the table. As you make changes to the
+table using the commands described in the following sections, you will likely want to see a preview of
+the table after each change.
+collect preview
+
+Preview the table in a collection
+
+Modify labels in row and column headers
+Once an initial table is created, you may want to modify what appears in the row, column, and table
+headers by default. You can select whether labels, titles, or nothing appears for each dimension and for
+each level of a dimension. You can also modify the default labels.
+collect label dim
+
+Add or modify the label for a dimension
+
+collect label levels
+
+Add or modify labels for levels within a dimension
+
+collect label use
+
+Apply labels from an external label file
+
+collect label drop
+
+Drop dimension and level labels
+
+collect style header
+
+Specify whether titles, labels, or nothing is shown for a dimension
+or for levels of a dimension
+
+collect style row
+
+Change arrangement of row headers, how factor variables are
+displayed, how duplicates are reported, and how long labels wrap
+
+collect style column
+
+Change arrangement of column headers, how factor variables are
+displayed, how duplicates are reported, and the width and spacing
+of columns
+
+collect style table
+
+Change display of factor variables in table headers
+
+Intro 4 — Overview of commands 59
+
+Control display of zero coefficients in regression results
+When regression results are included in a table, coefficients with values of 0 are reported for covariates
+that are dropped because of collinearity, base levels of factor variables, and empty cells in factor-variable
+interactions. You can choose to show or hide these 0-valued coefficients.
+collect style showomit
+
+Show or hide omitted covariates
+
+collect style showbase
+
+Show or hide base levels of factor variables
+
+collect style showempty
+
+Show or hide empty cells of factor-variable interactions
+
+Change styles—formats, bolding, colors, and more
+To complete a table, you may want to modify the look of cells in the body of the table or in the row
+and column headers.
+collect style cell
+
+Modify formats, bolding, italics, colors, and more
+
+collect stars
+
+Add stars representing statistical significance
+
+collect style html
+
+Change appearance of cell borders and header cells for tables
+exported to HTML
+
+collect style putdocx
+
+Change width, indentation, and spacing of tables to be
+included in a report created by putdocx
+
+collect style putpdf
+
+Change width, indentation, and spacing of tables to be
+included in a report created by putpdf
+
+collect style smcl
+
+Change appearance of long notes for tables exported
+to SMCL
+
+collect style tex
+
+Change horizontal placement of tables exported to LATEX
+
+collect style txt
+
+Change appearance of long notes for tables exported
+to plain text files
+
+collect style use
+
+Apply styles from an external style file
+
+collect style clear
+
+Clear all collection styles
+
+Intro 4 — Overview of commands 60
+
+Add a title and notes
+You can also add a title and notes to a table and customize their appearance with bolding, italics, font
+color, and more.
+collect title
+
+Add a custom table title in a collection
+
+collect style title
+
+Collection styles for table titles
+
+collect notes
+
+Add table notes in a collection
+
+collect style notes
+
+Collection styles for table notes
+
+Query collection style properties
+After applying styles from an external file and making several edits, you may want to check the current
+settings. You can query style properties for row headers, base levels, the position of the intercept, and
+more.
+collect query
+
+Query collection style properties
+
+Export the table
+After customizing the table, you can export it to Microsoft Word, HTML, PDF, Microsoft Excel, LATEX,
+Markdown, SMCL, or plain text. You can also incorporate the table into a report created with putdocx,
+putpdf, or putexcel.
+collect export
+
+Export table from a collection
+
+putdocx collect
+
+Add a table to a report created by putdocx
+
+putpdf collect
+
+Add a table to a report created by putpdf
+
+putexcel ul cell = collect Add a table to a report created by putexcel with the top left
+cell of the table in ul cell
+
+Save styles and labels
+If you have built a table with styles or labels you would like to apply to other tables, you can save
+these to a file.
+collect label save
+
+Save labels to a file
+
+collect style save
+
+Save styles to a file
+
+Intro 4 — Overview of commands 61
+
+Save the collection
+If you would like to use the collection you created in the future to build a new table or further modify
+the existing table, you can save the collection and use it later.
+collect save
+
+Save a collection to disk
+
+collect use
+
+Use a collection from disk
+
+Manage collections
+You can work with one or more collections in memory. With multiple collections, you can set the
+active collection. You can also list, copy, rename, and drop collections.
+collect dir
+
+Display names of all collections in memory
+
+collect set
+
+Set the current (active) collection
+
+collect copy
+
+Copy a collection
+
+collect rename
+
+Rename a collection
+
+collect drop
+
+Drop collections from memory
+
+Also see
+[TABLES] Intro 3 — Workflow outline
+[TABLES] Intro 5 — Other tabulation commands
+
+Intro 5 — Other tabulation commands
+
+Description
+Tables can be produced by a few other commands.
+
+Remarks and examples
+The table command is not considered an “other” table command. It is not listed below. Although
+table is documented in [R], it is part of the collection system. It is actually implemented on top of the
+collection system documented in this manual. table leaves behind a collection that can be manipulated
+using all the tools in this manual.
+Other tabulation commands are the following:
+Command
+tabulate (oneway)
+tabulate (twoway)
+tabulate, summarize()
+tabstat
+svy: tabulate (oneway)
+svy: tabulate (twoway)
+
+Description
+One-way tabulations with percentages and cumulative percentages
+Two-way tabulations. Optionally computes statistics for
+independence of the rows and columns
+One-way or two-way tabulations of summary statistics
+Tables of summary statistics
+Survey version of tabulate (oneway)
+Survey version of tabulate (twoway)
+
+Aside from the independence statistics computed by two-way tabulate and two-way
+svy: tabulate and the cumulative percentages computed by (one-way) tabulate, all of these
+commands have been superseded by [R] table. The independence statistics are returned in r() and can
+be collected.
+The svy versions of tabulate also have options that return MEFF, DEFF, and other survey statistics.
+Those results are returned in e() and can be collected.
+Aside from the independence statistics and survey statistics, none of these commands returns results,
+and thus, their tabulations cannot be used in collections. That said, it is often useful to collect independence statistics and include them in tables created from collections.
+To be fully truthful, tabstat with the save option will store results into r(). You would never
+collect these results because table can compute all of the statistics that tabstat can, and more. More
+importantly, table automatically puts all the statistics it computes into a collection that is easy to work
+with.
+These commands are all are still documented primarily because they provide an easy and familiar way
+to quickly analyze your data. That is, the data and the independence statistics.
+
+Also see
+[TABLES] Intro 4 — Overview of commands
+
+62
+
+

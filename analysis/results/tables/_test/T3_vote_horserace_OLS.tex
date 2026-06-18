@@ -1,0 +1,36 @@
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Vote horse race at col 5 --- OLS HC3}
+\label{tab:T3_OLS}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline
+ & (1) Per-cap & (2) Volume share & (3) Revenue share \tabularnewline 
+\midrule \addlinespace[\belowrulesep]
+Wine area per 1,000 pop. (ha)&0.168&& \tabularnewline
+&(0.261)&& \tabularnewline
+Wine volume, national share (\%)&&0.454& \tabularnewline
+&&(0.297)& \tabularnewline
+Wine revenue, national share (\%)&&&0.469 \tabularnewline
+&&&(0.309) \tabularnewline
+French language share (\%)&--0.181**&--0.224**&--0.239** \tabularnewline
+&(0.0702)&(0.0885)&(0.104) \tabularnewline
+Absinthe industry share (\%)&--0.272&--0.207&--0.185 \tabularnewline
+&(0.227)&(0.364)&(0.301) \tabularnewline
+Protestant share (\%)&--0.00860&--0.0278&--0.0369 \tabularnewline
+&(0.0675)&(0.0661)&(0.0679) \tabularnewline
+Log population density&--2.48&--2.16&--2.09 \tabularnewline
+&(2.73)&(2.76)&(2.71) \tabularnewline
+Constant&79.3***&78.5***&78.7*** \tabularnewline
+&(11.2)&(11.4)&(11.1) \tabularnewline
+\midrule R-squared&0.594&0.618&0.623 \tabularnewline
+N&25&25&25 \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize N=25 cantons. All cols include col-5 control set. Robust standard errors in parentheses. * p\(<\)0.10, ** p\(<\)0.05, *** p\(<\)0.01.}
+\end{table}

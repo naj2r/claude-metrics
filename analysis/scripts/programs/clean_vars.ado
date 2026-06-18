@@ -45,6 +45,35 @@ program define clean_vars, nclass
 	replace `varlist' = "Fruit trees per cap (1951 proxy)"  if `varlist'=="fruit_tree_density"
 	replace `varlist' = "Vineyard x fruit-tree density"     if `varlist'=="vine_x_fruit"
 
+	* --- Workshop pipeline variables (Phase A'', 2026-05-22) ---
+	*     Match labels with 14_workshop_summary_stats.do labelvar block.
+	replace `varlist' = "Yes-vote, Vote \#68 (absinthe ban)"   if `varlist'=="Y1"
+	replace `varlist' = "Yes-vote fraction (0-1)"              if `varlist'=="Y1_frac"
+	replace `varlist' = "Yes-vote, Vote \#67 (commerce)"       if `varlist'=="pct_yes_67"
+	replace `varlist' = "Yes-vote, Vote \#69 (water power)"    if `varlist'=="pct_yes_69"
+	replace `varlist' = "Petition signatures per 100 eligible" if `varlist'=="pet_per_eligible"
+	replace `varlist' = "Petition signature fraction (0-1)"    if `varlist'=="pet_frac"
+	replace `varlist' = "Turnout, Vote \#68"                   if `varlist'=="turnout_68"
+	replace `varlist' = "Wine area per 1,000 pop. (ha)"        if `varlist'=="X1"
+	replace `varlist' = "Wine area, national share (\%)"       if `varlist'=="X1_share"
+	replace `varlist' = "Wine volume, national share (\%)"     if `varlist'=="X2_share"
+	replace `varlist' = "Wine revenue, national share (\%)"    if `varlist'=="X3_share"
+	replace `varlist' = "White wine revenue share (\%)"        if `varlist'=="X3_white_share"
+	replace `varlist' = "Red wine revenue share (\%)"          if `varlist'=="X3_red_share"
+	replace `varlist' = "White wine volume share (\%)"         if `varlist'=="X3_white_vol_share"
+	replace `varlist' = "Red wine volume share (\%)"           if `varlist'=="X3_red_vol_share"
+	replace `varlist' = "French language share (\%)"           if `varlist'=="cov1"
+	replace `varlist' = "Absinthe trade share (\%)"           if `varlist'=="cov2_total_share"
+	replace `varlist' = "Protestant share (\%)"                if `varlist'=="cov3"
+	replace `varlist' = "Log population density"               if `varlist'=="ln_density"
+	replace `varlist' = "Absinthe-producer indicator"          if `varlist'=="abs_producer"
+	replace `varlist' = "French \$\times\$ Absinthe-producer"  if `varlist'=="fr_x_producer"
+	replace `varlist' = "White \$\times\$ French"              if `varlist'=="X3_white_x_cov1"
+	replace `varlist' = "White-vol \$\times\$ French"          if `varlist'=="X3_white_vol_x_cov1"
+	replace `varlist' = "White \$\times\$ Abs-producer"        if `varlist'=="X3_white_x_absprod"
+	replace `varlist' = "White \$\times\$ Abs-industry"        if `varlist'=="X3_white_x_cov2"
+	replace `varlist' = "Population (1900)"                    if `varlist'=="pop_1900"
+
 	replace `varlist' = "Constant"                          if `varlist'=="_cons"
 
 end

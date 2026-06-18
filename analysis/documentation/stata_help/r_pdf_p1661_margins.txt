@@ -1,0 +1,4606 @@
+makespline — Spline generation 1650
+
+Syntax
+makespline basis varlist [ if ] [ in ] [ weight ] [ , options ]
+
+basis
+
+Description
+
+bspline
+piecewise
+rcs
+linear
+
+B-spline
+piecewise polynomial spline
+restricted cubic spline
+linear spline—piecewise basis of order 1 without rescaling variables
+
+options
+
+Description
+
+Main
+
+bsepsilon(#)
+
+specify the distance (#) from the variable’s boundary for B-spline
+knot placement; default is bsepsilon(0.01)
+local
+generate first-order polynomial spline variables centered around
+adjacent knots
+harrell
+place knots according to percentiles in Harrell (2001); only for
+rcs basis
+order(#)
+use a spline basis of order #; default is order(3)
+knots(#)
+use a spline basis function with # knots
+knotslist(knotvals)
+use knots specified in knotvals
+knotsmat(matname)
+use knots in matrix matname
+distinct(#)
+set minimum number of distinct values required for variables
+used to construct splines to #; default is distinct(10)
+replace
+replace existing variables having the same names as the new basis
+and rescaled variables, if they exist
+norescalevars
+do not rescale variables before generating spline basis
+uniformknots
+place knots at evenly spaced points over the range of each
+variable; default is placement at percentiles
+float
+set type for generated variables to float instead of double
+basis(stub | newvarlist)
+store elements of spline basis function using stub or newvarlist
+rescale(stub | newvarlist) store rescaled values of variables using stub or newvarlist
+collect is allowed; see [U] 11.1.10 Prefix commands.
+fweights, aweights, and iweights are allowed; see [U] 11.1.6 weight.
+
+Options
+
+
+
+
+Main
+
+bsepsilon(#) specifies the distance from the boundary of the variable where B-spline knots may be
+placed. The default is bsepsilon(0.01).
+local specifies that a basis function for a first-order piecewise polynomial be generated with variables
+centered around adjacent knots. When splines are generated for only one variable and used in estimation, the regression coefficients measure slopes for the intervals defined by knots.
+harrell specifies that knots be placed according to the percentiles recommended in Harrell (2001, 23).
+This option may be used only with basis rcs and when specifying 3 to 7 knots.
+
+makespline — Spline generation 1651
+
+order(#) specifies that a spline of order # be used as the basis. order() may be 1, 2, or 3 for basis
+bspline and basis piecewise. order() may only be 3 for basis rcs. For basis linear or when
+the local option is specified, order() may only be 1. The default is order(3), cubic splines.
+knots(#) specifies that a spline or B-spline basis function with # interior knots be used. The number of
+knots must be an integer greater than or equal to 1. The maximum number of knots is either 4,096 or
+two-thirds of the sample size, whichever is smaller. Also, the number of knots must be less than the
+number of distinct values in the variable used to generate the basis function. The default is knots(1)
+if exact knot values are not specified using knotslist() or knotsmat(). For basis rcs, the default
+is knots(3), and the number of knots must be 3 or greater.
+knotslist(knotvals) specifies in knotvals the values of knots to be used for each variable. The knot
+values must be specified in the order of varlist, and a backslash (\) must be used to separate knots for
+different variables. For example, if splines are generated for x1 and x2, the knots may be specified
+as knotslist(20 40 60 \ 5 10 15).
+knotsmat(matname) specifies that, in matname, the knots for each variable be the values in each row.
+The number of knots should be the same for each variable, and there must be as many rows as there
+are variables. If rows of matname are not labeled with varnames, then rows are assumed to be in the
+order of varlist.
+distinct(#) specifies the minimum number of distinct values required for the variables used to construct the basis functions. Intuitively, using discrete variables for continuous interpolation is difficult
+to justify. # specifies the number of distinct values necessary for a variable to be considered continuous. The default is distinct(10).
+replace specifies that the variables generated to form the basis function be replaced.
+If
+basis(stub | newvarlist) or rescale(stub | newvarlist) are specified, the variables named with stub,
+or those listed in newvarlist, are replaced. Otherwise, variables with the default names are replaced.
+norescalevars specifies that the original values of the variables in varlist be used to generate the basis
+function. By default, variables are first rescaled to [0, 1]. norescalevars may not be used with basis
+bspline or basis linear.
+uniformknots specifies that knots be placed at evenly spaced points over the range of each variable.
+The default is placement at percentiles of each of the specified variables.
+float specifies that variables be generated as floats. Because of numerical precision and stability, the
+default is double.
+basis(stub | newvarlist) specifies that the elements of the basis function be generated with the specified
+names.
+
+When stub is specified, this prefix is used to generate enumerated variables for each element of the
+basis function.
+When newvarlist is specified, variables with these names are generated for the elements of the basis
+function.
+rescale(stub | newvarlist) specifies that the rescaled variables used to generate the basis function be
+stored with the specified names. This option applies only to basis piecewise and basis rcs.
+
+When stub is specified, this prefix is used to generate enumerated variables for the rescaled variables.
+When newvarlist is specified, variables with these names are generated for the rescaled variables.
+
+makespline — Spline generation 1652
+
+Remarks and examples
+makespline generates new variables that form B-splines, piecewise polynomial splines, and restricted cubic splines from existing variables. Splines allow for different low-order polynomials in different regions of the original variables, and they approximate a smooth function by continuously connecting
+these low-order polynomials. Knots define the boundaries of the regions.
+
+The standard piecewise polynomial variables created by makespline piecewise allow the functions
+to be linear, quadratic, or cubic in each region. makespline linear provides a convenient method for
+creating linear splines from the original variables, without rescaling. This is useful when you wish to
+directly interpret regression coefficients in the metric of the original variables. The terms in the standard
+piecewise polynomial spline function can be highly collinear and may be numerically unstable when
+used in estimation. B-splines, which can be created by makespline bspline, avoid this problem by
+creating orthogonal spline terms. For an introduction to piecewise polynomial splines and B-splines, see
+Piecewise polynomial splines and B-splines in [R] npregress intro. makespline rcs creates restricted
+cubic splines, also known as natural splines, in which the function is linear before the first knot, cubic
+between adjacent knots, and linear again after the last knot. This can improve performance in the tails
+over the standard cubic spline.
+In addition to selecting the type of spline, makespline allows you to specify the location of knots—
+the locations where the function changes. You can specify the number of knots you wish to allow, and
+makespline will place the knots based on percentiles of the data or uniformly spaced across the range
+of values in the data. Alternatively, you can specify the exact values at which you wish the knots to be
+placed.
+Regardless of the type of spline, we can refer to our newly created variables as a spline basis function.
+A basis is a collection of terms that can approximate a smooth function arbitrarily well. A basis function,
+such as one of the spline functions created by makespline, is a subset of the basis terms that can be used
+to approximate the mean function.
+The basis function variables generated by makespline are useful for nonparametric and semiparametric estimation. For instance, makespline can be used when we want to fit models such as
+y = x1 𝛽 + 𝑔 (x2 , x3 , . . . , x𝑘 ) + 
+
+(1)
+
+In the expression above, the outcome y, the covariates x1 , . . . , x𝑘 , and the unobservable  are 𝑛 × 1
+vectors of covariates. The function 𝑔(⋅) is unknown and x1 enters the model linearly. These types of
+models are commonly used when we are interested in estimating the effect of x1 on the mean of y. We
+are agnostic about the functional form in which the controls, x2 , . . . , x𝑘 , enter the model, but to get a
+precise estimate of the effect of x1 , we need a reliable approximation of 𝑔(⋅). We may use makespline
+to generate the basis functions that best approximate 𝑔(⋅) and then use the basis functions to fit the model
+in (1).
+For instance, we can generate basis functions with basis as the stub name:
+makespline bspline x2-x5, basis(basis)
+
+This would generate a third-order B-spline basis function for each of the variables in x2-x5, with knots
+at the medians of x2-x5. Each of the basis functions would consist of five variables; see Methods and
+formulas in [R] npregress series for details.
+
+makespline — Spline generation 1653
+
+Once we have these basis functions, we can fit the model in (1) by typing
+regress y x1 c.(basis*)##c.(basis*)
+
+where c.(basis*)##c.(basis*) specifies that the terms in the basis functions be included in the model
+on their own as well as interacted with each of the other terms.
+Above, we are assuming that we constructed a good approximation of the unknown function 𝑔(⋅).
+We could go further and select from among these spline basis terms by using a technique such as lasso
+for prediction, described in [LASSO] lasso, or, if we are interested in inferences on estimated effects,
+a technique such as the partialing-out or double-selection lasso method, described in [LASSO] Lasso
+inference intro.
+Let’s say we are interested in getting a reliable estimate of the effect of x1 on the mean of the outcome.
+We would type
+poregress y x1, controls(c.(basis*)##c.(basis*))
+
+The method used by the above command is partialing-out lasso, which selects from the elements of
+the basis function to provide an optimal approximation of 𝑔(⋅) while accounting for the implied model
+selection error. The result is an estimate of the effect of x1 on the outcome with reliable standard errors.
+Of course, the model does not have to be like the one presented in (1). It could be
+y = 𝑔 (x1 , x2 , . . . , x𝑘 ) + 
+or
+y = 𝑔 (x1 ) + 𝑔 (x2 ) + · · · + 𝑔 (x𝑘 ) + 
+or we might instead be interested in using the basis functions for visualization.
+
+Example 1: Generating and naming B-spline basis functions
+Below, we generate a third-order B-spline basis function with one knot placed at the median. The
+basis function is constructed from the variable price.
+. sysuse auto
+(1978 automobile data)
+. makespline bspline price
+
+The basis function consists of these five variables:
+. describe _*
+Variable
+name
+
+Storage
+type
+
+Display
+format
+
+_bsp_1_1
+_bsp_1_2
+_bsp_1_3
+_bsp_1_4
+_bsp_1_5
+
+double
+double
+double
+double
+double
+
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+
+Value
+label
+
+Variable label
+B-spline basis term 1 for price
+B-spline basis term 2 for price
+B-spline basis term 3 for price
+B-spline basis term 4 for price
+B-spline basis term 5 for price
+
+makespline — Spline generation 1654
+
+The default naming convention is to give the elements of the basis function a name that starts with
+bsp and two subscripts. The first subscript enumerates the basis functions, and the second subscript
+enumerates the elements within the basis function. For example, if we created basis functions for two
+variables, we would obtain the following:
+. makespline bspline price mpg, replace
+. describe _*
+Variable
+name
+
+Storage
+type
+
+Display
+format
+
+_bsp_1_1
+_bsp_1_2
+_bsp_1_3
+_bsp_1_4
+_bsp_1_5
+_bsp_2_1
+_bsp_2_2
+_bsp_2_3
+_bsp_2_4
+_bsp_2_5
+
+double
+double
+double
+double
+double
+double
+double
+double
+double
+double
+
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+
+Value
+label
+
+Variable label
+B-spline basis term 1 for price
+B-spline basis term 2 for price
+B-spline basis term 3 for price
+B-spline basis term 4 for price
+B-spline basis term 5 for price
+B-spline basis term 1 for mpg
+B-spline basis term 2 for mpg
+B-spline basis term 3 for mpg
+B-spline basis term 4 for mpg
+B-spline basis term 5 for mpg
+
+If we want to change the stub name bsp to autobasis, we could use the basis() option as follows:
+. makespline bspline price mpg, basis(autobasis)
+. describe auto*
+Variable
+name
+autobasis_1_1
+autobasis_1_2
+autobasis_1_3
+autobasis_1_4
+autobasis_1_5
+autobasis_2_1
+autobasis_2_2
+autobasis_2_3
+autobasis_2_4
+autobasis_2_5
+
+Storage
+type
+
+Display
+format
+
+double
+double
+double
+double
+double
+double
+double
+double
+double
+double
+
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+
+Value
+label
+
+Variable label
+B-spline basis term 1 for price
+B-spline basis term 2 for price
+B-spline basis term 3 for price
+B-spline basis term 4 for price
+B-spline basis term 5 for price
+B-spline basis term 1 for mpg
+B-spline basis term 2 for mpg
+B-spline basis term 3 for mpg
+B-spline basis term 4 for mpg
+B-spline basis term 5 for mpg
+
+Alternatively, we could provide names for each of the variables that form a basis function. For example,
+. makespline bspline mpg, basis(mpg1 mpg2 mpg3 mpg4 mpg5)
+. describe mpg1-mpg5
+Variable
+name
+mpg1
+mpg2
+mpg3
+mpg4
+mpg5
+
+Storage
+type
+
+Display
+format
+
+double
+double
+double
+double
+double
+
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+%10.0g
+
+Value
+label
+
+Variable label
+B-spline basis term 1 for mpg
+B-spline basis term 2 for mpg
+B-spline basis term 3 for mpg
+B-spline basis term 4 for mpg
+B-spline basis term 5 for mpg
+
+makespline — Spline generation 1655
+
+Example 2: Generating and naming piecewise polynomial spline basis functions
+Below, we generate a third-order piecewise polynomial spline with one knot at the median and show
+the variables we generated:
+. makespline piecewise mpg
+. describe *_sp*
+Variable
+name
+
+Storage
+type
+
+Display
+format
+
+_rs_sp_1
+_sp_1_1
+
+double
+double
+
+%10.0g
+%10.0g
+
+Value
+label
+
+Variable label
+mpg rescaled to [0,1]
+Piecewise polynomial basis term 1
+for mpg
+
+The only syntactical difference is that, after makespline, we specify piecewise instead of bspline
+to be the basis. makespline generates two variables in this case. They are the elements that are necessary
+to construct a basis function.
+The default naming convention is to give the elements of the spline function a name that starts with
+sp and has two subscripts. The first subscript enumerates the piecewise polynomial spline for a given
+variable, and the second subscript denotes the knot number. The rescaled variable starts with rs sp
+followed by a subscript denoting the element in the variable list.
+Again, we may use a stub to modify the names that precede the subscripts, or we may specify a name
+for each new variable. Below, we also specified the names for the rescaled variables:
+. makespline piecewise mpg price, basis(mpgsp pricesp) rescale(mpgrs pricers)
+. describe mpgsp mpgrs pricesp pricers
+Variable
+name
+
+Storage
+type
+
+Display
+format
+
+mpgsp
+
+double
+
+%10.0g
+
+mpgrs
+pricesp
+
+double
+double
+
+%10.0g
+%10.0g
+
+pricers
+
+double
+
+%10.0g
+
+Value
+label
+
+Variable label
+Piecewise polynomial basis term 1
+for mpg
+mpg rescaled to [0,1]
+Piecewise polynomial basis term 1
+for price
+price rescaled to [0,1]
+
+The logic behind the variables generated is that they consist of all the elements needed to approximate the unknown function 𝑔(⋅) of the specified variables nonparametrically. In this case, a third-order
+piecewise polynomial spline approximation of 𝑔(⋅) consists of the levels, square, and cube of mpgsp,
+mpgrs, pricesp, and pricers. Specifically, to include the fully interacted basis functions in a model,
+we would need to include the term below in our specification:
+c.(c.mpgrs##c.mpgrs##c.mpgrs mpgsp)##c.(c.pricers##c.pricers##c.pricers pricesp)
+
+makespline simplifies this task by returning a local macro with the terms needed to fit 𝑔(⋅). The
+local macro has the name r(regressors). In this case, it expands to the following:
+. display ”‘r(regressors)’”
+c.(c.mpgrs##c.mpgrs##c.mpgrs mpgsp)##c.(c.pricers##c.pricers##c.pricers pricesp)
+
+Note that when you generate basis functions for more than one variable, as we did above,
+r(regressors) fully interacts these basis functions. These fully interacted basis functions can be included when fitting a model by adding ‘r(regressors)’ to your list of covariates.
+
+makespline — Spline generation 1656
+
+Example 3: Using makespline in semiparametric estimation
+As we mentioned previously, basis functions are particularly useful for approximating unknown functions. For example, say we want to obtain the average marginal effect of x1 on the conditional mean of
+the continuous outcome y. We have two controls, x2 and x3, but it is unclear whether they enter the
+model linearly or with another functional form.
+To approximate the unknown function of x2 and x3, we construct two B-spline basis functions with
+eight knots each. We use the simulated dataset and then the makespline bspline command:
+. use https://www.stata-press.com/data/r19/splines, clear
+(Simulated data)
+. makespline bspline x2 x3, knots(8)
+
+This yields basis functions with 12 elements. Once you fully interact the two basis functions, you
+get 168 regressors. Using all of them to approximate the unknown function would not be a sound idea.
+Thus, we will use poregress to perform partialing-out lasso linear regression. This estimator will select
+from the 168 covariates to provide a good approximation to the unknown function and at the same time
+provide a reliable estimate of the marginal effect of interest.
+Rather than interact the basis terms manually, we can simply refer to the macro r(regressors),
+which contains the full interaction of the basis functions:
+. poregress y x1, controls(‘r(regressors)’)
+Estimating lasso for y using plugin
+Estimating lasso for x1 using plugin
+Partialing-out linear model
+
+Number of obs
+Number of controls
+Number of selected controls
+Wald chi2(1)
+Prob > chi2
+
+=
+=
+=
+=
+=
+
+5,000
+168
+19
+3535.78
+0.0000
+
+y
+
+Coefficient
+
+Robust
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+x1
+
+2.951242
+
+.049632
+
+59.46
+
+0.000
+
+2.853965
+
+3.048519
+
+Note: Chi-squared test is a Wald test of the coefficients of the variables
+of interest jointly equal to zero. Lassos select controls for model
+estimation. Type lassoinfo to see number of selected variables in each
+lasso.
+
+We obtain an average marginal effect of 2.95.
+A researcher does not know the true value of the effect; however, we do. These are simulated data.
+The model is given by
+y = 3x1 + 3sin {3 (x2 − x3 )} + 
+The unknown function of x2 and x3 is complex, yet we obtained a precise estimate of the average marginal
+effect.
+
+makespline — Spline generation 1657
+
+Example 4: Using makespline for estimation and graphing
+It is common to use linear splines to create a graph after estimation. The knots of a regressor define
+a piecewise polynomial that can be visualized conditional on the values of other covariates.
+Below, we study the effect of mileage in miles per gallon (mpg) on car prices (price). We regress
+price on mpg, three linear polynomial basis terms defined by knots at the quartiles of mpg, and a dummy
+variable, foreign (1 if cars are foreign).
+We first generate the variables that form the polynomial basis and then fit the regression.
+. sysuse auto, clear
+(1978 automobile data)
+. makespline linear mpg, knots(3) basis(mpg)
+. regress price mpg mpg_* i.foreign
+Source
+
+SS
+
+df
+
+MS
+
+Number of obs
+F(5, 68)
+Prob > F
+R-squared
+Adj R-squared
+Root MSE
+
+=
+=
+=
+=
+=
+=
+
+74
+13.49
+0.0000
+0.4979
+0.4610
+2165.4
+
+Model
+Residual
+
+316201619
+318863777
+
+5
+68
+
+63240323.8
+4689173.19
+
+Total
+
+635065396
+
+73
+
+8699525.97
+
+price
+
+Coefficient
+
+Std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+mpg
+mpg_1_1
+mpg_1_2
+mpg_1_3
+
+-1330.299
+1698.953
+-622.9298
+139.4188
+
+213.0425
+622.5153
+651.5686
+277.0762
+
+-6.24
+2.73
+-0.96
+0.50
+
+0.000
+0.008
+0.342
+0.616
+
+-1755.419
+456.7432
+-1923.115
+-413.4783
+
+-905.1798
+2941.163
+677.2551
+692.3158
+
+foreign
+Foreign
+_cons
+
+1676.381
+28796.47
+
+609.4723
+3449.408
+
+2.75
+8.35
+
+0.008
+0.000
+
+460.1983
+21913.28
+
+2892.564
+35679.65
+
+The regression line for our model is given by the following command:
+generate double xb = _b[_cons]
++ _b[1.foreign]*foreign
+mpg*_b[mpg] + (mpg>18)*(mpg-18)*_b[mpg_1_1]
+(mpg>20)*(mpg-20)*_b[mpg_1_2]
+(mpg>25)*(mpg-25)*_b[mpg_1_3]
+
++
++
++
+
+///
+///
+///
+
+The effect of mpg changes at the knots. If mpg is less than or equal to 18, it is b[mpg]; if it is greater
+than 18 but less than or equal to 20, it is ( b[mpg] + b[mpg 1 1]); if it is greater than 20 but less
+than or equal to 25, it is ( b[mpg] + b[mpg 1 1] + b[mpg 1 2]); and if it is greater than 25, it is
+( b[mpg] + b[mpg 1 1] + b[mpg 1 2] + b[mpg 1 3]).
+We can plot regression lines for foreign and domestic cars. We first generate the predictions for foreign
+and domestic cars.
+. generate xb_domestic = _b[_cons]
+>
+>
+>
+
++ mpg*_b[mpg]
++ (mpg>18)*(mpg-18)*_b[mpg_1_1]
++ (mpg>20)*(mpg-20)*_b[mpg_1_2]
++ (mpg>25)*(mpg-25)*_b[mpg_1_3]
+
+. generate xb_foreign = _b[_cons] + _b[1.foreign] + mpg*_b[mpg]
+>
++ (mpg>18)*(mpg-18)*_b[mpg_1_1]
+>
++ (mpg>20)*(mpg-20)*_b[mpg_1_2]
+>
++ (mpg>25)*(mpg-25)*_b[mpg_1_3]
+
+makespline — Spline generation 1658
+
+Then we plot both regression lines referencing the placement of the knots with vertical lines. In the
+graph, we also include the values of the dependent variable. We can inspect graphically how the effect
+of mpg differs across the regions defined by the knots.
+. twoway line xb_domestic mpg,
+>
+lcolor(blue) lpattern(dash) sort
+||
+>
+line xb_foreign mpg,
+>
+lcolor(red) lpatter(dash_dot) sort
+||
+>
+scatter price mpg if foreign==0, mcolor(blue%30)
+||
+>
+scatter price mpg if foreign==1, mcolor(red%30)
+>
+xline(18 20 25)
+>
+title(Fitted values for domestic and foreign cars)
+>
+subtitle(Spline regression with knots at quartiles of mpg)
+
+Fitted values for domestic and foreign cars
+Spline regression with knots at quartiles of mpg
+15000
+
+10000
+
+xb_domestic
+xb_foreign
+Price
+Price
+
+5000
+
+0
+10
+
+20
+
+30
+
+40
+
+Mileage (mpg)
+
+Stored results
+makespline stores the following in r():
+Scalars
+r(N knots)
+r(local)
+r(bsepsilon)
+
+number of knots
+1 if local was specified, 0 otherwise
+distance from variable’s boundary for B-spline knot placement
+
+Macros
+r(basis)
+r(regressors)
+r(basisnames#)
+r(wtype)
+r(wexp)
+
+spline type used to generate basis function
+regressors formed from basis functions
+variable names of basis function for variable #
+weight type
+weight expression
+
+Matrices
+r(minmax)
+r(knots)
+
+minimum and maximum of all variables
+matrix of knots
+
+makespline — Spline generation 1659
+
+Methods and formulas
+See Methods and formulas in [R] npregress series for piecewise polynomial spline and B-spline
+computation.
+When the local option is specified, let 𝑉𝑖 , 𝑖 = 1, . . . , 𝑛, be the variables to be created; 𝑘𝑖 , 𝑖 =
+1, . . . , 𝑛 − 1, be the corresponding knots; and 𝒱 be the original variable rescaled to be in [0, 1]. Then
+𝑉1 = min(𝒱, 𝑘1 )
+𝑉𝑖 = max{ min(𝒱, 𝑘𝑖 ), 𝑘𝑖−1 } − 𝑘𝑖−1
+
+𝑖 = 2, . . . , 𝑛 − 1
+
+𝑉𝑛 = max(𝒱, 𝑘𝑛−1 ) − 𝑘𝑛−1
+When the rcs basis is specified, let 𝑘𝑖 , 𝑖 = 1, . . . , 𝑛, be the knot values; 𝑉𝑖 , 𝑖 = 1, . . . , 𝑛 − 1, be the
+variables to be created; and 𝒱 be the original variable rescaled to be in [0, 1]. Then
+𝑉1 = 𝒱
+𝑉𝑖+1 =
+
+(𝒱 − 𝑘𝑖 )3+ − (𝑘𝑛 − 𝑘𝑛−1 )−1 {(𝒱 − 𝑘𝑛−1 )3+ (𝑘𝑛 − 𝑘𝑖 ) − (𝒱 − 𝑘𝑛 )3+ (𝑘𝑛−1 − 𝑘𝑖 )}
+(𝑘𝑛 − 𝑘1 )2
+𝑖 = 1, . . . , 𝑛 − 2
+
+where
+(𝑢)+ = {
+
+𝑢, if 𝑢 > 0
+0, if 𝑢 ≤ 0
+
+When the harrell option is specified, the knots are placed using the percentiles recommended in
+Harrell (2001, 23). These percentiles are based on the chosen number of knots as follows:
+No.
+of knots
+3
+4
+5
+6
+7
+
+Percentiles
+10
+5
+5
+5
+2.5
+
+50
+35
+27.5
+23
+18.33
+
+90
+65
+50
+41
+34.17
+
+95
+72.5
+59
+50
+
+95
+77
+65.83
+
+95
+81.67
+
+97.5
+
+References
+Chetverikov, D., D. Kim, and D. Wilhelm. 2018. Nonparametric instrumental-variable estimation. Stata Journal 18:
+937–950.
+de Boor, C. 2001. A Practical Guide to Splines. Rev. ed. New York: Springer.
+Eubank, R. L. 1999. Nonparametric Regression and Spline Smoothing. 2nd ed. New York: Dekker. https://doi.org/10.
+1201/9781482273144.
+Hansen, B. E. 2009. University of Wisconsin–Madison, ECON 718, NonParametric Econometrics, Spring 2009, course
+notes. Last visited on 2019/01/15. https://www.ssc.wisc.edu/∼bhansen/718/718.htm.
+———. 2022. Econometrics. Princeton, NJ: Princeton University Press.
+Harrell, F. E., Jr. 2001. Regression Modeling Strategies: With Applications to Linear Models, Logistic Regression, and
+Survival Analysis. New York: Springer. https://doi.org/10.1007/978-1-4757-3462-1.
+
+makespline — Spline generation 1660
+Li, Q., and J. S. Racine. 2007. Nonparametric Econometrics: Theory and Practice. Princeton, NJ: Princeton University
+Press.
+Schoenberg, I. J., ed. 1969. Approximations with Special Emphasis on Spline Functions. New York: Academic Press.
+Schumaker, L. L. 2007. Spline Functions: Basic Theory. 3rd ed. Cambridge: Cambridge University Press. https://doi.org/
+10.1017/CBO9780511618994.
+
+Also see
+[R] npregress series — Nonparametric series regression
+[R] npregress series postestimation — Postestimation tools for npregress series
+[R] npregress intro — Introduction to nonparametric regression
+[R] kdensity — Univariate kernel density estimation
+[R] lpoly — Kernel-weighted local polynomial smoothing
+
+margins — Marginal means, predictive margins, and marginal effects
+Description
+Options
+References
+
+Quick start
+Remarks and examples
+Also see
+
+Menu
+Stored results
+
+Syntax
+Methods and formulas
+
+Description
+Margins are statistics calculated from predictions of a previously fit model at fixed values of some
+covariates and averaging or otherwise integrating over the remaining covariates.
+The margins command estimates margins of responses for specified values of covariates and presents
+the results as a table.
+Capabilities include estimated marginal means (also called least-squares means); adjusted predictions
+and adjusted treatment means; predictive margins (also called potential-outcome means); average and
+conditional adjusted predictions; and average and conditional marginal and partial effects, which may be
+reported as derivatives or as elasticities.
+
+Quick start
+Estimated marginal means (least-squares means)
+Estimated marginal mean of y for each level of a after anova y a##b
+margins a, asbalanced
+Estimated marginal mean of y for each level of the interaction of a and b after anova y a##b##c
+margins a#b, asbalanced
+Estimated marginal means of y1, y2, and y3 for each level of a after manova y1 y2 y3 = a##b
+margins a, asbalanced
+
+Adjusted means and adjusted predictions
+Adjusted mean of y for each level of a when x is at its mean after regress y i.a x
+margins a, atmeans
+Same as above, but set x to 10 rather than to its mean
+margins a, at(x=10)
+Same as above, and also report adjusted means for x = 20, x = 30, and x = 40
+margins a, at(x=(10(10)40))
+Adjusted predicted probability of y = 1 for each level of a when x is at its mean after
+logit y a##c.x
+margins a, atmeans
+Adjusted predicted probability for each level of the interaction of a and b, holding x at 25, after logit
+y a##b##c.x
+margins a#b, at(x=25)
+Adjusted prediction for each level of a when x = 25 and b = 1
+margins a, at(x=25 b=1)
+1661
+
+margins — Marginal means, predictive margins, and marginal effects 1662
+
+Predictive margins and potential-outcome means
+Overall predictive margin, the average predicted probability of y = 1, after logit y a##b x1 x2
+margins
+Predictive margins (potential-outcome means) for each level of a
+margins a
+Predictive margins for a, when x1 is set to 10, 20, 30, and 40
+margins a, at(x1=(10(10)40))
+Predictive margins for levels of the interaction of a and b
+margins a#b
+Predictive margins for a for all combinations of x1 = 10, 20, 30 and x2 = 50, 100, 150
+margins a, at(x1=(10(10)30) x2=(50(50)150))
+Predictive margins for a, first for x1 = 10, 20, 30 with x2 at its observed values, then for x2 = 50, 100,
+150 with x1 at its observed values
+margins a, at(x1=(10(10)30)) at(x2=(50(50)150))
+Predictive margins for a after svy:logit y a##b x1 x2
+margins a, vce(unconditional)
+Average predicted probabilities of y = 1, y = 2, . . .after mlogit y x1 x2 i.a
+margins
+Predictive margins for each level of a for each outcome of y
+margins a
+
+Average marginal effects and average partial effects
+Average marginal effect of x1 on the predicted probability of y = 1 after probit y c.x1##c.x2##a
+with continuous x1 and x2 and binary a
+margins, dydx(x1)
+Average marginal effect (average partial effect) of binary a
+margins, dydx(a)
+Average marginal effect of x1 when x2 is set to 10, 20, 30, and 40
+margins, dydx(x1) at(x2=(10(10)40))
+Average marginal effect of x1 when a is set to 0 and then to 1
+margins a, dydx(x1)
+Average marginal effect of each variable in the model
+margins, dydx(*)
+Average marginal effect of all variables on the truncated expected value of y, e(0,.), after
+tobit y x1 x2 x3, ll(0)
+margins, dydx(*) predict(e(0,.))
+
+margins — Marginal means, predictive margins, and marginal effects 1663
+
+Same as above, and report marginal effects for censored expected value of y, ystar(0,.), and for the
+linear prediction, xb
+margins, dydx(*) predict(e(0,.)) predict(ystar(0,.)) predict(xb)
+
+Conditional marginal effects and conditional partial effects
+Marginal effect of x1 on the predicted probability of y = 1, setting all variables to their means, after
+probit y c.x1##c.x2##a with continuous x1 and x2 and binary a
+margins, dydx(x1) atmeans
+Marginal effect (partial effect) of a when all variables are set to their means
+margins, dydx(a) atmeans
+Marginal effect of x1 when a = 0 and x1 and x2 are set to their means
+margins, dydx(x1) at(a=0 (mean) x1 x2)
+Same as above
+margins, dydx(x1) at(a=0) atmeans
+Marginal effect of x1 when for all possible combinations of a = 0, 1, x1 = 50, 100, and
+x2 = 10, 20, 30, 40
+margins a, dydx(x1) at(x1=(50 100) x2=(10(10)40))
+Marginal effects of x1, x2, and a with all variables set to their means
+margins, dydx(*) atmeans
+
+Menu
+Statistics > Postestimation
+
+margins — Marginal means, predictive margins, and marginal effects 1664
+
+Syntax
+margins [ marginlist ] [ if ] [ in ] [ weight ] [ , response options options ]
+
+where marginlist is a list of factor variables or interactions that appear in the current estimation results.
+The variables may be typed with or without the i. prefix, and you may use any factor-variable syntax:
+. margins i.sex i.group i.sex#i.group
+. margins sex group sex#i.group
+. margins sex##group
+
+response options
+
+Description
+
+Main
+
+predict(pred opt )
+expression(pnl exp)
+dydx(varlist )
+eyex(varlist )
+dyex(varlist )
+eydx(varlist )
+continuous
+
+estimate margins for predict, pred opt
+estimate margins for pnl exp
+estimate marginal effect of variables in varlist
+estimate elasticities of variables in varlist
+estimate semielasticity—𝑑(𝑦)/𝑑(ln𝑥)
+̂
+estimate semielasticity—𝑑(ln𝑦)/𝑑(𝑥)
+̂
+treat factor-level indicators as continuous
+
+margins — Marginal means, predictive margins, and marginal effects 1665
+
+options
+
+Description
+
+Main
+
+grand
+
+add the overall margin; default if no marginlist
+
+At
+
+at(atspec)
+atmeans
+asbalanced
+
+estimate margins at specified values of covariates
+estimate margins at the means of covariates
+treat all factor variables as balanced
+
+if/in/over
+
+over(varlist )
+subpop(subspec)
+
+estimate margins at unique values of varlist
+estimate margins for subpopulation
+
+Within
+
+within(varlist )
+
+estimate margins at unique values of the nesting factors in varlist
+
+Contrast
+
+contrast options
+
+any options documented in [R] margins, contrast
+
+Pairwise comparisons
+
+pwcompare options
+
+any options documented in [R] margins, pwcompare
+
+SE
+
+vce(delta)
+vce(unconditional)
+nose
+
+estimate SEs using delta method; the default
+estimate SEs allowing for sampling of covariates
+do not estimate SEs
+
+Advanced
+
+noweights
+noesample
+emptycells(empspec)
+estimtolerance(tol)
+noestimcheck
+force
+chainrule
+nochainrule
+
+ignore weights specified in estimation
+do not restrict margins to the estimation sample
+treatment of empty cells for balanced factors
+specify numerical tolerance used to determine estimable functions;
+default is estimtolerance(1e-5)
+suppress estimability checks
+estimate margins despite potential problems
+use the chain rule when computing derivatives
+do not use the chain rule
+
+Reporting
+
+level(#)
+mcompare(method )
+noatlegend
+post
+display options
+
+set confidence level; default is level(95)
+adjust for multiple comparisons; default is mcompare(noadjust)
+suppress legend of fixed covariate values
+post margins and their VCE as estimation results
+control columns and column formats, row spacing, line width and
+factor-variable labeling
+
+df(#)
+
+use 𝑡 distribution with # degrees of freedom for computing 𝑝-values
+and confidence intervals
+
+margins — Marginal means, predictive margins, and marginal effects 1666
+
+method
+
+Description
+
+noadjust
+bonferroni [ adjustall ]
+sidak [ adjustall ]
+scheffe
+
+do not adjust for multiple comparisons; the default
+Bonferroni’s method; adjust across all terms
+Šidák’s method; adjust across all terms
+Scheffé’s method
+
+Time-series operators are allowed if they were used in the estimation.
+See at() under Options for a description of atspec.
+collect is allowed; see [U] 11.1.10 Prefix commands.
+fweights, aweights, iweights, and pweights are allowed; see [U] 11.1.6 weight.
+df(#) does not appear in the dialog box.
+
+Options
+Warning: The option descriptions are brief and use jargon. Skip to Remarks and examples if you are
+reading about margins for the first time.
+
+
+
+
+
+Main
+
+predict(pred opt ) and expression(pnl exp) are mutually exclusive; they specify the response. If
+neither is specified, the response will be the default prediction that would be produced by predict
+after the underlying estimation command. Some estimation commands, such as mlogit, document a
+different default prediction for margins than for predict.
+predict(pred opt ) specifies the option(s) to be specified with the predict command to produce
+the variable that will be used as the response. After estimation by logistic, you could specify
+predict(xb) to obtain linear predictions rather than the predict command’s default, the probabilities.
+
+Multiple predict() options can be specified to compute margins of multiple predictions simultaneously.
+expression(pnl exp) specifies the response as an expression.
+See [R] predictnl for
+a full description of pnl exp.
+After estimation by logistic, you might specify
+expression(exp(predict(xb))) to use relative odds rather than probabilities as the response.
+For examples, see Example 12: Margins of a specified expression.
+dydx(varlist ), eyex(varlist ), dyex(varlist ), and eydx(varlist ) request that margins report derivatives
+of the response with respect to varlist rather than on the response itself. eyex(), dyex(), and eydx()
+report derivatives as elasticities; see Expressing derivatives as elasticities.
+continuous is relevant only when one of dydx() or eydx() is also specified. It specifies that the levels
+of factor variables be treated as continuous; see Derivatives versus discrete differences. This option
+is implied if there is a single-level factor variable specified in dydx() or eydx().
+grand specifies that the overall margin be reported. grand is assumed when marginlist is empty.
+
+margins — Marginal means, predictive margins, and marginal effects 1667
+
+
+
+
+
+At
+
+at(atspec) specifies values for covariates to be treated as fixed. By default, margins are calculated using
+observed values of covariates.
+at(age=20) fixes covariate age to the value specified. at() may be used to fix continuous or factor
+covariates.
+at(age=20 sex=1) simultaneously fixes covariates age and sex at the values specified.
+at(age=(20 30 40 50)) fixes age first at 20, then at 30, . . . . margins produces separate results for
+each specified value.
+at(age=(20(10)50)) does the same as at(age=(20 30 40 50)); that is, you may specify a numlist.
+at((mean) age (median) distance) fixes the covariates at the summary statistics specified.
+at((p25) all) fixes all covariates at their 25th percentile values. See Syntax of at() for the
+full list of summary-statistic modifiers.
+at((mean) all (median) x x2=1.2 z=(1 2 3)) is processed from general to specific, with settings for named covariates overriding general settings specified via all. Thus, all covariates are
+fixed at their means except for x (fixed at its median), x2 (fixed at 1.2), and z (fixed first at 1, then
+at 2, and finally at 3).
+at((means) all (asobserved) x2) is a convenient way to set all covariates except x2 to the
+mean.
+
+Multiple at() options can be specified, and each will produce a different set of margins.
+See Syntax of at() for more information.
+atmeans specifies that covariates be fixed at their means and is shorthand for at((mean) all).
+atmeans differs from at((mean) all) in that atmeans will affect subsequent at() options. For
+instance,
+. margins ..., atmeans
+
+at((p25) x)
+
+at((p75) x)
+
+produces two sets of margins with both sets evaluated at the means of all covariates except x.
+asbalanced is shorthand for at((asbalanced) factor) and specifies that factor covariates be evaluated as though there were an equal number of observations in each level; see Obtaining margins
+as though the data were balanced. asbalanced differs from at((asbalanced) factor) in that
+asbalanced will affect subsequent at() options in the same way as atmeans does.
+
+
+
+When asbalanced is combined with the atmeans option, factor variables are treated as balanced,
+while continuous covariates are fixed at their means. The resulting margin is known as an adjusted
+treatment mean.
+
+if/in/over
+
+over(varlist ) specifies that separate sets of margins be estimated for the groups defined by varlist. The
+variables in varlist must contain nonnegative integer (or missing) values. The variables need not be
+covariates in your model. When over() is combined with the vce(unconditional) option, each
+group is treated as a subpopulation; see [SVY] Subpopulation estimation.
+subpop([ varname ] [ if ]) is intended for use with the vce(unconditional) option. It specifies that
+margins be estimated for the single subpopulation identified by the indicator variable or by the if
+expression or by both. Zero or missing indicates that the observation be excluded; nonzero or non-
+
+margins — Marginal means, predictive margins, and marginal effects 1668
+
+missing, that it be included. See [SVY] Subpopulation estimation for why subpop() is preferred to
+if expressions and in ranges when also using vce(unconditional). If subpop() is used without
+vce(unconditional), it is treated merely as an additional if qualifier.
+
+
+
+
+
+Within
+
+within(varlist ) allows for nested designs. varlist contains the nesting variable(s) over which margins are to be estimated. See Obtaining margins with nested designs. As with over(varlist ), when
+within(varlist ) is combined with vce(unconditional), each level of the variables in varlist is
+treated as a subpopulation.
+
+
+
+
+
+Contrast
+
+contrast options are any of the options documented in [R] margins, contrast.
+
+
+
+
+
+Pairwise comparisons
+
+pwcompare options are any of the options documented in [R] margins, pwcompare.
+
+
+
+
+
+SE
+
+vce(delta) and vce(unconditional) specify how the VCE and, correspondingly, standard errors are
+calculated.
+vce(delta) is the default. The delta method is applied to the formula for the response and the VCE
+of the estimation command. This method assumes that values of the covariates used to calculate
+the response are given or, if all covariates are not fixed using at(), that the data are given.
+vce(unconditional) specifies that the covariates that are not fixed be treated in a way that accounts for their having been sampled. The VCE is estimated using the linearization method. This
+method allows for heteroskedasticity or other violations of distributional assumptions and allows
+for correlation among the observations in the same manner as vce(robust) and vce(cluster
+. . .), which may have been specified with the estimation command. This method also accounts for
+complex survey designs if the data are svyset. See Obtaining margins with survey data and representative samples. When you use complex survey data, this method requires that the linearized
+variance estimation method be used for the model. See [SVY] svy postestimation for an example
+of margins with replication-based methods.
+nose suppresses calculation of the VCE and standard errors. See Requirements for model specification
+for an example of the use of this option.
+
+
+
+
+
+Advanced
+
+noweights specifies that any weights specified on the previous estimation command be ignored by
+margins. By default, margins uses the weights specified on the estimator to average responses and
+to compute summary statistics. If weights are specified on the margins command, they override
+previously specified weights, making it unnecessary to specify noweights. The noweights option
+is not allowed after svy: estimation when the vce(unconditional) option is specified.
+
+For multilevel models, such as meglm, the default behavior is to construct a single weight value for
+each observation by multiplying the corresponding multilevel weights within the given observation.
+noesample specifies that margins not restrict its computations to the estimation sample used by the
+previous estimation command. See Example 15: Margins evaluated out of sample.
+
+margins — Marginal means, predictive margins, and marginal effects 1669
+
+With the default delta-method VCE, noesample margins may be estimated on samples other than the
+estimation sample; such results are valid under the assumption that the data used are treated as being
+given.
+You can specify noesample and vce(unconditional) together, but if you do, you should be sure
+that the data in memory correspond to the original e(sample). To show that you understand that, you
+must also specify the force option. Be aware that making the vce(unconditional) calculation on
+a sample different from the estimation sample would be equivalent to estimating the coefficients on
+one set of data and computing the scores used by the linearization on another set; see [P] robust.
+emptycells(strict) and emptycells(reweight) are relevant only when the asbalanced option is
+also specified. emptycells() specifies how empty cells are handled in interactions involving factor
+variables that are being treated as balanced; see Obtaining margins as though the data were balanced.
+emptycells(strict) is the default; it specifies that margins involving empty cells be treated as not
+estimable.
+emptycells(reweight) specifies that the effects of the observed cells be increased to accommodate any missing cells. This makes the margin estimable but changes its interpretation.
+emptycells(reweight) is implied when the within() option is specified.
+estimtolerance(tol) specifies the numerical tolerance used to determine estimable functions. The
+default is estimtolerance(1e-5).
+
+A linear combination of the model coefficients z is found to be not estimable if
+mreldif(z, z × H ) > tol
+
+where H is defined in Methods and formulas.
+noestimcheck specifies that margins not check for estimability. By default, the requested margins are
+checked and those found not estimable are reported as such. Nonestimability is usually caused by
+empty cells. If noestimcheck is specified, estimates are computed in the usual way and reported
+even though the resulting estimates are manipulable, which is to say they can differ across equivalent
+models having different parameterizations. See Estimability of margins.
+force instructs margins to proceed in some situations where it would otherwise issue an error message
+because of apparent violations of assumptions. Do not be casual about specifying force. You need
+to understand and fully evaluate the statistical issues. For an example of the use of force, see Using
+margins after the estimates use command.
+chainrule and nochainrule specify whether margins uses the chain rule when numerically computing derivatives. You need not specify these options when using margins after any official Stata
+estimator; margins will choose the appropriate method automatically.
+
+Specify nochainrule after estimation by a community-contributed command. We recommend using
+nochainrule, even though chainrule is usually safe and is always faster. nochainrule is safer
+because it makes no assumptions about how the parameters and covariates join to form the response.
+nochainrule is implied when the expression() option is specified.
+
+
+
+
+
+Reporting
+
+level(#) specifies the confidence level, as a percentage, for confidence intervals. The default is
+level(95) or as set by set level; see [U] 20.8 Specifying the width of confidence intervals.
+mcompare(method ) specifies the method for computing 𝑝-values and confidence intervals that account
+for multiple comparisons within a factor-variable term.
+
+margins — Marginal means, predictive margins, and marginal effects 1670
+
+Most methods adjust the comparisonwise error rate, 𝛼𝑐 , to achieve a prespecified experimentwise
+error rate, 𝛼𝑒 .
+mcompare(noadjust) is the default; it specifies no adjustment.
+𝛼𝑐 = 𝛼𝑒
+mcompare(bonferroni) adjusts the comparisonwise error rate based on the upper limit of the Bonferroni inequality
+𝛼𝑒 ≤ 𝑚𝛼𝑐
+
+where m is the number of comparisons within the term.
+The adjusted comparisonwise error rate is
+𝛼𝑐 = 𝛼𝑒 /𝑚
+mcompare(sidak) adjusts the comparisonwise error rate based on the upper limit of the probability
+inequality
+𝛼𝑒 ≤ 1 − (1 − 𝛼𝑐 )𝑚
+
+where m is the number of comparisons within the term.
+The adjusted comparisonwise error rate is
+𝛼𝑐 = 1 − (1 − 𝛼𝑒 )1/𝑚
+This adjustment is exact when the m comparisons are independent.
+mcompare(scheffe) controls the experimentwise error rate using the 𝐹 or 𝜒2 distribution with degrees of freedom equal to the rank of the term.
+mcompare(method adjustall) specifies that the multiple-comparison adjustments count all comparisons across all terms rather than performing multiple comparisons term by term. This leads to
+more conservative adjustments when multiple variables or terms are specified in marginslist. This
+option is compatible only with the bonferroni and sidak methods.
+noatlegend specifies that the legend showing the fixed values of covariates be suppressed.
+post causes margins to behave like a Stata estimation (e-class) command. margins posts the vector of
+estimated margins along with the estimated variance–covariance matrix to e(), so you can treat the
+estimated margins just as you would results from any other estimation command. For example, you
+could use test to perform simultaneous tests of hypotheses on the margins, or you could use lincom
+to create linear combinations. See Example 10: Testing margins—contrasts of margins.
+
+display options: noci, nopvalues, vsquish, nofvlabel, fvwrap(#), fvwrapon(style),
+cformat(% fmt ), pformat(% fmt ), sformat(% fmt ), and nolstretch.
+noci suppresses confidence intervals from being reported in the coefficient table.
+nopvalues suppresses 𝑝-values and their test statistics from being reported in the coefficient table.
+vsquish specifies that the blank space separating factor-variable terms or time-series–operated variables from other variables in the model be suppressed.
+nofvlabel displays factor-variable level values rather than attached value labels. This option overrides the fvlabel setting; see [R] set showbaselevels.
+fvwrap(#) allows long value labels to wrap the first # lines in the coefficient table. This option
+overrides the fvwrap setting; see [R] set showbaselevels.
+
+margins — Marginal means, predictive margins, and marginal effects 1671
+
+fvwrapon(style) specifies whether value labels that wrap will break at word boundaries or break
+based on available space.
+fvwrapon(word), the default, specifies that value labels break at word boundaries.
+fvwrapon(width) specifies that value labels break based on available space.
+
+This option overrides the fvwrapon setting; see [R] set showbaselevels.
+cformat(% fmt ) specifies how to format margins, standard errors, and confidence limits in the table
+of estimated margins.
+pformat(% fmt ) specifies how to format 𝑝-values in the table of estimated margins.
+sformat(% fmt ) specifies how to format test statistics in the table of estimated margins.
+nolstretch specifies that the width of the table of estimated margins not be automatically widened to
+accommodate longer variable names. The default, lstretch, is to automatically widen the table of
+estimated margins up to the width of the Results window. Specifying lstretch or nolstretch
+overrides the setting given by set lstretch. If set lstretch has not been set, the default is
+lstretch. nolstretch is not shown in the dialog box.
+
+The following option is available with margins but is not shown in the dialog box:
+df(#) specifies that the 𝑡 distribution with # degrees of freedom be used for computing 𝑝-values and
+confidence intervals. The default typically is to use the standard normal distribution. However, if
+the estimation command computes the residual degrees of freedom (e(df r)) and predict(xb) is
+specified with margins, the default is to use the 𝑡 distribution with e(df r) degrees of freedom.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Introduction
+Obtaining margins of responses
+Example 1: A simple case after regress
+Example 2: A simple case after logistic
+Example 3: Average response versus response at average
+Example 4: Multiple margins from one command
+Example 5: Margins with interaction terms
+Example 6: Margins with continuous variables
+Example 7: Margins of continuous variables
+Example 8: Margins of interactions
+Example 9: Decomposing margins
+Example 10: Testing margins—contrasts of margins
+Example 11: Margins of a specified prediction
+Example 12: Margins of a specified expression
+Example 13: Margins with multiple outcomes (responses)
+Example 14: Margins with multiple equations
+Example 15: Margins evaluated out of sample
+Obtaining margins of derivatives of responses (a.k.a. marginal effects)
+Use at() freely, especially with continuous variables
+Expressing derivatives as elasticities
+Derivatives versus discrete differences
+Example 16: Average marginal effect (partial effects)
+Example 17: Average marginal effect of all covariates
+Example 18: Evaluating marginal effects over the response surface
+Obtaining margins with survey data and representative samples
+Example 19: Inferences for populations, margins of response
+Example 20: Inferences for populations, marginal effects
+
+margins — Marginal means, predictive margins, and marginal effects 1672
+Example 21: Inferences for populations with svyset data
+Standardizing margins
+Obtaining margins as though the data were balanced
+Balancing using asbalanced
+Balancing by standardization
+Balancing nonlinear responses
+Treating a subset of covariates as balanced
+Balancing in the presence of continuous covariates
+Using fvset design
+Balancing in the presence of empty cells
+Obtaining margins with nested designs
+Introduction to nested designs
+Margins with nested designs as though the data were balanced
+Coding of nested designs
+Special topics
+Requirements for model specification
+Estimability of margins
+Manipulability of tests
+Using margins after the estimates use command
+Syntax of at()
+Estimation commands that may be used with margins
+Video examples
+Glossary
+
+Introduction
+margins is a postestimation command, a command for use after you have fit a model using an estimation command such as regress or logistic, or using almost any other estimation command.
+margins estimates and reports margins of responses and margins of derivatives of responses, also
+known as marginal effects. A margin is a statistic based on a fitted model in which some of or all the
+covariates are fixed. Marginal effects are changes in the response for change in a covariate, which can
+be reported as a derivative, elasticity, or semielasticity.
+
+For a brief overview of margins, see Williams (2012).
+
+Obtaining margins of responses
+What we call margins of responses are also known as predictive margins, adjusted predictions, and
+recycled predictions. When applied to balanced data, margins of responses are also called estimated
+marginal means and least-squares means.
+A margin is a statistic based on a fitted model calculated over a dataset in which some of or all the
+covariates are fixed at values different from what they really are. For instance, after a linear regression
+fit on males and females, the marginal mean (margin of mean) for males is the predicted mean of the
+dependent variable, where every observation is treated as if it represents a male; thus, those observations
+that in fact do represent males are included, as well as those observations that represent females. The
+marginal mean for females would be similarly obtained by treating all observations as if they represented
+females.
+In making the calculation, sex is treated as male or female everywhere it appears in the model. The
+model might be
+. regress y age bp i.sex sex#c.age sex#c.bp
+
+and then, in making the marginal calculation of the mean for males and females, margins not only
+accounts for the direct effect of i.sex but also for the indirect effects of sex#c.age and sex#c.bp.
+
+margins — Marginal means, predictive margins, and marginal effects 1673
+
+The response being margined can be any statistic produced by [R] predict, or any expression of those
+statistics.
+Standard errors are obtained by the delta method, at least by default. The delta method assumes
+that the values at which the covariates are evaluated to obtain the marginal responses are fixed. When
+your sample represents a population, whether you are using svy or not (see [SVY] svy), you can specify
+margins’ vce(unconditional) option and margins will produce standard errors that account for the
+sampling variability of the covariates. Some researchers reserve the term predictive margins to describe
+this.
+The best way to understand margins is to see some examples. You can run the following examples
+yourself if you type
+. use https://www.stata-press.com/data/r19/margex
+(Artificial data for margins)
+
+Example 1: A simple case after regress
+. regress y i.sex i.group
+(output omitted )
+. margins sex
+Predictive margins
+Model VCE: OLS
+
+Number of obs = 3,000
+
+Expression: Linear prediction, predict()
+
+sex
+Male
+Female
+
+Margin
+
+Delta-method
+std. err.
+
+60.56034
+78.88236
+
+.5781782
+.5772578
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+104.74
+136.65
+
+0.000
+0.000
+
+59.42668
+77.7505
+
+61.69401
+80.01422
+
+The numbers reported in the Margin column are average values of the linear prediction of y, as noted
+above the output table after Expression:. Based on a linear regression of y on sex and group, 60.6
+would be the average value of the linear prediction of y if everyone in the data were treated as if they
+were male, and 78.9 would be the average value if everyone were treated as if they were female.
+Example 2: A simple case after logistic
+
+margins may be used after almost any estimation command.
+. logistic outcome i.sex i.group
+(output omitted )
+. margins sex
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+
+sex
+Male
+Female
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.1286796
+.1905087
+
+.0111424
+.0089719
+
+11.55
+21.23
+
+0.000
+0.000
+
+.106841
+.1729241
+
+.1505182
+.2080933
+
+margins — Marginal means, predictive margins, and marginal effects 1674
+
+The numbers reported in the Margin column are average predicted probabilities. Based on a logistic
+regression of outcome on sex and group, 0.13 would be the average probability of outcome if everyone
+in the data were treated as if they were male, and 0.19 would be the average probability if everyone were
+treated as if they were female.
+margins reports average values after regress and average probabilities after logistic. By default,
+margins makes tables of whatever it is that predict (see [R] predict) predicts by default. Alternatively,
+margins can make tables of anything that predict can produce if you use margins’ predict() option;
+see Example 11: Margins of a specified prediction.
+Example 3: Average response versus response at average
+
+In example 2, margins reported average probabilities of outcome for sex = 0 and sex = 1. If
+we instead wanted the predicted probabilities evaluated at the mean of the covariates, we would specify
+margins’ atmeans option. We previously typed
+. logistic outcome i.sex i.group
+(output omitted )
+. margins sex
+(output omitted )
+
+and now we type
+. margins sex, atmeans
+Adjusted predictions
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+At: 1.group = .3996667 (mean)
+2.group = .3726667 (mean)
+3.group = .2276667 (mean)
+
+sex
+Male
+Female
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.0966105
+.1508362
+
+.0089561
+.0118064
+
+10.79
+12.78
+
+0.000
+0.000
+
+.0790569
+.127696
+
+.1141641
+.1739764
+
+The average of the predictions, which we calculated in example 2, is different from the prediction at the
+average of the covariates that we calculate here. The first is the average of the probabilities among actual
+persons in the data. The second is the expected probability of a person with “average” characteristics;
+in this case, that person is 40% in group one, 37% in group two, and 23% in group three. Such a person
+cannot exist because membership in each group is exclusive, but margins uses regression coefficients
+to calculate the predicted response of the mythical “average” individual.
+When you specify the atmeans or at() option, margins reports the values used for the covariates
+in the legend above the table. margins lists the values for all the covariates, including values it may
+not use, in the results that follow. In this example, margins reported means for sex even though those
+means were not used. They were not used because we asked for the margins of sex, so sex was fixed
+first at 0 and then at 1.
+If you wish to suppress this legend, specify the nolegend option.
+
+margins — Marginal means, predictive margins, and marginal effects 1675
+
+Example 4: Multiple margins from one command
+
+More than one margin can be reported by just one margins command. You can type
+. margins sex group
+
+and doing that is equivalent in terms of the output to typing
+. margins sex
+. margins group
+
+When multiple margins are requested on the same command, each is estimated separately. There is,
+however, a difference when you also specify margins’ post option. Then, the variance–covariance
+matrix for all margins requested is posted, and that is what allows you to test, for example, equality of
+margins. Testing equality of margins is covered in Example 10: Testing margins—contrasts of margins.
+In any case, below we request margins for sex and for group.
+. margins sex group
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+sex
+Male
+Female
+
+.1286796
+.1905087
+
+.0111424
+.0089719
+
+11.55
+21.23
+
+0.000
+0.000
+
+.106841
+.1729241
+
+.1505182
+.2080933
+
+group
+1
+2
+3
+
+.2826207
+.1074814
+.0291065
+
+.0146234
+.0094901
+.0073417
+
+19.33
+11.33
+3.96
+
+0.000
+0.000
+0.000
+
+.2539593
+.0888812
+.0147169
+
+.311282
+.1260817
+.043496
+
+margins — Marginal means, predictive margins, and marginal effects 1676
+
+Example 5: Margins with interaction terms
+
+The estimation command on which margins bases its calculations may contain interaction terms,
+such as an interaction of sex and group:
+. logistic outcome i.sex i.group sex#group
+(output omitted )
+. margins sex group
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+sex
+Male
+Female
+
+.1561738
+.1983749
+
+.0132774
+.0101546
+
+11.76
+19.54
+
+0.000
+0.000
+
+.1301506
+.1784723
+
+.182197
+.2182776
+
+group
+1
+2
+3
+
+.3211001
+.1152127
+.0265018
+
+.0176403
+.0099854
+.0109802
+
+18.20
+11.54
+2.41
+
+0.000
+0.000
+0.016
+
+.2865257
+.0956417
+.0049811
+
+.3556744
+.1347838
+.0480226
+
+We fit the model by typing logistic outcome i.sex i.group sex#group, but the meaning would
+have been the same had we typed logistic outcome sex##group.
+As mentioned in example 4, the results for sex and the results for group are calculated independently,
+and we would have obtained the same results had we typed margins sex followed by margins group.
+The margin for male (sex = 0) is 0.16. The probability 0.16 is the average probability if everyone in
+the data were treated as if sex = 0, including sex = 0 in the main effect and sex = 0 in the interaction
+of sex with group.
+Had we specified margins sex, atmeans, we would have obtained not average probabilities but
+the probabilities evaluated at the average. Rather than obtaining 0.16, we would have obtained 0.10
+for sex = 0. The 0.10 is calculated by taking the fitted model, plugging in sex = 0 everywhere, and
+plugging in the average value of the group indicator variables everywhere they are used. That is, rather
+than treating the group indicators as being (1, 0, 0), (0, 1, 0), or (0, 0, 1) depending on observation, the
+group indicators are treated as being (0.40, 0.37, 0.23), which are the average values of group = 1,
+group = 2, and group = 3.
+
+margins — Marginal means, predictive margins, and marginal effects 1677
+
+Example 6: Margins with continuous variables
+
+To the above example, we will add the continuous covariate age to the model and then rerun margins
+sex group.
+. logistic outcome i.sex i.group sex#group age
+(output omitted )
+. margins sex group
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+sex
+Male
+Female
+
+.1600644
+.1966902
+
+.0125653
+.0100043
+
+12.74
+19.66
+
+0.000
+0.000
+
+.1354368
+.1770821
+
+.184692
+.2162983
+
+group
+1
+2
+3
+
+.2251302
+.150603
+.0736157
+
+.0123233
+.0116505
+.0337256
+
+18.27
+12.93
+2.18
+
+0.000
+0.000
+0.029
+
+.200977
+.1277685
+.0075147
+
+.2492834
+.1734376
+.1397167
+
+Compared with the results presented in example 5, results for sex change little, but results for groups 1
+and 3 change markedly. The tables differ because now we are adjusting for the continuous covariate age,
+as well as for sex and group.
+We will continue examining interactions in example 8. Because we have added a continuous variable, let’s take a detour to explain how to obtain margins for continuous variables and to explain their
+interpretation.
+
+margins — Marginal means, predictive margins, and marginal effects 1678
+
+Example 7: Margins of continuous variables
+
+Continuing with our example of
+. logistic outcome i.sex i.group sex#group age
+
+let’s examine the continuous covariate age.
+You are not allowed to type margins age; doing that will produce an error:
+. margins age
+factor age not found in list of covariates
+r(322);
+
+The message “age not found in list of covariates” is margins’ way of saying, “Yes, age might be in
+the model, but if it is, it is not included as a factor variable; it is in as a continuous variable.” Sometimes,
+Stata is overly terse. margins might also say that because age is continuous there are an infinite number
+of values at which it could evaluate the margins. At what value(s) should age be fixed? margins requires
+more guidance with continuous covariates. We can provide that guidance by using the at() option and
+typing
+. margins, at(age=40)
+
+To understand why that yields the desired result, let us tell you that if you were to type
+. margins
+
+margins would report the overall margin—the margin that holds nothing constant. Because our model
+is logistic, the average value of the predicted probabilities would be reported. The at() option fixes one
+or more covariates to the value(s) specified and can be used with both factor and continuous variables.
+Thus, if you typed margins, at(age=40), then margins would average over the data the responses for
+everybody, setting age=40. Here is what happens when you type that:
+. margins, at(age=40)
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+At: age = 40
+
+_cons
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.1133603
+
+.0070731
+
+16.03
+
+0.000
+
+.0994972
+
+.1272234
+
+Reported is the margin for age = 40, adjusted for the other covariates in our model.
+If we wanted to obtain the margins for age 30, 35, 40, 45, and 50, we could type
+. margins, at(age=(30 35 40 45 50))
+
+or, equivalently,
+. margins, at(age=(30(5)50))
+
+margins — Marginal means, predictive margins, and marginal effects 1679
+
+Example 8: Margins of interactions
+
+Our model is
+. logistic outcome i.sex i.group sex#group age
+
+We can obtain the margins of all possible combinations of the levels of sex and the levels of group
+by typing
+. margins sex#group
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+
+sex#group
+Male#1
+Male#2
+Male#3
+Female#1
+Female#2
+Female#3
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.2379605
+.0658294
+.0538001
+.2158632
+.2054406
+.085448
+
+.0237178
+.0105278
+.0136561
+.0112968
+.0183486
+.0533914
+
+10.03
+6.25
+3.94
+19.11
+11.20
+1.60
+
+0.000
+0.000
+0.000
+0.000
+0.000
+0.110
+
+.1914745
+.0451953
+.0270347
+.1937218
+.1694781
+-.0191973
+
+.2844465
+.0864636
+.0805656
+.2380045
+.2414032
+.1900932
+
+The first line in the table reports the marginal probability for sex = 0 (male) and group = 1. That
+is, it reports the estimated probability if everyone in the data were treated as if they were sex = 0 and
+group = 1.
+Also reported are all the other combinations of sex and group.
+By the way, we could have typed margins sex#group even if our fitted model did not include
+sex#group. Estimation is one thing, and asking questions about the nature of the estimates is another.
+margins does, however, require that i.sex and i.group appear somewhere in the model, because fixing a value outside the model would just produce the grand margin, and you can separately ask for that
+if you want it by typing margins without arguments.
+
+margins — Marginal means, predictive margins, and marginal effects 1680
+
+Example 9: Decomposing margins
+
+We have the model
+. logistic outcome i.sex i.group sex#group age
+
+In example 6, we typed margins sex and obtained 0.160 for males and 0.197 for females. We are
+going to decompose each of those numbers. Let us explain:
+1. The margin for males, 0.160, treats everyone as if they were male, and that amounts to simultaneously
+(a) treating males as males and
+(b) treating females as males.
+2. The margin for females, 0.197, treats everyone as if they were female, and that amounts to simultaneously
+(a) treating males as females and
+(b) treating females as females.
+The margins 1a and 1b are the decomposition of 1, and the margins 2a and 2b are the decomposition
+of 2.
+We could obtain 1a and 2a by typing
+. margins if sex==0, at(sex=(0 1))
+
+because the qualifier if sex==0 would restrict margins to running on only the males. Similarly, we
+could obtain 1b and 2b by typing
+. margins if sex==1, at(sex=(0 1))
+
+We run these examples below:
+. margins if sex==0, at(sex=(0 1))
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 1,498
+
+Expression: Pr(outcome), predict()
+1._at: sex = 0
+2._at: sex = 1
+
+_at
+1
+2
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.0794393
+.1335584
+
+.0062147
+.0127351
+
+12.78
+10.49
+
+0.000
+0.000
+
+.0672586
+.1085981
+
+.0916199
+.1585187
+
+margins — Marginal means, predictive margins, and marginal effects 1681
+
+. margins if sex==1, at(sex=(0 1))
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 1,502
+
+Expression: Pr(outcome), predict()
+1._at: sex = 0
+2._at: sex = 1
+
+_at
+1
+2
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.2404749
+.2596538
+
+.0199709
+.0104756
+
+12.04
+24.79
+
+0.000
+0.000
+
+.2013326
+.2391219
+
+.2796171
+.2801857
+
+Putting together the results from example 6 and the results above, we have
+Margin treating individuals as themselves
+
+0.170
+
+Margin treating individuals as male
+Margin treating male as male
+Margin treating female as male
+
+0.160
+0.079
+0.240
+
+Margin treating individuals as female
+Margin treating male as female
+Margin treating female as female
+
+0.197
+0.134
+0.260
+
+Example 10: Testing margins—contrasts of margins
+
+Continuing with the previous example, it would be interesting to test the equality of 2b and 1b, to
+test whether the average probability of a positive outcome for females treated as females is equal to that
+for females treated as males. That test would be different from testing the overall significance of sex
+in our model. The test performed on our model would be a test of whether the probability of a positive
+outcome differs between males and females when they have equal values of the other covariates. The
+test of equality of margins is a test of whether the average probabilities differ given the different pattern
+of values of the other covariates that the two sexes have in our data.
+We can also perform such tests by treating the results from margins as estimation results. There are
+three steps required to perform tests on margins. First, you must arrange it so that all the margins of
+interest are reported by just one margins command. Second, you must specify margins’ post option.
+Third, you perform the test with the test command.
+Such tests and comparisons can be readily performed by contrasting margins; see [R] margins, contrast. Also see Contrasts of margins—effects (discrete marginal effects) in [R] marginsplot.
+In the previous example, we used two commands to obtain our results, namely,
+. margins if sex==0, at(sex=(0 1))
+. margins if sex==1, at(sex=(0 1))
+
+We could, however, have obtained the same results by typing just one command:
+. margins, over(sex) at(sex=(0 1))
+
+Performing margins, over(sex) first restricts the sample to sex==0 and then restricts it to sex==1,
+and that is equivalent to the two different if conditions that we specified before.
+
+margins — Marginal means, predictive margins, and marginal effects 1682
+
+To test whether females treated as females is equal to females treated as males, we will need to type
+. margins, over(sex) at(sex=(0 1)) post
+. test _b[2._at#1.sex] = _b[1._at#1.sex]
+
+We admit that the second command may seem to have come out of nowhere. When we specify post
+on the margins command, margins behaves as if it were an estimation command, which means that 1)
+it posts its estimates and full VCE to e(), 2) it gains the ability to replay results just as any estimation
+command can, and 3) it gains access to the standard postestimation commands. Item 3 explains why
+we could use test. We learned that we wanted to test b[2. at#1.sex] and b[1. at#1.sex] by
+replaying the estimation results, but this time with the standard estimation command coeflegend option.
+So, what we typed was
+. margins, over(sex) at(sex=(0 1)) post
+. margins, coeflegend
+. test _b[2._at#1.sex] = _b[1._at#1.sex]
+
+We will let you try margins, coeflegend for yourself. The results of running the other two commands are
+. margins, over(sex) at(sex=(0 1)) post
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+Over:
+sex
+1._at: 0.sex
+sex = 0
+1.sex
+sex = 0
+2._at: 0.sex
+sex = 1
+1.sex
+sex = 1
+
+_at#sex
+1#Male
+1#Female
+2#Male
+2#Female
+
+Margin
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.0794393
+.2404749
+.1335584
+.2596538
+
+.0062147
+.0199709
+.0127351
+.0104756
+
+12.78
+12.04
+10.49
+24.79
+
+0.000
+0.000
+0.000
+0.000
+
+.0672586
+.2013326
+.1085981
+.2391219
+
+. test _b[2._at#1.sex] = _b[1._at#1.sex]
+( 1)
+
+- 1bn._at#1.sex + 2._at#1.sex = 0
+chi2( 1) =
+Prob > chi2 =
+
+0.72
+0.3951
+
+.0916199
+.2796171
+.1585187
+.2801857
+
+margins — Marginal means, predictive margins, and marginal effects 1683
+
+We can perform the same test in one command using contrasts of margins:
+. logistic outcome i.sex i.group sex#group age
+(output omitted )
+. margins, over(sex) at(sex=(0 1)) contrast(atcontrast(r._at) wald)
+Contrasts of predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+Over:
+sex
+1._at: 0.sex
+sex = 0
+1.sex
+sex = 0
+2._at: 0.sex
+sex = 1
+1.sex
+sex = 1
+
+_at@sex
+(2 vs 1) Male
+(2 vs 1) Female
+Joint
+
+_at@sex
+(2 vs 1) Male
+(2 vs 1) Female
+
+df
+
+chi2
+
+P>chi2
+
+1
+1
+2
+
+14.59
+0.72
+16.13
+
+0.0001
+0.3951
+0.0003
+
+Contrast
+
+Delta-method
+std. err.
+
+.0541192
+.0191789
+
+.0141706
+.0225516
+
+[95% conf. interval]
+.0263453
+-.0250215
+
+.081893
+.0633793
+
+We refit our logistic model because its estimation results were replaced when we posted our margins.
+The syntax to perform the contrast we want is admittedly not obvious. Contrasting (testing) across at()
+groups is more difficult than contrasting across the margins themselves or across over() groups, because
+we have no natural place for the contrast operators (r., in our case). We also explicitly requested Wald
+tests of the contrasts, which are not provided by default. Nevertheless, the 𝜒2 statistic and its 𝑝-value for
+(2 vs 1) for female matches the results of our test command. We also obtain the test of whether the
+response of males treated as males is equal to the response of males treated as females.
+For a gentler introduction to contrasts of margins, see [R] margins, contrast.
+Example 11: Margins of a specified prediction
+
+We will fit the model
+. use https://www.stata-press.com/data/r19/margex
+. tobit ycn i.sex i.group sex#group age, ul(90)
+
+and we will tell the following story about the variables: We run a peach orchard where we allow people to
+pick their own peaches. A person receives one empty basket in exchange for $20, along with the right to
+enter the orchard. There is no official limit on how many peaches a person can pick, but only 90 peaches
+will fit into a basket. The dependent variable in the above tobit model, ycn, is the number of peaches
+picked. We use tobit, a special case of censored-normal regression, because ycn is censored at 90.
+
+margins — Marginal means, predictive margins, and marginal effects 1684
+
+After fitting this model, if we typed
+. margins sex
+
+we would obtain the margins for males and for females of the uncensored number of peaches picked.
+We would obtain that because predict after tobit produces the uncensored number by default. To
+obtain the censored prediction, we would have to specify predict’s ystar(.,90) option. If we want
+the margins based on that response, we type
+. margins sex, predict(ystar(.,90))
+
+The results of typing that are
+. tobit ycn i.sex i.group sex#group age, ul(90)
+(output omitted )
+. margins sex, predict(ystar(.,90))
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: E(ycn*|ycn<90), predict(ystar(.,90))
+
+sex
+Male
+Female
+
+Margin
+
+Delta-method
+std. err.
+
+62.21804
+78.34272
+
+.5996952
+.4555278
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+103.75
+171.98
+
+0.000
+0.000
+
+61.04266
+77.4499
+
+63.39342
+79.23553
+
+In our previous examples, sex = 1 has designated females, so evidently the females visiting our
+orchard are better at filling baskets than the men.
+Example 12: Margins of a specified expression
+
+Continuing with our peach orchard example and the previously fit model
+. use https://www.stata-press.com/data/r19/margex
+. tobit ycn i.sex i.group sex#group age, ul(90)
+
+let’s examine how well our baskets are working for us. What is the proportion of the number of peaches
+actually picked to the number that would have been picked were the baskets larger? As mentioned in
+example 11, predict, ystar(.,90) produces the expected number picked given the limit of basket
+size. predict, xb would predict the expected number without a limit. We want the ratio of those two
+predictions. That ratio will measure as a proportion how well the baskets work. Thus, we could type
+. margins sex, expression(predict(ystar(.,90))/predict(xb))
+
+margins — Marginal means, predictive margins, and marginal effects 1685
+
+That would give us the proportion for everyone treated as male and everyone treated as female, but what
+we want to know is how well baskets work for true males and true females, so we will type
+. margins, over(sex) expression(predict(ystar(0,90))/predict(xb))
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: predict(ystar(0,90))/predict(xb)
+Over:
+sex
+
+sex
+Male
+Female
+
+Margin
+
+Delta-method
+std. err.
+
+.9811785
+.9419962
+
+.0013037
+.0026175
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+752.60
+359.88
+
+0.000
+0.000
+
+.9786233
+.9368659
+
+.9837338
+.9471265
+
+By the way, we could count the number of peaches saved by the limited basket size during the period
+of data collection by typing
+. count
+3,000
+. margins, expression(3000*(predict(xb)-predict(ystar(.,90))))
+(output omitted )
+
+The number of peaches saved turns out to be 9,183.
+Example 13: Margins with multiple outcomes (responses)
+
+Estimation commands such as mlogit and mprobit (see [R] mlogit and [R] mprobit) calculate multiple responses, and those multiple responses are reflected in the options available with predict after
+estimation. Obtaining margins for such estimators is thus the same as obtaining margins of a specified
+prediction, which was demonstrated in example 11. The solution is to include the predict opt that selects
+the desired response in margins’ predict(predict opt ) option.
+If we fit the multinomial logistic model
+. mlogit group i.sex age
+
+then to obtain the margins for the probability that group = 1, we would type
+. margins sex, predict(outcome(1))
+
+and to obtain the margins for the probability that group = 3, we would type
+. margins sex, predict(outcome(3))
+
+To obtain the margins for each of these outcomes simultaneously, type
+. margins sex, predict(outcome(1)) predict(outcome(3))
+
+We learned about the outcome(1) and outcome(3) options by looking in [R] mlogit postestimation. For an example using margins with a multiple-outcome estimator, see example 4 in [R] mlogit
+postestimation.
+
+margins — Marginal means, predictive margins, and marginal effects 1686
+
+Example 14: Margins with multiple equations
+
+Estimation commands such as mvreg, manova, sureg, and reg3 (see [MV] mvreg, [MV] manova,
+[R] sureg, and [R] reg3) fit multiple equations. Obtaining margins for such estimators is the same as
+obtaining margins with multiple outcomes (see example 13), which in turn is the same as obtaining
+margins of a specified prediction (see example 11). You place the relevant option from the estimator’s
+predict command into margins’ predict(predict opt ) option.
+If we fit the seemingly unrelated regression model
+. sureg (y = i.sex age) (distance = i.sex i.group)
+
+we can obtain the marginal means of y for males and females by typing
+. margins sex, predict(equation(y))
+
+and we can obtain the marginal means of distance by typing
+. margins sex, predict(equation(distance))
+
+We could obtain the difference between the margins of y and distance by typing
+. margins sex, expression(predict(equation(y)) > predict(equation(distance)))
+
+More examples can be found in [MV] manova and [MV] manova postestimation.
+Example 15: Margins evaluated out of sample
+
+You can fit your model on one dataset and use margins on another if you specify margins’
+noesample option. Remember that margins reports estimated average responses, and, unless you lock
+all the covariates at fixed values by using the at() option, the remaining variables are allowed to vary
+as they are observed to vary in the data. That is indeed the point of using margins. The fitted model
+provides the basis for adjusting for the remaining variables, and the data provide their values. The predictions produced by margins are of interest assuming the data used by margins are in some sense
+interesting or representative. In some cases, you might need to fit your model on one set of data and
+perform margins on another.
+In example 11, we fit the model
+. tobit ycn i.sex i.group sex#group age, ul(90)
+
+and we told a story about our peach orchard in which we charged people $20 to collect a basket of
+peaches, where baskets could hold at most 90 peaches. Let us now tell you that we believe the data
+on which we estimated those margins were unrepresentative, or at least, we have a more representative
+sample stored in another .dta file. That dataset includes the demographics of our customers but does
+not include counts of peaches picked. It is a lot of work counting those peaches.
+
+margins — Marginal means, predictive margins, and marginal effects 1687
+
+Thus, we will fit our model just as we did previously using the detailed data, but we will bring the other,
+more representative dataset into memory before issuing the margins sex, predict(ystar(.,90))
+command, and we will add noesample to it.
+. use https://www.stata-press.com/data/r19/margex
+(Artificial data for margins)
+. tobit ycn i.sex i.group sex#group age, ul(90)
+(output omitted )
+. use https://www.stata-press.com/data/r19/peach
+. margins sex, predict(ystar(.,90)) noesample
+Predictive margins
+Model VCE: OIM
+
+Number of obs = 2,727
+
+Expression: E(ycn*|ycn<90), predict(ystar(.,90))
+
+sex
+0
+1
+
+Margin
+
+Delta-method
+std. err.
+
+56.79774
+75.02146
+
+1.003731
+.6437446
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+56.59
+116.54
+
+0.000
+0.000
+
+54.83046
+73.75974
+
+58.76502
+76.28317
+
+In example 12, we produced an estimate of the number of peaches saved by the limited-size baskets.
+We can update that estimate using the new demographic data by typing
+. count
+2,727
+. margins, exp(2727*(predict(xb)-predict(ystar(.,90)))) noesample
+(output omitted )
+
+By running the above, we find that the updated number of peaches saved is 6,408.
+
+Obtaining margins of derivatives of responses (a.k.a. marginal effects)
+Derivatives of responses are themselves responses, so everything said above in Obtaining margins of
+responses is equally true of derivatives of responses, and every example above could be repeated here
+substituting the derivative of the response for the response.
+Derivatives are of interest because they are an informative way of summarizing fitted results. The
+change in a response for a change in the covariate is easy to understand and to explain. In simple models,
+one hardly needs margins to assist in obtaining such margins. Consider the simple linear regression
+𝑦 = 𝛽0 + 𝛽1 × sex + 𝛽2 × age + 𝜖
+The derivatives of the responses are
+𝑑𝑦/𝑑(sex) = 𝛽1
+𝑑𝑦/𝑑(age) = 𝛽2
+margins computes these derivatives using 𝛽1̂ and 𝛽2̂ , the coefficients from the linear predictor of 𝑦. How
+does the linear predictor 𝑦 ̂ change between males and females? It changes by 𝛽1̂ . How does 𝑦 ̂ change
+with age? It changes by 𝛽2̂ per year.
+
+margins — Marginal means, predictive margins, and marginal effects 1688
+
+If you make the model a little more complicated, however, the need for margins arises. Consider the
+model
+𝑦 = 𝛽0 + 𝛽1 × sex + 𝛽2 × age + 𝛽3 × age2 + 𝜖
+Now, the derivative with respect to age is
+𝑑𝑦/𝑑(age) = 𝛽2 + 2 × 𝛽3 × age
+The change in 𝑦 for a change in age itself changes with age, and so to better understand the fitted results,
+you might want to make a table of the change in 𝑦 for a change in age for age = 30, age = 40, and
+age = 50. margins can do that.
+Consider an even more complicated model, such as
+𝑦 = 𝛽0 + 𝛽1 × sex + 𝛽2 × age + 𝛽3 × age2 + 𝛽4 × bp + 𝛽5 × sex × bp + 𝛽6 × tmt
++ 𝛽7 × tmt × age + 𝛽8 × tmt × age2 + 𝜖
+
+(1)
+
+The derivatives are
+𝑑𝑦/𝑑(sex) = 𝛽1 + 𝛽5 × bp
+𝑑𝑦/𝑑(age) = 𝛽2 + 2 × 𝛽3 × age + 𝛽7 × tmt + 2 × 𝛽8 × tmt × age
+𝑑𝑦/𝑑(bp) = 𝛽4 + 𝛽5 × sex
+𝑑𝑦/𝑑(tmt) = 𝛽6 + 𝛽7 × age + 𝛽8 × age2
+At this point, margins becomes indispensable.
+Use at() freely, especially with continuous variables
+
+An option one tends to use frequently with derivatives of responses is at(). Such use is often to better
+understand or to communicate how the response varies, or, in technical jargon, to explore the nature of
+the response surface.
+For instance, the effect 𝑑𝑦/𝑑(tmt) in (1) is equal to 𝛽6 + 𝛽7 × age + 𝛽8 × age2 , and so simply to
+understand how treatment varies with age, we may want to fix age at various values. We might type
+. margins, dydx(tmt) at(age=(30 40 50))
+
+Expressing derivatives as elasticities
+
+You specify the dydx(varname) option on the margins command to use 𝑑𝑦/𝑑(varname) as the response variable. If you want that derivative expressed as an elasticity, you can specify eyex(varname),
+eydx(varname), or dyex(varname). You substitute e for d where you want an elasticity. In the discussion below, when we talk about 𝑦, we are referring to the linear predictions from the model.
+The formulas are
+dydx() = 𝑑𝑦/𝑑𝑥
+eyex() = 𝑑𝑦/𝑑𝑥 × (𝑥/𝑦)
+eydx() = 𝑑𝑦/𝑑𝑥 × (1/𝑦) = 𝑑 ln(𝑦)/𝑑𝑥
+dyex() = 𝑑𝑦/𝑑𝑥 × (𝑥)
+
+= 𝑑𝑦/𝑑 ln(𝑥)
+
+margins — Marginal means, predictive margins, and marginal effects 1689
+
+and the interpretations are
+dydx():
+eyex():
+eydx():
+dyex():
+
+proportional
+proportional
+
+change in 𝑦 for a
+change in 𝑦 for a
+change in 𝑦 for a
+change in 𝑦 for a
+
+change in 𝑥
+change in 𝑥
+change in 𝑥
+proportional change in 𝑥
+proportional
+
+As margins always does with response functions, calculations are made at the observational level
+and are then averaged. Let’s assume that in observation 5, 𝑑𝑦/𝑑𝑥 = 0.5, 𝑦 = 15, and 𝑥 = 30; then
+dydx() = 0.5
+eyex() = 1.0
+eydx() = 0.03
+dyex() = 15.0
+
+Many social scientists would informally explain the meaning of eyex() = 1 as “𝑦 increases 100%
+when 𝑥 increases 100%” or as “𝑦 doubles when 𝑥 doubles”, although neither statement is literally true.
+eyex(), eydx(), and dyex() are rates evaluated at a point, just as dydx() is a rate, and all such interpretations are valid only for small (infinitesimal) changes in 𝑥. It is true that eyex() = 1 means 𝑦
+increases with 𝑥 at a rate such that, if the rate were constant, 𝑦 would double if 𝑥 doubled. This issue of
+casual interpretation is no different from casually interpreting dydx() as if it represents the response to
+a unit change. It is not necessarily true that dydx() = 0.5 means that “𝑦 increases by 0.5 if 𝑥 increases
+by 1”. It is true that “𝑦 increases with 𝑥 at a rate such that, if the rate were constant, 𝑦 would increase by
+0.5 if 𝑥 increased by 1”.
+dydx(), eyex(), eydx(), and dyex() may be used with continuous 𝑥 variables. dydx() and eydx()
+may also be used with factor variables. For eydx(), effects are based on 𝑑 ln(𝑦)/𝑑𝑥 for continuous
+covariates and on differences of ln(𝑦) for discrete covariates. Estimates based on logarithms have better
+computational properties and allow us to think of semielasticities as coefficients in a regression with log
+dependent variables. As we discuss next, when we are analyzing marginal effects of categorical variables,
+we think in terms of discrete differences instead of derivatives.
+Derivatives versus discrete differences
+
+In (1),
+𝑦 = 𝛽0 + 𝛽1 × sex + 𝛽2 × age + 𝛽3 × age2 + 𝛽4 × bp + 𝛽5 × sex × bp + 𝛽6 × tmt
++ 𝛽7 × tmt × age + 𝛽8 × tmt × age2 + 𝜖
+Let us call your attention to the derivatives of 𝑦 with respect to age and sex:
+𝑑𝑦/𝑑(age) = 𝛽2 + 2 × 𝛽3 × age + 𝛽7 × tmt + 2 × 𝛽8 × tmt × age
+
+(2)
+
+𝑑𝑦/𝑑(sex) = 𝛽1 + 𝛽5 × bp
+
+(3)
+
+age is presumably a continuous variable, and (2) is precisely how margins calculates its derivatives
+when you type margins, dydx(age). sex, however, is presumably a factor variable, and margins does
+not necessarily make the calculation using (3) were you to type margins, dydx(sex). We will explain,
+but let us first clarify what we mean by a continuous and a factor variable. Say that you fit (1) by typing
+. regress y i.sex age c.age#c.age i.bp bp#sex
+> i.tmt tmt#c.age tmt#c.age#c.age
+
+margins — Marginal means, predictive margins, and marginal effects 1690
+
+It is important that sex entered the model as a factor variable. It would not do to type regress y sex
+. . . because then sex would be a continuous variable, or at least it would be a continuous variable from
+Stata’s point of view. The model estimates would be the same, but margins’ understanding of those
+estimates would be a little different. With the model fit using i.sex, margins understands that either
+sex is 0 or sex is 1. With the model fit using sex, margins thinks sex is continuous and, for instance,
+sex = 1.5 is a possibility.
+margins calculates dydx() differently for continuous and for factor variables. For continuous variables, margins calculates 𝑑𝑦/𝑑𝑥 using the fitted values from regress. For factor variables, margins
+calculates the discrete first difference from the base category. To obtain that for sex, write down the
+model and then subtract from it the model evaluated at the base category for sex, which is sex = 0. If
+you do that, you will get the same formula as we obtained for the derivative, namely,
+
+discrete difference{(sex = 1) − (sex = 0)} = 𝛽1 + 𝛽5 × bp
+We obtain the same formula because our model is linear regression. Outside of linear regression, and
+outside of linear response functions generally, the discrete difference is not equal to the derivative. The
+discrete difference is not equal to the derivative for logistic regression, probit, etc. The discrete difference
+calculation is generally viewed as better for factor variables than the derivative calculation because the
+discrete difference is what would actually be observed.
+If you want the derivative calculation for your factor variables, specify the continuous option on the
+margins command.
+Example 16: Average marginal effect (partial effects)
+
+Concerning the title of this example, the way we use the term marginal effect, the effects of factor
+variables are calculated using discrete first differences. If you wanted the continuous calculation, you
+would specify margins’ continuous option in what follows.
+. use https://www.stata-press.com/data/r19/margex
+(Artificial data for margins)
+. logistic outcome treatment##group age c.age#c.age treatment#c.age
+(output omitted )
+. margins, dydx(treatment)
+Average marginal effects
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+dy/dx wrt: 1.treatment
+dy/dx
+1.treatment
+
+.0385625
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+.0162848
+
+2.37
+
+0.018
+
+.0066449
+
+.0704801
+
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+The average marginal effect of treatment on the probability of a positive outcome is 0.039.
+
+margins — Marginal means, predictive margins, and marginal effects 1691
+
+Example 17: Average marginal effect of all covariates
+
+We will continue with the model
+. logistic outcome treatment##group age c.age#c.age treatment#c.age
+
+if we wanted the average marginal effects for all covariates, we would type margins, dydx(*) or
+margins, dydx( all); they mean the same thing. This is probably the most common way margins,
+dydx() is used.
+. margins, dydx(*)
+Average marginal effects
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+dy/dx wrt: 1.treatment 2.group 3.group age
+dy/dx
+
+Delta-method
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+1.treatment
+
+.0385625
+
+.0162848
+
+2.37
+
+0.018
+
+.0066449
+
+.0704801
+
+group
+2
+3
+
+-.0776906
+-.1505652
+
+.0181584
+.0400882
+
+-4.28
+-3.76
+
+0.000
+0.000
+
+-.1132805
+-.2291366
+
+-.0421007
+-.0719937
+
+age
+
+.0095868
+
+.0007796
+
+12.30
+
+0.000
+
+.0080589
+
+.0111148
+
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+margins — Marginal means, predictive margins, and marginal effects 1692
+
+Example 18: Evaluating marginal effects over the response surface
+
+Continuing with the model
+. logistic outcome treatment##group age c.age#c.age treatment#c.age
+
+What follows maps out the entire response surface of our fitted model. We report the marginal effect
+of treatment evaluated at age = 20, 30, . . . , 60, by each level of group.
+. margins group, dydx(treatment) at(age=(20(10)60))
+Conditional marginal effects
+Model VCE: OIM
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+dy/dx wrt: 1.treatment
+1._at: age = 20
+2._at: age = 30
+3._at: age = 40
+4._at: age = 50
+5._at: age = 60
+dy/dx
+
+Delta-method
+std. err.
+
+0.treatment
+
+(base outcome)
+
+1.treatment
+_at#group
+1 1
+1 2
+1 3
+2 1
+2 2
+2 3
+3 1
+3 2
+3 3
+4 1
+4 2
+4 3
+5 1
+5 2
+5 3
+
+-.0208409
+.009324
+.0006558
+-.0436964
+.0382959
+.0064564
+-.055676
+.1152235
+.0284808
+-.027101
+.2447682
+.0824401
+.0292732
+.3757777
+.1688268
+
+.0152862
+.0059896
+.0048682
+.0279271
+.0120405
+.0166581
+.0363191
+.0209858
+.0471293
+.0395501
+.0362623
+.1025028
+.0587751
+.0578106
+.1642191
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+-1.36
+1.56
+0.13
+-1.56
+3.18
+0.39
+-1.53
+5.49
+0.60
+-0.69
+6.75
+0.80
+0.50
+6.50
+1.03
+
+0.173
+0.120
+0.893
+0.118
+0.001
+0.698
+0.125
+0.000
+0.546
+0.493
+0.000
+0.421
+0.618
+0.000
+0.304
+
+-.0508013
+-.0024155
+-.0088856
+-.0984325
+.014697
+-.0261929
+-.1268601
+.074092
+-.0638908
+-.1046177
+.1736954
+-.1184616
+-.0859239
+.2624709
+-.1530368
+
+.0091196
+.0210635
+.0101972
+.0110397
+.0618949
+.0391057
+.015508
+.156355
+.1208524
+.0504158
+.315841
+.2833418
+.1444703
+.4890844
+.4906904
+
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+margins — Marginal means, predictive margins, and marginal effects 1693
+
+Obtaining margins with survey data and representative samples
+The standard errors and confidence intervals produced by margins are based by default on the delta
+method applied to the VCE of the current estimates. Delta-method standard errors treat the covariates at
+which the response is evaluated as given or fixed. Such standard errors are appropriate if you specify
+at() to fix the covariates, and they are appropriate when you are making inferences about groups exactly
+like your sample whether you specify at() or not.
+On the other hand, if you have a representative sample of the population or if you have complex survey
+data and if you want to make inferences about the underlying population, you need to account for the variation in the covariates that would arise in repeated sampling. You do that using vce(unconditional),
+which invokes a different standard error calculation based on Korn and Graubard (1999). Syntactically,
+there are three cases. They all involve specifying vce(unconditional) on the margins command:
+1. You have a representative random sample, and you have not svyset your data.
+When you fit the model, you need to specify the vce(robust) or vce(cluster clustvar) option.
+When you issue the margins command, you need to specify the vce(unconditional) option.
+2. You have a weighted sample, and you have not svyset your data.
+You need to specify [pw=weight] when you fit the model and, of course, specify the
+vce(unconditional) option on the margins command. You do not need to specify the weights
+on the margins command because margins will obtain them from the estimation results.
+3. You have svyset your data, whether it be a simple random sample or something more complex
+including weights, strata, sampling units, or poststratification, and you are using the linearized
+variance estimator.
+You need to use the svy prefix when you fit the model. You need to specify vce(unconditional)
+when you issue the margins command. You do not need to respecify the weights.
+Even though the data are svyset, and even though the estimation was svy estimation, margins
+does not default to vce(unconditional). It does not default to vce(unconditional) because
+there are valid reasons to want the data-specific, vce(delta) standard-error estimates. Whether
+you specify vce(unconditional) or not, margins uses the weights, so you do not need to respecify them even if you are using vce(unconditional).
+vce(unconditional) is allowed only after estimation with vce(robust), vce(cluster . . .), or
+the svy prefix with the linearized variance estimator. If the VCE of the current estimates was specified
+as clustered, so will be the VCE estimates of margins. If the estimates were from a survey estimation,
+the survey settings in the dataset will be used by margins.
+
+When you use vce(unconditional), never specify if exp or in range on the margins command;
+instead, specify the subpop(if exp) option. You do that for the usual reasons; see [SVY] Subpopulation
+estimation. If you specify over(varlist ) to examine subgroups, the subgroups will automatically be
+treated as subpopulations.
+If you are using a replication-based variance estimator, you may want to use this method to estimate
+the variance of your margins; see [SVY] svy postestimation.
+
+margins — Marginal means, predictive margins, and marginal effects 1694
+
+Example 19: Inferences for populations, margins of response
+
+In example 6, we fit the model
+. logistic outcome i.sex i.group sex#group age
+
+and we obtained margins by sex and margins by group,
+. margins sex group
+
+If our data were randomly drawn from the population of interest and we wanted to account for this,
+we would have typed
+. logistic outcome i.sex i.group sex#group age, vce(robust)
+. margins sex group, vce(unconditional)
+
+We do that below:
+. logistic outcome i.sex i.group sex#group age, vce(robust)
+(output omitted )
+. margins sex group, vce(unconditional)
+Predictive margins
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+Margin
+
+Unconditional
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+sex
+Male
+Female
+
+.1600644
+.1966902
+
+.0131685
+.0104563
+
+12.16
+18.81
+
+0.000
+0.000
+
+.1342546
+.1761963
+
+.1858743
+.2171841
+
+group
+1
+2
+3
+
+.2251302
+.150603
+.0736157
+
+.0127069
+.0118399
+.0343188
+
+17.72
+12.72
+2.15
+
+0.000
+0.000
+0.032
+
+.200225
+.1273972
+.0063522
+
+.2500354
+.1738088
+.1408793
+
+The estimated margins are the same as they were in example 6, but the standard errors and confidence
+intervals differ, although not by much. Given that we have 3,000 observations in our randomly drawn
+sample, we should expect this.
+
+margins — Marginal means, predictive margins, and marginal effects 1695
+
+Example 20: Inferences for populations, marginal effects
+
+In example 17, we fit a logistic model and then obtained the average marginal effects for all covariates
+by typing
+. logistic outcome treatment##group age c.age#c.age treatment#c.age
+. margins, dydx(*)
+
+To repeat that and also obtain standard errors for our population, we would type
+. logistic outcome treatment##group age c.age#c.age treatment#c.age, vce(robust)
+(output omitted )
+. margins, dydx(*) vce(unconditional)
+Average marginal effects
+
+Number of obs = 3,000
+
+Expression: Pr(outcome), predict()
+dy/dx wrt: 1.treatment 2.group 3.group age
+dy/dx
+
+Unconditional
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+1.treatment
+
+.0385625
+
+.0163872
+
+2.35
+
+0.019
+
+.0064442
+
+.0706808
+
+group
+2
+3
+
+-.0776906
+-.1505652
+
+.0179573
+.0411842
+
+-4.33
+-3.66
+
+0.000
+0.000
+
+-.1128863
+-.2312848
+
+-.0424949
+-.0698456
+
+age
+
+.0095868
+
+.0007814
+
+12.27
+
+0.000
+
+.0080553
+
+.0111183
+
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+Example 21: Inferences for populations with svyset data
+
+See example 3 in [SVY] svy postestimation.
+
+Standardizing margins
+A standardized margin is the margin calculated on data different from the data used to fit the model.
+Typically, the word standardized is reserved for situations in which the alternate population is a reference
+population, which may be real or artificial, and which is treated as fixed.
+Say that you work for a hospital and have fit a model of mortality on the demographic characteristics
+of the hospital’s patients. At this stage, were you to type
+. margins
+
+you would obtain the mortality rate for your hospital. You have another dataset, hstandard.dta, that
+contains demographic characteristics of patients across all hospitals along with the population of each
+hospital recorded in the pop variable. You could obtain the expected mortality rate at your hospital if
+your patients matched the characteristics of the standard population by typing
+. use https://www.stata-press.com/data/r19/hstandard, clear
+. margins [fw=pop], noesample
+
+You specified noesample because the margin is being calculated on data other than the data used to
+fit the model. You specified [fw=pop] because the reference dataset you are using included population
+counts, as many reference datasets do.
+
+margins — Marginal means, predictive margins, and marginal effects 1696
+
+Obtaining margins as though the data were balanced
+Here we discuss what are commonly called estimated marginal means or least-squares means. These
+are margins that assume that the design is balanced, which means all levels of factor variables are equally
+likely. The seminal reference on these margins is Searle, Speed, and Milliken (1980).
+In designed experiments, observations are often allocated in a balanced way so that the variances can
+be easily compared and decomposed. At the Acme Portable Widget Company, they are experimenting
+with a new machine. The machine has three temperature settings and two pressure settings; a combination
+of settings will be optimal on any particular day, determined by the weather. At start-up, one runs a quick
+test and chooses the optimal setting for the day. Across different days, each setting will be used about
+equally, says the manufacturer.
+In experiments with the machine, 10 widgets were collected for stress testing at each of the settings
+over a six-week period. We wish to know the average stress-test value that can be expected from these
+machines over a long period.
+Balancing using asbalanced
+
+The data were intended to be balanced, but unfortunately some samples were destroyed before the
+stress could be measured, rendering the data unbalanced. To estimate the margins as if the data were
+balanced, specify the asbalanced option.
+. use https://www.stata-press.com/data/r19/acmemanuf
+. regress y pressure##temp
+(output omitted )
+. margins, asbalanced
+Adjusted predictions
+Model VCE: OLS
+
+Number of obs = 49
+
+Expression: Linear prediction, predict()
+At: pressure
+(asbalanced)
+temp
+(asbalanced)
+
+_cons
+
+Margin
+
+Delta-method
+std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+115.3758
+
+1.530199
+
+75.40
+
+0.000
+
+112.2899
+
+118.4618
+
+If we had omitted the asbalanced option, our calculations would have been different:
+. margins
+Predictive margins
+Model VCE: OLS
+
+Number of obs = 49
+
+Expression: Linear prediction, predict()
+
+_cons
+
+Margin
+
+Delta-method
+std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+109.9214
+
+1.422629
+
+77.27
+
+0.000
+
+107.0524
+
+112.7904
+
+margins — Marginal means, predictive margins, and marginal effects 1697
+
+To see what margins, asbalanced is doing, first recall that pressure and temp are categorical
+variables that take values {1, 2} and {1, 2, 3}, respectively. To re-create the asbalanced calculations
+using the at() option, we set each level of pressure equal to 1/2 and each level of temp equal to 1/3.
+. margins, at(1.pressure=0.5 2.pressure=0.5
+>
+1.temp=0.333333 2.temp=0.333333 3.temp=0.333333)
+Adjusted predictions
+Model VCE: OLS
+
+Number of obs = 49
+
+Expression: Linear prediction, predict()
+At: 1.pressure =
+.5
+2.pressure =
+.5
+1.temp
+= .333333
+2.temp
+= .333333
+3.temp
+= .333333
+
+_cons
+
+Margin
+
+Delta-method
+std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+115.3758
+
+1.530199
+
+75.40
+
+0.000
+
+112.2899
+
+118.4618
+
+Technical note
+Concerning how asbalanced calculations are performed, if a factor variable has 𝑙 levels, then each
+level’s coefficient contributes to the response weighted by 1/𝑙. If two factors, 𝑎 and 𝑏, interact, then each
+coefficient associated with their interaction is weighted by 1/(𝑙𝑎 × 𝑙𝑏 ).
+If a balanced factor interacts with a continuous variable, then each coefficient in the interaction is
+applied to the value of the continuous variable, and the results are weighted equally. So, if the factor
+being interacted has 𝑙𝑎 levels, the effect of each coefficient on the value of the continuous covariate is
+weighted by 1/𝑙𝑎 .
+
+Balancing by standardization
+
+To better understand the balanced results, we can perform the balancing ourselves by using the standardizing method shown in Standardizing margins. To do that, we will input a balanced dataset and then
+type margins, noesample.
+. use https://www.stata-press.com/data/r19/acmemanuf
+. regress y pressure##temp
+(output omitted )
+. drop _all
+
+margins — Marginal means, predictive margins, and marginal effects 1698
+
+. input pressure temp
+pressure
+1. 1 1
+2. 1 2
+3. 1 3
+4. 2 1
+5. 2 2
+6. 2 3
+7. end
+
+temp
+
+. margins, noesample
+Predictive margins
+Model VCE: OLS
+
+Number of obs = 6
+
+Expression: Linear prediction, predict()
+
+_cons
+
+Margin
+
+Delta-method
+std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+115.3758
+
+1.530199
+
+75.40
+
+0.000
+
+112.2899
+
+118.4618
+
+We obtain the same results as previously.
+Balancing nonlinear responses
+
+If our testing had produced a binary outcome, say, acceptable/unacceptable, rather than a continuous
+variable, we would type
+. use https://www.stata-press.com/data/r19/acmemanuf, clear
+. logistic acceptable pressure##temp
+. margins, asbalanced
+
+The result of doing that would be 0.680. If we omitted the asbalanced option, the result would have
+been 0.667. The two results are so similar because acmemanuf.dta is nearly balanced.
+Even though the asbalanced option can be used on both linear and nonlinear responses, such as
+probabilities, there is an issue of which you should be aware. The most widely used formulas for balancing responses apply the balancing to the linear prediction, average that as if it were balanced, and then
+apply the nonlinear transform. That is the calculation that produced 0.680.
+An alternative would be to apply the standardization method. That amounts to making the linear
+predictions observation by observation, applying the nonlinear transform to each, and then averaging the
+nonlinear result as if it were balanced. You could do that by typing
+. use https://www.stata-press.com/data/r19/acmemanuf, clear
+. logistic acceptable pressure##temp
+. clear
+. input pressure temp
+(see above for entered data)
+. margins, noesample
+
+The result from the standardization procedure would be 0.672. These two ways of averaging nonlinear
+responses are discussed in detail in Lane and Nelder (1982) within the context of general linear models.
+Concerning the method used by the asbalanced option, if your data start balanced and you have a
+nonlinear response, you will get different results with and without the asbalanced option!
+
+margins — Marginal means, predictive margins, and marginal effects 1699
+
+Treating a subset of covariates as balanced
+
+So far, we have treated all the covariates as if they were balanced. margins will allow you to treat a
+subset of the covariates as balanced, too. For instance, you might be performing an experiment in which
+you are randomly allocating patients to a treatment arm and so want to balance on arm, but you do not
+want to balance the other characteristics.
+In this example, we will imagine that the outcome of the experiment is continuous. We type
+. use https://www.stata-press.com/data/r19/margex, clear
+. regress y arm##sex sex##agegroup
+. margins, at((asbalanced) arm)
+
+If we wanted results balanced on agegroup as well, we could type
+. margins, at((asbalanced) arm agegroup)
+
+If we wanted results balanced on all three covariates, we could type
+. margins, at((asbalanced) arm agegroup sex)
+
+or we could type
+. margins, at((asbalanced) _factor)
+
+or we could type
+. margins, asbalanced
+
+Balancing in the presence of continuous covariates
+
+So far, we have considered only factor variables because the concept of balancing is applicable only to
+factor covariates. If your model contains both factor and continuous covariates, the asbalanced option
+will treat the factor covariates as if they were balanced, but it will not affect the continuous covariates.
+Here we imagine that the outcome of the experiment is binary and that we have two factor covariates
+(arm and sex) and two continuous covariates (distance and ycn). We could type
+. use https://www.stata-press.com/data/r19/margex, clear
+. logistic outcome i.arm i.sex c.distance c.ycn
+. margins, asbalanced
+
+This calculates the marginal probability of outcome = 1 while treating factor covariates arm and
+sex as balanced, but continuous covariates distance and ycn are left as observed, which is the default
+behavior.
+If we set continuous covariates equal to their means while maintaining a balanced treatment of factor
+covariates, the resulting margin is called an adjusted treatment mean. To calculate this margin, we could
+type
+. margins, asbalanced atmeans
+
+or we could type
+. margins, at((asbalanced) _factor
+
+(mean) _continuous)
+
+margins — Marginal means, predictive margins, and marginal effects 1700
+
+Using fvset design
+
+As a convenience feature, equivalent to
+. regress y arm##sex sex##agegroup
+. margins, at((asbalanced) arm sex)
+
+is
+. fvset design asbalanced arm sex
+. regress y arm##sex sex##agegroup
+. margins
+
+The advantage of the latter is that you have to set the variables as balanced only once. This is useful
+when balancing is a design characteristic of certain variables and you wish to avoid accidentally treating
+them as unbalanced.
+If you save your data after fvsetting, the settings will be remembered in future sessions. If you want
+to clear the setting(s), type
+. fvset clear varlist
+
+See [R] fvset.
+Balancing in the presence of empty cells
+
+The issue of empty cells is not exclusively an issue of balancing, but there are special considerations
+when balancing. Empty cells are discussed generally in Estimability of margins.
+An empty cell is an interaction of levels of two or more factor variables for which you have no data.
+Usually, margins involving empty cells cannot be estimated. When balancing, there is an alternate definition of the margin that allows the margin to be estimated. margins makes the alternate calculation when
+you specify the emptycells(reweight) option. By default, margins uses the emptycells(strict)
+option.
+If you have empty cells in your data and you request margins involving the empty cells, those margins
+will be marked as not estimable even if you specify the asbalanced option.
+. use https://www.stata-press.com/data/r19/estimability, clear
+(margins estimability)
+. regress y sex##group
+(output omitted )
+. margins sex, asbalanced
+Adjusted predictions
+Model VCE: OLS
+
+Number of obs = 69
+
+Expression: Linear prediction, predict()
+At: group
+(asbalanced)
+Margin
+sex
+Male
+Female
+
+21.91389
+.
+
+Delta-method
+std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+1.119295
+19.58
+(not estimable)
+
+0.000
+
+19.67572
+
+24.15206
+
+margins — Marginal means, predictive margins, and marginal effects 1701
+
+This example is discussed in Estimability of margins, although without the asbalanced option. What
+is said there is equally relevant to the asbalanced case. For reasons explained there, the margin for
+sex = 1 (female) cannot be estimated.
+The margin for sex = 1 can be estimated in the asbalanced case if you are willing to make an
+assumption. Remember that margins makes the balanced calculation by summing the responses associated with the levels and then dividing by the number of levels. If you specify emptycells(reweight),
+margins sums what is available and divides by the number available. Thus, you are assuming that, whatever the responses in the empty cells, those responses are such that they would not change the overall
+mean of what is observed.
+The results of specifying emptycells(reweight) are
+. margins sex, asbalanced emptycells(reweight)
+Adjusted predictions
+Model VCE: OLS
+
+Number of obs = 69
+
+Expression: Linear prediction, predict()
+Empty cells: reweight
+At: group
+(asbalanced)
+
+sex
+Male
+Female
+
+Margin
+
+Delta-method
+std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+21.91389
+24.85185
+
+1.119295
+1.232304
+
+19.58
+20.17
+
+0.000
+0.000
+
+19.67572
+22.38771
+
+24.15206
+27.316
+
+Obtaining margins with nested designs
+Introduction to nested designs
+
+Factors whose meaning depends on other factors are called nested factors, and the factors on which
+their meaning depends are called the nesting factors. For instance, assume that we have a sample of patients and each patient is assigned to one doctor. Then, patient is nested within doctor. Let the identifiers
+of the first 5 observations of our data be
+Doctor
+1
+1
+1
+
+Patient
+1
+2
+3
+
+Name
+Fred
+Mary
+Bob
+
+2
+2
+
+1
+2
+
+Karen
+Hank
+
+The first patient on one doctor’s list has nothing whatsoever to do with the first patient on another
+doctor’s list. The meaning of patient = 1 is defined only when the value of doctor is supplied.
+Nested factors enter into models as interactions of nesting and nested; the nested factor does not appear
+by itself. We might estimate a model such as
+. regress y ... i.doctor doctor#patient ...
+
+margins — Marginal means, predictive margins, and marginal effects 1702
+
+You do not include i.patient because the coding for patient has no meaning except within doctor.
+Patient 1 is Fred for doctor 1 and Karen for doctor 2, etc.
+margins provides an option to help account for the structure of nested models. The within(varlist )
+option specifies that margins estimate and report a set of margins for the value combinations of varlist.
+We might type
+. margins, within(doctor)
+
+Margin calculations are performed first for doctor = 1, then for doctor = 2, and so on.
+Sometimes you need to specify within(), and other times you do not. Let’s consider the particular
+model
+. regress y i.doctor doctor#patient i.sex sex#doctor#patient
+
+The guidelines are the following:
+1. You may compute overall margins by typing
+margins.
+2. You may compute overall margins within levels of a nesting factor by typing
+margins, within(doctor).
+3. You may compute margins of a nested factor within levels of its nesting factor by typing
+margins patient, within(doctor).
+4. You may compute margins of factors in your model, as long as the factor does not nest other factors
+and is not nested within other factors, by typing
+margins sex.
+5. You may not compute margins of a nesting factor, such as margins doctor, because they are not
+estimable.
+For examples using within(), see [R] anova.
+Margins with nested designs as though the data were balanced
+
+To obtain margins with nested designs as though the data were balanced, the guidelines are the same
+as above except that 1) you add the asbalanced option and 2) whenever you do not specify within(),
+you specify emptycells(reweight). The updated guidelines are
+1. You may compute overall margins by typing
+margins, asbalanced emptycells(reweight).
+2. You may compute overall margins within levels of a nesting factor by typing
+margins, asbalanced within(doctor).
+3. You may compute margins of a nested factor within levels of its nesting factor by typing
+margins patient, asbalanced within(doctor).
+4. You may compute margins of factors in your model, as long as the factor does not nest other factors
+and is not nested within other factors, by typing
+margins sex, asbalanced emptycells(reweight).
+5. You may not compute margins of a nesting factor, such as margins doctor, because they are not
+estimable.
+
+margins — Marginal means, predictive margins, and marginal effects 1703
+
+Just as explained in Using fvset design, rather than specifying the asbalanced option, you may set
+the balancing characteristic on the factor variables once and for all by using the command fvset design
+asbalanced varlist.
+
+Technical note
+Specifying either emptycells(reweight) or within(varlist ) causes margins to rebalance over
+all empty cells in your model. If you have interactions in your model that are not involved in the nesting,
+margins will lose its ability to detect estimability.
+
+Technical note
+Careful readers will note that the description of within(varlist ) matches closely the description of
+over(varlist ). The concept of nesting is similar to the concept of subpopulations. within() differs
+from over() in that it gracefully handles the missing cells when margins are computed as balanced.
+
+Coding of nested designs
+
+In the Introduction to this section, we showed a coding of the nested variable patient, where the
+coding started over with each doctor:
+Doctor
+1
+1
+1
+
+Patient
+1
+2
+3
+
+Name
+Fred
+Mary
+Bob
+
+2
+2
+
+1
+2
+
+Karen
+Hank
+
+That coding style is not required. The data could just as well have been coded
+Doctor
+1
+1
+1
+
+Patient
+1
+2
+3
+
+Name
+Fred
+Mary
+Bob
+
+2
+2
+
+4
+5
+
+Karen
+Hank
+
+Doctor
+1
+1
+1
+
+Patient
+1037239
+2223942
+0611393
+
+Name
+Fred
+Mary
+Bob
+
+2
+2
+
+4433329
+6110271
+
+Karen
+Hank
+
+or even
+
+margins — Marginal means, predictive margins, and marginal effects 1704
+
+Actually, either of the above two alternatives is better than the first one because margins will be
+better able to give you feedback about estimability should you make a mistake following the guidelines.
+On the other hand, both of these alternatives require more memory at the estimation step. If you run
+short of memory, you will need to recode your patient ID to the first coding style, which you could do by
+typing
+. sort doctor patient
+. by doctor: generate newpatient = _n
+
+Alternatively, you can set emptycells drop and continue to use your patient ID variable just as
+it is coded. If you do this, we recommend that you remember to type set emptycells keep when
+you are finished; margins is better able to determine estimability that way. If you regularly work with
+large nested models, you can set emptycells keep, permanently so that the setting persists across
+sessions. See [R] set emptycells.
+
+Special topics
+Requirements for model specification
+
+The results that margins reports are based on the most recently fit model or, in Stata jargon, the
+most recently issued estimation command. Here we discuss 1) mechanical requirements for how you
+specify that estimation command, 2) workarounds to use when those restrictions prove impossible, and
+3) requirements for margins’ predict(pred opt ) option to work.
+Concerning 1, when you specify the estimation command, covariates that are logically factor variables
+must be Stata factor variables, and that includes indicator variables, binary variables, and dummies. It
+will not do to type
+. regress y ... sex ...
+
+even if sex is a 0/1 variable. You must type
+. regress y ... i.sex ...
+
+If you violate this rule, you will not get incorrect results, but you will discover that you will be unable
+to obtain margins on sex:
+. margins sex
+factor sex not found in list of covariates
+r(111);
+
+It is also important that if the same continuous variable appears in your model more than once, differently transformed, those transforms be performed via Stata’s factor-variable notation. It will not do to
+type
+. generate age2 = age^2
+. regress y ... age age2 ...
+
+You must type
+. regress y ... age c.age#c.age ...
+
+You must do that because margins needs to know everywhere that variable appears in the model if it
+is to be able to set covariates to fixed values.
+
+margins — Marginal means, predictive margins, and marginal effects 1705
+
+Concerning 2, sometimes the transformations you desire may not be achievable using the factorvariable notation; in those situations, there is a workaround. Let’s assume you wish to estimate
+. generate age1_5 = age^1.5
+. regress y ... age age1_5 ...
+
+There is no factor-variable notation for including age and age1.5 in a model, so obviously you are
+going to obtain the estimates by typing just what we have shown. In what follows, it would be okay if
+there are interactions of age and age1 5 with other variables specified by the factor-variable notation,
+so the model could just as well be
+. regress y ... age age1_5 sex#c.age sex#c.age1_5 ...
+
+Let’s assume you have fit one of these two models. On any subsequent margins command where
+you leave age free to vary, there will be no issue. You can type
+. margins sex
+
+and results will be correct. Issues arise when you attempt to fix age at predetermined values. The following would produce incorrect results:
+. margins sex, at(age=20)
+
+The results would be incorrect because they leave age1 5 free to vary, and, logically, fixing age
+implies that age1 5 should also be fixed. Because we were unable to state the relationship between age
+and age1 5 using the factor-variable notation, margins does not know to fix age1 5 at 201.5 when it
+fixes age at 20. To get the correct results, you must fix the value of age1 5 yourself:
+. margins sex, at(age=20 age1_5=89.442719)
+
+That command produces correct results. In the command, 89.442719 is 201.5 .
+In summary, when there is a functional relationship between covariates of your model and that functional relationship is not communicated to margins via the factor-variable notation, then it becomes
+your responsibility to ensure that all variables that are functionally related are set to the appropriate fixed
+values when any one of them is set to a fixed value.
+Concerning 3, we wish to amend our claim that you can calculate margins for anything that predict
+will produce. We need to add a qualifier. Let us show you an example where the statement is not true.
+After regress, predict will predict something it calls pr(a,b), which is the probability a ≤ 𝑦 ≤ b.
+Yet if we attempted to use pr() with margins after estimation by regress, we would obtain
+. margins sex, predict(pr(10,20))
+prediction is a function of possibly stochastic quantities other than e(b)
+r(498);
+
+What we should have stated was that you can calculate margins for anything that predict will produce for which all the estimated quantities used in its calculation appear in e(V), the estimated VCE.
+pr() is a function of β, the estimated coefficients, and of 𝑠2 , the estimated variance of the residual.
+regress does not post the variance of the residual variance (sic) in e(V), or even estimate it, and therefore, predict(pr(10,20)) cannot be specified with margins after estimation by regress.
+It is unlikely that you will ever encounter these kinds of problems because there are so few predictions
+where the components are not posted to e(V). If you do encounter the problem, the solution may be to
+specify nose to suppress the standard error calculation. If the problem is not with computing the margin,
+but with computing its standard error, margins will report the result:
+. margins sex, predict(pr(10,20)) nose
+(output appears with SEs, tests, and CIs left blank)
+
+margins — Marginal means, predictive margins, and marginal effects 1706
+
+Technical note
+Programmers: If you run into this after running an estimation command that you have written, be
+aware that as of Stata 11, you are supposed to set in e(marginsok) the list of options allowed with
+predict that are okay to use with margins. When that list is not set, margins looks for violations of
+its assumptions and, if it finds any, refuses to proceed.
+
+Estimability of margins
+
+Sometimes margins will report that a margin cannot be estimated:
+. use https://www.stata-press.com/data/r19/estimability, clear
+(margins estimability)
+. regress y sex##group
+(output omitted )
+. margins sex
+Predictive margins
+Model VCE: OLS
+
+Number of obs = 69
+
+Expression: Linear prediction, predict()
+Margin
+sex
+Male
+Female
+
+Delta-method
+std. err.
+
+21
+.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+.8500245
+24.71
+(not estimable)
+
+0.000
+
+19.30027
+
+22.69973
+
+In the above output, the margin for sex = 0 (male) is estimated, but the margin for sex = 1 (female)
+is not estimable. This occurs because of empty cells. An empty cell is an interaction of levels of two or
+more factor variables for which you have no data. In the example, the lack of estimability arises because
+we have two empty cells:
+. table sex group, nototals
+
+Sex
+Male
+Female
+
+1
+
+2
+
+Group
+3
+4
+
+2
+9
+
+9
+9
+
+27
+3
+
+8
+
+5
+2
+
+To calculate the marginal mean response for sex = 1, we have no responses to average over for
+group = 4 and group = 5. We obviously could calculate that mean for the observations that really are
+sex = 1, but remember, the marginal calculation for sex = 1 treats everyone as if female, and we will
+thus have 8 and 2 observations for which we have no basis for estimating the response.
+There is no solution for this problem unless you are willing to treat the data as if it were balanced and
+adjust your definition of a margin; see Balancing in the presence of empty cells.
+
+margins — Marginal means, predictive margins, and marginal effects 1707
+
+Manipulability of tests
+
+Manipulability is a problem that arises with some tests, and in particular, arises with Wald tests. Tests
+of margins are based on Wald tests, hence our interest. This is a generic issue and not specific to the
+margins command.
+Let’s understand the problem. Consider performing a test of whether some statistic 𝜙 is 0. Whatever
+the outcome of that test, it would be desirable if the outcome were the same were we to test whether the
+sqrt(𝜙) were 0, or whether 𝜙2 were 0, or whether any other monotonic transform of 𝜙 were 0 (for 𝜙2 ,
+we were considering only the positive half of the number line). If a test does not have that property, it is
+manipulable.
+Wald tests are manipulable, and that means the tests produced by margins are manipulable. You can
+see this for yourself by typing
+. use https://www.stata-press.com/data/r19/margex, clear
+. replace y = y - 65
+. regress y sex##group
+. margins, df(.)
+. margins, expression(predict(xb)^2)
+
+To compare the results from the two margins commands, we added the df(.) option to the first one,
+forcing it to report a 𝑧 statistic even though a 𝑡 statistic would have been appropriate in this case. We
+would prefer if the test against zero produced by margins, df(.) was equal to the test produced by
+margins, expression(predict(xb)^2). But alas, they produce different results. The first produces
+𝑧 = 12.93, and the second produces 𝑧 = 12.57.
+The difference is not much in our example, but behind the scenes, we worked to make it small. We
+subtracted 65 from y so that the experiment would be for a case where it might be reasonable that you
+would be testing against 0. One does not typically test whether the mean income in the United States is
+zero or whether the mean blood pressure of live patients is zero. Had we left y as it was originally, we
+would have obtained 𝑧 = 190 and 𝑧 = 96. We did not want to show that comparison to you first because
+the mean of y is so far from 0 that you probably would never be testing it. The corresponding difference
+in 𝜙 is tiny.
+Regardless of the example, it is important that you base your tests in the metric where the likelihood
+surface is most quadratic. For further discussion on manipulability, see Manipulability in [R] predictnl.
+This manipulability is not limited to Wald tests after estimation; you can also see the manipulability
+of results produced by linear regression just by applying nonlinear transforms to a covariate (Phillips and
+Park 1988; Gould 1996).
+Using margins after the estimates use command
+
+Assume you fit and used estimates save (see [R] estimates save) to save the estimation results:
+. regress y sex##group age c.age*c.age if site==1
+. ...
+. estimates save mymodel
+file mymodel.ster saved
+
+Later, perhaps in a different Stata session, you reload the estimation results by typing
+. estimates use mymodel
+
+margins — Marginal means, predictive margins, and marginal effects 1708
+
+You plan to use margins with the reloaded results. You must remember that margins bases its results
+not only on the current estimation results but also on the current data in memory. Before you can use
+margins, you must reload the dataset on which you fit the model or, if you wish to produce standardized
+margins, some other dataset.
+. use mydata, clear
+(data for fitting models)
+
+If the dataset you loaded contained the data for standardization, you can stop reading; you know that
+to produce standardized margins, you need to specify the noesample option.
+We reloaded the original data and want to produce margins for the estimation sample. In addition to
+the data, margins requires that e(sample) be set, as margins will remind us:
+. margins sex
+e(sample) does not identify the estimation sample
+r(322);
+
+The best solution is to use estimates esample to rebuild e(sample):
+. estimates esample: y sex group age if site==1
+
+If we knew we had no missing values in y and the covariates, we could type
+. estimates esample: if site==1
+
+Either way, margins would now work:
+. margins sex
+(usual output appears)
+
+There is an alternative. We do not recommend it, but we admit that we have used it. Rather than rebuilding e(sample), you can use margins’ noesample option to tell margins to skip using e(sample).
+You could then specify the appropriate if statement (if necessary) to identify the estimation sample:
+. estimates use mymodel
+. use mydata, clear
+. margins sex if !missing(y, sex, group age) & site==1, noesample
+
+In the above, we are not really running on a sample different from the estimation sample; we are
+merely using noesample to fool margins, and then we are specifying on the margins command the
+conditions equivalent to re-create e(sample).
+If we wish to obtain vce(unconditional) results, however, noesample will be insufficient. We
+must also specify the force option,
+. margins sex if !missing(y, sex, group age) & site==1,
+> vce(unconditional) noesample force
+(usual output appears)
+
+Regardless of the approach you choose—resetting e(sample) or specifying noesample and possibly
+force —make sure you are right. In the vce(delta) case, you want to be right to ensure that you obtain
+the results you want. In the vce(unconditional) case, you need to be right because otherwise results
+will be statistically invalid.
+
+margins — Marginal means, predictive margins, and marginal effects 1709
+
+Syntax of at()
+
+In at(atspec), atspec may contain one or more of the following specifications:
+varlist
+(stat ) varlist
+
+varname = #
+varname = (numlist )
+varname = generate(exp)
+where
+1. varnames must be covariates in the previously fit model (estimation command).
+2. Variable names (whether in varname or varlist) may be continuous variables, factor variables, or
+specific level variables, such as age, group, or 3.group.
+3. varlist may also be one of three standard lists:
+(a)
+
+all (all covariates),
+
+(b)
+
+factor (all factor-variable covariates), or
+
+(c)
+
+continuous (all continuous covariates).
+
+4. stat can be any of the following:
+stat
+asobserved
+mean
+median
+p1
+p2
+...
+p50
+...
+p98
+p99
+min
+max
+zero
+base
+asbalanced
+
+Description
+at observed values in the sample (default)
+means (default for varlist)
+medians
+1st percentile
+2nd percentile
+3rd–49th percentiles
+50th percentile (same as median)
+51st–97th percentiles
+98th percentile
+99th percentile
+minimums
+maximums
+fixed at zero
+base level
+all levels equally probable and sum to 1
+
+Variables
+allowed
+all
+all
+continuous
+continuous
+continuous
+continuous
+continuous
+continuous
+continuous
+continuous
+continuous
+continuous
+continuous
+factors
+factors
+
+Any stat except zero, base, and asbalanced may be prefixed with an o to get the overall statistic—the sample over all over() groups. For example, omean, omedian, and op25. Overall
+statistics differ from their correspondingly named statistics only when the over() or within()
+option is specified. When no stat is specified, mean is assumed. If stat is not followed by a varlist,
+stat is ignored.
+
+margins — Marginal means, predictive margins, and marginal effects 1710
+
+atspec can involve multiple settings for one covariate as well as settings for multiple covariates. The
+following rules are applied when more than one covariate or value is included:
+1. When more than one covariate is referenced in atspec but each covariate is set to only one value,
+all settings are applied in combination. For example, at(x1=5 x2=0) results in margins being
+estimated under one scenario, with x1 set to 5, x2 set to 0, and all other covariates set to their
+observed values (the default).
+2. When multiple values are specified for a covariate, the covariate will be set to each of the values
+in turn. For example, at(x1=5 x1=10) or, equivalently, at(x1=(5 10)) specifies that x1 be set
+first to 5 and then to 10.
+3. When multiple values are specified for more than one covariate, all possible combinations of
+settings are applied in turn. For example, at(x1=(5 10) x2=(0 1)) results in margins being
+estimated under four scenarios: (x1 = 5 x2 = 0), (x1 = 5 x2 = 1), (x1 = 10 x2 = 0), and
+(x1 = 10 x2 = 1).
+4. Settings may be specified for groups of covariates using three general varlists— all, factor,
+and continuous. When atspec includes both specifications with general varlists and specifications with named covariates, the specifications for named covariates take precedence over general
+ones. For example, at(x1=10 (means) all) sets x1 to 10 while setting all other covariates to
+their means.
+5. Only one (stat ) varlist specification can be applied to a covariate. If more than one is specified,
+the rightmost specification is respected. For example, at((means) x1 x2 (medians) x1 x2) sets
+both x1 and x2 to their medians.
+6. When both a (stat ) specification and another specification are included for a named covariate, the
+other specification takes precedence. For example, at(x1=5 (means) x1) sets x1 to 5.
+In addition, at() can be repeated. When multiple at() options are specified, atspecs are processed
+sequentially. For instance, at(x1=5) at(x2=0) results in margins being estimated under two scenarios.
+The first sets x1 to 5 and all other covariates, including x2, to their observed values. The second sets x2
+to 0 and all other covariates to their observed values. Note that this is different from the single at(x1=5
+x2=0) specification, which sets x1 and x2 to the specified values simultaneously.
+Estimation commands that may be used with margins
+
+margins may be used after most estimation commands.
+margins cannot be used after estimation commands that do not produce full variance matrices, such
+as exlogistic and expoisson (see [R] exlogistic and [R] expoisson).
+margins is all about covariates and cannot be used after estimation commands that do not post the
+covariates, which eliminates gmm (see [R] gmm).
+margins cannot be used after some estimation commands that have an odd data organization, such
+as nlogit. However, margins has been specially adapted to work with many choice model estimation
+commands; see [CM] margins.
+
+margins — Marginal means, predictive margins, and marginal effects 1711
+
+Video examples
+Introduction to margins, part 1: Categorical variables
+Introduction to margins, part 2: Continuous variables
+Introduction to margins, part 3: Interactions
+
+Glossary
+adjusted mean. A margin when the response is the linear predictor from linear regression, ANOVA, etc.
+For some authors, adjusting also implies adjusting for unbalanced data. See Obtaining margins of
+responses and see Obtaining margins as though the data were balanced.
+adjusted treatment mean. When calculating estimated marginal means (also known as least-squares
+means) in the presence of continuous covariates, some authors recommend setting the continuous
+covariates equal to their means. This yields an estimated marginal mean that Searle, Speed, and
+Milliken (1980) refer to as an adjusted treatment mean. Adjusted treatment means are obtained using
+option at((asbalanced) factor (mean) continuous) or, equivalently, options asbalanced
+and atmeans together.
+average marginal effect. See marginal effect and average marginal effect.
+average partial effect. See partial effect and average partial effect.
+balanced data. When a dataset contains an equal number of observations at each level of a factor variable, it is said to be balanced with respect to that variable. The concept of balanced data is only
+applicable to factor variables, not continuous variables. Balancing is common in designed experiments, but even if the data are not balanced, the asbalanced option allows margins to be calculated
+as though the data were balanced. Also see Obtaining margins as though the data were balanced.
+conditional margin. A margin when the response is evaluated at fixed values of all the covariates. If
+any covariates are left as observed, the margin is called a predictive margin.
+effect. The effect of 𝑥 is the derivative of the response with respect to covariate 𝑥, or it is the difference
+in responses caused by a discrete change in 𝑥. Also see marginal effect.
+The effect of 𝑥 measures the change in the response for a change in 𝑥. Derivatives or differences might
+be reported as elasticities. If 𝑥 is continuous, the effect is measured continuously. If 𝑥 is a factor, the
+effect is measured with respect to each level of the factor and may be calculated as a discrete difference
+or as a continuous change, as measured by the derivative. margins calculates the discrete difference
+by default and calculates the derivative if the continuous option is specified.
+elasticity and semielasticity. The elasticity of 𝑦 with respect to 𝑥 is 𝑑(ln𝑦)/𝑑(ln𝑥) = (𝑥/𝑦) × (𝑑𝑦/𝑑𝑥),
+which is approximately equal to the proportional change in 𝑦 for a proportional change in 𝑥.
+The semielasticity of 𝑦 with respect to 𝑥 is either 1) 𝑑𝑦/𝑑(ln𝑥) = 𝑥 × (𝑑𝑦/𝑑𝑥) or 2) 𝑑(ln𝑦)/𝑑𝑥 =
+(1/𝑦) × (𝑑𝑦/𝑑𝑥), which is approximately 1) the change in 𝑦 for a proportional change in 𝑥 or 2) the
+proportional change in 𝑦 for a change in 𝑥.
+margins uses model predictions or user-specified statistics in expression() in place of 𝑦 above.
+
+empty cell. An interaction of levels of two or more factor variables for which you have no data. For
+instance, you have sex interacted with group in your model, and in your data there are no females in
+group 1. Empty cells affect which margins can be estimated; see Estimability of margins.
+
+margins — Marginal means, predictive margins, and marginal effects 1712
+
+estimability. Estimability concerns whether a margin can be uniquely estimated (identified); see Estimability of margins.
+estimated marginal mean. An estimated marginal mean, as defined by Searle, Speed, and Milliken
+(1980), is a margin assuming the levels of each factor covariate are balanced (equally likely), including
+interaction terms. This is obtained using the asbalanced option.
+If the model includes continuous covariates, setting them equal to their sample means yields a type
+of estimated marginal mean known as an adjusted treatment mean.
+When some cells are empty, it is impossible to estimate their marginal means. To get around this
+limitation, Searle, Speed, and Milliken introduced the concept of modified estimated marginal means,
+in which margins involving empty cells are redefined so that they become estimable. This is invoked
+by the emptycells(reweight) option. See Balancing in the presence of empty cells.
+least-squares mean. Synonym for estimated marginal mean.
+margin. A statistic calculated from predictions or other statistics of a previously fit model at fixed
+values of some covariates and averaging or otherwise integrating over the remaining covariates. The
+prediction or other statistic on which the margin is based is called the response.
+If all the covariates are fixed, then the margin is called a conditional margin. If any covariates are left
+to vary, the margin is called a predictive margin.
+In this documentation, we divide margins on the basis of whether the statistic is a response or a
+derivative of a response; see Obtaining margins of responses and Obtaining margins of derivatives of
+responses.
+marginal effect and average marginal effect. The marginal effect of 𝑥 is the margin of the effect of 𝑥.
+The term is popular with social scientists, and because of that, you might think the word marginal in
+marginal effect means derivative because of terms like marginal cost and marginal revenue. Marginal
+used in that way, however, refers to the derivative of revenue and the derivative of cost; it refers to the
+numerator, whereas marginal effect refers to the denominator. Moreover, effect is already a derivative
+or difference.
+Some researchers interpret marginal in marginal effect to mean instantaneous, and thus a marginal effect is the instantaneous derivative rather than the discrete first difference, corresponding to margins’
+continuous option. Researchers who use marginal in this way refer to the discrete difference calculation of an effect as a partial effect.
+Other researchers define marginal effect to be the margin when all covariates are held fixed and the
+average marginal effect when some covariates are not fixed.
+out-of-sample prediction. Predictions made in one dataset using the results from a model fit on another.
+Sample here refers to the sample on which the model was fit, and out-of-sample refers to the dataset
+on which the predictions are made.
+partial effect and average partial effect. Some authors restrict the term marginal effect to mean derivatives and use the term partial effect to denote discrete differences; see marginal effect and average
+marginal effect.
+population marginal mean. The theoretical (true) value that is estimated by estimated marginal mean.
+We avoid this term because it can be confused with the concept of a population in survey statistics,
+with which the population marginal mean has no connection.
+
+margins — Marginal means, predictive margins, and marginal effects 1713
+
+posting results, posting margins. A Stata concept having to do with storing the results from the margins
+command in e() so that those results can be used as if they were estimation results, thus allowing the
+subsequent use of postestimation commands, such as test, testnl, lincom, and nlcom (see [R] test,
+[R] testnl, [R] lincom, and [R] nlcom). This is achieved by specifying margins’ post option. See
+Example 10: Testing margins—contrasts of margins.
+predictive margin. A margin in which all the covariates are not fixed. When all covariates are fixed, it
+is called a conditional margin.
+recycled prediction. A synonym for predictive margin.
+response. A prediction or other statistic derived from combining the parameter estimates of a fitted
+model with data or specified values on covariates. Derivatives of responses are themselves responses.
+Responses are what we take margins of.
+standardized margin. The margin calculated on data different from the data used to fit the model. The
+term standardized is usually reserved for situations in which the alternate population is a reference
+population, which may be real or artificial, and which is treated as fixed.
+subpopulation. A subset of your sample that represents a subset of the population, such as the males in
+a sample of people. In survey contexts when it is desired to account for sampling of the covariates,
+standard errors for marginal statistics and effects need to account for both the population and the
+subpopulation. This is accomplished by specifying the vce(unconditional) option and one of the
+subpop() or over() options. In fact, the above is allowed even when your data are not svyset
+because vce(unconditional) implies that the sample represents a population.
+
+margins — Marginal means, predictive margins, and marginal effects 1714
+
+Stored results
+margins stores the following in r():
+Scalars
+r(N)
+r(N sub)
+r(N clust)
+r(N psu)
+r(N strata)
+r(df r)
+r(N poststrata)
+r(k predict)
+r(k margins)
+r(k by)
+r(k at)
+r(level)
+
+number of observations
+subpopulation observations
+number of clusters
+number of sampled PSUs, survey data only
+number of strata, survey data only
+variance degrees of freedom, survey data only
+number of post strata, survey data only
+number of predict() options
+number of terms in marginlist
+number of subpopulations
+number of at() options
+confidence level of confidence intervals
+
+Macros
+r(cmd)
+r(cmdline)
+r(est cmd)
+r(est cmdline)
+r(title)
+r(subpop)
+r(model vce)
+r(model vcetype)
+r(vce)
+r(vcetype)
+r(clustvar)
+r(margins)
+r(predict# opts)
+r(predict# label)
+r(expression)
+r(xvars)
+r(derivatives)
+r(over)
+r(within)
+r(by)
+r(by#)
+r(atstats#)
+r(emptycells)
+r(mcmethod)
+r(mcadjustall)
+
+margins
+command as typed
+e(cmd) from original estimation results
+e(cmdline) from original estimation results
+title in output
+subspec from subpop()
+vcetype from estimation command
+Std. err. title from estimation command
+vcetype specified in vce()
+title used to label Std. err.
+name of cluster variable
+marginlist
+the #th predict() option
+label from the #th predict() option
+response expression
+varlist from dydx(), dyex(), eydx(), or eyex()
+“ ”, “dy/dx”, “dy/ex”, “ey/dx”, or “ey/ex”
+varlist from over()
+varlist from within()
+union of r(over) and r(within) lists
+interaction notation identifying the #th subpopulation
+the #th at() specification
+empspec from emptycells()
+method from mcompare()
+adjustall or empty
+
+Matrices
+r(b)
+r(V)
+r(Jacobian)
+r( N)
+r(at)
+r(chainrule)
+r(error)
+r(table)
+
+estimates
+variance–covariance matrix of the estimates
+Jacobian matrix
+sample size corresponding to each margin estimate
+matrix of values from the at() options
+chain rule information from the fitted model
+margin estimability codes;
+0 means estimable,
+8 means not estimable
+matrix containing the margins with their standard errors, test statistics, 𝑝-values, and
+confidence intervals
+
+

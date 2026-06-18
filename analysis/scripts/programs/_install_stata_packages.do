@@ -110,6 +110,21 @@ _install_ssc coefplot
 * wyoung — multiple hypothesis correction (Reif/Jones/Molitor)
 _install_gh wyoung reifjulian
 
+* psacalc — Oster (2019) delta-bounds: coefficient stability / treatment-effect
+* bounds under proportional selection on unobservables. Added 2026-06-03 for the
+* small-N inference battery (scripts 22/23). See decision log
+* quality_reports/coder_reports/2026-06-03_inference-battery-decision-log.md (D5).
+_install_ssc psacalc
+
+* ebalance — Hainmueller (2012) entropy balancing: reweight controls to match
+* treated covariate moments. ivreg2h — Baum/Schaffer (Lewbel 2012)
+* heteroskedasticity-based instruments (depends on ivreg2 + ranktest, Group 1).
+* Both added 2026-06-09 for the IPW/ebal/Lewbel FEASIBILITY DIAGNOSTIC on the
+* workshop cohort producer leg. See
+* quality_reports/coder_reports/2026-06-09_feasibility-ipw-ebal-lewbel.md.
+_install_ssc ebalance
+_install_ssc ivreg2h
+
 ************************************************************
 * Group 6 — utilities
 ************************************************************
@@ -164,7 +179,7 @@ local commands ftools reghdfe ranktest avar ivreg2 boottest ///
     gtools estout esttab coefplot ///
     wyoung distinct unique fre winsor2 ingap ///
     b1x2 ///
-    coldiag2 lassoutils pdslasso ritest
+    coldiag2 lassoutils pdslasso ritest psacalc ebalance ivreg2h
 
 di _n as text "{hline 60}"
 di as text "Verification — checking 'which' for each main command"

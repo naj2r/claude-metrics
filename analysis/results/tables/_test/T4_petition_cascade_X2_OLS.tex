@@ -1,0 +1,32 @@
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Petition cascade (Panel B: Wine volume share) --- OLS HC3}
+\label{tab:T4_X2_OLS}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline
+ & (1) baseline & (2) +french & (3) +absinthe & (4) +protestant & (5) +geog (density) \tabularnewline 
+\midrule \addlinespace[\belowrulesep]
+Wine volume, national share (\%)&--0.00232&--0.209&--0.154&--0.419&--0.474 \tabularnewline
+&(0.440)&(0.431)&(0.463)&(0.406)&(0.379) \tabularnewline
+French language share (\%)&&0.0813&0.0498&0.107&0.111 \tabularnewline
+&&(0.0773)&(0.124)&(0.150)&(0.138) \tabularnewline
+Absinthe industry share (\%)&&&0.108&--0.113&--0.100 \tabularnewline
+&&&(0.467)&(0.811)&(0.756) \tabularnewline
+Protestant share (\%)&&&&0.175***&0.198** \tabularnewline
+&&&&(0.0608)&(0.0751) \tabularnewline
+Log population density&&&&&--1.57 \tabularnewline
+&&&&&(2.59) \tabularnewline
+Constant&20.5***&19.8***&19.8***&13.2***&19.5* \tabularnewline
+&(2.24)&(2.38)&(2.42)&(2.44)&(11) \tabularnewline
+\midrule R-squared&2.80e-06&0.0554&0.0657&0.417&0.441 \tabularnewline
+N&25&25&25&25&25 \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Y = petition signatures per 100 eligible voters. N=25 cantons. Col 5 adds Log population density as scale control. Robust standard errors in parentheses. * p\(<\)0.10, ** p\(<\)0.05, *** p\(<\)0.01.}
+\end{table}

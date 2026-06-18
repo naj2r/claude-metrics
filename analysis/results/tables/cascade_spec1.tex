@@ -1,0 +1,32 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Spec set 1 cascade: Per-capita vineyard area (X1) \label{tab:cascade1}}
+\begin{tabular}{l*{5}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}\\
+            &\multicolumn{1}{c}{(1) baseline}&\multicolumn{1}{c}{(2) +french}&\multicolumn{1}{c}{(3) +absinthe}&\multicolumn{1}{c}{(4) +protestant}&\multicolumn{1}{c}{(5) +geog}\\
+            &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   \\
+\midrule
+X1          &      -0.084   &       0.253   &       0.184   &       0.197   &       0.148   \\
+            &     (0.225)   &     (0.215)   &     (0.177)   &     (0.278)   &     (0.337)   \\
+cov1        &               &      -0.263***&      -0.172** &      -0.178** &      -0.201** \\
+            &               &     (0.076)   &     (0.069)   &     (0.081)   &     (0.080)   \\
+cov2\_total\_share&               &               &      -0.350   &      -0.306   &      -0.244   \\
+            &               &               &     (0.361)   &     (0.327)   &     (0.145)   \\
+cov3        &               &               &               &      -0.042   &      -0.044   \\
+            &               &               &               &     (0.057)   &     (0.064)   \\
+cov\_land    &               &               &               &               &       1.764   \\
+            &               &               &               &               &     (2.027)   \\
+ln\_pop\_1900 &               &               &               &               &               \\
+            &               &               &               &               &               \\
+\_cons      &      64.923***&      67.262***&      67.532***&      69.196***&      57.938***\\
+            &     (2.617)   &     (2.338)   &     (2.329)   &     (3.085)   &    (13.443)   \\
+\midrule
+N           &          25   &          25   &          25   &          25   &          25   \\
+R-squared   &       0.005   &       0.461   &       0.538   &       0.553   &       0.583   \\
+RMSE        &      11.894   &       8.952   &       8.480   &       8.551   &       8.475   \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize HC3 robust standard errors in parentheses.}\\
+\multicolumn{6}{l}{\footnotesize Spec set 1. Cascade columns 1-5. Priorban tabled.}\\
+\end{tabular}
+\end{table}

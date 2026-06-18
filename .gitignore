@@ -28,6 +28,8 @@ analysis/data/*
 # Processed/intermediate data — regenerable from run.do
 analysis/processed/*.dta
 analysis/processed/intermediate/*
+# Estimation intermediates (.dta/.ster) — regenerable from the estimation scripts
+analysis/results/intermediate/*
 
 # Project state (regeneratable, large, or sensitive)
 analysis/results/_inventory.xlsx

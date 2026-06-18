@@ -1,0 +1,2767 @@
+set dtable style — Default style settings for dtable
+
+Description
+set dtable style controls the default styles used in tables created by dtable. The default setting
+is dtable, which means that dtable uses the styles defined in the file style-dtable.stjson. This
+file can be found in the ado-path.
+
+Syntax
+Use the system default styles in tables
+set dtable style dtable [ , permanently ]
+
+Specify a style set to be used as the default in tables
+set dtable style style [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+Remarks and examples
+set dtable style controls the default style used in tables created by dtable. The default setting is
+dtable, which means dtable uses the styles defined in the file style-dtable.stjson. This file can
+be found in the ado-path.
+
+However, if you have a style that you plan to use with many of the tables that you will be creating,
+you can save that style to a file with collect style save. For example, you can save your style as
+tabstyle.stjson by typing the following:
+. collect style save tabstyle.stjson
+
+Then, to use that style by default with tables created by dtable, you would type
+. set dtable_style tabstyle
+
+set dtable style will then search for style-tabstyle.stjson in the ado-path. If styletabstyle.stjson is not found, it will search the ado-path for tabstyle.stjson.
+
+To see the current setting, type
+. display c(dtable_style)
+
+Also see
+[R] dtable — Create a table of descriptive statistics
+[TABLES] collect style save — Save collection styles to disk
+314
+
+set etable style — Default style settings for etable
+
+Description
+set etable style controls the default styles used in tables created by etable. The default setting
+is etable, which means that etable uses the styles defined in the file style-etable.stjson. This
+file can be found in the ado-path.
+
+Syntax
+Use the system default styles in tables
+set etable style etable [ , permanently ]
+
+Specify a style set to be used as the default in tables
+set etable style style [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+Remarks and examples
+set etable style controls the default style used in tables created by etable. The default setting is
+etable, which means etable uses the styles defined in the file style-etable.stjson. This file can
+be found in the ado-path.
+
+However, if you have a style that you plan to use with many of the tables that you will be creating,
+you can save that style to a file with collect style save. For example, you can save your style as
+tabstyle.stjson by typing the following:
+. collect style save tabstyle.stjson
+
+Then, to use that style by default with tables created by etable, you would type
+. set etable_style tabstyle
+
+set etable style will then search for style-tabstyle.stjson in the ado-path. If styletabstyle.stjson is not found, it will search the ado-path for tabstyle.stjson.
+
+To see the current setting, type
+. display c(etable_style)
+
+Also see
+[R] etable — Create a table of estimation results
+[TABLES] collect style save — Save collection styles to disk
+315
+
+set table style — Default style settings for table
+
+Description
+set table style controls the default styles used in tables created by table. The default setting is
+table, which means that table uses the styles defined in the file style-table.stjson. This file can
+be found in the ado-path.
+
+Syntax
+Use the system default styles in tables
+set table style table [ , permanently ]
+
+Specify a style set to be used as the default in tables
+set table style style [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+Remarks and examples
+set table style controls the default style used in tables created by table. The default setting is
+table, which means table uses the styles defined in the file style-table.stjson. This file can be
+found in the ado-path.
+
+However, if you have a style that you plan to use with many of the tables that you will be creating,
+you can save that style to a file with collect style save. For example, you can save your style as
+tabstyle.stjson by typing the following:
+. collect style save tabstyle.stjson
+
+Then, to use that style by default with tables created by table, you would type
+. set table_style tabstyle
+
+set table style will then search for style-tabstyle.stjson in the ado-path. If styletabstyle.stjson is not found, it will search the ado-path for tabstyle.stjson.
+
+To see the current setting, type
+. display c(table_style)
+
+Also see
+[R] table — Table of frequencies, summaries, and command results
+[TABLES] collect style save — Save collection styles to disk
+316
+
+set tabulate style — Default style settings for tabulate
+Description
+
+Syntax
+
+Option
+
+Remarks and examples
+
+Also see
+
+Description
+set tabulate style controls the default styles used in tables created by tabulate, tab1, tab2,
+tabi, and svy: tabulate. The default setting is tabulate, meaning that the styles defined in the
+style-tabulate.stjson file are used. This file can be found in the ado-path.
+set tabulate comps controls the default styles containing the composite results defined for
+two-way measures of association reported by tabulate, tab2, and tabi. The default setting is
+tabulate composites, meaning that the composite results defined in the style-tabulate composites.stjson file are used. This file can be found in the ado-path.
+set svy tab comps controls the default styles containing the composite results defined for two-way
+tests of independence reported by svy: tabulate. The default setting is svy tabulate composites,
+meaning that the composite results defined in the style-svy tabulate composites.stjson file are
+used. This file can be found in the ado-path.
+
+Syntax
+Use the system default styles in tabulation tables
+set tabulate style tabulate [ , permanently ]
+set tabulate comps tabulate composites [ , permanently ]
+set svy tab comps svy tabulate composites [ , permanently ]
+
+Specify a style set to be used as the default in tabulation tables
+set tabulate style style [ , permanently ]
+
+Specify a style defining the default composite results for measures of association to be used in two-way
+tabulation tables
+set tabulate comps style [ , permanently ]
+
+Specify a style defining the default composite results for tests of independence to be used in two-way
+tabulation tables for survey data
+set svy tab comps style [ , permanently ]
+
+Option
+permanently specifies that, in addition to making the change right now, the setting be remembered and
+become the default setting when you invoke Stata.
+
+317
+
+set tabulate style — Default style settings for tabulate 318
+
+Remarks and examples
+set tabulate style controls the default style used in tables created by tabulate for oneway tabulations, tab1, tabulate for two-way tabulations, tab2, tabi, tabulate, summarize(),
+svy: tabulate for one-way tabulations, and svy: tabulate for two-way tabulations. The default setting is tabulate, which means these commands use the styles defined in the file styletabulate.stjson. This file can be found in the ado-path.
+
+However, if you have a style that you plan to use with many tabulation tables that you will be creating,
+you can save that style to a file with collect style save. For example, you can save your style as
+tabstyle.stjson by typing the following:
+. collect style save tabstyle.stjson
+
+Then, to use that style by default with tables created by tabulate, you would type
+. set tabulate_style tabstyle
+
+set tabulate style will then search for style-tabstyle.stjson in the ado-path. If styletabstyle.stjson is not found, it will search the ado-path for tabstyle.stjson.
+
+To see the current setting, type
+. display c(tabulate_style)
+
+set tabulate comps controls the styles that define composite results for two-way tables produced
+by tabulate. See [R] tabulate twoway for details on these composite results and their default definitions. To see the current setting, type
+. display c(tabulate_comps)
+
+set svy tab comps controls the styles that define composite results for two-way tables produced
+by svy: tabulate. See [SVY] svy: tabulate twoway for details on these composite results and their
+default definitions. To see the current setting, type
+. display c(svy_tab_comps)
+
+Also see
+[R] tabulate oneway — One-way table of frequencies
+[R] tabulate twoway — Two-way table of frequencies
+[R] tabulate, summarize() — One- and two-way tables of summary statistics
+[SVY] svy: tabulate oneway — One-way tables for survey data
+[SVY] svy: tabulate twoway — Two-way tables for survey data
+[TABLES] collect style save — Save collection styles to disk
+
+Example 1 — Table of means, standard deviations, and correlations
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to use table to compute means and standard deviations, run
+the pwcorr command to obtain a correlation matrix, and create a table with all of these statistics. We
+also demonstrate how you can use collect to customize this table.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Table of correlations
+Table of correlations, means, and standard deviations
+
+Table of correlations
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES II)
+(McDowell et al. 1981). We want to create a table to explore the correlation between age, weight, and
+systolic blood pressure (bpsystol).
+Let’s begin by looking at the correlations with the pwcorr command, which allows us to report the
+significance levels along with the correlation coefficients.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. pwcorr age weight bpsystol, sig
+age
+
+weight bpsystol
+
+age
+
+1.0000
+
+weight
+
+0.0388
+0.0001
+
+1.0000
+
+bpsystol
+
+0.4811
+0.0000
+
+0.2861
+0.0000
+
+1.0000
+
+319
+
+Example 1 — Table of means, standard deviations, and correlations 320
+
+pwcorr stores the correlations and significance levels in the matrices r(C) and r(sig), respectively.
+Below, we create a matrix called vech, which contains the lower triangle elements of the matrix r(C).
+Then, we list both matrices:
+. matrix define vech = vech(r(C))
+. matrix list r(C)
+symmetric r(C)[3,3]
+age
+age
+1
+weight .03881324
+bpsystol .48110277
+
+weight
+
+bpsystol
+
+1
+.28607421
+
+1
+
+. matrix list vech
+vech[6,1]
+age:age
+age:weight
+age:bpsystol
+weight:weight
+weight:bpsystol
+bpsystol:bpsystol
+
+c1
+1
+.03881324
+.48110277
+1
+.28607421
+1
+
+We can see that vech() creates a column vector by stacking elements from the first column of r(C),
+then the second column, and finally the third column. The variable before the colon is the row equation,
+and the variable after the colon is the row name.
+To create our table, we can use collect get to collect the column vectors of both the correlations
+matrix and the significance levels matrix. We then use collect layout to lay out our table. We place
+the results for each row name on the rows, by interacting rowname and result, and the row equations
+(roweq) on the columns:
+. collect get corr=vech(r(C)) sig=vech(r(sig))
+. collect layout (rowname#result) (roweq)
+Collection: default
+Rows: rowname#result
+Columns: roweq
+Table 1: 9 x 3
+Age (years) Weight (kg) Systolic blood pressure
+Age (years)
+corr
+sig
+Weight (kg)
+corr
+sig
+Systolic blood pressure
+corr
+sig
+
+1
+.
+.0388132
+.0000782
+
+1
+.
+
+.4811028
+0
+
+.2860742
+3.7e-194
+
+1
+.
+
+This is a good starting point, but instead of displaying the significance levels, we would like to display
+stars representing those levels. We use collect stars to display three stars for values of sig less than
+0.01, two stars for values less than 0.05, and one star for values less than 0.1. The attach option
+tells Stata to attach these stars to the correlations (corr), and shownote adds the note explaining the
+significance levels that the stars represent.
+
+Example 1 — Table of means, standard deviations, and correlations 321
+
+Additionally, rather than displaying a value of 1 for the correlation of a variable with itself, we want
+to display a dash. We use collect style cell to specify that values of corr beyond 0.99 should be
+labeled with a dash. We also format the correlations to four decimal places and center them horizontally.
+Whereas before we included all results, now we update our table layout to include only the correlations
+(result[corr]):
+. collect stars sig 0.01 ”***” 0.05 ”**” 0.1 ”*”, attach(corr) shownote
+. collect style cell result[corr], maximum(0.99, label(”-”)) nformat(%6.4f)
+> halign(center)
+. collect layout (rowname#result[corr]) (roweq)
+Collection: default
+Rows: rowname#result[corr]
+Columns: roweq
+Table 1: 6 x 3
+Age (years) Weight (kg) Systolic blood pressure
+Age (years)
+corr
+Weight (kg)
+corr
+Systolic blood pressure
+corr
+
+0.0388***
+
+-
+
+0.4811***
+
+0.2861***
+
+-
+
+*** p<.01, ** p<.05, * p<.1
+
+This table looks much better, but we can customize it further. Because we are displaying only correlations, we can hide the labels for the results with collect style header. Additionally, we will
+remove the border on the right side of the corner and row-header sections of the table. The dimension
+border block divides the table into four sections: corner, column-header, row-header, and item.
+This dimension allows us to modify borders for a whole section of the table. Finally, we add a descriptive
+title with collect title and preview our table with collect preview:
+. collect style header result, level(hide)
+. collect style cell border_block[corner row-header], border(right, pattern(nil))
+. collect title ”Table of correlations”
+. collect preview
+Table of correlations
+Age (years) Weight (kg) Systolic blood pressure
+Age (years)
+Weight (kg)
+Systolic blood pressure
+
+0.0388***
+0.4811***
+
+0.2861***
+
+-
+
+*** p<.01, ** p<.05, * p<.1
+
+We can now export our table in our preferred style—Word, PDF, HTML, LATEX, Excel, or Markdown—using collect export.
+
+Table of correlations, means, and standard deviations
+Building on our last table, suppose we also want to report the means and standard deviations for each
+variable. We previously created a column vector with the correlations and significance levels, but for
+this table, we will create a row vector with those values. The reason is that now we are going to collect
+
+Example 1 — Table of means, standard deviations, and correlations 322
+
+other statistics for our table, and the collect system uses the dimensions coleq (column equation) and
+colname (column name) to identify those results. To align our results, we will need to reference our
+correlations using column equations and names as well.
+To see how this works, let’s create another collection for our new table and run our pwcorr command
+again. We will create a row vector of the correlations by transposing (’) the column vector of correlations
+(vech(r(C))):
+. collect create corr2
+(current collection is corr2)
+. pwcorr age weight bpsystol, sig
+age
+
+weight bpsystol
+
+age
+
+1.0000
+
+weight
+
+0.0388
+0.0001
+
+1.0000
+
+bpsystol
+
+0.4811
+0.0000
+
+0.2861
+0.0000
+
+1.0000
+
+. matrix define vechrow = vech(r(C))’
+. matrix list r(C)
+symmetric r(C)[3,3]
+age
+age
+1
+weight .03881324
+bpsystol .48110277
+
+weight
+
+bpsystol
+
+1
+.28607421
+
+1
+
+. matrix list vechrow
+vechrow[1,6]
+age:
+age:
+age:
+age
+weight
+bpsystol
+c1
+1 .03881324 .48110277
+
+weight:
+weight:
+weight
+bpsystol
+1 .28607421
+
+bpsystol:
+bpsystol
+1
+
+Now, we can identify the correlations by referring to the column equation and column name. We are
+now ready to create our table.
+Previously, we used collect get to collect our results, but with the table command, we can compute
+summary statistics and incorporate the results from another Stata command in the same table. This versatility will allow us to compute all our statistics with a single table command. With the statistic() option, we request the means and standard deviations of the three variables mentioned. With the command()
+option, we execute the pwcorr command. We also format the results to display only two digits to the
+right of the decimal. The arguments before the comma specify how we want to arrange our results. We
+place the summary statistics (result) and column equations on the rows and the column names of the
+matrix (colname) on the columns. We also modified the variable label for bpsystol to prevent the table
+from wrapping.
+
+Example 1 — Table of means, standard deviations, and correlations 323
+. label variable bpsystol ”BP”
+. table (result coleq) (colname),
+> statistic(mean age weight bpsystol)
+> statistic(sd age weight bpsystol)
+> command(corr=(vech(r(C))’) sig=(vech(r(sig))’):
+> pwcorr age weight bpsystol, sig) nformat(%5.2f mean sd)
+Age (years)
+
+Weight (kg)
+
+BP
+
+47.58
+
+71.90
+
+130.88
+
+17.21
+
+15.36
+
+23.33
+
+1
+
+.0388132
+
+.4811028
+
+1
+
+.2860742
+
+Mean
+Mean
+Standard deviation
+Standard deviation
+corr
+Age (years)
+pwcorr age weight bpsystol, sig
+Weight (kg)
+pwcorr age weight bpsystol, sig
+BP
+pwcorr age weight bpsystol, sig
+sig
+Age (years)
+pwcorr age weight bpsystol, sig
+Weight (kg)
+pwcorr age weight bpsystol, sig
+BP
+pwcorr age weight bpsystol, sig
+
+1
+.
+
+.0000782
+
+0
+
+.
+
+3.7e-194
+.
+
+We will use the maximum() option with collect style cell to display a dash for correlations
+between a variable and itself. And we will display stars for levels of significance, as we did with our
+previous table. Then, we can lay out our table with the variables (colname) on the rows and the results
+on the columns. The means and standard deviations can be identified by levels of colname and result.
+However, the correlations are identified by the value of the column name, column equation, and result.
+Therefore, we interact coleq with the level corr of result in our table layout.
+. collect style cell result[corr],
+> maximum(0.99, label(” - ”)) nformat(%6.4f) halign(center)
+. collect stars sig 0.01 ”***” 0.05 ”**” 0.1 ”*”, attach(corr) shownote
+. collect layout (colname) (result[mean sd] coleq#result[corr])
+Collection: Table
+Rows: colname
+Columns: result[mean sd] coleq#result[corr]
+Table 1: 3 x 5
+
+Age (years)
+Weight (kg)
+BP
+
+Mean
+
+Standard deviation
+
+Age (years)
+corr
+
+Weight (kg)
+corr
+
+BP
+corr
+
+47.58
+71.90
+130.88
+
+17.21
+15.36
+23.33
+
+0.0388***
+0.4811***
+
+0.2861***
+
+-
+
+*** p<.01, ** p<.05, * p<.1
+
+We now have the layout we want, but we will make a few modifications to polish the table further.
+First, we will hide the label ”corr” with collect style header. Then, we will shorten the label for
+the standard deviations with collect label levels. Rather than repeating the variable labels on the
+
+Example 1 — Table of means, standard deviations, and correlations 324
+
+rows and columns, we want to create an index for the variables and use those numbers in the column
+headers. We can do this by simply modifying the labels for the levels of colname and coleq. Then, we
+preview our table:
+. collect style header result[corr], level(hide)
+. collect label levels result sd ”SD”, modify
+. collect label levels colname age ”1. Age” weight ”2. Weight”
+> bpsystol ”3. Systolic BP”, modify
+. collect label levels coleq age ”1” weight ”2” bpsystol ”3”, modify
+. collect preview
+
+1. Age
+2. Weight
+3. Systolic BP
+
+Mean
+
+SD
+
+1
+
+2
+
+47.58
+71.90
+130.88
+
+17.21
+15.36
+23.33
+
+0.0388***
+0.4811***
+
+0.2861***
+
+3
+
+-
+
+*** p<.01, ** p<.05, * p<.1
+
+Finally, we will center the column headers for the column equations, remove the borders on the right
+side of the corner and row headers, and provide a title for the table. Both border block and cell type
+divide the table into four sections; the former is used to modify borders, and the latter is used to modify
+all other appearance styles for the cells. After we make these changes, we preview our table for the last
+time.
+. collect style cell cell_type[column-header]#coleq, halign(center)
+. collect style cell border_block[corner row-header], border(right, pattern(nil))
+. collect title ”Descriptive statistics and correlations”
+. collect preview
+Descriptive statistics and correlations
+
+1. Age
+2. Weight
+3. Systolic BP
+
+Mean
+
+SD
+
+47.58
+71.90
+130.88
+
+17.21
+15.36
+23.33
+
+1
+
+2
+
+3
+
+0.0388***
+0.4811***
+
+0.2861***
+
+-
+
+*** p<.01, ** p<.05, * p<.1
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[R] table — Table of frequencies, summaries, and command results
+[TABLES] collect style column — Collection styles for column headers
+[TABLES] collect style header — Collection styles for hiding and showing header components
+
+Example 2 — Table of medians and rank-sum test results
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to use table to compute medians and store them in a collection.
+We also use collect to store the results of rank-sum tests in the collection and then create a customized
+table combining the results.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Computing and collecting statistics
+Customizing the table
+
+Computing and collecting statistics
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES
+We wish to compute the median age, weight, systolic blood pressure
+(bpsystol), cholesterol, and iron for individuals who have diabetes and those who do not. We use
+the table command to compute these statistics. The first set of parentheses places the variables on the
+rows of the table, and the second set places the levels of diabetes on the columns. By default, table
+will display the table and store the results in a collection called Table. Also by default, table will report the statistics for each group, in our case diabetics and nondiabetics, and for the full dataset. We use
+nototals to suppress those medians for the full dataset.
+II) (McDowell et al. 1981).
+
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. table (var) (diabetes),
+> statistic(median age weight bpsystol tcresult iron) nototals
+Diabetes status
+Not diabetic
+Diabetic
+Age (years)
+Weight (kg)
+Systolic blood pressure
+Serum cholesterol (mg/dL)
+Serum iron (mcg/dL)
+
+48
+70.19
+128
+212
+96
+
+64
+74.84
+142
+223
+88
+
+We would also like to perform a rank-sum test for each of those variables to test whether the distributions are the same across the categories of diabetes. If we wanted to perform the test only for age, we
+could type
+. ranksum age, by(diabetes)
+
+Because we want to perform the test for multiple variables, we write a loop to issue the ranksum
+command for each variable. We use the collect prefix to collect the two-sided 𝑝-value (r(p)). The
+tag() option tags the results with the dimension var, which will allow us to align these results with the
+medians we computed above.
+325
+
+Example 2 — Table of medians and rank-sum test results 326
+. foreach x in age weight bpsystol tcresult iron {
+2.
+quietly: collect r(p), tag(var[‘x’]): ranksum ‘x’, by(diabetes)
+3. }
+
+We want to create a table with the medians we computed with table and the 𝑝-values we collected
+with the collect prefix. collect stored the results in the current collection, so we have the results all
+in one place. Now, we can use collect layout to arrange the items from the collection into a table.
+Again, we place the variables on the rows and the levels of diabetes and the statistics from ranksum
+on the columns.
+. collect layout (var) (diabetes result)
+Collection: Table
+Rows: var
+Columns: diabetes result
+Table 1: 5 x 3
+
+(output omitted )
+
+We omit the table preview here because of the table’s width.
+
+Customizing the table
+The table above is wide because of the long label for the 𝑝-values. We can see the labels by using the
+collect label list command with the result dimension.
+. collect label list result
+Collection: Table
+Dimension: result
+Label: Result
+Level labels:
+N Sample size
+N_1 Sample size of first group
+N_2 Sample size of second group
+Var_a Adjusted variance
+group1 Value of variable for first group
+median Median
+p Two-sided p-value from normal approximation
+p_l Lower one-sided p-value from normal approximation
+p_u Upper one-sided p-value from normal approximation
+sum_exp Expected sum of ranks for first group
+sum_obs Observed sum of ranks for first group
+z Z statistic
+
+The 𝑝-values correspond to the level p of the dimension result. Below, we modify this label with
+collect label levels. Then, we preview our table:
+. collect label levels result p ”p-value”, modify
+. collect preview
+Diabetes status
+Not diabetic
+Diabetic
+Age (years)
+Weight (kg)
+Systolic blood pressure
+Serum cholesterol (mg/dL)
+Serum iron (mcg/dL)
+
+48
+70.19
+128
+212
+96
+
+64
+74.84
+142
+223
+88
+
+p-value
+9.33e-69
+1.12e-10
+3.61e-43
+.0000178
+2.17e-08
+
+Example 2 — Table of medians and rank-sum test results 327
+
+Because labels for the levels of diabetes are descriptive enough, we can hide the title for the dimension. We format the 𝑝-values to have three decimal places. We also remove the vertical border. Then,
+we preview our table once more:
+. collect style header diabetes, title(hide)
+. collect style cell result[p], nformat(%5.3f)
+. collect style cell border_block, border(right, pattern(nil))
+. collect preview
+
+Age (years)
+Weight (kg)
+Systolic blood pressure
+Serum cholesterol (mg/dL)
+Serum iron (mcg/dL)
+
+Not diabetic
+
+Diabetic
+
+p-value
+
+48
+70.19
+128
+212
+96
+
+64
+74.84
+142
+223
+88
+
+0.000
+0.000
+0.000
+0.000
+0.000
+
+In fact, we prefer not to report our 𝑝-values in this form. Instead, we can display them as being less than
+0.001. With collect style cell, we can specify a minimum value, and any 𝑝-values smaller than the
+minimum will be displayed as simply less than that minimum:
+. collect style cell result[p], minimum(0.001)
+. collect preview
+
+Age (years)
+Weight (kg)
+Systolic blood pressure
+Serum cholesterol (mg/dL)
+Serum iron (mcg/dL)
+
+Not diabetic
+
+Diabetic
+
+p-value
+
+48
+70.19
+128
+212
+96
+
+64
+74.84
+142
+223
+88
+
+<0.001
+<0.001
+<0.001
+<0.001
+<0.001
+
+See [TABLES] collect style header and [TABLES] collect style cell for more information on the commands we used here to customize the table.
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[R] table — Table of frequencies, summaries, and command results
+[TABLES] collect get — Collect results from a Stata command
+
+Example 3 — Table of comparative summary statistics
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to use table to compute summary statistics for levels of a
+categorical variable and store them in a collection. We also demonstrate how to use the collect suite
+of commands to create a customized table with these results.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Computing statistics with the table command
+Customizing the table
+
+Computing statistics with the table command
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES II)
+(McDowell et al. 1981). We want to create a table to compare summary statistics for males and females.
+With the table command, we can compute several types of summary statistics. Below, we use the
+statistic() option to compute the mean and standard deviation (sd) of age, body mass index (bmi),
+and systolic blood pressure (bpsystol) for each category of sex. We place our variables (var) on the
+rows and the levels of sex on the columns. Additionally, we format the means and standard deviations
+to display only two digits to the right of the decimal.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. table (var) (sex),
+>
+statistic(mean age bmi bpsystol)
+>
+statistic(sd age bmi bpsystol)
+>
+nformat(%6.2f)
+
+Age (years)
+Mean
+Standard deviation
+Body mass index (BMI)
+Mean
+Standard deviation
+Systolic blood pressure
+Mean
+Standard deviation
+
+Male
+
+Sex
+Female
+
+Total
+
+47.42
+17.17
+
+47.72
+17.26
+
+47.58
+17.21
+
+25.51
+4.02
+
+25.56
+5.60
+
+25.54
+4.91
+
+132.89
+20.99
+
+129.07
+25.13
+
+130.88
+23.33
+
+328
+
+Example 3 — Table of comparative summary statistics 329
+
+The table above reports summary statistics for continuous variables. We might also want to incorporate statistics for categorical variables. For instance, let’s report frequencies and percentages for the
+levels of diabetes and hlthstat. The statistic fvfrequency provides the frequency for each level of
+a categorical variable, and fvpercent reports the percentage of observations in each category. We still
+want to format our means and standard deviations but not our other statistics. With nformat(), we can
+specify the statistics to which we want to apply the format.
+. table (var) (sex),
+>
+statistic(fvfrequency diabetes) statistic(fvpercent diabetes)
+>
+statistic(mean age bmi) statistic(sd age bmi)
+>
+statistic(fvfrequency hlthstat) statistic(fvpercent hlthstat)
+>
+statistic(mean bpsystol) statistic(sd bpsystol)
+>
+nformat(%6.2f mean sd)
+
+Diabetes status=Not diabetic
+Factor-variable frequency
+Factor-variable percent
+Diabetes status=Diabetic
+Factor-variable frequency
+Factor-variable percent
+Age (years)
+Mean
+Standard deviation
+Body mass index (BMI)
+Mean
+Standard deviation
+Health status=Excellent
+Factor-variable frequency
+Factor-variable percent
+Health status=Very good
+Factor-variable frequency
+Factor-variable percent
+Health status=Good
+Factor-variable frequency
+Factor-variable percent
+Health status=Fair
+Factor-variable frequency
+Factor-variable percent
+Health status=Poor
+Factor-variable frequency
+Factor-variable percent
+Systolic blood pressure
+Mean
+Standard deviation
+
+Male
+
+Sex
+Female
+
+Total
+
+4,698
+95.58
+
+5,152
+94.81
+
+9,850
+95.18
+
+217
+4.42
+
+282
+5.19
+
+499
+4.82
+
+47.42
+17.17
+
+47.72
+17.26
+
+47.58
+17.21
+
+25.51
+4.02
+
+25.56
+5.60
+
+25.54
+4.91
+
+1,252
+25.50
+
+1,155
+21.29
+
+2,407
+23.29
+
+1,213
+24.71
+
+1,378
+25.40
+
+2,591
+25.07
+
+1,340
+27.30
+
+1,598
+29.45
+
+2,938
+28.43
+
+722
+14.71
+
+948
+17.47
+
+1,670
+16.16
+
+382
+7.78
+
+347
+6.40
+
+729
+7.05
+
+132.89
+20.99
+
+129.07
+25.13
+
+130.88
+23.33
+
+We now have a table with summary statistics for males and females in our data. However, we likely
+want to polish the table so that the labels are not distracting.
+
+Example 3 — Table of comparative summary statistics 330
+
+Customizing the table
+By default, table will display the table and store the results in a collection called Table. We can
+now use the collect suite of commands to work with this collection and modify the look of the table.
+To get started, note that the statistics are stored as levels of the dimension result. We can see the
+levels of this dimension by using collect levelsof. We will use the names of the dimension and its
+levels in the collect subcommands that we use to modify our table.
+. collect levelsof result
+Collection: Table
+Dimension: result
+Levels: fvfrequency fvpercent mean sd
+
+First, let’s remove the labels for the statistics in the row headers. We can use collect style header
+to hide the level labels for the dimension result. Then, we preview our table with collect preview.
+. collect style header result, level(hide)
+. collect preview
+
+Diabetes status=Not diabetic
+Diabetes status=Diabetic
+Age (years)
+Body mass index (BMI)
+Health status=Excellent
+Health status=Very good
+Health status=Good
+Health status=Fair
+Health status=Poor
+Systolic blood pressure
+
+Male
+
+Sex
+Female
+
+Total
+
+4,698
+95.58
+217
+4.42
+47.42
+17.17
+25.51
+4.02
+1,252
+25.50
+1,213
+24.71
+1,340
+27.30
+722
+14.71
+382
+7.78
+132.89
+20.99
+
+5,152
+94.81
+282
+5.19
+47.72
+17.26
+25.56
+5.60
+1,155
+21.29
+1,378
+25.40
+1,598
+29.45
+948
+17.47
+347
+6.40
+129.07
+25.13
+
+9,850
+95.18
+499
+4.82
+47.58
+17.21
+25.54
+4.91
+2,407
+23.29
+2,591
+25.07
+2,938
+28.43
+1,670
+16.16
+729
+7.05
+130.88
+23.33
+
+The variable labels and value labels for our categorical variables are bound by an equal sign. Instead
+of repeating the variable labels, we can use collect style row stack to list each one only once and
+stack these headers in a single column. We also specify the spacer option to insert a blank line between
+row dimensions. Finally, we can remove the border on the right side of the row headers by setting the
+border pattern to nil. We then preview our table once more.
+
+Example 3 — Table of comparative summary statistics 331
+. collect style row stack, nobinder spacer
+. collect style cell border_block, border(right, pattern(nil))
+. collect preview
+Male
+
+Sex
+Female
+
+Total
+
+4,698
+95.58
+217
+4.42
+
+5,152
+94.81
+282
+5.19
+
+9,850
+95.18
+499
+4.82
+
+Age (years)
+
+47.42
+17.17
+
+47.72
+17.26
+
+47.58
+17.21
+
+Body mass index (BMI)
+
+25.51
+4.02
+
+25.56
+5.60
+
+25.54
+4.91
+
+1,252
+25.50
+1,213
+24.71
+1,340
+27.30
+722
+14.71
+382
+7.78
+
+1,155
+21.29
+1,378
+25.40
+1,598
+29.45
+948
+17.47
+347
+6.40
+
+2,407
+23.29
+2,591
+25.07
+2,938
+28.43
+1,670
+16.16
+729
+7.05
+
+132.89
+20.99
+
+129.07
+25.13
+
+130.88
+23.33
+
+Diabetes status
+Not diabetic
+Diabetic
+
+Health status
+Excellent
+Very good
+Good
+Fair
+Poor
+Systolic blood pressure
+
+This layout is one nice way to compare the summary statistics. We could continue to modify its style
+to finalize our table.
+However, we may also want to consider another layout—one in which the means of continuous variables and frequencies of categorical variables are in one column and the standard deviations of continuous
+variables and percentages for categorical variables are in another column.
+Currently, the frequencies for the categorical variables are tagged with the level fvfrequency of the
+result dimension, and the percentages are tagged with level fvpercent of the result dimension. To
+align the frequencies with the means and the percentages with the standard deviations, we recode them
+to the levels mean and sd of the same dimension. Then, we lay out our table with the variables on the
+rows and the results for males and females on the columns. Note that by typing sex[1 2], we specify
+that only levels 1 and 2 of the sex dimension be included. This allows us to omit the statistics that table
+computed for all observations in the data and that would be included if we simply include the dimension
+sex.
+
+Example 3 — Table of comparative summary statistics 332
+. collect recode result fvfrequency=mean
+(42 items recoded in collection Table)
+
+fvpercent=sd
+
+. collect layout (var) (sex[1 2]#result)
+Collection: Table
+Rows: var
+Columns: sex[1 2]#result
+Table 1: 15 x 4
+Male
+Diabetes status
+Not diabetic
+Diabetic
+
+Sex
+
+Female
+
+4698.00
+217.00
+
+95.58
+4.42
+
+5152.00
+282.00
+
+94.81
+5.19
+
+47.42
+25.51
+
+17.17
+4.02
+
+47.72
+25.56
+
+17.26
+5.60
+
+Health status
+Excellent
+Very good
+Good
+Fair
+Poor
+
+1252.00
+1213.00
+1340.00
+722.00
+382.00
+
+25.50
+24.71
+27.30
+14.71
+7.78
+
+1155.00
+1378.00
+1598.00
+948.00
+347.00
+
+21.29
+25.40
+29.45
+17.47
+6.40
+
+Systolic blood pressure
+
+132.89
+
+20.99
+
+129.07
+
+25.13
+
+Age (years)
+Body mass index (BMI)
+
+Now, we can finish customizing this table by adding percent signs to the percentages, enclosing our
+standard deviations in parentheses, and fixing the numeric formatting. (Now that the frequencies are part
+of the level mean, they have the numeric format that we applied earlier to that level.)
+We can use collect style cell to modify all cells in the table or specific cells.
+First, we add a percent sign to our percentages. Because we recoded the percentages to the sd level
+of result, we will need to refer to them with the tag result[sd]. However, this is not enough. If
+we refer to only result[sd], we will refer to both standard deviations and percentages. To apply a
+change only to our categorical variables, we type result[sd]#var[i.diabetes i.hlthstat]. By
+interacting these two tags, we reference only values that are tagged with the sd level of result as well
+as the levels of either i.diabetes or i.hlthstat of var.
+The option sformat() changes the string format, and %s refers to the numeric value. The text will be
+placed around our numeric values in the table as we place it around %s in this option. Adding a percent
+sign requires a special character, %%.
+Similarly, we can type result[sd]#var[age bmi bpsystol] to refer to the standard deviations of
+our continuous variables. We enclose these values in parentheses.
+. collect style cell result[sd]#var[i.diabetes i.hlthstat], sformat(”%s%%”)
+. collect style cell result[sd]#var[age bmi bpsystol], sformat(”(%s)”)
+
+Last, we do not want to display any digits to the right of the decimal for the frequencies. So we use
+collect style cell with the nformat() option for the frequencies (tagged with mean of the result
+dimension and of the levels hlthstat and diabetes of the var dimension).
+
+Example 3 — Table of comparative summary statistics 333
+. collect style cell result[mean]#var[i.diabetes i.hlthstat], nformat(%4.0f)
+. collect preview
+Male
+
+Sex
+
+Female
+
+Diabetes status
+Not diabetic
+Diabetic
+
+4698
+217
+
+95.58%
+4.42%
+
+5152
+282
+
+94.81%
+5.19%
+
+Age (years)
+Body mass index (BMI)
+
+47.42
+25.51
+
+(17.17)
+(4.02)
+
+47.72
+25.56
+
+(17.26)
+(5.60)
+
+Health status
+Excellent
+Very good
+Good
+Fair
+Poor
+
+1252
+1213
+1340
+722
+382
+
+25.50%
+24.71%
+27.30%
+14.71%
+7.78%
+
+1155
+1378
+1598
+948
+347
+
+21.29%
+25.40%
+29.45%
+17.47%
+6.40%
+
+132.89
+
+(20.99)
+
+129.07
+
+(25.13)
+
+Systolic blood pressure
+
+Our final table is much neater and easier to read.
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect recode — Recode dimension levels in a collection
+[R] table — Table of frequencies, summaries, and command results
+
+Example 4 — Table of 𝑡 test results
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to use collect to store the results of mean-comparison tests (𝑡
+tests) for levels of a categorical variable in a collection and how to create a customized table with these
+results.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Collecting statistics
+Customizing the table
+
+Collecting statistics
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES II)
+(McDowell et al. 1981). We wish to test whether the mean systolic blood pressure (bpsystol) is the
+same across males and females in each category of race. To perform the test for each level of race, we
+use the by prefix. We first create a new collection named ex4 and then use the collect prefix to collect
+the results from each ttest command and store them in the new collection. All results that ttest returns
+in r() will be collected, but only the ones we have specified will be automatically included in our table.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. collect create ex4
+(current collection is ex4)
+. quietly: collect r(N_1) r(mu_1) r(N_2) r(mu_2) r(p):
+> by race, sort: ttest bpsystol, by(sex)
+
+These results are stored in the current collection. We can then use collect layout to arrange the
+items from the collection into a table. We place the levels of race on the rows and the results (result)
+on the columns.
+. collect layout (race) (result)
+Collection: ex4
+Rows: race
+Columns: result
+Table 1: 3 x 5
+
+(output omitted )
+
+The labels for these statistics are automatically included in the table, which makes it very wide. Therefore, we omit the table preview from the output. In the following section, we will format the table to
+make it ready for publication.
+
+334
+
+Example 4 — Table of 𝑡 test results 335
+
+Customizing the table
+To finalize our table from the previous section, we will want to label which statistics are for males
+and females, shorten the labels for the statistics, and display the results with two digits to the right of the
+decimal.
+First, let’s work on the labels. The statistics are part of the dimension result. We list the labels for
+the levels of this dimension:
+. collect label list result
+Collection: ex4
+Dimension: result
+Label: Result
+Level labels:
+N_1 Sample size n1
+N_2 Sample size n2
+df_t Degrees of freedom
+level Confidence level
+mu_1 x1 mean for population 1
+mu_2 x2 mean for population 2
+p Two-sided p-value
+p_l Lower one-sided p-value
+p_u Upper one-sided p-value
+sd Combined std. dev.
+sd_1 Standard deviation for first variable
+sd_2 Standard deviation for second variable
+se Std. error
+t t statistic
+
+We would like to remap the statistics for males to their own dimension and similarly for females. This
+will allow us to categorize the results under the labels Males and Females. The levels N 1 and mu 1
+correspond to males, and the levels N 2 and mu 2 correspond to females. We also remap the 𝑝-values to
+their own dimension called Difference.
+. collect remap result[N_1 mu_1] = Males
+(6 items remapped in collection ex4)
+. collect remap result[N_2 mu_2] = Females
+(6 items remapped in collection ex4)
+. collect remap result[p] = Difference
+(3 items remapped in collection ex4)
+
+Then, we use collect style header to specify that we want to display the title for the specified
+dimensions. These titles are suppressed by default. Then, we arrange our items once more with the new
+dimension names. Again, we place the levels of race on the rows, but now we place the dimensions
+Males, Females, and Difference on the columns.
+
+Example 4 — Table of 𝑡 test results 336
+. collect style header Males Females Difference, title(name)
+. collect layout (race) (Males Females Difference)
+Collection: ex4
+Rows: race
+Columns: Males Females Difference
+Table 1: 3 x 5
+Males
+N_1
+White
+Black
+Other
+
+Males Females
+mu_1
+N_2
+
+4312 132.8476
+500
+133.69
+103 130.6699
+
+Females Difference
+mu_2
+p
+
+4753 128.5264
+586 133.8481
+97 126.7216
+
+1.78e-19
+.9217363
+.3098674
+
+Our table looks much better. Next, we will add labels to the statistics. The statistics are levels of the
+new dimensions that we remapped them to. To modify labels for levels of a dimension, we use collect
+label levels.
+. collect label levels Males N_1 ”N” mu_1 ”Mean BP”
+. collect label levels Females N_2 ”N” mu_2 ”Mean BP”
+. collect label levels Difference p ”p-value”
+
+Previously, we saw the column headers Males and Females being repeated. We would like to display
+these only once and center them horizontally. We can use collect style column to make this change.
+We also set the columns to have the same width. Then, we center-align all the cells in the table. With
+collect style cell, we can modify all cells in the table or specific cells. For example, we wish to
+format the means and 𝑝-values to display two digits to the right of the decimal. Therefore, we specify
+the levels of the dimensions we want to apply this format to. Then, we get a preview of our table.
+. collect style column, dups(center) width(equal)
+. collect style cell, halign(center)
+. collect style cell Males[mu_1] Females[mu_2] Difference[p], nformat(%5.2f)
+. collect preview
+N
+White
+Black
+Other
+
+4312
+500
+103
+
+Males
+
+Females
+Mean BP
+
+Mean BP
+
+N
+
+132.85
+133.69
+130.67
+
+4753
+586
+97
+
+128.53
+133.85
+126.72
+
+Difference
+p-value
+0.00
+0.92
+0.31
+
+Finally, we will modify the borders in the table by using collect style cell. First, we remove the
+vertical border. Because we do not want any vertical borders, we do not list any levels of the dimension border block when we specify the border(right, pattern(nil)) option. Our next collect
+style cell command requires a bit more explanation. With it, we add a horizontal border below Males
+to indicate that the first N and Mean BP are for males. To target this very specific border, we specify
+cell type[column-header]#Males. Here cell type refers to cells in different parts of the table. We
+want to make a change only in the column header. We also want to make this change only for the Males
+dimension. By specifying the # between the tags, we direct the change only at the dimension Male within
+the column headers. We can also target the border under Females by specifying cell type[columnheader]#Females. To this command, we add the border(bottom, pattern(single)) option to
+place a single border on the bottom of these cells.
+
+Example 4 — Table of 𝑡 test results 337
+. collect style cell border_block, border(right, pattern(nil))
+. collect style cell cell_type[column-header]#Males
+> cell_type[column-header]#Females, border(bottom, pattern(single))
+. collect preview
+Males
+
+White
+Black
+Other
+
+Females
+
+Difference
+
+N
+
+Mean BP
+
+N
+
+Mean BP
+
+p-value
+
+4312
+500
+103
+
+132.85
+133.69
+130.67
+
+4753
+586
+97
+
+128.53
+133.85
+126.72
+
+0.00
+0.92
+0.31
+
+After finalizing our table of results, we can export it to another format with collect export.
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect remap — Remap tags in a collection
+[TABLES] collect style column — Collection styles for column headers
+[TABLES] collect style header — Collection styles for hiding and showing header components
+
+Example 5 — Table of regression coefficients and confidence intervals
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to collect results from a regression and create a table of coefficients and confidence intervals. We also show how to customize the resulting table.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Collecting regression results and creating a table
+Customizing the table
+
+Collecting regression results and creating a table
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES II)
+(McDowell et al. 1981). We fit a model for systolic blood pressure (bpsystol) as a function of age,
+weight, and the region of the country the individual resides in. We first create a new collection named
+ex5 and then use the collect prefix to collect the coefficients ( r b) and confidence intervals ( r ci)
+into the this collection.
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. collect create ex5
+(current collection is ex5)
+. collect _r_b _r_ci: regress bpsystol age weight i.region
+Source
+
+SS
+
+df
+
+MS
+
+Model
+Residual
+
+1708779.02
+3925891
+
+5
+10,345
+
+341755.804
+379.496472
+
+Total
+
+5634670.03
+
+10,350
+
+544.412563
+
+bpsystol
+
+Coefficient
+
+Std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+age
+weight
+
+.6383029
+.4069294
+
+.0111397
+.0124796
+
+57.30
+32.61
+
+0.000
+0.000
+
+.6164668
+.382467
+
+.6601389
+.4313917
+
+region
+MW
+S
+W
+
+-.2397311
+-.6187414
+-.8617777
+
+.5640029
+.5604584
+.570496
+
+-0.43
+-1.10
+-1.51
+
+0.671
+0.270
+0.131
+
+-1.345286
+-1.717348
+-1.98006
+
+.8658237
+.4798654
+.2565047
+
+_cons
+
+71.70779
+
+1.107732
+
+64.73
+
+0.000
+
+69.53642
+
+73.87916
+
+338
+
+Number of obs
+F(5, 10345)
+Prob > F
+R-squared
+Adj R-squared
+Root MSE
+
+=
+=
+=
+=
+=
+=
+
+10,351
+900.55
+0.0000
+0.3033
+0.3029
+19.481
+
+Example 5 — Table of regression coefficients and confidence intervals 339
+
+In fact, all visible e() results are collected from our regression and stored as levels of the dimension
+result. But by specifying those two results, we have set them to be automatically included in a table
+when we include the dimension result.
+Now, we can use collect layout to arrange the results into a table. We place the covariate names
+(colname) on the rows and the statistics (result) on the columns:
+. collect layout (colname) (result)
+Collection: ex5
+Rows: colname
+Columns: result
+Table 1: 7 x 2
+Coefficient
+Age (years)
+Weight (kg)
+NE
+MW
+S
+W
+Intercept
+
+95% CI
+
+.6383029 .6164668
+.4069294
+.382467
+0
+-.2397311 -1.345286
+-.6187414 -1.717348
+-.8617777 -1.98006
+71.70779 69.53642
+
+.6601389
+.4313917
+.8658237
+.4798654
+.2565047
+73.87916
+
+Notice that the statistics are labeled and that the variable labels and value labels are used in the table
+as well.
+
+Customizing the table
+With just a few modifications, we can make the table above look better.
+By default, the base levels of factor variables are included in the table. Below, we remove the base
+levels. Then, we get a preview of our table.
+. collect style showbase off
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+MW
+S
+W
+Intercept
+
+95% CI
+
+.6383029 .6164668
+.4069294
+.382467
+-.2397311 -1.345286
+-.6187414 -1.717348
+-.8617777 -1.98006
+71.70779 69.53642
+
+.6601389
+.4313917
+.8658237
+.4798654
+.2565047
+73.87916
+
+We would also like to format the statistics to two decimal places. We can do this with collect
+style cell. By not specifying a dimension, we have applied this formatting to all cells in the table with
+numeric content. The table would look neater if we enclose the confidence intervals in brackets and use a
+comma as the delimiter. This formatting applies only to the confidence intervals ( r ci), so we specify
+the dimension and level with collect style cell. Then, we remove the vertical border and preview
+our table once more.
+
+Example 5 — Table of regression coefficients and confidence intervals 340
+. collect style cell, nformat(%5.2f)
+. collect style cell result[_r_ci], sformat(”[%s]”) cidelimiter(”, ”)
+. collect style cell border_block, border(right, pattern(nil))
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+MW
+S
+W
+Intercept
+
+95% CI
+
+0.64 [0.62, 0.66]
+0.41 [0.38, 0.43]
+-0.24 [-1.35, 0.87]
+-0.62 [-1.72, 0.48]
+-0.86 [-1.98, 0.26]
+71.71 [69.54, 73.88]
+
+The last thing that would make this table complete would be to display stars for significance. Below,
+we define the levels of the 𝑝-values, stored in r p, for which stars should be shown. We will display
+three stars for 𝑝-values less than 0.01, two stars for values less than 0.05, and one star for values less
+than 0.1. Additionally, we have added three spaces to all other results, so that our results will be aligned
+when viewing them in plain text or in the Stata Markup and Control Language format. We can display
+the stars in a separate column, but below we attach them to the coefficients ( r b). Then, we simply
+add a note explaining the significance represented by the stars and preview our table for the last time.
+. collect stars _r_p 0.01 ”***” 0.05 ”** ” 0.1 ”*
+
+” 1 ”
+
+”, attach(_r_b)
+
+. collect notes : ”*** p<.01, ** p<.05, * p<.1”
+. collect preview
+Coefficient
+Age (years)
+Weight (kg)
+MW
+S
+W
+Intercept
+
+95% CI
+
+0.64*** [0.62, 0.66]
+0.41*** [0.38, 0.43]
+-0.24
+[-1.35, 0.87]
+-0.62
+[-1.72, 0.48]
+-0.86
+[-1.98, 0.26]
+71.71*** [69.54, 73.88]
+
+*** p<.01, ** p<.05, * p<.1
+
+Note that we could have easily added the note using the shownote option with collect stars.
+However, this note would have included p<1, so we instead added our custom note with collect notes.
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect style cell — Collection styles for cells
+[TABLES] collect style showbase — Collection styles for displaying base levels
+
+Example 6 — Table comparing regression results
+Description
+
+Remarks and examples
+
+Reference
+
+Also see
+
+Description
+In this example, we demonstrate how to collect results from multiple regressions and create a table
+of coefficients, standard errors, and statistics computed after fitting the model. We also show how to
+customize the resulting table.
+
+Remarks and examples
+Remarks are presented under the following headings:
+Collecting regression results and creating a table
+Customizing the table
+
+Collecting regression results and creating a table
+Below, we use data from the Second National Health and Nutrition Examination Survey (NHANES II)
+(McDowell et al. 1981). We would like to create a table comparing the results from two models. If we
+were including only the estimation results, we could easily create this table with etable; this command
+is used to create and export tables of estimation results in a single step. However, we want to include
+results from another command, testparm, in our table. So, we use the collect suite of commands.
+We begin by creating a new collection named ex6. Then, we fit a model for systolic blood pressure
+(bpsystol) as a function of weight, sex, and whether an individual has diabetes. We use the collect
+prefix to collect the coefficients ( r b) and standard errors ( r se) into the ex6 collection. We also
+attach the tag model[(1)] to these results. We can later use this tag to refer to these results when we
+build and customize our table.
+
+341
+
+Example 6 — Table comparing regression results 342
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. collect create ex6
+(current collection is ex6)
+. collect _r_b _r_se, tag(model[(1)]): regress bpsystol weight i.diabetes i.sex
+Source
+
+SS
+
+df
+
+MS
+
+Number of obs
+F(3, 10345)
+Prob > F
+R-squared
+Adj R-squared
+Root MSE
+
+=
+=
+=
+=
+=
+=
+
+10,349
+382.25
+0.0000
+0.0998
+0.0995
+22.141
+
+Model
+Residual
+
+562138.283
+5071141.76
+
+3
+10,345
+
+187379.428
+490.2022
+
+Total
+
+5633280.05
+
+10,348
+
+544.38346
+
+bpsystol
+
+Coefficient
+
+Std. err.
+
+t
+
+P>|t|
+
+[95% conf. interval]
+
+weight
+
+.4340474
+
+.0153533
+
+28.27
+
+0.000
+
+.4039519
+
+.4641428
+
+diabetes
+Diabetic
+
+14.34115
+
+1.019611
+
+14.07
+
+0.000
+
+12.34252
+
+16.33979
+
+sex
+Female
+_cons
+
+1.107633
+98.40567
+
+.4710559
+1.235476
+
+2.35
+79.65
+
+0.019
+0.000
+
+.1842724
+95.9839
+
+2.030994
+100.8274
+
+In fact, all results that regress stores in e() are collected when we run the command above. By
+specifying r b and r se following collect, we have requested that these results be automatically
+included in a table when we include the dimension result.
+Let’s also use the testparm command to test whether the coefficient on diabetes is different from
+zero. We collect the 𝑝-value that testparm returns in the scalar r(p). We also tag this result with
+model[(1)], which will allow us to easily align the result from this command with the regression results
+when we construct our table.
+. collect p_d=r(p), tag(model[(1)]): testparm i.diabetes
+( 1)
+
+1.diabetes = 0
+F(
+
+1, 10345) =
+Prob > F =
+
+197.83
+0.0000
+
+Now, we add the interaction between diabetes and sex to the model. We use the collect prefix
+again to collect the results from this model. We add quietly prefix to suppress the output. Now that
+diabetes is interacted with sex, we perform a joint test for the hypothesis that all coefficients associated with diabetes, including those in the interaction, are equal to zero. This time we attach the tag
+model[(2)] to the results from both the regress and the testparm commands.
+. quietly: collect _r_b _r_se, tag(model[(2)]): regress bpsystol weight
+> diabetes##sex
+. collect p_d=r(p), tag(model[(2)]): testparm i.diabetes i.diabetes#i.sex
+( 1)
+( 2)
+
+1.diabetes = 0
+1.diabetes#2.sex = 0
+F(
+
+2, 10344) =
+Prob > F =
+
+100.11
+0.0000
+
+Example 6 — Table comparing regression results 343
+
+All the results are now stored in the current collection. We are ready to arrange the values into a table.
+These values are organized in the collection by tags, which are made up of dimensions and levels within
+those dimensions. We need to know the dimension names to lay out and customize our table. Below, we
+list the dimensions:
+. collect dims
+Collection dimensions
+Collection: ex6
+Dimension
+Layout, style, header, label
+cmdset
+coleq
+colname
+colname_remainder
+diabetes
+model
+program_class
+result
+result_type
+rowname
+sex
+Style only
+
+border_block
+cell_type
+
+No. levels
+4
+1
+10
+1
+2
+2
+3
+37
+3
+1
+2
+4
+4
+
+The output indicates which dimensions can be used with the collect subcommands. For example,
+the first section lists dimensions that can be specified in collect layout, which is used to arrange the
+values in the collection into a table. We place the covariate names (colname) and the statistics (result)
+on the rows. We place model, the dimension we created with the tag() option of collect above, on
+the columns.
+
+Example 6 — Table comparing regression results 344
+. collect layout (colname#result) (model)
+Collection: ex6
+Rows: colname#result
+Columns: model
+Table 1: 30 x 2
+(1)
+Weight (kg)
+Coefficient
+Std. error
+Not diabetic
+Coefficient
+Std. error
+Diabetic
+Coefficient
+Std. error
+Male
+Coefficient
+Std. error
+Female
+Coefficient
+Std. error
+Not diabetic # Male
+Coefficient
+Std. error
+Not diabetic # Female
+Coefficient
+Std. error
+Diabetic # Male
+Coefficient
+Std. error
+Diabetic # Female
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+(2)
+
+.4340474 .4335342
+.0153533 .0153559
+0
+0
+
+0
+0
+
+14.34115 12.57211
+1.019611 1.538361
+0
+0
+
+0
+0
+
+1.107633 .9520999
+.4710559 .4817911
+0
+0
+0
+0
+0
+0
+3.146466
+2.048958
+98.40567 98.5238
+1.235476 1.237787
+
+In the following section, we format the results, remove the base levels, and make some other edits to
+make this table ready for publication.
+
+Customizing the table
+In the table above, the base levels of factor variables were included in the table. Below, we remove
+the base levels with collect style showbase. We also format the statistics to two decimal places.
+We can do this with collect style cell. This command allows us to format all cells in the table at
+once or to format specific cells. Because we want to apply the numeric formatting to all cells, we do not
+specify a dimension. We also remove the border on the right side of the row headers by setting the border
+pattern for this location (right) to nil. Next, we want to enclose the standard errors in parentheses. The
+standard errors are stored in the level r se of the dimension result. To apply this format only to this
+result, we specify the dimension (result) and its level; we use brackets ([ ]) to refer to levels of a
+dimension. Then, we get a preview of our table.
+
+Example 6 — Table comparing regression results 345
+. collect style showbase off
+. collect style cell, nformat(%5.2f)
+. collect style cell border_block, border(right, pattern(nil))
+. collect style cell result[_r_se], sformat(”(%s)”)
+. collect preview
+(1)
+
+(2)
+
+Weight (kg)
+Coefficient
+0.43
+0.43
+Std. error
+(0.02) (0.02)
+Diabetic
+Coefficient
+14.34 12.57
+Std. error
+(1.02) (1.54)
+Female
+Coefficient
+1.11
+0.95
+Std. error
+(0.47) (0.48)
+Diabetic # Female
+Coefficient
+3.15
+Std. error
+(2.05)
+Intercept
+Coefficient
+98.41 98.52
+Std. error
+(1.24) (1.24)
+
+Next, we would like to center the results and column headers horizontally. We will need to refer to the
+levels of the dimension cell type. Below, we list the levels of this dimension. This dimension divides
+the table into four sections. The sections we want to modify are the values (items) in the body of the
+table and the column-headers. We specify the dimension cell type and these levels with collect
+style cell to modify their horizontal alignment.
+. collect levelsof cell_type
+Collection: ex6
+Dimension: cell_type
+Levels: column-header corner item row-header
+. collect style cell cell_type[item column-header], halign(center)
+
+We also remove the labels Coefficient and Std. error. These labels are attached to the levels of
+the dimension result. We use collect style header to hide the level labels for this dimension. Then,
+to add an additional space between columns, we use collect style column with the extraspace()
+option.
+We can arrange our row headers in two ways. One way is to place each item in a separate cell; the
+other way is to stack the elements in a single column. We choose the latter with collect style row
+stack. Also, notice that by default collect uses a # as a delimiter for interaction terms. We would
+instead like to use an x, with a space on each side.
+
+Example 6 — Table comparing regression results 346
+. collect style header result, level(hide)
+. collect style column, extraspace(1)
+. collect style row stack, spacer delimiter(” x ”)
+. collect preview
+(1)
+
+(2)
+
+Weight (kg)
+
+0.43
+(0.02)
+
+0.43
+(0.02)
+
+Diabetic
+
+14.34
+(1.02)
+
+12.57
+(1.54)
+
+Female
+
+1.11
+(0.47)
+
+0.95
+(0.48)
+
+Diabetic x Female
+Intercept
+
+3.15
+(2.05)
+98.41
+(1.24)
+
+98.52
+(1.24)
+
+Recall that all e() results were collected from our models. In addition to reporting the 𝑝-value from
+testparm, we also want to report the 𝑅2 value, which is stored under the level r2 of the dimension
+result. So, in addition to the results for each covariate (colname#result), we also specify the levels
+r2 and p d of result in the first set of parentheses, which will be used to define the rows of the table.
+As before, we use model for the column identifier.
+. collect layout (colname#result result[r2 p_d]) (model)
+Collection: ex6
+Rows: colname#result result[r2 p_d]
+Columns: model
+Table 1: 18 x 2
+(1)
+
+(2)
+
+Weight (kg)
+
+0.43
+(0.02)
+
+0.43
+(0.02)
+
+Diabetic
+
+14.34
+(1.02)
+
+12.57
+(1.54)
+
+Female
+
+1.11
+(0.47)
+
+0.95
+(0.48)
+
+Diabetic x Female
+Intercept
+
+3.15
+(2.05)
+98.41
+(1.24)
+
+98.52
+(1.24)
+
+0.10
+
+0.10
+
+0.00
+
+0.00
+
+Example 6 — Table comparing regression results 347
+
+We hid the labels for the levels of the dimension result, but now that we have added the 𝑝-values
+and values of 𝑅2 , we want to display their levels. We specify these two levels of the dimension result
+with collect style header. Then, we modify the labels for these levels. Additionally, we want to
+format our 𝑝-values to three decimal places and display them as <0.001 if they are less than 0.001. We
+can do this by specifying minimum(0.001) with collect style cell. After making that change, we
+preview our table once more:
+. collect style header result[r2 p_d], level(label)
+. collect label levels result p_d ”Diabetes p-value” r2 ”R-squared”, modify
+. collect style cell result[p_d], nformat(%5.3f) minimum(0.001)
+. collect preview
+(1)
+
+(2)
+
+Weight (kg)
+
+0.43
+(0.02)
+
+0.43
+(0.02)
+
+Diabetic
+
+14.34
+(1.02)
+
+12.57
+(1.54)
+
+Female
+
+1.11
+(0.47)
+
+0.95
+(0.48)
+
+Diabetic x Female
+
+3.15
+(2.05)
+
+Intercept
+
+98.41
+(1.24)
+
+98.52
+(1.24)
+
+R-squared
+
+0.10
+
+0.10
+
+Diabetes p-value
+
+<0.001
+
+<0.001
+
+Example 6 — Table comparing regression results 348
+
+Last, we want to add stars to the coefficients to indicate which are significant at a 1%, 5%, and
+10% level. The significance is determined by the 𝑝-values ( r p), but the actual stars are attached to
+the coefficients ( r b). The shownote option adds the note at the bottom of the table, explaining the
+significance represented by the stars.
+. collect stars _r_p 0.01 ”***”
+
+0.05 ”** ” 0.1 ”*
+
+”, attach(_r_b) shownote
+
+. collect preview
+(1)
+
+(2)
+
+Weight (kg)
+
+0.43***
+(0.02)
+
+0.43***
+(0.02)
+
+Diabetic
+
+14.34***
+(1.02)
+
+12.57***
+(1.54)
+
+Female
+
+1.11**
+(0.47)
+
+0.95**
+(0.48)
+
+Diabetic x Female
+Intercept
+
+3.15
+(2.05)
+98.41***
+(1.24)
+
+98.52***
+(1.24)
+
+R-squared
+
+0.10
+
+0.10
+
+Diabetes p-value
+
+<0.001
+
+<0.001
+
+*** p<.01, ** p<.05, * p<.1
+
+Now, we can export our table to our preferred format—Word, PDF, HTML, LATEX, Excel, or Markdown—using collect export.
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect style cell — Collection styles for cells
+[TABLES] collect style showbase — Collection styles for displaying base levels
+
+

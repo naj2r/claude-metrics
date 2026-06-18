@@ -1,0 +1,29 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{T9 Panel A: Aggregate wine cascade \label{tab:T9\_A}}
+\begin{tabular}{l*{5}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}\\
+            &\multicolumn{1}{c}{(1) baseline}&\multicolumn{1}{c}{(2) +french}&\multicolumn{1}{c}{(3) +absinthe}&\multicolumn{1}{c}{(4) +protestant}&\multicolumn{1}{c}{(5) +geog (density)}\\
+            &        b/se   &        b/se   &        b/se   &        b/se   &        b/se   \\
+\midrule
+Wine revenue, national share (\%)&      -0.196   &       0.568** &       0.415   &       0.547*  &       0.469   \\
+            &     (0.219)   &     (0.251)   &     (0.271)   &     (0.277)   &     (0.309)   \\
+French language share (\%)&               &      -0.307***&      -0.218** &      -0.248** &      -0.239** \\
+            &               &     (0.079)   &     (0.100)   &     (0.102)   &     (0.104)   \\
+Absinthe industry share (\%)&               &               &      -0.294   &      -0.197   &      -0.185   \\
+            &               &               &     (0.336)   &     (0.258)   &     (0.301)   \\
+Protestant share (\%)&               &               &               &      -0.069   &      -0.037   \\
+            &               &               &               &     (0.050)   &     (0.068)   \\
+Log population density&               &               &               &               &      -2.086   \\
+            &               &               &               &               &     (2.709)   \\
+Constant    &      65.129***&      67.508***&      67.714***&      70.317***&      78.670***\\
+            &     (2.575)   &     (2.096)   &     (2.132)   &     (2.676)   &    (11.070)   \\
+\midrule
+N           &          25   &          25   &          25   &          25   &          25   \\
+R-squared   &       0.016   &       0.510   &       0.560   &       0.595   &       0.623   \\
+RMSE        &      11.831   &       8.535   &       8.276   &       8.137   &       8.054   \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize HC3 robust standard errors in parentheses.  N=25 cantons.  Y = Yes-vote share, Vote \#68 (absinthe ban).}\\
+\end{tabular}
+\end{table}
