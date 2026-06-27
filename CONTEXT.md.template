@@ -1,0 +1,48 @@
+# Project: [PROJECT_NAME]
+
+> **`/init-project <slug>` walks you through filling this. Claude reads it before any analytical reasoning.**
+
+## Dataset(s)
+
+> Name(s), source(s), sample period, N observations, refresh cadence.
+
+[ FILL IN ]
+
+## Unit of observation
+
+> What does one row in the analysis dataset represent?
+
+[ FILL IN ]
+
+## Outcome variable(s)
+
+> Name, transformation, units. Multiple outcomes OK.
+
+[ FILL IN ]
+
+## Identification strategy
+
+> OLS / FE / DiD / IV / matching / RCT / RDD — one sentence on the source of variation.
+
+[ FILL IN ]
+
+## Key globals
+
+> `$[PROJECT_NAME]` = `[Dropbox path to this project]/analysis`
+> Plus any other path globals or sample-restriction globals.
+
+[ FILL IN ]
+
+## Coauthors
+
+[ FILL IN ]
+
+## Stata version
+
+19
+
+## Notes
+
+> Funder requirements, IRB constraints, deadlines, etc.
+
+[ OPTIONAL ]

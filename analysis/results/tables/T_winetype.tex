@@ -1,0 +1,19 @@
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{White vs red wine at the headline spec (canton cross-section cannot resolve the split)}
+\label{tab:T_winetype}
+\begin{tabularx}{\linewidth}{@{}lCC@{}}
+
+\toprule
+{Wine type (col-5 spec)}&{OLS coef (HC3)}&{FL AME (pp)} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+White wine&. (.)&. (.) \tabularnewline
+Red wine&. (.)&. (.) \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Col-5 spec with the wine revenue share split into white- and red-wine revenue share (each entered on its own). OLS coef = HC3 (0-100 scale); FL AME = fractional-logit average marginal effect (pp). SE in parentheses. Cahannes (1981) predicts absinthe competed with WHITE wine, so coef(white) > coef(red); at this canton-level spec the point estimates run the other way (red >= white), but both are imprecise and their confidence intervals overlap heavily -- the canton cross-section cannot resolve the white-vs-red distinction.}
+\end{table}

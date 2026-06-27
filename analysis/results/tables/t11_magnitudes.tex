@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Substantive magnitudes: predicted yes-vote shifts (\\\%) by canton contrast}
+\label{tab:magnitudes}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+{Specification}&{Vineyard coef}&{+1-SD}&{Avg wine}&{NE vs UR}&{VD vs UR} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Bivariate&--178.6&--1.48&--1.10&--1.61&--4.11
+KEY (subset shares)&484.4**&4.00&2.99&4.37&11.15
+KEY (total-pop shares)&436.6*&3.61&2.70&3.94&10.05
+KEY + log pop.&471.5*&3.90&2.91&4.26&10.85
+Full + absinthe dummy&409.0&3.38&2.53&3.69&9.41
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Each cell shows the predicted yes-vote shift (in percentage points) holding language and religion constant. +1-SD: a one-standard-deviation increase in vineyard\\_per\\_cap (0.0083 ha/person). Avg wine: comparison from no-vineyard Uri (UR, 0.0000) to the cantonal mean (0.0062). NE vs UR: Neuch\\^{}\{a\}tel (0.0090) vs Uri. VD vs UR: Vaud, the wine-richest canton (0.0230), vs Uri. Stars on coefficient: * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

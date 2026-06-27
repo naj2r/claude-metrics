@@ -1,0 +1,18 @@
+| ="Cross-referendum: votes #67 | #68                     | #69 — Fractional logit AME" |                            |       |
+|-------------------------------|-------------------------|-----------------------------|----------------------------|-------|
+|                               | (1)                     | (2)                         | (3)                        |       |
+|                               | (1) Vote #67 (commerce) | (2) Vote #68 (absinthe ban) | (3) Vote #69 (water power) |       |
+|                               | b/se                    | b/se                        | b/se                       |       |
+| ="Wine revenue                | national share (\%)"    | -0.196                      | 0.434**                    | 0.005 |
+|                               | (0.308)                 | (0.195)                     | (0.210)                    |       |
+| French language share (\%)    |                         |                             |                            |       |
+|                               |                         |                             |                            |       |
+| Absinthe industry share (\%)  |                         |                             |                            |       |
+|                               |                         |                             |                            |       |
+| Protestant share (\%)         |                         |                             |                            |       |
+|                               |                         |                             |                            |       |
+| Log population density        |                         |                             |                            |       |
+|                               |                         |                             |                            |       |
+| Constant                      |                         |                             |                            |       |
+|                               |                         |                             |                            |       |
+| N                             | 25                      | 25                          | 25                         |       |

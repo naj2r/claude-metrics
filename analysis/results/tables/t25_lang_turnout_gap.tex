@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{French--German turnout gap collapse on the absinthe ban (Vote \#68)}
+\label{tab:lang_turnout_gap}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{ }&{French (N=5)}&{German (N=20)}&{Gap (Fr--Ge)} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Baseline turnout (median across 14 placebo votes 1907--1910)&44.40&56.62&--12.22
+Vote \#68 turnout (5 July 1908, absinthe ban)&47.92&48.02&--0.11
+Change (gap collapse, row 2 minus row 1)&+3.52&--8.60&+12.12
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Phase C.6c (verify\\_reconstruct\\_expand handoff). Documents the language-driven mobilization asymmetry on the 1908 absinthe-ban referendum. Group definitions: French = cantons with french\\_share>0.5 of (German+French) speakers (NE, GE, VD, FR, VS; N=5); German = remaining cantons (N=20). Baseline turnout = canton-level median across the 14 federal referenda from 1907 to 1910 (the 'placebo' set used to detect mobilization deviation on \\#68). Gap entries are arithmetic differences between the French and German group means in each row. The $\Delta$ row entries are differences between row 2 and row 1 within each group; the $\Delta$ Gap entry (+12.12) equals the swing in the French--German turnout gap from baseline to \\#68. Source: \texttt\{processed/absinthe\\_analysis.dta\} via the Phase A.8 dispersion descriptive (section A.8.6 of \texttt\{output/notes/dispersion\\_descriptive\\_stats.md\}). All numbers reproducible by \texttt\{summarize\} on \texttt\{baseline\\_turnout\\_canton\}, \texttt\{turnout\\_v68\}, and \texttt\{mobilization\\_dev\\_v68\}. Together with Table\~\ref\{tab:mobil\\_lang\\_relig\} (T20b: language predicts mobilization in regression), this table makes the +12.12-pp swing legible as the empirical signature of the language cleavage activating on vote \\#68.}
+\end{table}
+\end{document}

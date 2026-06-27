@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Summary statistics: 25 Swiss cantons in the 1908 absinthe-ban vote}
+\label{tab:summary_stats}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+{Variable}&{Mean}&{Std. dev.}&{Min}&{Max}&{N} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Yes-vote share (\\%, 1908)&64.3&11.7&35.3&83.3&25
+Vineyard per capita (ha/person)&.00618&.00827&0&.0257&25
+French-language share&.177&.327&.000522&.909&25
+Catholic share&.569&.35&.0981&.987&25
+Log population (1900)&11.3&1.05&9.48&13.3&25
+Population density (per km\^{}2)&238&592&14.7&3,033&25
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Cross-section of N=25 cantons (BE+JU combined; JU did not exist in 1908). Yes-vote share is from the 5 July 1908 federal vote on the absinthe ban (vote no. 68). Vineyard area is from HSSO Table I.01 (1905); other covariates from HSSO B.01a/b, B.27, B.32 (1900 census).}
+\end{table}
+\end{document}

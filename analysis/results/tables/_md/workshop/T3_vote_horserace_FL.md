@@ -1,0 +1,22 @@
+| Vote horse race at col 5 — FL |                      |                  |                   |         |
+|-------------------------------|----------------------|------------------|-------------------|---------|
+|                               | (1)                  | (2)              | (3)               |         |
+|                               | (1) Per-cap          | (2) Volume share | (3) Revenue share |         |
+|                               | b/se                 | b/se             | b/se              |         |
+| ="Wine area per 1             | 000 pop. (ha)"       | 0.170            |                   |         |
+|                               | (0.145)              |                  |                   |         |
+| ="Wine volume                 | national share (\%)" |                  | 0.428**           |         |
+|                               |                      | (0.205)          |                   |         |
+| ="Wine revenue                | national share (\%)" |                  |                   | 0.434** |
+|                               |                      |                  | (0.195)           |         |
+| French language share (\%)    |                      |                  |                   |         |
+|                               |                      |                  |                   |         |
+| Absinthe industry share (\%)  |                      |                  |                   |         |
+|                               |                      |                  |                   |         |
+| Protestant share (\%)         |                      |                  |                   |         |
+|                               |                      |                  |                   |         |
+| Log population density        |                      |                  |                   |         |
+|                               |                      |                  |                   |         |
+| Constant                      |                      |                  |                   |         |
+|                               |                      |                  |                   |         |
+| N                             | 25                   | 25               | 25                |         |

@@ -1,0 +1,316 @@
+
+help texsave
+-----------------------------------------------------------------------------------------------------------------------------------
+Title
+
+    texsave -- Save dataset in LaTeX format.
+
+
+Syntax
+
+        texsave [varlist] using filename [if] [in] [, title(string) footnote(footnote_suboptions) autonumber varlabels
+              hlines(numlist) label(string) size(string) landscape replace spacing_options code_options format_options
+              other_options]
+
+    where
+
+        footnote_suboptions are
+
+            footnote(string [, size(string) addlinespace(string) width(string)])
+
+        spacing_options are
+
+            geometry(string) width(string) headersep(string) rowsep(string) rowstretch(#) rowheight(string) colwidth(string)
+
+        code_options are
+
+            preamble(stringlist) headlines(stringlist) tablelines(stringlist) headerlines(stringlist) footlines(stringlist)
+
+        format_options are
+
+            nofix noendash decimalalign bold(stringlist) italics(stringlist) underline(stringlist) slanted(stringlist)
+              smallcaps(stringlist) sansserif(stringlist) monospace(stringlist) emphasis(stringlist)
+
+        and other_options are
+
+            valuelabels nonames frag dataonly location(string) align(string)
+
+
+Description
+
+    texsave outputs the dataset currently in memory to filename in LaTeX format. It uses the booktabs, tabularx, and geometry
+    packages to produce publication-quality tables. To link the table to an existing LaTeX document, follow these two steps:
+
+        1. Add the line \usepackage{standalone} to the document's preamble.
+
+        2. Add the line \input{filename} to the place where you want the table to appear in the document.
+
+Options
+
+    title(string) writes out string as a caption above the table.
+
+
+    footnote(string [, size(string) width(string)] addlinespace(string)) writes out string in a left-justified footnote at the
+        bottom of the table.  The suboptions allow you to set the size and width of the footnote, using the same syntax described
+        above by the size(string) and width(string) options. The addlinespace(string) suboption writes out
+        "\addlinespace[string]" just prior the footnote, allowing you to control the amount of spacing between the table and the
+        footnote. (See rowsep() for examples of valid units.) The default is "\addlinespace[\belowrulesep]".
+
+
+    autonumber writes out "(1)", "(2)"... in the first row of the table header, beginning with column two.  This is useful when
+        outputting regression results stored by a command like regsave (if installed).
+
+
+    varlabels specifies that variable labels be written in the table header instead of variable names.
+
+
+    hlines(numlist) draws horizontal lines below each row specified in numlist.  Specify a row's number twice to output a double
+        line. Negative values are interpreted as the distance from the end of the table.
+
+
+    label(string) uses LaTeX's \label option to mark your table with the key string.
+
+
+    size(string) specifies the size of your table.  Valid size options are tiny, scriptsize, footnotesize, small, normalsize,
+        large, Large, LARGE, huge, and Huge.  Alternatively, the user may specify a numeric value between 1 and 10, where 1
+        corresponds to tiny and 10 corresponds to Huge.
+
+
+    landscape specifies a landscape orientation instead of a portrait orientation. This requires the pdflscape package.
+
+
+    replace overwrites filename.
+
+
+    spacing_options:
+
+            geometry(string) specifies the page dimensions using the geometry package. The default is "margin=1in".
+
+            width(string) specifies the width of your table. Lengths can be specified in the same way as for rowsep (see below).
+              The default is \linewidth.
+
+            headersep(string) adds vertical spacing of length string between the header row and the data rows via the
+              \addlinespace command.  It uses the same syntax as rowsep(string).  The default is "\addlinespace[\belowrulesep]".
+
+            rowsep(string) adds vertical spacing of length string to the rows via the \addlinespace command.  The length can be
+              expressed in the following units: cm (centimetres), em (the width of the letter M in the current font), ex (the
+              height of the letter x in the current font), in (inches), pc (picas), pt (points) or mm (millimetres).  For
+              example, rowsep(1cm) adds one centimeter of vertical space between rows.
+
+            rowstretch(#) injects vertical space above and below cell text: "\renewcommand{\arraystretch}{#}". The default value
+              is 1. Values larger than 1 increase spacing, values smaller than 1 decrease spacing.
+
+            rowheight(string) injects vertical space only above cell text: "\setlength\extrarowheight{string}". Lengths can be
+              specified in the same way as for rowsep.
+
+            colwidth(string) modifies the column width: "\setlength{\tabcolsep}{string". Lengths can be specified in the same way
+              as for rowsep. See also align().
+
+
+    code_options insert customized LaTeX code into different parts of the table (see Notes section below for table structure):
+
+            preamble(stringlist) specifies lines of LaTeX code to appear before "\begin{document}".  Each line of code should be
+              surrounded by quotation marks (see example 4 below).
+
+            headlines(stringlist) specifies lines of LaTeX code to appear between "\begin{document}" and "\begin{table}".  Each
+              line of code should be surrounded by quotation marks (see example 4 below).
+
+            tablelines(stringlist) specifies lines of LaTeX code to appear between "\begin{table}" and "\begin{tabularx}".  Each
+              line of code should be surrounded by quotation marks (see example 4 below).
+
+            headerlines(stringlist) specifies lines of LaTeX code to appear between "\begin{tabularx}" and the table header.
+              Each line of code should be surrounded by quotation marks (see example 5 below).  By default, headerlines() appends
+              "\tabularnewline" to the end of each string.  Use the alternative option headerlines2(stringlist) if you don't want
+              to append "\tabularnewline".
+
+            footlines(stringlist) specifies lines of LaTeX code to appear after "\end{table}".  Each line of code should be
+              surrounded by quotation marks (see example 4 below).
+
+
+    format_options:
+
+            nofix instructs texsave not to add a backslash ("\") in front of the following non-alphanumeric characters: _ % # $ &
+              ~ ^ \ { }.  Adding the backslash is often required in order to avoid LaTeX compilation errors.
+
+            noendash specifies that negative signs ("-") not be converted to en dashes ("--") in the dataset.
+
+            decimalalign aligns numeric values at the decimal point using the siunitx package.
+
+            bold(), italics(), underline(), slanted(), smallcaps(), sansserif(), monospace(), and emphasis() allow you to format
+              the data values in your table.  For example, underline("word1" "word2") underlines all data values containing
+              either "word1" or "word2".
+
+
+    other_options:
+
+            valuelabels specifies that value labels of labeled variables be outputted instead of numeric values.
+
+            nonames specifies that variable names not be added to the table header.
+
+            frag omits from the output LaTeX code like \begin{document} that is needed to create a standalone document. This
+              makes filename a fragment, which is useful if you want to use LaTeX's \input{table} command to include your table
+              as a subfile.  An alternative is to use the LaTeX package standalone, which instructs LaTeX to skip extra preambles
+              when including subfiles.
+
+            dataonly is a programmer's option that outputs only the contents of the dataset.  It omits variable names, footnotes,
+              and all other LaTeX code that surrounds the contents of the table.  The resulting output will not compile into a
+              table.
+
+            location(string) specifies the location of your table in the document.  It consists of one or more of the following
+              specifiers:
+
+                h - "Here": at the position in the text where the environment appears
+
+                t - "Top": at the top of a text page
+
+                b - "Bottom": at the bottom of a text page
+
+                p - "Page": on a separate page containing no text, only figures and tables
+
+                The default is location(tbp).
+
+            align(string) specifies the column formatting. It generally consists of a sequence of the following specifiers, at
+              least one for each of the columns:
+
+                l - a column of left-aligned items
+
+                r - a column of right-aligned items
+
+                c - a column of centered items
+
+                L - a column of ragged-right items; text will wrap around
+
+                R - a column of ragged-left items; text will wrap around
+
+                C - a column of centered items; text will wrap around
+
+                S - a column of numbers aligned at the decimal point; requires decimalalign option
+
+                | - a vertical line the full height and depth of the environment.  If there are three columns, specify
+                  align(|l|C|C|) to surround all columns with vertical lines.
+
+                The default is to left-justify the first column and center and distribute space equally across the rest of the
+                  columns, which in the case of three columns corresponds to align(lCC).
+
+
+Remarks
+
+    It is sometimes difficult to make texsave output a literal "$" because this can be interpreted by Stata as a global macro.
+        For example, "$R^2$" will be incorrectly outputted as "^2$".  You can avoid this problem by using the alternative LaTeX
+        syntax "\(R^2\)".
+
+    If your dataset includes LaTeX code, you will probably want to instruct texsave not to modify it by specifying the nofix
+        option.
+
+    texsave performs some basic error checking. For example, it issues an error if you specify horizontal lines at row values
+        that do not exist.  However, it does not check that tables with lots of alignment specifications etc. will compile
+        correctly.  It is your responsibility to ensure that you are supplying valid LaTeX code when specifying options such as
+        headlines(), align() etc.  See http://en.wikibooks.org/wiki/LaTeX/Tables to learn more about writing LaTeX code for
+        tables.
+
+    Occasionally you may want to modify a line in the output file that can't be automated using texsave's options.  The
+        filefilter command is helpful in these cases. For example, the following command will remove the "\centering" from the
+        first line of the table output:
+
+           . filefilter "myfile1.tex" "myfile2.tex", from("\begin{table}[tbp] \centering") to("\begin{table}[tbp]")
+
+
+Notes
+
+    texsave creates a LaTeX table using the following basic structure:
+
+         \documentclass{article}
+         \usepackage{booktabs}
+         \usepackage{tabularx}
+         \usepackage[margin=1in]{geometry}
+         preamble(stringlist)
+
+         \begin{document}
+         headlines(stringlist)
+
+         \begin{table}[tbp] \centering
+         tablelines(stringlist)
+         \newcolumntype{C}{>{\centering\arraybackslash}X}
+         title(string)
+
+         \begin{tabularx}{\linewidth}{@{}lC...C@{}}
+         \toprule
+         autonumber
+         headerlines(stringlist)
+
+         [variable names]
+         \midrule\addlinespace[headersep(string)]
+         [data]
+
+         \bottomrule \addlinespace[\belowrulesep]
+         \end{tabularx}
+
+         \parbox{\linewidth}{\footnotesize footnote(string)}
+         \end{table}
+
+         footlines(stringlist)
+         \end{document}
+
+
+Examples
+
+    1.  Output a table with a title and a footnote.
+
+       . sysuse auto.dta, clear
+
+       . texsave make mpg trunk if price > 8000 using "example1.tex", title(MPG and trunk space) footnote(Variable trunk measured i
+> n cubic feet) replace
+
+
+    2.  Output a table with a small font size and some horizontal lines.
+
+       . sysuse auto.dta, clear
+
+       . texsave make mpg trunk weight length displacement turn using "example2.tex" in 1/30, size(2) hlines(3 10/13 19 23 25 -2 30
+> ) replace
+
+
+    3.  Output a table with non-variable name headers and LaTeX math code in the footnote.
+
+       . sysuse auto.dta, clear
+
+       . label var make "Car make"
+
+       . label var mpg "Miles per gallon"
+
+       . label var trunk "Trunk space"
+
+       . texsave make mpg trunk if price > 8000 using "example3.tex", title(MPG and trunk space) varlabels footnote("Variable trunk
+>  measured in ft\(^3\)") nofix replace
+
+
+    4. Output a table with additional LaTeX code.
+
+       . sysuse auto.dta, clear
+
+       . texsave make mpg trunk if price > 8000 using "example4.tex", loc(h) preamble("\usepackage{amsfonts}") headlines("\begin{ce
+> nter}" "My headline" "\end{center}") footlines("My footline") replace
+
+
+    5. Output a table with a complicated header and bold-face the first observation.
+
+       . sysuse auto.dta, clear
+
+       . texsave make mpg trunk if price > 8000 using "example5.tex", bold("Buick") headerlines("& \multicolumn{2}{c}{\textbf{Data}
+> }" "\cmidrule{2-3}\addlinespace[-2ex]") nofix replace
+
+
+Author
+
+    Julian Reif, University of Illinois
+
+    jreif@illinois.edu
+
+
+    Thanks to Kit Baum for helpful suggestions and feedback.
+
+
+Also see
+
+    regsave (if installed), sortobs (if installed), filefilter
+

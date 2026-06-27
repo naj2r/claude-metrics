@@ -1,0 +1,453 @@
+collect style smcl — Collection styles for SMCL files 246
+
+wrapnotes and nowrapnotes specify whether to break long table notes.
+wrapnotes, the default, specifies that long notes break at the table’s width.
+nowrapnotes specifies that long notes are allowed to extend beyond the table width.
+SMCL line sizes can range from 40 to 255, so tables with fewer than 40 display columns will have
+
+notes that wrap at 40 display columns.
+
+Remarks and examples
+collect style smcl allows you to specify styles for the table that you will export to a SMCL file
+with collect export. If you do not like the change you have made, you can clear the SMCL appearance
+styles by typing the following:
+. collect style smcl
+
+This change will be applied to the current collection. To make this change for another collection, specify
+the collection name with the name() option.
+
+Stored results
+collect style smcl stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Also see
+[TABLES] collect export — Export table from a collection
+[TABLES] collect query — Query collection style properties
+
+collect style table — Collection styles for table headers
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+Reference
+
+Syntax
+Also see
+
+Options
+
+Description
+collect style table specifies table header style properties. When collect layout specifies that
+multiple tables be created, collect style table determines how the headers for each of the tables are
+displayed.
+
+Quick start
+Use an x to delimit interaction terms
+collect style table, delimiter(” x ”)
+Use a colon to delimit table headers with multiple dimensions
+collect style table, dimdelimiter(” : ”)
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Syntax
+collect style table [ , options ]
+
+options
+
+Description
+
+name(cname)
+nodelimiter
+
+specify table header styles for collection cname
+place factor-variable and interaction elements in separate
+cells without a delimiter
+use delim to delimit interaction terms composed
+in a single cell
+use atdelim to delimit interaction terms containing
+the @ symbol
+use bardelim to delimit interaction terms containing
+the | symbol
+use binder to separate factor variables from their levels
+use dimdelim to delimit table headers
+use dimbinder to separate dimensions from their levels
+
+delimiter(delim)
+atdelimiter(atdelim)
+bardelimiter(bardelim)
+binder(binder)
+dimdelimiter(dimdelim)
+dimbinder(dimbinder)
+
+247
+
+collect style table — Collection styles for table headers 248
+
+Options
+name(cname) specifies the collection to which table header style properties are to be applied. By default,
+properties are applied to the current collection.
+nodelimiter, delimiter(), atdelimiter(), and bardelimiter() control how to compose factorvariable and interaction terms in headers.
+nodelimiter, the default, specifies that factor-variable and interaction term elements (matrix stripe
+elements) be split into separate cells.
+delimiter(delim) specifies that factor-variable and interaction term elements (matrix stripe elements) be composed in a single cell.
+
+The variables in an interaction term are composed in a single cell using delim as the delimiter.
+Factor-variable terms serve as their own dimension nested within the stripe dimensions coleq,
+colname, roweq, and rowname. Option binder() controls how levels of factor variables are
+composed within a single cell.
+atdelimiter(atdelim) specifies that atdelim be used to delimit interaction terms containing the @
+symbol. This option is applicable when, for example, working with results from contrast, mean,
+proportion, ratio, and total.
+bardelimiter(bardelim) specifies that bardelim be used to delimit interaction terms containing the
+| symbol. This option is applicable when, for example, working with results from anova and
+manova.
+binder(binder) specifies how to compose levels of factor variables within a single cell.
+
+The binder will be applied as long as the factor variable and its levels are not hidden. Note that the
+default style used by collect, which is style-default.stjson, will hide the dimension from the
+headers. You can use collect style header to specify whether to display the label or name for a
+dimension and whether to display the label or value for the level of a dimension.
+dimdelimiter(dimdelim) specifies how to delimit table headers composed from multiple dimensions.
+The default is to use a comma as the delimiter.
+dimbinder(dimbinder) specifies how dimension-level pairs are composed within the table headers.
+
+Remarks and examples
+collect style table specifies how the headers of individual tables are to be composed when
+collect layout specifies that multiple tables are to be created. When creating multiple tables, you
+may have one or more dimensions defining the tables. With a single dimension, you may have the title
+of the dimension and the label for the level of the dimension. For these tables, you can specify the delimiter used to separate the dimension from its level. With two dimensions, you may have multiple titles
+and labels, in which case you may also want to specify the delimiter for the dimensions.
+
+Example 1 Delimiters for dimensions
+We use data from the Second National Health and Nutrition Examination Survey (NHANES II) (McDowell et al. 1981), and we model the occurrence of a heart attack as a function of systolic blood pressure, age, and body mass index (bmi). We fit two different models and collect the coefficients ( r b)
+and standard errors ( r se) for each.
+
+collect style table — Collection styles for table headers 249
+. use https://www.stata-press.com/data/r19/nhanes2
+(Second National Health and Nutrition Examination Survey)
+. quietly: collect _r_b _r_se: logit heartatk bpsystol bmi
+. quietly: collect _r_b _r_se : logit heartatk bpsystol age
+
+We would like to create tables that focus on the coefficient and standard error for bpsystol. We can
+include just those variables in which we are interested by specifying the levels of colname when arranging the items in our collection with collect layout. The dimension cmdset identifies the commands
+from which we have collected results. We place the levels of this dimension on the columns and leave
+the row specification empty. We also create separate tables for the results of the covariate bpsystol:
+. collect layout () (cmdset) (colname[bpsystol]#result)
+Collection: default
+Columns: cmdset
+Tables: colname[bpsystol]#result
+Table 1: 1 x 2
+Table 2: 1 x 2
+Systolic blood pressure, Coefficient
+1
+
+2
+
+.0155575 -.0021038
+Systolic blood pressure, Std. error
+1
+
+2
+
+.0018229 .0020584
+
+The first label we see corresponds to the level bpsystol of the dimension colname. The second
+corresponds to the level of the dimension result. By default, a comma is used as the delimiter for the
+dimensions. We would instead like to use a colon, with spaces on each side. We specify that below with
+the dimdelimiter() option. We also label the levels of cmdset to indicate coefficients are adjusted for
+another covariate, center the results, and add extra space between columns. Then, we preview our table:
+. collect style table, dimdelimiter(” : ”)
+. collect label levels cmdset 1 ”Model 1 (BMI adjusted)”
+>
+2 ”Model 2 (age adjusted)”
+. collect style cell, halign(center)
+. collect style column, extraspace(1)
+. collect preview
+Systolic blood pressure : Coefficient
+Model 1 (BMI adjusted)
+
+Model 2 (age adjusted)
+
+.0155575
+
+-.0021038
+
+Systolic blood pressure : Std. error
+Model 1 (BMI adjusted)
+
+Model 2 (age adjusted)
+
+.0018229
+
+.0020584
+
+collect style table — Collection styles for table headers 250
+
+While it is rare that we would want to report coefficients and standard errors in separate tables, we can
+see that collect style table is useful for controlling the look of table headers when collect creates
+multiple tables at once.
+
+Stored results
+collect style table stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect query — Query collection style properties
+[TABLES] collect style header — Collection styles for hiding and showing header components
+
+collect style tex — Collection styles for LATEX files
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Also see
+
+Description
+collect style tex specifies styles to be used when exporting a table from a collection to a LATEX
+file.
+collect style tex, typed without any options, will clear the existing LATEX appearance styles for
+the current collection.
+
+Quick start
+Specify that tables not be centered on the page when exported from the current collection to a LATEX file
+collect style tex, nocentering
+Clear the current LATEX appearance styles
+collect style tex
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Collect styles > Styles for LaTeX
+
+Syntax
+Specify styles to be used when exporting a collection to a LATEX file
+collect style tex [ , options ]
+
+Clear existing LATEX appearance styles
+collect style tex [ , name(cname) ]
+
+options
+
+Description
+
+name(cname)
+[ no ]begintable
+[ no ]centering
+
+apply LATEX styles to collection cname
+specify whether to use LATEX table environment
+specify whether to center table horizontally on the page
+
+251
+
+collect style tex — Collection styles for LATEX files 252
+
+Options
+name(cname) specifies that the LATEX styles be applied to collection cname.
+
+When name(cname) is specified without any other options, LATEX styles are cleared from collection
+cname.
+The default in both cases is to apply the style changes to the current collection.
+begintable and nobegintable control whether to use the LATEX table environment.
+begintable specifies that collect export use the LATEX table environment. In addition, table titles
+are specified using \caption.
+nobegintable specifies that collect export not use the LATEX table environment.
+centering and nocentering control whether to center the table horizontally on the page.
+centering specifies that collect export center the table horizontally on the page.
+nocentering specifies that collect export not center the table horizontally on the page.
+
+Remarks and examples
+collect style tex allows you to specify styles for the table that you will export to a LATEX file with
+collect export. If you do not like the change you have made, you can clear the LATEX appearance
+styles by typing the following:
+. collect style tex
+
+This change will be applied to the current collection. To make this change for another collection, specify
+the collection name with the name() option.
+
+Stored results
+collect style tex stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Also see
+[TABLES] collect query — Query collection style properties
+[TABLES] collect export — Export table from a collection
+
+collect style title — Collection styles for table titles
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect style title specifies appearance styles for table titles in the collection. This includes
+bolding, italics, font, text color, and shading. Certain appearance edits can be rendered only on certain
+export formats.
+
+Quick start
+Make the table titles bold
+collect style title, font(, bold)
+When exporting the table to a LATEX file, use the LATEX macro textbf to render the title
+collect style title, latex(textbf)
+Clear the table title styles
+collect style title, clear
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+253
+
+collect style title — Collection styles for table titles 254
+
+Syntax
+collect style title [ , options ]
+
+options
+
+Description
+
+Main
+
+name(cname)
+clear
+
+apply table title appearance styles to collection cname
+remove table title styles
+
+Fonts
+
+font([ fontfamily ] [ , font opts ])
+smcl(smcl)
+latex(latex)
+
+set font style for title text
+specify formatting for SMCL files
+specify LATEX macro
+
+Shading
+
+shading(sspec)
+
+set background color, foreground color, and fill pattern for titles
+
+font opts
+
+Description
+
+size(# [ unit ])
+color(color)
+variant(variant)
+[ no ]bold
+[ no ]italic
+[ no ]strikeout
+[ no ]underline
+
+specify font size
+specify font color
+specify font variant and capitalization
+specify whether to format text as bold
+specify whether to format text as italic
+specify whether to strike out text
+specify whether to underline text
+
+fontfamily specifies a font family.
+sspec is
+[ background(bgcolor) foreground(fgcolor) pattern(fpattern) ]
+bgcolor specifies the background color.
+fgcolor specifies the foreground color.
+fpattern specifies the fill pattern. A complete list of fill patterns is shown in Shading patterns of
+[TABLES] Appendix.
+bgcolor, fgcolor, and color may be one of the colors listed in Colors of [TABLES] Appendix; a valid RGB
+value in the form ### ### ###, for example, 171 248 103; or a valid RRGGBB hex value in the form
+######, for example, ABF867.
+unit may be in (inch), pt (point), or cm (centimeter). An inch is equivalent to 72 points and 2.54 centimeters. The default is pt.
+
+collect style title — Collection styles for table titles 255
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection to which title appearance styles are to be applied. By default, the
+title styles are applied to the current collection.
+clear removes existing title style properties.
+
+
+
+
+
+Fonts
+
+font([ fontfamily ] [ , size(# [ unit ]) color(color) variant(variant) [ no ]bold [ no ]italic
+[ no ]strikeout [ no ]underline ]) specifies the font style for the title text.
+
+These font style properties are applicable when publishing items from a collection to Microsoft Word,
+Microsoft Excel, PDF, HTML, and LATEX files.
+fontfamily specifies a font family.
+size(# [ unit ]) specifies the font size as a number optionally followed by units. If # is specified
+without the optional unit, points is assumed.
+color(color) specifies the font color.
+variant(variant) specifies the font variant and capitalization. variant may be allcaps, smallcaps,
+or normal. variant(allcaps) changes the text to all uppercase letters. variant(smallcaps)
+changes the text to use large capitals for uppercase letters and smaller capitals for lowercase letters.
+variant(normal) changes the font variant back to normal; capitalization is unchanged from the
+original text.
+
+This style property is applicable only when publishing to HTML and LATEX files.
+bold and nobold specify the font weight. bold changes the font weight to bold; nobold changes the
+font weight back to normal.
+italic and noitalic specify the font style. italic changes the font style to italic; noitalic
+changes the font style back to normal.
+strikeout and nostrikeout specify whether to add a strikeout mark to the text. strikeout adds
+a strikeout mark to the text; nostrikeout changes the text back to normal.
+
+Only one of strikeout or underline is allowed when publishing to HTML files.
+underline and nounderline specify whether to underline the title. underline adds a single line
+under the title; nounderline removes the underline.
+
+Only one of strikeout or underline is allowed when publishing to HTML files.
+smcl(smcl) specifies how to render title text for SMCL output. The supported SMCL directives are input,
+error, result, and text.
+
+This style property is applicable only when publishing to a SMCL file.
+latex(latex) specifies the name of a LATEX macro to render title text for LATEX output. This style property
+is applicable only when publishing to a LATEX file.
+
+Example LATEX macro names are textbf, textsf, textrm, and texttt. Custom LATEX macros are
+also allowed. If title is the table title, then latex is translated to the following when exporting to LATEX:
+\latex {title}
+
+

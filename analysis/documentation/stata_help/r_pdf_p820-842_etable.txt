@@ -1,0 +1,1360 @@
+estimates table — Compare estimation results 809
+
+Options
+
+
+
+
+Main
+
+stats(scalarlist ) specifies a list of any of or all the names of scalars stored in e() to be displayed in
+the table. scalarlist may also contain the following:
+aic
+bic
+rank
+
+Akaike’s information criterion
+Schwarz’s Bayesian information criterion
+rank of e(V) (# of free parameters in model)
+
+The specified statistics do not have to be available for all estimation results being displayed.
+For example, stats(N ll chi2 aic) specifies that e(N), e(ll), e(chi2), and AIC be included. In
+Stata, e(N) records the number of observations; e(ll), the log likelihood; and e(chi2), the 𝜒2 test
+that all coefficients in the first equation of the model are equal to zero.
+star and star(#1 #2 #3) specify that stars (asterisks) are to be used to mark significance. The second
+syntax specifies the significance for one, two, and three stars. If you specify simply star, that is
+equivalent to specifying star(.05 .01 .001), which means one star (*) if 𝑝 < 0.05, two stars (**)
+if 𝑝 < 0.01, and three stars (***) if 𝑝 < 0.001.
+
+The star and star() options may not be combined with the se, t, or p option.
+
+
+
+
+
+Options
+
+keep(coeflist ) and drop(coeflist ) are alternatives; they specify coefficients to be included or omitted
+from the table. The default is to display all coefficients.
+
+If keep() is specified, it specifies not only the coefficients to be included but also the order in which
+they appear.
+A coeflist is a list of coefficient names, each name of which may be simple (for example, price), an
+equation name followed by a colon (for example, mean:), or a full name (for example, mean:price).
+Names are separated from each other by blanks.
+When full names are not specified, all coefficients that match the partial specification are included.
+For instance, drop( cons) would omit cons for all equations.
+equations(matchlist ) specifies how the equations of the models in namelist are to be matched. The
+default is to match equations by name. Matching by name usually works well when all results were
+fit by the same estimation command. When you are comparing results from different estimation
+commands, however, specifying equations() may be necessary.
+
+The most common usage is equations(1), which indicates that all first equations are to be matched
+into one equation named #1.
+matchlist has the syntax
+term [ , term ... ]
+term is
+[ eqname = ] #:#. . .:#
+
+(syntax 1)
+
+[ eqname = ] #
+
+(syntax 2)
+
+estimates table — Compare estimation results 810
+
+In syntax 1, each # is a number or a period (.). If a number, it specifies the position of the equation in
+the corresponding model; 1:3:1 would indicate that equation 1 in the first model matches equation 3
+in the second, which matches equation 1 in the third. A period indicates that there is no corresponding
+equation in the model; 1:.:1 indicates that equation 1 in the first matches equation 1 in the third.
+In syntax 2, you specify just one number, say, 1 or 2, and that is shorthand for 1:1. . .:1 or 2:2. . .:2,
+meaning that equation 1 matches across all models specified or that equation 2 matches across all
+models specified.
+Now that you can specify a term, you can put that together into a matchlist by separating one term
+from the other by commas. In what follows, we will assume that three names were specified,
+. estimates table alpha beta gamma, ...
+
+equations(1) is equivalent to equations(1:1:1); we would be saying that the first equations
+match across the board.
+equations(1:.:1) would specify that equation 1 matches in models alpha and gamma but that there
+is nothing corresponding in model beta.
+equations(1,2) is equivalent to equations(1:1:1, 2:2:2). We would be saying that the first
+equations match across the board and so do the second equations.
+equations(1, 2:.:2) would specify that the first equations match across the board, that the second
+equations match for models alpha and gamma, and that there is nothing equivalent to equation 2 in
+model beta.
+
+If equations() is specified, equations not matched by position are matched by name.
+
+
+
+
+
+Numerical formats
+
+b(% fmt ) specifies how the coefficients are to be displayed. You might specify b(%9.2f) to make decimal
+points line up. There is also a b option, which specifies that coefficients are to be displayed, but that
+is just included for consistency with the se, t, and p options. Coefficients are always displayed.
+se, t, and p specify that standard errors, 𝑡 or 𝑧 statistics, and 𝑝-values are to be displayed. The default
+is not to display them. se(% fmt ), t(% fmt ), and p(% fmt ) specify that each is to be displayed and
+specifies the display format to be used to format them.
+stfmt(% fmt ) specifies the format for displaying the scalar statistics included by the stats() option.
+
+
+
+
+
+General format
+
+varwidth(#) specifies the number of character positions used to display the names of the variables and
+statistics. The default is 12.
+modelwidth(#) specifies the number of character positions used to display the names of the models.
+The default is 12.
+eform displays coefficients in exponentiated form. For each coefficient, exp(β) rather than β is displayed, and standard errors are transformed appropriately. Display of the intercept, if any, is suppressed.
+varlabel specifies that variable labels be displayed instead of variable names.
+newpanel specifies that the statistics be displayed in a table separated by a blank line from the table with
+coefficients rather than in the style of another equation in the table of coefficients.
+
+estimates table — Compare estimation results 811
+
+style(stylespec) specifies the style of the coefficient table.
+style(oneline) specifies that a vertical line be displayed after the variables but not between the
+models. This is the default.
+style(columns) specifies that vertical lines be displayed after each column.
+style(noline) specifies that no vertical lines be displayed.
+coded specifies that a compact table be displayed. This format is especially useful for comparing variables that are included in a large collection of models.
+
+
+
+
+
+Reporting
+
+display options: noomitted, vsquish, noemptycells, baselevels, allbaselevels,
+nofvlabel, fvwrap(#), and fvwrapon(style); see [R] Estimation options.
+The following option is available with estimates table but is not shown in the dialog box:
+title(string ) specifies the title to appear above the table.
+
+Remarks and examples
+estimates table lets you format estimation results and organize results from multiple models in a
+single table. You achieve this by combining estimates table with estimates store; see [R] estimates store. When combined with putdocx or putpdf, estimates table lets you create customized
+tables of results in .docx or .pdf format.
+
+Alternatively, you can use etable to create a table with the results stored with estimates store.
+The advantage of using etable is that you can add notes to your table and export it to a variety of file
+types, such as HTML and LATEX.
+
+Example 1: Creating the default table
+If you type estimates table without arguments, a table of the most recent estimation results will
+be shown:
+. use https://www.stata-press.com/data/r19/auto
+(1978 automobile data)
+. regress mpg weight
+(output omitted )
+. regress mpg weight displ
+(output omitted )
+. estimates table
+Variable
+weight
+displacement
+_cons
+
+Active
+-.00656711
+.00528078
+40.084522
+
+In the above output table, only the results from the second regress command are displayed because
+they are the current (active) estimates.
+
+estimates table — Compare estimation results 812
+
+By default, estimates table displays only coefficient estimates. You can request additional model
+statistics by specifying the stats() option. Estimation commands store e-class results. To see a list of
+available results from the last estimation command that can be specified in the stats() option, you can
+use the ereturn list command.
+
+Example 2: Creating a table with multiple models
+If we want to display more than one set of estimation results in a single table, we can use estimates
+store to store each set of estimation results in memory so that they can be accessed later by estimates
+table. This is one of the primary uses of estimates table —comparing estimation results:
+. regress mpg weight displ
+(output omitted )
+. estimates store base
+. regress mpg weight displ i.foreign
+(output omitted )
+. estimates store alt
+. qreg mpg weight displ i.foreign
+(output omitted )
+. estimates store qreg
+. estimates table base alt qreg, stats(r2)
+Variable
+weight
+displacement
+
+base
+
+alt
+
+qreg
+
+-.00656711
+.00528078
+
+-.00677449
+.00192865
+
+-.00595056
+.00018552
+
+-1.6006312
+
+-2.1326005
+39.213348
+
+foreign
+Foreign
+_cons
+
+40.084522
+
+41.847949
+
+r2
+
+.6529307
+
+.66287957
+
+estimates table automatically lines up the point estimates of coefficients on covariates that are common across each model. The stats(r2) option specifies that the coefficient of determination (𝑅2 ) be
+placed under the models for which it is computed.
+
+The foreign variable was included in the models alt and qreg as a factor variable. Because the
+values of foreign are labeled, the value labels are displayed by default. See [D] label for information
+about managing value labels.
+
+estimates table — Compare estimation results 813
+
+Example 3: Creating and exporting a formatted table
+We can add estimates of the standard errors to the table and format them along with the original
+coefficient estimates by using the b() and se() options.
+As shown in example 2, the labeled values of any factor variables are displayed by default. To see the
+labels corresponding to the variables that are included in the model rather than the names of the variables,
+we can specify the varlabel option.
+. estimates table alt, b(%5.4f) se(%5.4f) varlabel
+Variable
+
+alt
+
+Weight (lbs.)
+Displacement (cu. in.)
+Car origin
+Foreign
+Constant
+
+-0.0068
+0.0012
+0.0019
+0.0101
+-1.6006
+1.1136
+41.8479
+2.3507
+
+Legend: b/se
+
+If we wanted this table to appear in a Word document, we could use the putdocx command with the
+etable output type to write it to a new document. To create the new document myresults.docx, we
+would type the following putdocx commands:
+. putdocx begin
+. putdocx table results = etable
+. putdocx save myresults.docx
+successfully created ”myresults.docx”
+
+This creates a table in Word that looks like
+
+estimates table — Compare estimation results 814
+
+Stored results
+estimates table stores the following in r():
+Macros
+r(names)
+Matrices
+r(coef)
+r(stats)
+
+names of results used
+matrix 𝑀: 𝑛 × 2 ∗ 𝑚
+𝑀[𝑖, 2𝑗 − 1] = 𝑖th parameter estimate for model 𝑗;
+𝑀[𝑖, 2𝑗] = variance of 𝑀[𝑖, 2𝑗 − 1]; 𝑖 = 1, . . . , 𝑛; 𝑗 = 1, . . . , 𝑚
+matrix 𝑆: 𝑘 × 𝑚 (if option stats() specified)
+𝑆[𝑖, 𝑗] = 𝑖th statistic for model 𝑗; 𝑖 = 1, . . . , 𝑘; 𝑗 = 1, . . . , 𝑚
+
+References
+Gallup, J. L. 2012. A new system for formatting estimation tables. Stata Journal 12: 3–28.
+Weiss, M. 2010. Stata tip 90: Displaying partial results. Stata Journal 10: 500–502.
+
+Also see
+[R] estimates — Save and manipulate estimation results
+[R] etable — Create a table of estimation results
+[R] table regression — Table of regression results
+
+estimates title — Set title for estimation results
+Description
+
+Quick start
+
+Menu
+
+Syntax
+
+Remarks and examples
+
+Also see
+
+Description
+estimates title: (note the colon) sets or clears the title for the current estimation results. The title
+is used by estimates table, estimates stats, and estimates dir.
+estimates title without the colon displays the current title.
+
+Quick start
+Set title for the current estimation results
+estimates title: Base model
+Display the title of the current estimation results
+estimates title
+
+Menu
+Statistics > Postestimation
+
+Syntax
+estimates title: [ text ]
+estimates title
+
+Remarks and examples
+After setting the title, if estimates have been stored, do not forget to store them again:
+. use https://www.stata-press.com/data/r19/auto
+(1978 automobile data)
+. regress mpg gear turn
+(output omitted )
+. estimates store reg
+
+Now let’s add a title:
+. estimates title: ”My regression”
+. estimates store reg
+
+Also see
+[R] estimates — Save and manipulate estimation results
+
+815
+
+Estimation options — Estimation options
+Description
+
+Syntax
+
+Options
+
+Also see
+
+Description
+This entry describes the options common to many estimation commands. Not all the options documented here work with all estimation commands. See the documentation for the particular estimation
+command; if an option is listed there, it is applicable.
+
+Syntax
+estimation cmd . . . [ , options ]
+options
+
+Description
+
+Model
+
+noconstant
+offset(varname𝑜 )
+exposure(varname𝑒 )
+constraints(constraints)
+
+suppress constant term
+include varname𝑜 in model with coefficient constrained to 1
+include ln(varname𝑒 ) in model with coefficient constrained to 1
+apply specified linear constraints
+
+Reporting
+
+level(#)
+lrmodel
+nocnsreport
+noci
+nopvalues
+noomitted
+vsquish
+noemptycells
+baselevels
+allbaselevels
+nofvlabel
+fvwrap(#)
+fvwrapon(style)
+cformat(% fmt )
+pformat(% fmt )
+sformat(% fmt )
+
+set confidence level; default is level(95)
+perform likelihood-ratio model test instead of the default Wald test
+do not display constraints
+suppress confidence intervals
+suppress 𝑝-values and their test statistics
+do not display omitted collinear variables
+suppress blank space separating factor variables or time-series variables
+do not display empty interaction cells of factor variables
+report base levels for factor variables and interactions
+display all base levels for factor variables and interactions
+display factor-variable level values rather than value labels
+allow # lines when wrapping long value labels
+apply style for wrapping long value labels;
+style may be word or width
+format for coefficients, standard errors, and confidence limits
+format for 𝑝-values
+format for test statistics
+
+Integration
+
+intmethod(intmethod )
+intpoints(#)
+
+integration method for random-effects models
+use # integration (quadrature) points
+
+nolstretch
+collinear
+coeflegend
+
+do not automatically widen coefficient table for long variable names
+keep collinear variables
+display legend instead of statistics
+
+816
+
+Estimation options — Estimation options 817
+
+Options
+
+
+
+
+Model
+
+noconstant suppresses the constant term (intercept) in the model.
+offset(varname𝑜 ) specifies that varname𝑜 be included in the model with the coefficient constrained to
+be 1.
+exposure(varname𝑒 ) specifies a variable that reflects the amount of exposure over which the depvar
+events were observed for each observation; ln(varname𝑒 ) with the coefficient constrained to be 1 is
+entered into the log-link function.
+constraints(numlist | matname) specifies the linear constraints to be applied during estimation. The
+default is to perform unconstrained estimation. See [R] reg3 for the use of constraints in multipleequation contexts.
+constraints(numlist ) specifies the constraints by number after they have been defined by using
+the constraint command; see [R] constraint. Some commands (for example, slogit) allow only
+constraints(numlist ).
+constraints(matname) specifies a matrix containing the constraints; see [P] makecns.
+
+
+
+
+
+Reporting
+
+level(#) specifies the confidence level, as a percentage, for confidence intervals. The default is
+level(95) or as set by set level; see [U] 20.8 Specifying the width of confidence intervals.
+lrmodel specifies to conduct a likelihood-ratio test of the full maximum-likelihood model versus the
+restricted model that includes only a constant term in the regression equation instead of conducting
+the default Wald test that all coefficients are zero. This option can substantially increase estimation
+time.
+lrmodel may not be specified with the vce(robust), vce(cluster clustvar), vce(jackknife),
+vce(bootstrap), or noconstant option.
+lrmodel may not be combined with constraints; see constraints(constraints). In some cases, a
+likelihood-ratio test is valid for models with constraints. To compute a likelihood-ratio test when
+constraints have been applied during estimation, use lrtest; see [R] lrtest.
+lrmodel may not be specified with the jackknife, bootstrap, svy, or mi estimate prefix. In
+addition, lrmodel may not be specified on replay.
+nocnsreport specifies that no constraints be reported. The default is to display user-specified constraints above the coefficient table.
+noci suppresses confidence intervals from being reported in the coefficient table.
+nopvalues suppresses 𝑝-values and their test statistics from being reported in the coefficient table.
+noomitted specifies that variables that were omitted because of collinearity not be displayed. The default is to include in the table any variables omitted because of collinearity and to label them as
+“(omitted)”.
+vsquish specifies that the blank space separating factor-variable terms or time-series–operated variables
+from other variables in the model be suppressed.
+
+Estimation options — Estimation options 818
+
+noemptycells specifies that empty cells for interactions of factor variables not be displayed. The default
+is to include in the table interaction cells that do not occur in the estimation sample and to label them
+as “(empty)”.
+baselevels and allbaselevels control whether the base levels of factor variables and interactions
+are displayed. The default is to exclude from the table all base categories.
+baselevels specifies that base levels be reported for factor variables and for interactions whose
+bases cannot be inferred from their component factor variables.
+allbaselevels specifies that all base levels of factor variables and interactions be reported.
+nofvlabel displays factor-variable level values rather than attached value labels. This option overrides
+the fvlabel setting; see [R] set showbaselevels.
+fvwrap(#) specifies how many lines to allow when long value labels must be wrapped. Labels requiring
+more than # lines are truncated. This option overrides the fvwrap setting; see [R] set showbaselevels.
+fvwrapon(style) specifies whether value labels that wrap will break at word boundaries or break based
+on available space.
+fvwrapon(word), the default, specifies that value labels break at word boundaries.
+fvwrapon(width) specifies that value labels break based on available space.
+
+This option overrides the fvwrapon setting; see [R] set showbaselevels.
+cformat(% fmt ) specifies how to format coefficients, standard errors, and confidence limits in the coefficient table. The maximum format width is 9. See [R] set cformat.
+pformat(% fmt ) specifies how to format 𝑝-values in the coefficient table. The maximum format width
+is 5. See [R] set cformat.
+sformat(% fmt ) specifies how to format test statistics in the coefficient table. The maximum format
+width is 8. See [R] set cformat.
+
+
+
+
+
+Integration
+
+intmethod(intmethod) specifies the integration method to be used for the random-effects model. It
+accepts one of four arguments: mvaghermite, the default for all but a crossed random-effects model,
+performs mean and variance adaptive Gauss–Hermite quadrature; mcaghermite performs mode
+and curvature adaptive Gauss–Hermite quadrature; ghermite performs nonadaptive Gauss–Hermite
+quadrature; and laplace, the default for crossed random-effects models, performs the Laplacian approximation.
+intpoints(#) specifies the number of integration points to use for integration by quadrature. The
+default is intpoints(12); the maximum is intpoints(195). Increasing this value improves the
+accuracy but also increases computation time. Computation time is roughly proportional to its value.
+
+The following options are not shown in the dialog box:
+nolstretch specifies that the width of the coefficient table not be automatically widened to accommodate longer variable names. The default, lstretch, is to automatically widen the coefficient table up
+to the width of the Results window. Specifying lstretch or nolstretch overrides the setting given
+by set lstretch. If set lstretch has not been set, the default is lstretch.
+collinear specifies that the estimation command not omit collinear variables. This option is seldom
+used because collinear variables make a model unidentified. However, you can add constraints to
+a model that will identify it even with collinear variables. For example, if variables x1 and x2 are
+
+Estimation options — Estimation options 819
+
+collinear, but you constrain the coefficient on x2 to be a multiple of the coefficient on x1, then your
+model is identified even with collinear variables. In such cases, you specify collinear so that both
+x1 and x2 are retained in the model.
+coeflegend specifies that the legend of the coefficients and how to specify them in an expression be
+displayed rather than displaying the statistics for the coefficients.
+
+Also see
+[U] 20 Estimation and postestimation commands
+
+etable — Create a table of estimation results
+Description
+Appendix
+
+Quick start
+Acknowledgments
+
+Menu
+References
+
+Syntax
+Also see
+
+Options
+
+Remarks and examples
+
+Description
+The etable command allows you to easily create a table of estimation results and export it to a variety
+of file types. You can create a table complete with a title, notes, stars for indicating significant results,
+and more.
+
+Quick start
+Create a table from the active estimation results, reporting the coefficients, standard errors, and number
+of observations
+etable
+Same as above, and display stars for significant results and a note indicating what the stars represent
+etable, showstars showstarsnote
+Create a table with title “My title” and note “My note”
+etable, title(”My title”) note(”My note”)
+Create a table with stored estimates model1 and model2, along with the number of observations and
+adjusted 𝑅2 value for each model
+etable, estimates(model1 model2) mstat(N) mstat(r2_a)
+Same as above, and export the table to myfile.tex
+etable, estimates(model1 model2) mstat(N) mstat(r2_a) export(myfile.tex)
+
+Menu
+Statistics > Summaries, tables, and tests > Table of estimation results
+
+820
+
+etable — Create a table of estimation results 821
+
+Syntax
+etable [ , options ]
+
+options
+
+Description
+
+Main
+
+estimates(namelist)
+margins
+replay
+column(column header)
+name(cname)
+append
+replace
+
+work with previously stored estimation results
+consume results from margins
+report table without consuming results
+select column header
+work with collection cname; default is name(ETable)
+append to the collection
+replace the collection
+
+Coefficients
+
+keep(coeflist)
+cstat(cstat[ , cstat opts ])
+
+report coefficients in order specified
+report coefficient statistic
+
+Model
+
+mstat(mstat[ , mstat opts ])
+
+report model statistic
+
+Equations
+
+equations(eqlist)
+eqrecode(oldeq = neweq)
+[ no ]showeq
+
+report equations in order specified
+recode equation
+display or suppress equations
+
+Stars
+
+stars([ starspec ] [ , stars opts ])
+[ no ]showstars
+[ no ]showstarsnote
+
+customize rules for star labels
+display or suppress star labels
+display or suppress note explaining star labels
+
+Title
+
+title(string )
+titlestyles(text styles)
+
+add table title
+change table title styles
+
+Notes
+
+note(string )
+notestyles(text styles)
+
+add table note
+change table note styles
+
+Export
+
+export( filename.suffix[ , export opts ])
+
+export table
+
+Options
+
+[ no ]varlabel
+[ no ]fvlabel
+[ no ]center
+[ no ]wrapnotes
+label( filename[ , replace ])
+style( filename[ , override ])
+warn
+warn does not appear in the dialog box.
+
+display or suppress variable names or labels
+display or suppress factor values or labels
+center or right-align item cells
+specify whether to wrap long notes at table’s width
+specify the collection labels
+specify the collection style
+show collect warnings
+
+etable — Create a table of estimation results 822
+
+column header
+
+Description
+
+depvar
+dvlabel
+command
+title
+estimates
+index
+
+show dependent variable name; the default
+show variable label for dependent variable
+show command name
+show command title
+show estimates name
+show result set index
+
+cstat opts
+
+Description
+
+label(string )
+font([ fontfamily ] [ , font opts ])
+smcl(smcl)
+latex(latex)
+shading(sspec)
+nformat(% fmt )
+sformat(sfmt)
+cidelimiter(char)
+cridelimiter(char)
+
+specify coefficient statistic label
+specify font style
+specify formatting for SMCL files
+specify LATEX macro
+set background color, foreground color, and fill pattern
+specify numeric format
+specify string format
+use character as delimiter for confidence interval limits
+use character as delimiter for credible interval limits
+
+mstat opts
+
+Description
+
+label(string )
+font([ fontfamily ][ , font opts ])
+smcl(smcl)
+latex(latex)
+shading(sspec)
+nformat(% fmt )
+sformat(sfmt)
+
+specify model statistic label
+specify font style
+specify formatting for SMCL files
+specify LATEX macro
+set background color, foreground color, and fill pattern
+specify numeric format
+specify string format
+
+font opts
+
+Description
+
+size(# [ unit ])
+color(color)
+variant(variant)
+[ no ]bold
+[ no ]italic
+[ no ]strikeout
+underline(upattern)
+
+specify font size
+specify font color
+specify font variant and capitalization
+specify whether to format statistic as bold
+specify whether to format statistic as italic
+specify whether to strike out statistic
+specify whether to underline statistic
+
+etable — Create a table of estimation results 823
+
+stars opts
+
+Description
+
+attach(cstat)
+increasing
+decreasing
+pvname(string )
+delimiter(char)
+nformat(% fmt )
+prefix(string )
+suffix(string )
+clear
+
+attach star labels to coefficient statistic cstat
+compose stars note with increasing 𝑝-values; the default
+compose stars note with decreasing 𝑝-values
+𝑝-value name for stars note
+use character as delimiter for labels in stars note
+numeric format for stars note
+prefix for stars note
+suffix for stars note
+remove previous star properties
+
+text styles
+
+Description
+
+font([ fontfamily ] [ , text opts ])
+smcl(smcl)
+latex(latex)
+shading(sspec)
+
+font style
+specify formatting for SMCL files
+specify LATEX macro
+set background color, foreground color, and fill pattern
+
+text opts
+
+Description
+
+size(# [ unit ])
+color(color)
+variant(variant)
+[ no ]bold
+[ no ]italic
+[ no ]strikeout
+[ no ]underline
+
+specify font size
+specify font color
+specify font variant and capitalization
+specify whether to format statistic as bold
+specify whether to format statistic as italic
+specify whether to strike out statistic
+specify whether to underline statistic
+
+suffix
+
+fileformat
+
+Output format
+
+docx
+html
+pdf
+xlsx
+xls
+tex
+smcl
+txt
+markdown
+md
+
+as(docx)
+as(html)
+as(pdf)
+as(xlsx)
+as(xls)
+as(tex)
+as(smcl)
+as(txt)
+as(markdown)
+as(md)
+
+Microsoft Word
+HTML 5 with CSS
+PDF
+
+Microsoft Excel 2007/2010 or newer
+Microsoft Excel 1997/2003
+LATEX
+SMCL
+
+plain text
+Markdown
+Markdown
+
+etable — Create a table of estimation results 824
+
+export opts
+
+Description
+
+as(fileformat)
+replace
+docx options
+html options
+pdf options
+excel options
+tex options
+smcl option
+txt option
+md option
+
+specify document type
+overwrite existing file
+available when exporting to .docx files
+available when exporting to .html files
+available when exporting to .pdf files
+available when exporting to .xls and .xlsx files
+available when exporting to .tex files
+available when exporting to .smcl files
+available when exporting to .txt files
+available when exporting to .markdown and .md files
+
+docx options
+
+Description
+
+noisily
+
+show the putdocx commands used to export to the Microsoft
+Word file
+save the putdocx commands used for exporting to the named
+do-file
+
+dofile(filename[ , replace ])
+
+html options
+
+Description
+
+append
+tableonly
+cssfile(cssfile)
+prefix(prefix)
+
+append to an existing file
+export only the table to the specified file
+define the styles in cssfile instead of filename
+use prefix to identify style classes
+
+pdf options
+
+Description
+
+noisily
+dofile(filename[, replace ])
+
+show the putpdf commands used to export to the PDF file
+save the putpdf commands used for exporting to the named
+do-file
+
+excel options
+
+Description
+
+noisily
+dofile(filename[ , replace ])
+
+show the putexcel commands used to export to the Excel file
+save the putexcel commands used for exporting to the named
+do-file
+specify the worksheet to use; the default sheet name
+is Sheet1
+specify the Excel upper-left cell as the starting position to
+export the table; the default is cell(A1)
+modify Excel file
+do not open Excel file in memory
+
+sheet(sheetname[ , replace ])
+cell(cell)
+modify
+noopen
+noopen does not appear in the dialog box.
+
+tex options
+
+Description
+
+append
+tableonly
+
+append to an existing file
+export only the table to the specified file
+
+etable — Create a table of estimation results 825
+
+smcl option
+
+Description
+
+append
+
+append to an existing file
+
+txt option
+
+Description
+
+append
+
+append to an existing file
+
+md option
+
+Description
+
+append
+
+append to an existing file
+
+fontfamily specifies a valid font family.
+unit may be in (inch), pt (point), or cm (centimeter). An inch is equivalent to 72 points and 2.54 centimeters. The default is pt.
+variant may be allcaps, smallcaps, or normal.
+variant(allcaps) changes the text to all uppercase letters; applicable when publishing items from
+a collection to Microsoft Word, PDF, LATEX, and HTML files.
+variant(smallcaps) changes the text to use large capitals for uppercase letters and smaller capitals
+for lowercase letters; applicable when publishing items from a collection to Microsoft Word, LATEX,
+and HTML files.
+variant(normal) changes the font variant back to normal and leaves the capitalization unchanged
+from the original text; applicable when publishing items from a collection to Microsoft Word, PDF,
+LATEX, and HTML files.
+
+upattern may be any of the patterns listed in the Appendix. For example, underline(none) removes
+the underline from the statistic, and underline(single) underlines the statistic. All other upatterns
+are available only when publishing items from a collection to Microsoft Word.
+smcl specifies the name of the SMCL directive to render text for SMCL output. The supported SMCL
+directives are input, error, result, and text.
+latex specifies the name of a LATEX macro to render text for LATEX output. Example LATEX macro names
+are textbf, textsf, textrm, and texttt. Custom LATEX macros are also allowed. If text is to be
+rendered in a cell, title, or note, then latex is translated to the following when you export to LATEX:
+\latex {text}
+sspec is
+[ background(bgcolor) foreground(fgcolor) pattern(fpattern) ]
+bgcolor specifies the background color.
+fgcolor specifies the foreground color.
+fpattern specifies the fill pattern. A complete list of fill patterns is shown in the Appendix.
+
+etable — Create a table of estimation results 826
+
+bgcolor, fgcolor, and color may be one of the colors listed in the Appendix; a valid RGB value in the
+form ### ### ###, for example, 171 248 103; or a valid RRGGBB hex value in the form ######, for
+example, ABF867.
+sfmt is the specification for a string format in option sformat() and may contain a mix of text and %s.
+Here %s refers to the statistic value that is formatted as specified using nformat(). The text will be
+placed around the statistic as it is placed around %s in this option. For instance, to place parentheses
+around the statistic, you can specify sformat(”(%s)”).
+Two text characters must be specified using a special character sequence if you want them to be
+displayed in your collection. To include %, type %%. To include \, type \\. For instance, to place a
+percent sign after a statistic, you can specify sformat(”%s%%”).
+
+Options
+
+
+
+
+Main
+
+estimates(namelist) specifies the estimation results to be included in the table. These are the names
+specified with estimates store. By default, etable creates a table with the active estimation results.
+margins creates a table with the results of the immediately preceding margins command.
+replay specifies that etable redisplay the table without consuming results.
+column(column header) specifies the content to be used in the column headers. column header may
+be depvar, dvlabel, command, title, estimates, or index.
+depvar specifies that etable use the dependent variable name for the column headers. This name is
+obtained from the eclass macro e(depvar). Note that this macro may contain multiple names
+after fitting a multivariate model.
+dvlabel specifies that etable use the variable label for the dependent variable name for the column headers. etable uses the variable label associated with the variable name in the eclass
+macro e(depvar). If the variable does not have a variable label, the variable name will be used.
+column(dvlabel) will not be helpful when the estimation command stores multiple names in
+e(depvar).
+command specifies that etable use the command name for the column headers. This name is obtained
+from the eclass macro e(cmd).
+title specifies that etable use the command title for the column headers. This title is obtained from
+the eclass macro e(title).
+estimates specifies that etable use the name given to previously stored estimation results for the
+column headers; these are the names specified with estimates store.
+index specifies that etable use the result set index for the column headers.
+name(cname) specifies the collection from which estimation results will be obtained, instead of the
+current collection. The default is name(ETable).
+append specifies that etable append the results into the collection named in name().
+replace permits etable to overwrite the existing collection. This option is implied for name(ETable)
+when append and replay are not specified.
+
+etable — Create a table of estimation results 827
+
+
+
+
+
+Coefficients
+
+keep(coeflist) specifies the coefficients to be included in the table and the order in which to display
+them. Names are separated from each other by blanks. The default is to display all coefficients.
+cstat(cstat[ , cstat opts ]) specifies the coefficient statistic to be included in the table. Optionally,
+you may specify the label and style for this statistic. cstat() may be repeated to request multiple
+coefficient statistics.
+
+The default is to display the coefficients ( r b) and their standard errors ( r se), both formatted to
+three decimals. Standard errors are enclosed in parentheses.
+Available coefficient statistics are
+cstat
+
+Description
+
+r b
+r se
+r z
+r z abs
+r p
+r lb
+r ub
+r ci
+r crlb
+r crub
+r cri
+hide
+
+coefficients reported by estimation
+standard errors of r b
+test statistics for r b
+absolute values of r z
+𝑝-values for r b
+lower bounds of confidence intervals (CIs) for r b
+upper bounds of CIs for r b
+CIs for r b
+lower bounds of credible intervals for r b
+upper bounds of credible intervals for r b
+credible intervals of Bayesian estimates
+hide coefficient statistics
+
+cstat opts are label(string ), font([ fontfamily ] [ , font opts ]), smcl(smcl), latex(latex),
+shading(sspec), nformat(% fmt ), sformat(sfmt), cidelimiter(char), and
+cridelimiter(char).
+label(string ) is used to modify the label for the specified coefficient statistic.
+font([ fontfamily ] [ , size(# [ unit ]) color(color) variant(variant) [ no ]bold
+[ no ]italic [ no ]strikeout [ no ]underline underline(upattern) ]) specifies the font
+style for the coefficient statistic. These font style properties are applicable when exporting
+the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LATEX files, unless otherwise
+specified.
+
+fontfamily specifies a valid font family. This font style property is applicable when publishing
+items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+size(# [ unit ]) specifies the font size as a number optionally followed by units. This font style
+property is applicable when publishing items from a collection to Microsoft Word, Microsoft
+Excel, PDF, and HTML files.
+color(color) specifies the text color.
+variant(variant) specifies the font variant and capitalization.
+bold and nobold specify the font weight. bold changes the font weight to bold; nobold
+changes the font weight back to normal.
+italic and noitalic specify the font style. italic changes the font style to italic; noitalic
+changes the font style back to normal.
+
+etable — Create a table of estimation results 828
+
+strikeout and nostrikeout specify whether to add a strikeout mark to the coefficient statistic. strikeout adds a strikeout mark to the statistic; nostrikeout changes the statistic
+back to normal.
+underline(upattern), underline, and nounderline specify how to underline the coefficient
+statistic.
+
+Only one of strikeout or underline is allowed when publishing to HTML files.
+smcl(smcl) specifies how to render the statistic value for SMCL output. This style property is
+applicable only when publishing items from a collection to a SMCL file.
+latex(latex) specifies how to render the statistic value for LATEX output. This style property is
+applicable only when publishing items from a collection to a LATEX file.
+shading(sspec) sets the background color, foreground color, and fill pattern. The background
+color is applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML,
+and LATEX files. The foreground color and fill pattern are applicable when exporting the table
+to Microsoft Word and Microsoft Excel.
+nformat(% fmt ) applies the Stata numeric format % fmt to the coefficient statistic.
+sformat(sfmt) applies a string format to the coefficient statistic.
+cidelimiter(char) changes the delimiter between confidence interval limits for coefficient
+statistic r ci. The default is cidelimiter(” ”).
+cridelimiter(char) changes the delimiter between credible interval limits for coefficient statistic r cri. The default is cridelimiter(” ”).
+
+
+
+
+
+Model
+
+mstat(mstat[ , mstat opts ]) specifies the model statistics to be included in the table.
+
+mstat may be a result identifier or a named expression. mstat() may be repeated to request multiple
+model statistics. The default is to display the number of observations, with zero decimal digits.
+result identifier is one of the following:
+Identifier
+N
+aic
+bic
+F
+chi2
+ll
+r2
+r2 a
+rank
+escalar
+rscalar
+hide
+
+Result
+number of observations
+Akaike’s information criteria
+Schwarz’s Bayesian information criteria
+𝐹 statistic
+𝜒2
+log likelihood of fitted model
+𝑅2
+adjusted 𝑅2
+rank of fitted model
+any e() scalar, by default
+any r() scalar with option margins
+hide model statistics
+
+named expression is specified as name = exp, where name may be any valid Stata name and exp
+is a scalar expression, typically an expression that involves one or more scalars in e(). For
+example, aic=(-2*e(ll) + 2*e(rank)).
+
+etable — Create a table of estimation results 829
+
+With option margins, or if you ran a postestimation command like estat, exp may also involve
+one or more scalars in r(). For example, suppose you fit a logistic model and also called
+estat gof, then you can show its goodness-of-fit statistic with chi2 gof=(r(chi2)).
+mstat opts are label(string ), font([ fontfamily ] [ , font opts ]), smcl(smcl), latex(latex),
+shading(sspec), nformat(% fmt ), and sformat(sfmt).
+label(string ) is used to modify the label for the specified model statistic.
+font([ fontfamily ] [ , size(# [ unit ]) color(color) variant(variant) [ no ]bold
+[ no ]italic [ no ]strikeout [ no ]underline underline(upattern) ]) specifies the font
+style for the model statistic. These font style properties are applicable when exporting the table
+to Microsoft Word, Microsoft Excel, PDF, HTML, and LATEX files, unless otherwise specified.
+
+fontfamily specifies a valid font family. This font style property is applicable when publishing
+items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+size(# [ unit ]) specifies the font size as a number optionally followed by units. This font style
+property is applicable when publishing items from a collection to Microsoft Word, Microsoft
+Excel, PDF, and HTML files.
+color(color) specifies the text color.
+variant(variant) specifies the font variant and capitalization.
+bold and nobold specify the font weight. bold changes the font weight to bold; nobold
+changes the font weight back to normal.
+italic and noitalic specify the font style. italic changes the font style to italic; noitalic
+changes the font style back to normal.
+strikeout and nostrikeout specify whether to add a strikeout mark to the model statistic.
+strikeout adds a strikeout mark to the statistic; nostrikeout changes the text back to
+normal.
+underline(upattern), underline, and nounderline specify how to underline the model
+statistic.
+
+Only one of strikeout or underline is allowed when publishing to HTML files.
+smcl(smcl) specifies how to render the statistic value for SMCL output. This style property is
+applicable only when publishing items from a collection to a SMCL file.
+latex(latex) specifies how to render the statistic value for LATEX output. This style property is
+applicable only when publishing items from a collection to a LATEX file.
+shading(sspec) sets the background color, foreground color, and fill pattern.
+nformat(% fmt ) applies the Stata numeric format % fmt to the model statistic.
+sformat(sfmt) applies a string format to the model statistic.
+
+
+
+
+
+Equations
+
+equations(eqlist) specifies the equations to be included in the table and the order in which they are
+reported.
+eqrecode(oldeq = neweq) changes the equation name from oldeq to neweq. eqrecode() may be repeated to recode multiple equations.
+
+etable — Create a table of estimation results 830
+
+showeq and noshoweq specify whether equations should be displayed. showeq displays the equations;
+noshoweq suppresses the equations.
+
+
+
+
+
+Stars
+
+stars([ #1 ”label1” [ #2 ”label2” [ #3 ”label3” [ #4 ”label4” [ #5 ”label5” ] ] ] ] ]
+[ , stars opts ]) manages the display of stars for indicating the significance of results.
+
+The default is stars(.05 ”*” .01 ”**”, attach( r b)), which will display one star (*) for 𝑝values less than 0.05 and two stars (**) for 𝑝-values less than 0.01; the stars will be attached to the
+coefficients ( r b).
+stars opts are attach(cstat), increasing, decreasing, pvname(string ), delimiter(char),
+nformat(% fmt ), prefix(string ), suffix(string ), and clear.
+attach(cstat) specifies that the star labels be attached to coefficient statistic cstat. The default
+is attach( r b).
+increasing and decreasing control the order of 𝑝-values in the stars note.
+increasing specifies that the stars note be composed with increasing 𝑝-values. This is the
+default.
+decreasing specifies that the stars note be composed with decreasing 𝑝-values.
+pvname(string ) specifies the name for the 𝑝-value in the stars note that is displayed with
+showstarsnote. The default is pvname(p).
+delimiter(char) changes the delimiter between labels in the stars note.
+cridelimiter(”,”).
+
+The default is
+
+nformat(% fmt ) specifies the numeric format for the numbers displayed in the stars note. The
+default is nformat(%9.0g).
+prefix(string ) adds a prefix to the stars note.
+suffix(string ) adds a suffix to the stars note.
+clear removes existing star properties.
+showstars and noshowstars specify whether star labels should be displayed. showstars displays star
+labels; noshowstars suppresses the star labels.
+showstarsnote and noshowstarsnote specify whether to display the note explaining what the star
+labels represent. showstarsnote displays the note; noshowstarsnote suppresses the note.
+showstarsnote is ignored if noshowstars is in effect.
+
+
+
+
+
+Title
+
+title(string ) adds the text string as a title to the table.
+titlestyles(text styles) changes the style for the table title. text styles are the following:
+font([ fontfamily ] [ , size(# [ unit ]) color(color) variant(variant) [ no ]bold
+[ no ]italic [ no ]strikeout [ no ]underline ]) specifies the font style. These font style properties are applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML,
+and LATEX files, unless otherwise specified.
+
+fontfamily specifies a valid font family. This font style property is applicable when publishing
+items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+
+etable — Create a table of estimation results 831
+
+size(# [ unit ]) specifies the font size as a number optionally followed by units. This font style
+property is applicable when publishing items from a collection to Microsoft Word, Microsoft
+Excel, PDF, and HTML files.
+color(color) specifies the text color.
+variant(variant) specifies the font variant and capitalization.
+bold and nobold specify the font weight. bold changes the font weight to bold; nobold changes
+the font weight back to normal.
+italic and noitalic specify the font style. italic changes the font style to italic; noitalic
+changes the font style back to normal.
+strikeout and nostrikeout specify whether to add a strikeout mark to the title. strikeout
+adds a strikeout mark to the title; nostrikeout changes the title back to normal.
+underline and nounderline specify whether to underline the table title. underline adds a
+single line under the title; nounderline removes the underline.
+
+Only one of strikeout or underline is allowed when publishing to HTML files.
+smcl(smcl) specifies how to render the table title for SMCL output. This style property is applicable
+only when publishing items from a collection to a SMCL file.
+latex(latex) specifies how to render the table title for LATEX output. This style property is applicable
+only when publishing items from a collection to a LATEX file.
+shading(sspec) sets the background color, foreground color, and fill pattern. The background color
+is applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML, and LATEX
+files. The foreground color and fill pattern are applicable when exporting the table to Microsoft
+Word and Microsoft Excel.
+
+
+
+
+
+Notes
+
+note(string ) adds the text string as a note to the table. note() may be specified multiple times to add
+multiple notes. Each note is placed on a new line.
+notestyles(text styles) changes the style for the table notes. text styles are the following:
+font([ fontfamily ] [ , size(# [ unit ]) color(color) variant(variant) [ no ]bold
+[ no ]italic [ no ]strikeout [ no ]underline ]) specifies the font style. These font style properties are applicable when exporting the table to Microsoft Word, Microsoft Excel, PDF, HTML,
+and LATEX files, unless otherwise specified.
+fontfamily specifies a valid font family. This font style property is applicable when publishing
+items from a collection to Microsoft Word, Microsoft Excel, PDF, and HTML files.
+size(# [ unit ]) specifies the font size as a number optionally followed by units. This font style
+property is applicable when publishing items from a collection to Microsoft Word, Microsoft
+Excel, PDF, and HTML files.
+color(color) specifies the text color.
+variant(variant) specifies the font variant and capitalization.
+bold and nobold specify the font weight. bold changes the font weight to bold; nobold changes
+the font weight back to normal.
+
+

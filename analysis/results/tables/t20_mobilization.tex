@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Differential mobilization on vote \\#68 (Becker producer-channel; C.6)}
+\label{tab:mobilization}
+\begin{tabularx}{\linewidth}{@{}lC@{}}
+
+\toprule
+&{(1)} \tabularnewline \midrule
+{Variable}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+mobilization\_dev\_v68\_coef&--0.436**
+mobilization\_dev\_v68\_stderr&(0.165)
+vineyard\_per\_cap\_coef&491***
+vineyard\_per\_cap\_stderr&(163)
+french\_share\_coef&--21.8***
+french\_share\_stderr&(6.05)
+catholic\_share\_coef&5.76
+catholic\_share\_stderr&(4.87)
+\_cons\_coef&59.2***
+\_cons\_stderr&(3.50)
+N&25
+r2&0.626
+spec&C6\_mobil\_conditional
+model&ols
+dropped&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Differential-mobilization regression (C.6 Phase 2). Tests the Becker (1983) producer-side channel of the bootleggers-and-baptists framework. The mobilization\\_dev\\_v68 measure is canton-level turnout on vote \\#68 minus the canton's median turnout across the 14 placebo votes 1900-1910 (positive = above-baseline mobilization on the absinthe vote specifically). Conditional on the headline KEY-spec controls (vineyard\\_per\\_cap, french\\_share, catholic\\_share). A positive mobilization coefficient supports the producer-mobilization channel. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

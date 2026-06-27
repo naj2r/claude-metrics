@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Vote \\#65 (Lebensmittelgesetz, 1906): Simpson sign-flip diagnostic}
+\label{tab:food65_simpson}
+\begin{tabularx}{\linewidth}{@{}lCC@{}}
+
+\toprule
+&{(1)}&{(2)} \tabularnewline \midrule
+{Variable}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vineyard\_per\_cap\_coef&583&1,286**
+vineyard\_per\_cap\_stderr&(430)&(604)
+french\_share\_coef&&--17.6
+french\_share\_stderr&&(23.9)
+catholic\_share\_coef&&32.8**
+catholic\_share\_stderr&&(12.3)
+\_cons\_coef&58.4***&38.5***
+\_cons\_stderr&(5.28)&(10.3)
+N&25&25
+r2&0.0500&0.368
+spec&food65\_bivariate&food65\_conditional
+model&ols&ols
+dropped&&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Simpson sign-flip diagnostic for vote \\#65 (1906 Federal Foodstuffs Act, ratified 10 June 1906; Lebensmittelgesetz). Column (1) is the bivariate regression of canton yes-vote share on vineyard\\_per\\_cap. Column (2) adds french\\_share + catholic\\_share, mirroring the headline KEY specification. If the vineyard coefficient flips from negative (bivariate) to positive (conditional) — as it does for the headline absinthe vote \\#68 — vote \\#65 exhibits the same Simpson structure: language and religion confound the bivariate vineyard-vote correlation, and conditioning on them reveals the underlying wine-industry rent-seeking effect. If the bivariate is already positive, the political coalition for \\#65 was assembled differently (broader public-health coalition, less language-cleavage-driven). Either result is informative for the regulatory-capture-across-two-votes story (see \texttt\{progress\\_2026-04-30\\_1830\\_foodbev.md\}). N=25 cantons. HC3 robust SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

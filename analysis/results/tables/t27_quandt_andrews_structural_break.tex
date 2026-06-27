@@ -1,0 +1,19 @@
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Structural-break tests on the wine/potato producer-price ratio (1830-1915, N=86)}
+\label{tab:t27_struct_break}
+\begin{tabularx}{\linewidth}{lrrrl}
+
+\toprule
+{Test}&{Statistic}&{df}&{p-value}&{Break date} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Quandt-Andrews Sup-Wald&28.511&2&< 0.0001&1887 (estimated) \tabularnewline
+Chow Wald at 1875&6.471&2&0.0393&1875 (fixed; Banerjee 2010) \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize OLS regression of the wine/potato producer-price ratio on a linear time trend; null hypothesis: no structural break in intercept or slope. The Quandt-Andrews supremum-Wald test (Andrews 1993) searches all candidate break years within the trimmed window 1843-1903; the Chow Wald test fixes the break date at 1875 (Banerjee et al. 2010 phylloxera-arrival year for Switzerland). Source: HSSO H.2a producer-price indexes (Ritzmann 1990; Swiss Farmers' Secretariat 1922-1984).}
+\end{table}

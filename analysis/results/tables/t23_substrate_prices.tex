@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Substrate producer prices and substitution-incentive ratio, 1875-1915 (HSSO H.2a, 1914 = 100)}
+\label{tab:substrate_prices}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline \midrule
+{Year}&{Wine index}&{Potato index}&{Apple index}&{Wine/Potato}&{Era} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+1875&63.1&52.7&141.6&1.20&
+1876&58.5&63.6&152.6&0.92&
+1877&68.9&64.5&91.4&1.07&
+1878&67.2&78.1&79.3&0.86&
+1879&74.1&93.8&74.0&0.79&
+1880&71.4&57.4&137.1&1.24&(P)
+1881&45.6&61.4&76.2&0.74&(P)
+1882&45.6&53.7&66.7&0.85&(P)
+1883&38.6&74.0&91.8&0.52&(P)
+1884&45.6&53.1&65.9&0.86&(P)
+1885&56.5&38.3&47.5&1.48&(P)
+1886&45.4&45.3&56.2&1.00&(P)
+1887&70.9&35.2&146.0&2.02&(P)
+1888&70.8&60.2&47.5&1.18&(P)
+1889&75.2&51.6&127.6&1.46&(P)
+1890&80.2&39.8&81.1&2.01&(P)
+1891&83.0&57.8&93.7&1.44&(P)
+1892&80.9&35.2&103.4&2.30&(P)
+1893&64.4&45.3&103.4&1.42&(P)
+1894&56.1&35.9&106.3&1.56&(P)
+1895&82.5&39.8&125.3&2.07&(P)
+1896&54.4&55.5&122.1&0.98&
+1897&66.7&44.5&202.2&1.50&
+1898&82.5&50.0&101.1&1.65&
+1899&68.4&37.5&219.7&1.82&
+1900&43.9&36.7&39.7&1.19&
+1901&40.4&49.2&151.2&0.82&
+1902&52.6&46.9&136.3&1.12&
+1903&68.4&57.8&172.5&1.18&
+1904&61.4&48.4&98.8&1.27&
+1905&49.1&55.5&193.8&0.89&
+1906&64.9&50.0&140.5&1.30&
+1907&75.4&47.7&202.9&1.58&
+1908&63.2&42.2&106.9&1.50&(B)
+1909&89.5&57.8&159.9&1.55&
+1910&107.0&82.0&147.6&1.30&
+1911&105.3&76.6&205.8&1.37&
+1912&78.9&66.4&115.6&1.19&
+1913&93.0&56.2&242.3&1.65&
+1914&100.0&100.0&100.0&1.00&
+1915&107.0&89.1&109.6&1.20&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: This table presents the substrate input-price environment faced by spirits distillers. It documents substitution INCENTIVE (relative input costs), not substitution behavior (which requires demand-quantity data we do not observe). Producer Price Indexes for vegetable products (1914 = 100). The Wine/Potato ratio is the primary substitution-incentive proxy: higher values indicate stronger cost-rational incentive for spirits distillers to use potato eau-de-vie in place of grape eau-de-vie. (P) marks the phylloxera-trough period 1880-1895 during which Swiss vineyard area collapsed (Banerjee et al. 2010; Simpson 2011); (B) marks the 1908 absinthe ban referendum year (vote \\#68). The 1908 ratio was  1.50, indicating ongoing cost-rational substitution incentive at the ban-year baseline. Convergent quantity-side evidence: Marrus (1974) consumption volumes; HSSO I.01 canton-level substrate-crop areas (canton\\_substrate\\_availability\\_descriptive.md). Source: HSSO H.2a (Producer Price Indexes of Vegetable Products 1801-1983, citing Ritzmann 1990 and Swiss Farmers' Secretariat 1922-1984).}
+\end{table}
+\end{document}

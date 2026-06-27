@@ -1,0 +1,188 @@
+# Project Context
+
+> **Claude reads this file before any analytical reasoning.** If a field is empty, ask the user to fill it before proceeding. Do not invent project context.
+
+This file is the project-level "what is this about" — distinct from `CLAUDE.md` (which is "how do we code here"). Fill all five fields when starting a new project. Run `/init-project` for an interactive walkthrough.
+
+---
+
+## 0. Current specification (workshop paper) — READ FIRST
+
+⚠️ **The current paper is the WORKSHOP analysis** (`processed/cohort_1908_workshop.dta`; scripts `08_*_workshop` → `09_*_workshop` → … → `22`/`23`). The vineyard-area / French+Catholic replication described in §1–§5 below is the **superseded original** (`absinthe_analysis.dta`, scripts `01`–`04`), retained as project history — do **not** read it as the current spec.
+
+| | Original (superseded — §1–§5 below) | **Current paper (workshop)** |
+|---|---|---|
+| Outcome | `yes_pct` (#68) | `Y1` = #68 yes-share (FL fractional `Y1_frac = Y1/100`) |
+| Wine measure (focal) | `vineyard_per_cap` (ha/person), coef [300,600] | **`X3_share`** = canton share of national wine **revenue** |
+| Headline | OLS vineyard coef ~+484 | **FL average marginal effect ≈ 0.43 pp/pp** (OLS twin ≈ 0.47); RI p ≈ 0.05–0.09 |
+| Col-5 controls | French + **Catholic** | **French (`cov1`) + Absinthe-trade share (`cov2_total_share`) + Protestant (`cov3`) + log density (`ln_density`)** |
+| Religion control | Catholic share | **Protestant share** (`cov3`) — Catholic is its exact complement (they sum to 1), so only one can ever enter the regression |
+
+**The current col-5 spec never includes "Catholic."** The religion control is **Protestant** (`cov3`); `cov2_total_share` is the **absinthe-trade** share (Milliet purchases), *not* a religion variable. A "+ Catholic" label that appeared in some older inference-table footnotes was a mislabel of the absinthe-trade control — corrected 2026-06-09. See `analysis/documentation/producer_variable_disambiguation.md` and `analysis/documentation/robustness_status.md` for the current spec's full provenance.
+
+---
+
+## 1. Dataset(s)
+
+> _Name(s), source(s), sample period, N observations, refresh cadence._
+
+- **swissvotes_dataset.csv** — Swissvotes.ch master dataset of all 708 Swiss federal popular votes (1848–present). Semicolon-delimited, UTF-8 with BOM, ~700 columns. We extract vote #68 (absinthe ban, July 5 1908): cantonal yes-vote shares. Source: swissvotes.ch. One-time historical snapshot, no refresh.
+- **I.01_EN.xlsx** — HSSO Table I.01, land use by canton 1840–1996. Vineyard hectares sub-block, single-year rows {1877, 1884, 1894, 1905, 1913}. Primary measure: vineyard area in 1905. Source: Historical Statistics of Switzerland Online (HSSO).
+- **B.01a_EN.xlsx** — HSSO Table B.01a, resident population by canton 1671–1990. We use the 1900 census row.
+- **B.01b_EN.xlsx** — HSSO Table B.01b, population density by canton 1798–1990. We use the 1900 row.
+- **B.27_EN.xlsx** — HSSO Table B.27, population by religion 1850–1990. We use 1900 Protestant and Catholic counts per canton.
+- **B.32_EN.xlsx** — HSSO Table B.32, population by native language 1880–1990. We use 1900 German and French counts per canton.
+- **E.1a_EN.xlsx** — HSSO Table E.1a, net migration balance between population censuses, by canton, 1837/50–1980/90 (per-period averages). We use the 1900/10 row as the most recent pre-vote economic-vitality control. Added 2026-04-30 per strategist handoff.
+- **I.39c_EN.xlsx** — HSSO Table I.39c, agricultural farm censuses 1905–1990. Multiple sub-blocks per (canton, year): number of farms, number of parcels, parcels per farm, mean parcel area. We use the **parcels-per-farm** sub-block at 1905 (Olson 1965 organizational-capacity proxy). The strategist's preferred `avg_parcel_area_1905` block is unavailable (mean-parcel-area data starts at 1929). Added 2026-04-30 per strategist handoff.
+
+- **I.04a_EN.xlsx** — HSSO Table I.04a, fruit-tree stock by canton ("Sämtliche Obstbäume" / total fruit trees). Imported FOR PROVENANCE ONLY. Pre-vote years (1885/88, 1910, 1926/28) have ≤3 cantons populated; first fully-populated year is 1951. We constructed `fruit_tree_density` from 1951/1900-pop and tested it briefly, then **EXCLUDED it from active analysis** (per user 2026-04-30 reversal): a 43-year forward projection violates the project's data-recency rule below. Variable retained in `processed/absinthe_analysis.dta` for transparency; do NOT include in any reported regression unless 1908-or-earlier canton-level fruit-tree data becomes available.
+
+### NATIONAL-LEVEL files (descriptive context only — never merged into canton dataset)
+
+The HSSO F-series (F.7a, F.7b, F.8a, F.8b, F.13) are nationwide aggregates with no canton dimension. Translated + archived 2026-04-30 per strategist handoff. Used only for paper-text descriptive sentences; CANNOT serve as canton-level controls or regressors. Implementation in `analysis/scripts/06_national_descriptives.do`; full documentation including column dictionaries and translation procedure in `analysis/documentation/methods/hsso_national_descriptives.md` (auto-surfaced by methods-doc-reminder hook on keywords "hsso", "national", "descriptives").
+
+- **F.7a_EN.xlsx** — National resident population by employment status × gender, 1888-1960. Pre-vote rows: 1888, 1900. Extracted to `f07a_employment_long.dta` (N=264). Includes total_active + total_nonactive for R12 cross-data fingerprint vs B.01a (1900 sum: 3,315,443 — matches B.01a canton-pop sum to 6 sig figs).
+- **F.7b_EN.xlsx** — Same series 1960-1990. Translated and mirrored only; NOT extracted (post-vote; reserved for Paper #2).
+- **F.8a_EN.xlsx** — National agricultural population, 1888-1960. Pre-vote rows: 1888, 1900. Extracted to `f08a_agric_pop_long.dta` (N=384).
+- **F.8b_EN.xlsx** — Same series 1930-1980. Translated and mirrored only; NOT extracted (post-vote).
+- **F.13_EN.xlsx** — National industrial business census 1905, 1929, 1939, 1955. Pre-vote row: 1905. 40 industry/sector classes × 6 metrics. Extracted to `f13_business_sector_long.dta` (N=960). The headline pre-vote number for the paper: in 1905, Switzerland had **1,481 spirits/beverage enterprises employing 6,539 workers** nationally (vs 18,660 food enterprises with 57,264 employees) — descriptive context for the absinthe ban's competitive landscape.
+
+These files definitively close the canton-level employment search: HSSO does not have pre-1908 canton-by-occupation employment data anywhere. Future referees asking "what about employment data?" can be pointed at this archive.
+
+**DATA-RECENCY RULE for canton-level controls** (project policy, 2026-04-30): controls must use referendum-year (1908) or earlier data, OR data within a few years post-vote where time-stability is defensible (e.g. 1912 ag-land used as 1908 proxy: 4-year gap, agricultural land use does not change drastically; 1900 census used: 8-year gap, demographic stocks change slowly; 1905 vineyard area: 3-year gap). The 43-year gap from 1908 to 1951 fruit-tree data does NOT meet this bar. The 24-year gap to 1929 mean-parcel-area data also does not meet it; we instead reconstruct 1905 mean parcel area from 1905 farms × 1905 parcels-per-farm and 1912 ag-land (worst gap is 4 years).
+
+**Canonical canton-level wine-industry-size proxy set** (final per 2026-04-30): `vineyard_per_cap + avg_parcel_area_1905`. The canton-level employment search is closed — no Berufstabellen-style 1900 viticulture-employment data exists at the canton level in HSSO or the Eidgenössische Volkszählung that we have access to. Fruit-tree density was a candidate but rejected on recency grounds.
+
+All HSSO files are English translations in `$Absinthe1Data/translated/`. German originals in `$Absinthe1Data/original/` are for provenance auditing only — never imported.
+
+---
+
+## 2. Unit of observation
+
+> _What does one row in the analysis dataset represent?_
+
+Swiss canton in the 1908 federal vote. Cross-section, N = 25 cantons. BE = pre-1979 BE+JU combined (Jura was not a separate canton until 1979). The 26th modern canton (JU) is excluded.
+
+---
+
+## 3. Outcome variable(s)
+
+> _Name, transformation, units. Multiple outcomes OK._
+
+- `yes_pct` — canton-level yes-vote share for vote #68 (absinthe ban, July 5 1908), in percent (0–100). National result: 63.5% yes (passed). Two cantons rejected: Neuchâtel and Geneva.
+
+---
+
+## 4. Identification strategy
+
+> _OLS / FE / DiD / IV / matching / RCT / RDD — one sentence on the source of variation._
+
+Cross-sectional OLS with HC3 robust standard errors. Compare the bivariate vineyard–vote relationship to the relationship after conditioning on French-language share and Catholic share. The sign flip in the vineyard coefficient (negative bivariate → positive conditional) is the methodological finding — Simpson's paradox driven by French-speaking cantons being both wine-producing AND culturally opposed to federal temperance regulation.
+
+**Substantive headline (the absinthe ban itself, vote #68)**: vineyard coefficient ~+484 (p=0.024) after conditioning on language and religion; ~+437 (p=0.063) with total-pop denominators (matches prior independent analysis exactly).
+
+**SECOND HEADLINE (added 2026-04-30, see `analysis/documentation/progress/progress_2026-04-30_1830_foodbev.md`)**: cross-referendum falsification panel reveals the absinthe ban is the second of two wine-industry rent-seeking victories in 1900-1910. Vote #65 (10 June 1906 federal Lebensmittelgesetz) shows vineyard coefficient ~+1286 (p=0.045) — the food-purity law that disadvantaged adulterated-wine and substitute-beverage competitors. Vote #63 (25 Oct 1903 federal alcohol-trade regulation) is a clean null (p=0.886) — vineyard cantons did NOT generically oppose federal alcohol regulation. The three-vote sequence (null on #63, positive on #65, positive on #68) is the canonical empirical signature of **Stigler (1971) regulatory capture**: industries support regulation when and only when it disadvantages competitors. Provides quantitative triangulation of a process the historical literature (Prestwich 1988; Padosch et al. 2006; Studer 2024) has documented qualitatively.
+
+**Two share-denominator definitions reported in tables**:
+- `french_share`/`catholic_share` (subset): French/(German+French speakers); Catholic/(Protestant+Catholic). Focuses on the language/religion cleavage that drives federal politics.
+- `french_share_total`/`catholic_share_total` (total-pop): French/total population; Catholic/total population. Matches the prior independent analysis at `~/Research/repos/Brainstorm-Absinthe/Replication/`. Both yield the headline finding (vineyard coef in [300, 600], positive); subset definition gives ~+484 (p=0.024), total-pop gives ~+437 (p=0.063).
+
+Robustness: leave-one-out, exclude NE+GE (the two rejecting cantons), randomization inference (10,000 permutations).
+
+---
+
+## 5. Key globals
+
+> _`$MyProject` and any other path globals; sample restrictions encoded as globals._
+
+- `$MyProject` — set in `run.do` = `$Absinthe1` (pointing to `analysis/` in this repo)
+- `$Absinthe1` — `~/Research/repos/c-metrics-absinthe1/analysis` (set in Stata profile)
+- `$Absinthe1Data` — `~/Dropbox/research_data_raw/c-metrics-absinthe1` (raw data, separate from code)
+- `$DisableR = 1` — R portion is disabled for this project
+- Sample: all 25 cantons; no restrictions (but NE+GE exclusion tested as robustness)
+
+---
+
+## Variable definitions (algebra)
+
+Every derived variable in `02_clean.do` is a deterministic function of the raw HSSO/swissvotes counts. Explicit formulas:
+
+```
+* --- Outcome ---
+yes_pct        = swissvotes <ct>-japroz, vote #68             [units: %, 0-100]
+yes_frac       = yes_pct / 100                                [units: 0-1]
+
+* --- Vineyard ---
+vineyard_ha       = vineyard_1905                             [units: hectares]
+vineyard_per_cap  = vineyard_ha / pop_1900                    [units: ha/person]
+vine_per_1000     = (vineyard_ha / pop_1900) * 1000           [units: ha per 1000 pop]
+vine_share_agland = (vineyard_1905 / (agland_1000ha*1000))*100 [units: %]
+vineyard_per_cap_1894 = vineyard_1894 / pop_1900              [pre-determined: pre-vote]
+vine_change_pct   = ((vineyard_1905-vineyard_1877)/vineyard_1877)*100  [if y_1877>0]
+
+* --- Religion / Language shares: TWO denominator definitions ---
+* SUBSET denominator (mine; focuses on the dominant binary cleavage):
+catholic_share        = catholic_1900 / (protestant_1900 + catholic_1900)
+french_share          = french_1900   / (german_1900    + french_1900)
+
+* TOTAL-POP denominator (matches prior Brainstorm-Absinthe analysis):
+catholic_share_total  = catholic_1900 / pop_1900
+french_share_total    = french_1900   / pop_1900
+
+* The two definitions diverge most where Italian/Romansh are large
+* (TI: french_share=11.2% subset vs 0.3% total-pop). Both are reported in
+* the OLS table (cols. 4 vs 5). Both yield the headline sign-flip.
+
+* --- German share (added 2026-04-30 — "two sides of the coin") ---
+* SUBSET denominator (Ger.+Fr. only, NOT exact complement of french_share
+* because of Italian/Romansh):
+german_share        = german_1900 / (german_1900 + french_1900)
+* TOTAL-POP denominator:
+german_share_total  = german_1900 / pop_1900
+
+* --- Strategist 2026-04-30 controls ---
+net_migration_pre_vote   = E.1a value at 1900/10 row, by canton
+                           [units: persons/year, average over 1900-1910]
+net_migration_per_cap    = net_migration_pre_vote / pop_1900
+                           [units: persons-per-pop-per-year]
+parcels_per_farm_1905    = I.39c "Anzahl Parzellen je Betrieb" 1905 row, by canton
+                           [units: parcels per farm; LOW = consolidated, HIGH = fragmented]
+```
+
+**Naming rule for denominators**: bare name = subset denominator (binary contrast); `_total` suffix = total-population denominator. Future shares should follow this convention.
+
+---
+
+## Notes
+
+- **Simpson's paradox**: French-speaking cantons are both heavily wine-producing AND culturally opposed to federal temperance regulation. Failing to condition on language share produces a misleading negative bivariate vineyard–vote correlation.
+- **BE/JU handling**: Jura (JU) separated from Bern (BE) in 1979. For the 1908 cross-section, use the combined BE+JU value from HSSO (column C, labeled "BE,JU") and drop the BE-only column (D) and JU-only column (AB). N = 25, not 26.
+- **Vineyard unit choice (frontmatter convention)**: `vineyard_per_cap` is in **hectares per person**, not per 1000 pop. The raw coefficient (~+484 in KEY spec) is mathematically correct but reads as absurd to a non-specialist (no canton has 1 ha/person). The substantive translation is in `t11_magnitudes.tex`: a one-SD increase in `vineyard_per_cap` ≈ 4 pp higher yes-vote; comparing wine-richest Vaud (0.023 ha/person) to no-vineyard Uri predicts ~11 pp higher yes-vote, holding language and religion constant. **Whenever the headline coefficient appears in prose, ALWAYS pair it with a substantive-magnitude sentence drawn from t11.**
+- **Absinthe-canton tiering**: three definitions are computed for robustness. `absinthe_dummy` = NE only (heartland; Pernod 1797–; matches prior analysis). `absinthe_dummy_broad` = NE + VD (incl. Yverdon Kübler & Wyss). `absinthe_dummy_any` = NE + VD + GE (any documented production). Used as robustness in `t12_absinthe_tier.tex`.
+- **⚠️ Producer-variable disambiguation**: the *headline* producer-coalition treatment is **`abs_producer`** (8 cantons; `cov2_total_share>0` = "any Milliet absinthe purchase"; an **absinthe-trade-interest** set — handles/sells, *not* strictly manufacturers) in `cohort_1908_workshop.dta`, reported in `T_producer_cascade`. The `absinthe_dummy*` tiers above are **robustness only** (the manufacturing-heartland ladder). The names collide — `absinthe_dummy` is literally `canton_code=="NE"`, not a generic "produces absinthe" — so always read the realized treated set, not the name. Details: `analysis/documentation/producer_variable_disambiguation.md`. Do not promote the NE-tiers to headline without strategist sign-off.
+- **Language confound — two approaches**: (a) binary subsample (`if french_share < 0.5`, N=20 German-only cantons; in `t05` cols 1-3) — arbitrary 0.5 cutoff; (b) **continuous weighting** (`[aweight = (1-french_share_total)]`, N=25; in `t05` cols 4-5) — preferred because no observations dropped. Both yield the same direction; the continuous version is more defensible.
+- **Naturalization data not yet imported**: HSSO Table B.15 (canton × gender × nationality, 1900) exists in the original Brainstorm-Absinthe data folder but is not in `$Absinthe1Data`. If naturalization shares matter for an interpretation (e.g., immigrant attitudes toward federal temperance), B.15 would need to be added to `01_import.do`.
+- **Verification target**: After conditioning on French/Catholic shares (either denominator), the coefficient on `vineyard_per_cap` should be in [300, 600] positive. With subset denominators p~0.02; with total-pop denominators p~0.06. The bivariate coefficient is negative. Both targets are guarded by `assert` in `04_tables.do`.
+- **Naming conventions**: scripts use 2-digit zero-padded prefixes (`01_*.do`, `02_*.do`, ...). Output tables use `t01_*.tex`, `t02_*.tex` etc.; figures use `f01_*.pdf`, `f02_*.pdf`. Subsetted long code chains (if any) use decimal sub-prefixes (e.g., `01.1_*.do`, `01.2_*.do`).
+- **Expansion analyses (`05_expansion.do`)** — ported from prior Brainstorm-Absinthe analysis after data extraction was verified to match. Includes: (1) same-day placebo (vote #67 commerce, July 5 1908 — same voters, different issue); (2) German-only subsample (eliminates Simpson confound entirely); (3) pre-determined vineyard 1894 (addresses reverse causality); (4) vineyard-change 1877-1905 ("desperation hypothesis"); (5) population/votes/eligible/French-pop/German-pop weighted regressions; (6) 6 alternative vineyard operationalizations (pre-1894 per cap, per 1000 pop, raw ha, binary >1000 ha, per km², share of agricultural land); (7) heterogeneity interactions (vine × french/catholic/lnpop); (8) alternative outcomes (margin, yes/eligible, turnout); (9) NE prediction-gap (estimates net absinthe-industry employment effect); (10) Oster (2019) coefficient stability (with Simpson-paradox caveat); (11) **cross-referendum falsification panel** — KEY-spec regression run on each of the 15 federal popular votes 1900-1910; absinthe vote (#68) coefficient should be in the right tail. Outputs: `t04_placebo.tex` through `t10_stability.tex`, plus `t13_placebo_panel.tex` and `f03_placebo_distribution.pdf`. **`log(vineyard+1)` is intentionally NOT used as an alt operationalization — with ~32% zero-vineyard cantons the +1 is arbitrary and the coefficient has no scale-invariant interpretation (Chen & Roth 2023, QJE). Extensive margin captured via `wine_canton` binary; intensity via per-km² and ag-share.**
+
+**Round-2 formal hypothesis tests (added 2026-05-01, see `analysis/documentation/progress/progress_2026-05-01_2030_bbtests.md`)** — H3 (coalition: vine × protestant_share_total) and H6 (Olsonian: vine × avg_parcel_area_1905) interaction tests of the bootleggers-and-baptists framework returned **null at conventional significance levels with positive direction** across all spec variants: H3 STRAT main +358.74 (p=0.467); H3 ALT backmatter +454.32 (p=0.441); H6 +394.34 (p=0.872). At N=25 with one interaction term, minimum detectable effect for H6 was ~17× the observed magnitude — the tests were structurally underpowered and should be reported as **lack of evidence, not evidence of lack**. The KEY-spec vineyard main effect remains positive across all 5 Task-B specs (range +464 to +1096), so the Simpson sign-flip headline and Stiglerian capture story are unaffected. Paper framing: B&B remains the preferred theoretical motivation; H3 and H6 are reported as theoretically motivated tests the available data cannot resolve. Reported in `t17_formal_hypotheses.tex` (main, strategist's pre-specified spec) and `t17b_formal_hypotheses_alt.tex` (backmatter, cleaner protestant-alone spec) — see also `progress_2026-05-01_2031_collinearity_design.md` for the methodological rationale behind dual-spec reporting.
+
+**Cross-referendum falsification design (`05_expansion.do` sections 10.5, 12.8-12.9)** — built on top of `processed/placebo_panel.dta` (375 rows = 25 cantons × 15 votes 1900-1910). For each placebo vote, regress canton yes-vote share on `vineyard_per_cap + french_share + catholic_share`, HC3. The treatment vote (#68 absinthe) ought to be in the right tail. Substantively interesting watchpoints:
+
+- **Vote #63 (25.10.1903) "Artikel über die Regulierung des Alkoholhandels"** (Federal alcohol-trade regulation article) — should be NULL. If vineyard cantons opposed federal alcohol regulation generically, the wine-protection-via-substitution story collapses. **Observed: -52, p=0.886 ✓**.
+- **Vote #65 (10.06.1906) "Lebensmittelgesetz"** (Federal Act on the Trade in Foodstuffs and Articles of Daily Use, 8 Dec 1905) — **NOT a clean placebo**. This law established federal authority over beverage purity, additives, and essences (the regulatory framework later invoked against absinthe). Wine producers were a key "yes" constituency because the law cracked down on wine adulteration and substitute beverages. The pro-wine-purity coalition (wine industry + temperance + public health) reassembled for the absinthe vote 23 months later. Reading vote #65 as the *prequel* to #68 makes a single rent-seeking story; reading them as independent makes a paradox. **Observed: +1286**, p=0.045**. Prior analysis (Brainstorm-Absinthe 2026-04-09) flagged this and we replicate.
+
+Of 14 non-treatment placebo coefficients, only #65 reaches significance and only #65 has substantive content related to alcohol/wine regulation. Absinthe (#68) ranks #2 of 15 in coefficient magnitude. Window matches prior Brainstorm-Absinthe analysis (entry `2026-04-09_expansion-analysis.qmd` Section 2).
+
+**True-placebo rank — DUAL CLASSIFICATION (round 2 update — Task C.4)**: per user dispatch 2026-05-01 22:25 and `progress_2026-05-01_2230_dual_classification.md`, the paper presents BOTH classifications side-by-side rather than picking one. Both are reportable, both are honest; the dual presentation removes the cherry-picking risk by making the methodological choice transparent.
+
+- **Classification A (#60 retained as placebo, #65 reclassified)**: absinthe ranks **#2 of 14** in the true-placebo set, permutation-style p = 2/14 ≈ 0.143. Conservative falsification — treats #60 (federal customs tariff 1903, vineyard β = +737, p = 0.328 not significant) as a chance-noise null because its coefficient is not significant. Placebo set = 13 votes (15 minus #68 treatment minus #65 wine-rent-seeking comparator).
+
+- **Classification B (#60 + #65 BOTH reclassified as wine-industry comparators)**: absinthe ranks **#1 of 13** in the true-placebo set, permutation-style p = 1/13 ≈ 0.077. Substantive interpretation — treats #60 as a third member of the wine-industry rent-seeking cluster (tariff protection 1903 → product-purity regulation 1906 → product-elimination 1908) on the historical case that the 1903 tariff included substantial wine-import duties. Placebo set = 12 votes (15 minus #68 minus #65 minus #60).
+
+The conservative reading (A) is the floor: even treating #60 as ordinary noise, absinthe ranks among the top 2 of 14. The substantive reading (B) is the ceiling: with the 3-vote regulatory-capture pattern explicit, absinthe is the strict #1 of 13 with the only stronger non-treatment vote being itself. Both readings are paper-presentable; the choice between them rests on the historical-archival evidence on the 1903 tariff schedule's wine-import duties (verification scheduled as future work).
+
+**Vote-LOO sensitivity (round 2 — Task C.4 extension)**: an additional robustness check shows that the rank ambiguity in Classification A is driven entirely by a single vote (#60). Of 13 vote-leave-one-out drops (drop each placebo once and recompute absinthe's rank in the remaining 12-vote set), only the drop of #60 changes absinthe's rank from #2 to #1; the other 12 drops leave the rank unchanged. This empirically demonstrates that the rank-#1-vs-rank-#2 question is single-vote-driven (asking "does #60 belong in the placebo set?"), not driven by a noisy distribution of multiple competitors.
+
+The original round-1 framing was "rank #2 of 15" with #65 in the placebo set; the round-2 framings are dual: "#2 of 14 (Classification A)" and "#1 of 13 (Classification B)". The figure `f03_placebo_distribution.pdf` was updated in round 2 to show only the 13 true placebos under Classification A in the histogram (#60 still appears as a placebo bar; the caption flags it as wine-relevant per round-2 update).

@@ -44,7 +44,7 @@ replace _grp = 1 if inlist(canton_iso, "UR","SZ","OW","NW","LU") ///
 list ... if _grp == 1
 ```
 
-The flag approach scales to arbitrarily many groupings and makes the grouping intent visible in the data. The OR-chained approach is leaner for one-off filters.
+The flag approach scales to arbitrarily many groupings and makes the grouping intent visible in the data. The OR-chained approach is leaner for one-off filters. Found during `08_setup_cohort_1908.do` religion verification, May 2026.
 
 ## `local x "..."` vs `local x = "..."` — expression-evaluation gotcha
 
@@ -80,9 +80,11 @@ Stata's parser treats any `/*` substring inside an open block comment as a neste
 - Bad inside `/* ... */`: `analysis/scripts/*.do`
 - Good inside `/* ... */`: `analysis/scripts/NN_slug.do`
 
-Or use line comments (`*` or `//`) for the entire docstring — they don't have nesting behavior. Add a `MAINTAINER NOTE` to any docstring that's been bitten by this so future editors know not to reintroduce the glob.
+Switching the docstring to line comments (`*` or `//`) does **NOT** make it safe. A `/*` embedded *inside* a `*`- or `//`-line comment still opens a block comment that runs until the next `*/` — Stata processes `/* */` before line-comment rules, so a leading `*`/`//` does not protect the rest of the line (or the file) from an embedded `/*`. The only reliable defense is: **never let a `/` sit immediately before a `*` in ANY comment.** Watch especially for trailing-directory globs like `dir/*`, `results/intermediate/*`, `scripts/libraries/*`. Rephrase to a placeholder, drop the glob, or space it out. Add a `MAINTAINER NOTE` to any docstring bitten by this.
 
-Originally surfaced during session-init helper development (silent rc=0 failure consumed 4+ debug cycles before the `/*` glob was identified as the trigger).
+Found during `stata_absinthe_init.do` session-init helper development, May 2026 (silent rc=0 failure consumed 4+ debug cycles before the `/*` glob was identified as the trigger).
+
+**Second instance — 2026-06-19, `redrafts/redraft_08_setup_cohort_1908.do`:** a `*`-LINE comment containing `results/intermediate/*` opened an unclosed block comment that silently ate the entire next section (the wine merge + two `save`s) at rc=0. Caught only because an expected output (the checkpoint `.dta`) never updated — the script "ran fine," it just skipped a whole section. Confirms line comments are NOT immune; the `dir/*` trailing glob is the trigger, and the failure is invisible until a downstream output is missing.
 
 ## `subinstr` with literal backslash: `"\"` is parsed as escaped quote (.do-file only)
 
@@ -106,7 +108,7 @@ global HOME = subinstr("`raw_home'", "`bs'", "/", .)
 
 `char(92)` returns the literal backslash character without triggering the parser's escape-quote handling. Same trick works in any string-literal context where you need a backslash inside a `.do` file (regex patterns, file-path manipulation, etc.).
 
-Originally surfaced during session-init helper development. Distinct from the MCP-Stata-transport backslash mangling documented below (that one corrupts `\` → `/` in inline MCP code; this one is a Stata-native parser quirk affecting any `.do` file regardless of how it's invoked).
+Found during `stata_absinthe_init.do` session-init helper development, May 2026. Distinct from the MCP-Stata-transport backslash mangling documented below (that one corrupts `\` → `/` in inline MCP code; this one is a Stata-native parser quirk affecting any `.do` file regardless of how it's invoked).
 
 ## File-write formatting gotchas
 
@@ -190,9 +192,9 @@ set graphics off
 
 * Pre-erase regenerable intermediate .dta files to prevent the
 * "Replace existing file?" modal dialog when a prior run was interrupted
-* and left files partially written. Source data in $MyProjectData is NOT touched.
+* and left files partially written. Source data in $Absinthe1Data is NOT touched.
 foreach f in <list of regenerable intermediates> {
-    cap erase "$MyProject/results/intermediate/`f'"
+    cap erase "$Absinthe1/results/intermediate/`f'"
 }
 ```
 
@@ -305,16 +307,16 @@ When a script is structured for section-by-section Ctrl+D execution in the do-fi
 ```stata
 **# 5.0 Standalone-run preamble: load §1-§4 output if memory is empty / re-runnable
 {
-    cap confirm variable <predecessor_last_var>   // sentinel = predecessor §4's last-added var
+    cap confirm variable pop_1910         // sentinel = predecessor §4's last-added var
     if _rc {
-        cap confirm file "$MyProject/processed/<output_dataset>.dta"
+        cap confirm file "$MyProject/processed/cohort_1908.dta"
         if _rc {
-            di as error "  §5 needs §1-§4 output (<predecessor_last_var>) but <output_dataset>.dta not found."
+            di as error "  §5 needs §1-§4 output (pop_1910) but cohort_1908.dta not found."
             di as error "  Run §1-§4 first, OR run the whole script end-to-end."
             error 601
         }
-        use "$MyProject/processed/<output_dataset>.dta", clear
-        di as text "  (standalone-run preamble: loaded <output_dataset>.dta from disk)"
+        use "$MyProject/processed/cohort_1908.dta", clear
+        di as text "  (standalone-run preamble: loaded cohort_1908.dta from disk)"
     }
     foreach v in <vars_this_section_adds> {    // idempotency: drop colliding vars
         cap drop `v'
@@ -333,16 +335,16 @@ The variable in `cap confirm variable <X>` MUST be the **last var added by the i
 
 **Why predecessor's-last-var works**: in a linearly-built dataset where `§N (save)` writes the union of all sections, the on-disk file always represents the canonical complete state. If the predecessor's last var is missing from memory, the in-memory state is partial — reload from disk to restore the complete chain. If the predecessor's last var IS present, all earlier vars must also be present (linear-build invariant), and no reload is needed.
 
-**Real-world bug pattern**: in a multi-section cohort-build script, §5.0 used a base ID variable (e.g., the ID column added by §1) as the sentinel. That ID was present in the user's session from an earlier truncated run (§1+§2+§3 only, no §4). §5 proceeded but §6.1 sanity assertions crashed on `assert <var_added_by_§4> > 0 & !missing(<var_added_by_§4>)` because §4's output was never in memory. Fix: switch the §5.0 sentinel to a variable added by §4 (its last). With the predecessor-last-var sentinel, §5.0 detects the missing §4 output, auto-loads from disk, and restores all upstream sections at once. Retrofit the same pattern to every other §N.0 preamble for chain consistency.
+**Bug 2026-05-18** during `08_setup_cohort_1908.do` chunked review: §5.0 used `canton_iso` as the sentinel, which was present in the PI's session (from an older script version that ran §1+§2+§3 only). §5 proceeded but §6.1 crashed on `assert pop_1900 > 0 & !missing(pop_1900)` because pop_1900 was never loaded. Switching the sentinel to `pop_1910` (§4's last var) made §5.0 auto-load from disk, restoring pop_1900/1910 alongside everything else. Retrofitted to §2.0/§3.0/§4.0/§6.0 for consistency.
 
 ### Recommended safeguards for standalone-preamble changes
 
 When you add or modify a standalone-preamble, run BOTH of these regression tests before reporting done:
 
 1. **End-to-end**: `clear all; do "<script>"` — simulates a fresh session with empty memory. The preamble's auto-load branch fires (memory is empty, so the sentinel var is absent). All downstream sections see the freshly-loaded state.
-2. **Partial-state**: load the complete output dataset, drop a downstream var family (e.g., `drop <vars_added_by_predecessor>`), then run the chunk in question. The preamble should detect the missing sentinel and auto-load from disk to restore the dropped vars. If the preamble's sentinel is too weak (e.g., a base ID var that's always present), it will NOT trigger the auto-load and the chunk will crash downstream — exactly the bug the partial-state test is designed to catch.
+2. **Partial-state**: load the complete output dataset, drop a downstream var family (e.g., `drop pop_1900 pop_1910`), then run the chunk in question. The preamble should detect the missing sentinel and auto-load from disk to restore the dropped vars. If the preamble's sentinel is too weak (e.g., `canton_iso` instead of `pop_1910`), it will NOT trigger the auto-load and the chunk will crash downstream — exactly the bug the partial-state test is designed to catch.
 
-A single end-to-end pass is NOT sufficient: end-to-end always builds from scratch, so all upstream vars are guaranteed present regardless of sentinel weakness. Only the partial-state test surfaces sentinel choice errors. Skip the partial-state test → ship the bug.
+A single end-to-end pass is NOT sufficient: end-to-end always builds from scratch, so all upstream vars are guaranteed present regardless of sentinel weakness. Only the partial-state test surfaces sentinel choice errors. Skip the partial-state test → ship the bug (this is the 2026-05-18 lesson).
 
 ### Idempotency: drop section-output vars before re-building
 

@@ -1,0 +1,32 @@
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Vote cascade (Panel A: Wine revenue share) --- OLS HC3}
+\label{tab:T2_X3_OLS}
+\begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)} \tabularnewline
+ & (1) baseline & (2) +french & (3) +absinthe & (4) +protestant & (5) +geog (density) \tabularnewline 
+\midrule \addlinespace[\belowrulesep]
+Wine revenue, national share (\%)&--0.196&0.568**&0.415&0.547*&0.469 \tabularnewline
+&(0.219)&(0.251)&(0.271)&(0.277)&(0.309) \tabularnewline
+French language share (\%)&&--0.307***&--0.218**&--0.248**&--0.239** \tabularnewline
+&&(0.0794)&(0.100)&(0.102)&(0.104) \tabularnewline
+Absinthe industry share (\%)&&&--0.294&--0.197&--0.185 \tabularnewline
+&&&(0.336)&(0.258)&(0.301) \tabularnewline
+Protestant share (\%)&&&&--0.0692&--0.0369 \tabularnewline
+&&&&(0.0495)&(0.0679) \tabularnewline
+Log population density&&&&&--2.09 \tabularnewline
+&&&&&(2.71) \tabularnewline
+Constant&65.1***&67.5***&67.7***&70.3***&78.7*** \tabularnewline
+&(2.58)&(2.10)&(2.13)&(2.68)&(11.1) \tabularnewline
+\midrule R-squared&0.0160&0.510&0.560&0.595&0.623 \tabularnewline
+N&25&25&25&25&25 \tabularnewline
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize N=25 cantons. Col 5 adds Log population density as scale control. Robust standard errors in parentheses. * p\(<\)0.10, ** p\(<\)0.05, *** p\(<\)0.01.}
+\end{table}

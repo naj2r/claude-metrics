@@ -1,0 +1,32 @@
+---
+title: "[PROJECT TITLE]"
+author: "[AUTHORS]"
+date: today
+---
+
+# Introduction
+
+[Project narrative goes here.]
+
+# Results
+
+The main descriptive statistics are reported in @tbl-summary.
+
+<!-- Once analysis/results/tables/summary_stats.tex exists, uncomment: -->
+<!-- \input{../analysis/results/tables/summary_stats.tex} -->
+
+The main regression estimates are reported in @tbl-regressions.
+
+<!-- \input{../analysis/results/tables/regressions.tex} -->
+
+The main outcome distribution appears in @fig-histogram.
+
+<!-- ![Outcome distribution](../analysis/results/figures/<filename>.pdf){#fig-histogram} -->
+
+# Conclusion
+
+[Conclusion here.]
+
+---
+
+_This is a starter skeleton. Once `4_make_tables_figures.do` produces tables and figures into `analysis/results/`, replace the commented-out includes above with actual file references. Render with `quarto render`._

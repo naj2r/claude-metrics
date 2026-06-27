@@ -1,6 +1,41 @@
+# OS
 .DS_Store
+
+# R
 .Rapp.history
 .Rhistory
+
+# LaTeX
 *.aux
 *.synctex.gz
 *.log
+
+# Claude Code (local state)
+.claude/.mode
+.claude/edit-log.jsonl
+.claude/cache/
+CLAUDE.local.md
+
+# Stata logs (timestamped per-run)
+analysis/scripts/logs/*
+!analysis/scripts/logs/.gitkeep
+
+# Raw data — immutable, may be private/large; only the demo ships in repo
+analysis/data/*
+!analysis/data/auto.csv
+!analysis/data/README.md
+
+# Processed/intermediate data — regenerable from run.do
+analysis/processed/*.dta
+analysis/processed/intermediate/*
+# Estimation intermediates (.dta/.ster) — regenerable from the estimation scripts
+analysis/results/intermediate/*
+
+# Project state (regeneratable, large, or sensitive)
+analysis/results/_inventory.xlsx
+analysis/scripts/libraries/stata/_install_errors.log
+guides/sources/pdfs/*_text.md
+
+# Quarto
+paper/_book/
+paper/.quarto/

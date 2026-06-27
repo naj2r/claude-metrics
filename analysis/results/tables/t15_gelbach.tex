@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Gelbach (2016) decomposition: which controls drive the Simpson sign-flip?}
+\label{tab:gelbach}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{Contribution to vineyard coef. change (b1base - b1full)}&{Delta}&{(SE)}&{p} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+Language (french\\_share)&--573.9**&(285.0)&0.044
+Religion (catholic\\_share)&--89.1&(92.6)&0.336
+Total (sum)&--663.0**&(287.8)&0.021
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Gelbach (2016) conditional decomposition of the change in the vineyard\_per\_cap coefficient between the bivariate spec (b1base = -178.6) and the KEY spec adding french\_share + catholic\_share (b1full =  484.4). Delta is the contribution of each x2 group to b1base minus b1full (= -663.0). The Simpson sign-flip means deltas are NEGATIVE (the controls move the coefficient UP from negative to positive). Implementation: official b1x2 package by Gelbach (2014), v4.1.0, vendored at libraries/stata/b/. Hand-validated against the b1x2 identity (assertion in 05\_expansion.do sec 10.9). Robust SEs (HC1; b1x2 does not support HC3). Methods reference: analysis/documentation/methods/gelbach\_decomposition.md. Significance: * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

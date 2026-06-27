@@ -1,0 +1,31 @@
+
+-----------------------------------------------------------------------------------------------------------------------------------
+package sortobs from http://fmwww.bc.edu/RePEc/bocode/s
+-----------------------------------------------------------------------------------------------------------------------------------
+
+TITLE
+      'SORTOBS': module to sort observations according to a specified order
+
+DESCRIPTION/AUTHOR(S)
+      
+       sortobs allows the user to sort observations by either (1) a
+      variable's specific values or (2) observation numbers.
+      Observations that are not specified in the command retain their
+      original, respective sort orders.
+      
+      KW: data management
+      KW: sort
+      
+      Requires: Stata version 8.2
+      
+      Distribution-Date: 20190719
+      
+      Author: Julian Reif , University of Illinois
+      Support: email jreif@illinois.edu
+      
+
+INSTALLATION FILES                                  (click here to install)
+      sortobs.ado
+      sortobs.hlp
+-----------------------------------------------------------------------------------------------------------------------------------
+(click here to return to the previous screen)

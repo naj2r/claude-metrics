@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Absinthe-canton tiering: how does broadening the dummy change the vineyard effect?}
+\label{tab:absinthe_tier}
+\begin{tabularx}{\linewidth}{@{}lCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)} \tabularnewline \midrule
+{Variable}&{}&{}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+absinthe\_dummy\_broad\_coef&&0.380&
+absinthe\_dummy\_broad\_stderr&&(14.7)&
+absinthe\_dummy\_coef&--11.0&&
+absinthe\_dummy\_stderr&(12.6)&&
+vineyard\_per\_cap\_coef&413*&485*&460*
+vineyard\_per\_cap\_stderr&(205)&(239)&(248)
+french\_share\_coef&--24.6***&--28.5**&--21.3
+french\_share\_stderr&(8.31)&(10.8)&(14.1)
+catholic\_share\_coef&6.85&8.52&6.55
+catholic\_share\_stderr&(4.63)&(4.95)&(5.29)
+absinthe\_dummy\_any\_coef&&&--8.30
+absinthe\_dummy\_any\_stderr&&&(13)
+\_cons\_coef&62.7***&61.5***&62.5***
+\_cons\_stderr&(3.66)&(3.77)&(4.06)
+N&25&25&25
+r2&0.564&0.538&0.554
+spec&absinthe\_tier\_ne&absinthe\_tier\_ne\_vd&absinthe\_tier\_ne\_vd\_ge
+model&ols&ols&ols
+dropped&&&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: KEY spec with tiered absinthe-canton dummies. Col. 1: NE only (Val-de-Travers heartland; Pernod 1797). Col. 2: NE + VD (incl. Yverdon Kübler \& Wyss). Col. 3: NE + VD + GE (any documented production). Vineyard coefficient should be stable across tiering choices if the wine-protection mechanism is distinct from absinthe-employment effects. HC3 SEs. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

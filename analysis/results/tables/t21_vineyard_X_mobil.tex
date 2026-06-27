@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Vineyard x mobilization interaction (LitA5; C.6)}
+\label{tab:vine_X_mobil}
+\begin{tabularx}{\linewidth}{@{}lC@{}}
+
+\toprule
+&{(1)} \tabularnewline \midrule
+{Variable}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+vine\_c\_c6\_coef&507*
+vine\_c\_c6\_stderr&(258)
+mobil\_c\_coef&--0.405
+mobil\_c\_stderr&(0.255)
+vine\_X\_mobil\_coef&10.1
+vine\_X\_mobil\_stderr&(49.9)
+french\_share\_coef&--23.3*
+french\_share\_stderr&(12.6)
+catholic\_share\_coef&6.15
+catholic\_share\_stderr&(5.06)
+\_cons\_coef&64.7***
+\_cons\_stderr&(3.35)
+N&25
+r2&0.627
+spec&C6\_vineyard\_X\_mobil
+model&ols
+dropped&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Vineyard x mobilization interaction (LitA5: turnout x vote interaction). Tests whether the wine-industry rent-seeking effect amplifies in cantons that mobilized differentially on vote \\#68. Both interaction inputs are mean-centered (vine\\_c\\_c6, mobil\\_c) so main effects represent slopes evaluated at the mean of the moderator. KEY-spec controls (french\\_share, catholic\\_share) included. A positive interaction would imply mobilization amplified the wine-rent-seeking effect (consistent with the Olson 1965 organizational-strength prediction); a null interaction would imply mobilization is an independent channel rather than a moderator. HC3 robust SEs in parentheses. N=25 cantons. * p<0.10, ** p<0.05, *** p<0.01.}
+\end{table}
+\end{document}

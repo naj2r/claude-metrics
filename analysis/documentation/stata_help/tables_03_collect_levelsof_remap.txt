@@ -1,0 +1,2656 @@
+collect label — Manage custom labels in a collection 118
+
+Menu
+collect label dim
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+collect label levels
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+collect label save
+Statistics > Summaries, tables, and tests > Tables and collections > Collection labels > Save labels
+
+collect label use
+Statistics > Summaries, tables, and tests > Tables and collections > Collection labels > Use labels
+
+collect label drop
+Statistics > Summaries, tables, and tests > Tables and collections > Collection labels > Drop labels
+
+collect label list
+Statistics > Summaries, tables, and tests > Tables and collections > Collection labels > List labels
+
+Syntax
+Label a dimension
+collect label dim dim ”label” [ , name(cname) modify ]
+
+Label dimension levels
+collect label levels dim level ”label” [ level ”label” ... ]
+
+[ , name(cname) modify replace ]
+
+Save labels to disk
+collect label save filename [ , name(cname) replace ]
+
+Use labels from disk
+collect label use filename [ , name(cname) modify replace ]
+
+Drop labels for a dimension
+collect label drop dim [ , name(cname) ]
+
+List labels for a dimension
+collect label list dim [ , name(cname) all ]
+
+where cname is a collection name, dim is a dimension in the specified collection, and level is a level of
+this dimension.
+
+collect label — Manage custom labels in a collection 119
+
+If filename is specified without an extension, .stjson is assumed for both collect label save and
+collect label use. If filename contains embedded spaces, enclose it in double quotes.
+
+Options
+Options are presented under the following headings:
+Options for collect label dim
+Options for collect label levels
+Options for collect label save
+Options for collect label use
+Option for collect label drop
+Options for collect label list
+
+Options for collect label dim
+name(cname) specifies the collection to which the dimension label is to be applied. By default, the
+dimension label is applied to the current collection.
+modify specifies that an existing (nonempty) dimension label is to be modified. By default, collect
+label dim applies labels only to dimensions with empty labels.
+
+Options for collect label levels
+name(cname) specifies the collection to which the level labels are to be applied. By default, the level
+labels are applied to the current collection.
+modify specifies that existing (nonempty) labels on dimension levels are to be modified. By default,
+new labels specified using collect label levels are applied only to levels without existing labels,
+and those with existing labels will remain unchanged.
+replace specifies that all existing labels for the levels of dimension dim be dropped and only the new
+level labels be applied.
+
+Options for collect label save
+name(cname) specifies the collection from which labels are to be saved. By default, the labels from the
+current collection are saved.
+replace permits collect label save to overwrite an existing file.
+
+Options for collect label use
+name(cname) specifies the collection to which the labels in filename will be applied. By default, the
+labels in filename will be applied to the current collection.
+modify specifies that existing (nonempty) labels on dimensions and dimension levels are to be modified.
+By default, the labels in filename are applied only to dimensions and levels of dimensions without
+existing labels, and those with existing labels remain unchanged.
+replace specifies that all existing labels on dimensions and dimension levels be dropped and only the
+new labels in filename be used.
+
+collect label — Manage custom labels in a collection 120
+
+Option for collect label drop
+name(cname) specifies the collection for which labels are to be dropped. By default, labels are dropped
+for the dimension in the current collection.
+
+Options for collect label list
+name(cname) specifies the collection for which labels are to be listed. By default, labels are listed for
+the dimension in the current collection.
+all specifies that all levels of dim be shown in the list, including those without a label.
+
+Remarks and examples
+Labels of dimensions and their levels allow us to quickly understand what values are being presented
+in a table.
+When you use collect get or the collect prefix, some labels are automatically applied to dimensions and levels of dimensions in your collection. When you have variable and value labels on the variables in your dataset, those labels will be included in your collection as well, and they will be displayed
+in tables created from it. In addition, Stata provides default labels for dimensions such as the result
+dimension, which means that the statistics reported on the table will have meaningful labels. However,
+for a given table, it is often necessary to modify labels. For instance, value labels from the dataset may
+be longer than desired for a column header, or you may prefer a different description than the default
+provided by Stata for the statistics in your table. collect label allows you to make these changes.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981) to fit two models. We collect the coefficients ( r b) and use the
+quietly prefix to suppress the output. Then, we arrange the items in our collection with collect
+layout. We place the variable names on the rows and the statistics (result) from each command
+(cmdset) on the columns:
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect _r_b: regress bpsystol bmi
+. quietly: collect _r_b: regress bpsystol bmi age
+. collect layout (colname) (cmdset#result)
+Collection: default
+Rows: colname
+Columns: cmdset#result
+Table 1: 3 x 2
+1
+2
+Coefficient Coefficient
+Body mass index (BMI)
+Age (years)
+Intercept
+
+1.656894
+88.56855
+
+1.304128
+.5883367
+69.58451
+
+Each covariate is a level of the dimension colname, and the levels of colname are labeled with the
+variable labels from the current dataset in memory, by default. The constant is labeled as Intercept.
+Say that we want to change that label to Constant. We can use collect label levels to change the
+label. We will first need to know the name of this level within the colname dimension. To determine the
+name, we can simply list all the levels of the dimension and their corresponding labels as follows:
+
+collect label — Manage custom labels in a collection 121
+. collect label list colname
+Collection: default
+Dimension: colname
+Label: Covariate names and column names
+Level labels:
+_cons Intercept
+age Age (years)
+bmi Body mass index (BMI)
+
+Here we see the label for the dimension as well as each of its levels. By default, the dimension label
+is omitted from the table. We find that the name of the level for the constant is cons. Because this level
+already has a label, we need the modify option with collect label levels to override the existing
+label. In the table above, we also see 1 and 2 in the column headers. These identify our two regression
+commands; they are the levels of the cmdset dimension, which are unlabeled. We could learn this by
+typing
+. collect label list cmdset, all
+
+We will label the columns as Model 1 and Model 2. Because the levels of cmdset do not have labels,
+we do not need to specify any options. After applying our labels, we get a preview of the table:
+. collect label levels colname _cons ”Constant”, modify
+. collect label levels cmdset 1 ”Model 1” 2 ”Model 2”
+. collect preview
+Model 1
+Model 2
+Coefficient Coefficient
+Body mass index (BMI)
+Age (years)
+Constant
+
+1.656894
+88.56855
+
+1.304128
+.5883367
+69.58451
+
+There may be certain labels that you find yourself modifying for many tables. For example, if you
+create many tables of estimation results, you might change the label Coefficient to simply Coef. in
+each table. Instead of doing this for each collection separately, you can save a set of labels with collect
+label save. Then, you can use collect label use with option modify to apply these labels to other
+collections.
+
+Stored results
+All collect label subcommands store the following in s():
+Macros
+s(collection)
+s(dimname)
+
+name of collection
+dimension name
+
+collect label — Manage custom labels in a collection 122
+
+collect label list additionally stores the following in s():
+Macros
+s(label)
+s(level#)
+s(label#)
+s(k)
+
+dimension label
+level of dimension
+label for level of dimension
+number of dimension levels with a label
+
+References
+Huber, C. 2021. Customizable tables in Stata 17, part 2: The new collect command. The Stata Blog: Not Elsewhere
+Classified. https://blog.stata.com/2021/06/07/customizable-tables-in-stata-17-part-2-the-new-collect-command/.
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect dims — List dimensions in a collection
+[TABLES] collect levelsof — List levels of a dimension
+
+collect levelsof — List levels of a dimension
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Syntax
+Reference
+
+Option
+Also see
+
+Description
+collect levelsof lists the levels of a dimension in a collection.
+
+Quick start
+List the levels of dimension dim1 in the current collection
+collect levelsof dim1
+List the levels of dimension dim2 in the collection c2
+collect levelsof dim2, name(c2)
+
+Syntax
+collect levelsof dim [ , name(cname) ]
+
+where dim is a dimension in the collection and cname is the name of a collection.
+
+Option
+name(cname) specifies the collection for which dimension levels are to be listed. If this option is not
+specified, the levels of the specified dimension will be listed for the current collection.
+
+Remarks and examples
+collect levelsof lists the levels of the specified dimension.
+
+Exploring dimension levels is often helpful in the process of table building because many collect
+subcommands take levels of dimensions as arguments. For example, the list provided by collect
+levelsof can be useful when arranging values in the collection into a table by using collect layout.
+If you wish to report only a subset of the results that were collected, you can list the desired levels in
+collect layout, and you can first determine the names of those levels from the results of collect
+levelsof.
+
+123
+
+collect levelsof — List levels of a dimension 124
+
+Stored results
+collect levelsof stores the following in s():
+Macros
+s(collection)
+s(dimname)
+s(levels)
+
+name of collection
+specified dimension
+list of levels for the specified dimension
+
+Reference
+Huber, C. 2021. Customizable tables in Stata 17, part 2: The new collect command. The Stata Blog: Not Elsewhere
+Classified. https://blog.stata.com/2021/06/07/customizable-tables-in-stata-17-part-2-the-new-collect-command/.
+
+Also see
+[TABLES] collect label — Manage custom labels in a collection
+[TABLES] collect dims — List dimensions in a collection
+
+collect notes — Add table notes in a collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect notes manages the creation of table notes in a collection.
+
+Quick start
+Add a table note that describes the cell information for continuous variables
+collect notes ”mean (sd)”
+Add a table note that describes the cell information for indicator variables
+collect notes ”count percent%”
+Insert a note at the beginning of the list of notes
+collect notes 0: ”Intercept estimates are baseline odds.”
+Replace the first note with a custom note for labels on significant results
+collect notes 1: ”*** p<0.001, ** p<0.01, * p<0.05”
+Clear all table notes
+collect notes, clear
+Remove the third note
+collect notes 3:, clear
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+125
+
+collect notes — Add table notes in a collection 126
+
+Syntax
+Add a table note at the end of the list of notes
+collect notes ”string” [ , options ]
+
+Add, replace, or remove a table note in a specified position
+collect notes #: [ ”string” ] [ , options ]
+
+Remove all table notes
+collect notes, clear [ name(cname) ]
+
+The table note is added to the end of the list of notes unless #: is specified.
+When # is 0, the note is added to the beginning of the list of notes.
+options
+
+Description
+
+name(cname)
+clear
+fortags(taglist)
+
+specify custom table note for collection cname
+remove custom table note
+specify tags identifying tables for which to target the note
+
+Options
+name(cname) specifies the collection to which the table note is added or removed. By default, the change
+is applied to the current collection.
+clear removes all notes or the note in the specified position.
+fortags(taglist) specifies conditions for selecting which tables the note is added or removed.
+
+Within the taglist, if tags are joined by #, tables having all of these tags are selected; if tags are
+separated by a space, tables with any of these tags are selected.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[levels]
+dimension is a dimension in the collection.
+levels are levels of the corresponding dimension.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+collect notes — Add table notes in a collection 127
+
+Remarks and examples
+Remarks are presented under the following headings:
+Introduction
+Adding notes to a table
+Removing notes
+Targeting notes to a specific table
+
+Introduction
+Many times, you will want to add notes to a table to provide the reader with crucial information, such
+as details about the sample or an explanation of the notation used in the table. With collect notes, you
+can add notes to your table with any information you feel is necessary. Notes will be added to the table
+in plain text, but you can customize the appearance style of the notes with collect style notes. For
+example, you can specify the font, text color, and more.
+After adding several notes to a table, you may decide that one or more of those notes is not needed.
+You can remove all the notes in a collection or a specific note by referring to the number of the note. If
+you are unsure about the order of the notes, you can list them with collect query notes.
+Additionally, you might be labeling significant results with collect stars. If you add an explanatory note with collect stars, that note will be listed before any notes you specify with collect notes.
+
+collect notes — Add table notes in a collection 128
+
+Adding notes to a table
+Notes are a great place to tell the reader about groups that may not be present in our sample and
+consequently in our table. For example, we use data from the Second National Health and Nutrition
+Examination Survey (NHANES II) (McDowell et al. 1981). We wish to fit a model for systolic blood
+pressure as a function of agegrp (age group) and race.
+First, we create an empty cell by replacing agegrp with a missing value for individuals in the third
+level of race and sixth level of agegrp. Then, we collect the regression results and format our coefficients ( r b) to two decimal places with collect style cell. Finally, we lay out our table with our
+variables on the rows and coefficients in a single column:
+. use https://www.stata-press.com/data/r19/nhanes2l
+(Second National Health and Nutrition Examination Survey)
+. replace agegrp = . if race==3 & agegrp==6
+(11 real changes made, 11 to missing)
+. quietly: collect _r_b: regress bpsystol agegrp#race
+. collect style cell result[_r_b], nformat(%5.2f)
+. collect layout (colname) (result)
+Collection: default
+Rows: colname
+Columns: result
+Table 1: 19 x 1
+Coefficient
+20--29 # White
+20--29 # Black
+20--29 # Other
+30--39 # White
+30--39 # Black
+30--39 # Other
+40--49 # White
+40--49 # Black
+40--49 # Other
+50--59 # White
+50--59 # Black
+50--59 # Other
+60--69 # White
+60--69 # Black
+60--69 # Other
+70+ # White
+70+ # Black
+70+ # Other
+Intercept
+
+0.00
+-0.27
+-5.15
+2.45
+5.46
+-0.26
+8.44
+18.07
+10.92
+17.43
+25.62
+8.40
+23.26
+29.49
+34.57
+30.25
+33.69
+0.00
+117.51
+
+We see that there are no individuals in the 70+ age group who belong to the Other category. By
+default, empty cells are included in the table. Instead of displaying the empty row, we would like to add
+a note to point out that our sample did not include any individuals 70 years old, or older, that were in the
+Other race category. First, we omit the empty cells from our table with collect style showempty.
+Then, we add a note about the reference category and a note about the empty cell. Because we want
+to place the Other category between quotes, we use compound double quotes for our second note; see
+[U] 18.3.5 Double quotes.
+
+collect notes — Add table notes in a collection 129
+. collect style showempty off
+. collect notes
+> ”The reference category is white individuals in the 20--29 age group.”
+. collect notes
+> ‘”There were not any 70+ individuals in the ”Other” category in our sample.”’
+
+Now, we can preview our table with the notes:
+. collect preview
+Coefficient
+20--29 # White
+20--29 # Black
+20--29 # Other
+30--39 # White
+30--39 # Black
+30--39 # Other
+40--49 # White
+40--49 # Black
+40--49 # Other
+50--59 # White
+50--59 # Black
+50--59 # Other
+60--69 # White
+60--69 # Black
+60--69 # Other
+70+ # White
+70+ # Black
+Intercept
+
+0.00
+-0.27
+-5.15
+2.45
+5.46
+-0.26
+8.44
+18.07
+10.92
+17.43
+25.62
+8.40
+23.26
+29.49
+34.57
+30.25
+33.69
+117.51
+
+The reference category is white individuals in the 20--29 age group.
+There were not any 70+ individuals in the ”Other” category in our sample.
+
+We did not number our notes, so each note is numbered sequentially.
+
+collect notes — Add table notes in a collection 130
+
+To complete this table, we will add stars to represent 𝑝-values that are less than 0.01, less than 0.05,
+and less than 0.1. We added extra spaces so that the stars are left-aligned. Additionally, we attach the
+stars to the coefficients and use the shownote option to add a note explaining what the stars represent:
+. collect stars _r_p 0.01 ”***” 0.05 ”** ” 0.1 ”*
+> attach(_r_b) shownote
+
+” 1 ”
+
+”,
+
+. collect preview
+Coefficient
+20--29 # White
+20--29 # Black
+20--29 # Other
+30--39 # White
+30--39 # Black
+30--39 # Other
+40--49 # White
+40--49 # Black
+40--49 # Other
+50--59 # White
+50--59 # Black
+50--59 # Other
+60--69 # White
+60--69 # Black
+60--69 # Other
+70+ # White
+70+ # Black
+Intercept
+
+0.00
+-0.27
+-5.15*
+2.45***
+5.46***
+-0.26
+8.44***
+18.07***
+10.92***
+17.43***
+25.62***
+8.40*
+23.26***
+29.49***
+34.57***
+30.25***
+33.69***
+117.51***
+
+*** p<.01, ** p<.05, * p<.1, p<1
+The reference category is white individuals in the 20--29 age group.
+There were not any 70+ individuals in the ”Other” category in our sample.
+
+The note regarding the stars will always be placed before any notes we add with collect notes.
+
+collect notes — Add table notes in a collection 131
+
+It seems we forgot to note the source of the data. We would like to add another note, but this time we
+will add it to the beginning of the list of notes by making it the zeroth note. Then, we will preview the
+table once more:
+. collect notes 0: ”Source: NHANES II”
+. collect preview
+Coefficient
+20--29 # White
+20--29 # Black
+20--29 # Other
+30--39 # White
+30--39 # Black
+30--39 # Other
+40--49 # White
+40--49 # Black
+40--49 # Other
+50--59 # White
+50--59 # Black
+50--59 # Other
+60--69 # White
+60--69 # Black
+60--69 # Other
+70+ # White
+70+ # Black
+Intercept
+
+0.00
+-0.27
+-5.15*
+2.45***
+5.46***
+-0.26
+8.44***
+18.07***
+10.92***
+17.43***
+25.62***
+8.40*
+23.26***
+29.49***
+34.57***
+30.25***
+33.69***
+117.51***
+
+*** p<.01, ** p<.05, * p<.1, p<1
+Source: NHANES II
+The reference category is white individuals in the 20--29 age group.
+There were not any 70+ individuals in the ”Other” category in our sample.
+
+collect notes — Add table notes in a collection 132
+
+Removing notes
+In the section above, we added three notes to our table. However, we now decide that the note regarding the reference category is not needed. To remove just this note, we can preview our table and
+count from the first note to find that we want to remove the second note. But suppose we are preparing
+our notes before laying out our table. In this case, we can simply list the notes in a collection, and the
+appearance styles for these notes, with collect query notes:
+. collect query notes
+Table note styles
+Collection: default
+Note 1: Source: NHANES II
+Note 2: The reference category is white individuals in the 20--29 age
+> group.
+Note 3: There were not any 70+ individuals in the ”Other” category in
+> our sample.
+Font family:
+Font size:
+Font color:
+Font weight: normal
+Font style: normal
+Font variant: normal
+Font strikeout: normal
+Font underline: none
+SMCL tag:
+LaTeX macro:
+Background color:
+Foreground color:
+Shading pattern:
+
+Now we see that we want to remove the second note. Below, we remove it and then list our note
+information once more:
+. collect notes 2:, clear
+. collect query notes
+Table note styles
+Collection: default
+Note 1: Source: NHANES II
+Note 2: There were not any 70+ individuals in the ”Other” category in
+> our sample.
+Font family:
+Font size:
+Font color:
+Font weight: normal
+Font style: normal
+Font variant: normal
+Font strikeout: normal
+Font underline: none
+SMCL tag:
+LaTeX macro:
+Background color:
+Foreground color:
+Shading pattern:
+
+Here we see that our remaining notes are automatically renumbered.
+
+collect notes — Add table notes in a collection 133
+
+Targeting notes to a specific table
+Suppose your layout involves arranging more than one table, but some notes should show up only
+with a specific table. Use the fortags() option to target a note to a specific table.
+In the following, we add a group dimension so that we can arrange our estimation results into two
+tables. The first table will report the fitted model’s 𝐹 test, and the second table will report the fitted
+coefficients as in the previous examples.
+First, we use collect get to define the 𝑝-value result named p F corresponding with the 𝐹
+statistic result named F, collected from scalar e(F). Note that collect get tags custom expressions like the one for p F with program class[nclass] but that the scalar e(F) is tagged with
+program class[eclass]. We want to use collect stars to add significance labels to the F result as
+we did with the coefficients. However, collect stars requires that all tag elements match when attaching significance labels to other results in the collection, so we must use collect recode to make the
+𝑝-value and 𝐹 results have the same program class tag element. This allows us to apply our collect
+stars rules to results r p and p F and then attach the stars labels to the matching items with results
+r b and F. We plan to show the 𝐹 statistic with its degrees of freedom, so we apply some numeric
+formats to their results.
+. collect get p_F = Ftail(e(df_m),e(df_r),e(F)), tags(cmdset[1])
+. collect recode program_class nclass = eclass, fortags(program_class[nclass])
+(1 items recoded in collection default)
+. collect stars _r_p p_F 0.01 ”***” 0.05 ”** ” 0.1 ”*
+> attach(_r_b F) shownote
+
+” 1 ”
+
+”,
+
+. collect style cell result[F], nformat(%9.2f)
+. collect style cell result[df_m df_r], nformat(%12.0fc)
+
+Next, we add new tag elements to help target the results for our two tables. We want the model’s 𝐹
+test to go in the first table, so we tag those results with group[1]. We want the coefficients to go in the
+second table, so we tag those results with group[2]. Note that we include the 𝑝-value results in these
+calls to collect addtags so that collect stars can attach the significance labels properly.
+. collect addtags group[1], fortags(result[df_m df_r F p_F])
+(4 items changed in collection default)
+. collect addtags group[2], fortags(result[_r_b _r_p])
+(36 items changed in collection default)
+. collect addtags colname[_hide], fortags(group[1])
+(4 items changed in collection default)
+
+collect notes — Add table notes in a collection 134
+
+Now we can use collect layout to arrange our tables using the new group dimension. We also use
+collect style header to hide the title and levels of dimension group. At this point, our notes are all
+common. None of our notes are targeted to a specific table, so they show up under each table.
+. collect style header group, title(hide) level(hide)
+. collect layout (colname) (result[_r_b df_m df_r F]) (group)
+Collection: default
+Rows: colname
+Columns: result[_r_b df_m df_r F]
+Tables: group
+Table 1: 1 x 3
+Table 2: 18 x 1
+Model DF Residual DF F statistic
+16
+
+10,323
+
+196.61***
+
+*** p<.01, ** p<.05, * p<.1, p<1
+Source: NHANES II
+There were not any 70+ individuals in the ”Other” category in our sample.
+Coefficient
+20--29 # White
+20--29 # Black
+20--29 # Other
+30--39 # White
+30--39 # Black
+30--39 # Other
+40--49 # White
+40--49 # Black
+40--49 # Other
+50--59 # White
+50--59 # Black
+50--59 # Other
+60--69 # White
+60--69 # Black
+60--69 # Other
+70+ # White
+70+ # Black
+Intercept
+
+0.00
+-0.27
+-5.15*
+2.45***
+5.46***
+-0.26
+8.44***
+18.07***
+10.92***
+17.43***
+25.62***
+8.40*
+23.26***
+29.49***
+34.57***
+30.25***
+33.69***
+117.51***
+
+*** p<.01, ** p<.05, * p<.1, p<1
+Source: NHANES II
+There were not any 70+ individuals in the ”Other” category in our sample.
+
+collect notes — Add table notes in a collection 135
+
+Finally, we can add notes targeted to specific tables. Recall that the second note in our collection—the
+note about individuals 70 years old or older that were in the Other race category—is not targeted, so we
+remove it and then add it back as a targeted note for the second table showing the coefficients. We also
+add a note about the null hypothesis for the table reporting the 𝐹 test.
+. collect notes 2:, clear
+. collect notes
+> ‘”There were not any 70+ individuals in the ”Other” category in our sample.”’
+> , fortags(group[2])
+. collect notes ”Null hypothesis is all coefficients are zero.”,
+> fortags(group[1])
+. collect preview
+Model DF Residual DF F statistic
+16
+
+10,323
+
+196.61***
+
+*** p<.01, ** p<.05, * p<.1, p<1
+Source: NHANES II
+Null hypothesis is all coefficients are zero.
+Coefficient
+20--29 # White
+20--29 # Black
+20--29 # Other
+30--39 # White
+30--39 # Black
+30--39 # Other
+40--49 # White
+40--49 # Black
+40--49 # Other
+50--59 # White
+50--59 # Black
+50--59 # Other
+60--69 # White
+60--69 # Black
+60--69 # Other
+70+ # White
+70+ # Black
+Intercept
+
+0.00
+-0.27
+-5.15*
+2.45***
+5.46***
+-0.26
+8.44***
+18.07***
+10.92***
+17.43***
+25.62***
+8.40*
+23.26***
+29.49***
+34.57***
+30.25***
+33.69***
+117.51***
+
+*** p<.01, ** p<.05, * p<.1, p<1
+Source: NHANES II
+There were not any 70+ individuals in the ”Other” category in our sample.
+
+collect notes — Add table notes in a collection 136
+
+Here we call collect query notes to get a report on the common notes, targeted notes, and the
+notes styles.
+. collect query notes
+Table note styles
+Collection: default
+Common notes:
+Note 1: Source: NHANES II
+Notes for tag: group[1]
+Note 1: Null hypothesis is all coefficients are zero.
+Notes for tag: group[2]
+Note 1: There were not any 70+ individuals in the ”Other” category in
+> our sample.
+Font family:
+Font size:
+Font color:
+Font weight: normal
+Font style: normal
+Font variant: normal
+Font strikeout: normal
+Font underline: none
+SMCL tag:
+LaTeX macro:
+Background color:
+Foreground color:
+Shading pattern:
+
+Stored results
+collect notes stores the following in s():
+Macros
+s(collection)
+
+name of collection
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect style notes — Collection styles for table notes
+[TABLES] collect query — Query collection style properties
+[TABLES] collect stars — Add stars for significant results in a collection
+
+collect query — Query collection style properties
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Syntax
+Also see
+
+Option
+
+Description
+collect query displays the settings of various collection parameters.
+
+Quick start
+Display the current layout specification
+collect query layout
+
+Display the current row header style properties, such as the binder used to separate factor variables from
+their levels and whether row header elements are stacked or placed in separate columns
+collect query row
+Display the current putdocx settings, such as the table width and cell spacing
+collect query putdocx
+Display the levels of dimension dim1 that will be automatically displayed when dim1 is included in a
+table
+collect query autolevels dim1
+
+Syntax
+Query the current layout specification
+collect query layout [ , name(cname) ]
+
+Query automatic levels for a dimension
+collect query autolevels dim [ , name(cname) ]
+
+Query row header style properties
+collect query row [ , name(cname) ]
+
+Query column header style properties
+collect query column [ , name(cname) ]
+
+Query table header style properties
+collect query table [ , name(cname) ]
+
+137
+
+collect query — Query collection style properties 138
+
+Query dimension header style properties
+collect query header [ dim [ level ] ] [ , name(cname) ]
+
+Query collection styles for HTML files
+collect query html [ , name(cname) ]
+
+Query collection styles for Microsoft Word files
+collect query putdocx [ , name(cname) ]
+
+Query collection styles for PDF files
+collect query putpdf [ , name(cname) ]
+
+Query collection styles for SMCL files
+collect query smcl [ , name(cname) ]
+
+Query collection styles for LATEX files
+collect query tex [ , name(cname) ]
+
+Query collection styles for plain text files
+collect query txt [ , name(cname) ]
+
+Query collection styles for displaying base levels
+collect query showbase [ , name(cname) ]
+
+Query collection styles for displaying empty cells
+collect query showempty [ , name(cname) ]
+
+Query collection styles for displaying omitted coefficients
+collect query showomit [ , name(cname) ]
+
+Query cell appearance styles
+collect query cell [ tag ] [ , name(cname) ]
+
+Query collection style for intercept position
+collect query cons [ , name(cname) ]
+
+Query collection styles for identifying significant results
+collect query stars [ , name(cname) ]
+
+collect query — Query collection style properties 139
+
+Query collection styles for table titles
+collect query title [ , name(cname) ]
+
+Query collection styles for table notes
+collect query notes [ , name(cname) ]
+
+Query collection composite results
+collect query composite [ , name(cname) ]
+
+Query collection composite result definition
+collect query composite clevel [ , name(cname) ]
+
+where cname is a collection name, dim is a dimension in the specified collection, level is a level of the
+specified dimension, clevel is a composite result, and tag identifies cells in the table. tag is one or more
+dim[ level] joined by #.
+
+Option
+name(cname) specifies the collection for which settings should be displayed. By default, settings are
+displayed for the current collection.
+
+Remarks and examples
+collect query provides information on collection style properties. This can be useful when you
+want information on style properties without having to preview the table in a collection or lay out a table.
+For example, perhaps you have adopted a colleague’s layout and style with collect style use. You
+can type
+. collect query layout
+
+to see the layout specification, or type
+. collect query autolevels result
+
+to see what levels of dimension result will be automatically displayed.
+Or perhaps you are building a table, and you want to check whether the column header style properties
+are to your liking. You can type
+. collect query column
+
+and see which characters will be used to delimit interaction terms, whether extra spaces will be inserted
+between columns, and more.
+
+collect query — Query collection style properties 140
+
+Stored results
+collect query layout stores the following in s():
+Macros
+s(collection)
+s(rows)
+s(columns)
+s(tables)
+s(k tables)
+s(table#)
+
+name of collection
+rows specification
+columns specification
+tables specification
+number of tables
+layout for the #th table
+
+collect query autolevels stores the following in s():
+Macros
+s(dimname)
+s(levels)
+s(collection)
+
+name of dimension
+levels of dimension to be automatically displayed
+name of collection
+
+collect query row after collect style row split stores the following in s():
+Macros
+s(span)
+s(position)
+s(dups)
+s(spacer)
+s(binder)
+s(nobinder)
+s(bardelimiter)
+s(atdelimiter)
+s(delimiter)
+s(nodelimiter)
+s(arrangement)
+s(collection)
+
+true or false
+left or right
+repeat, first, or center
+on or off; whether a blank line is added between stacked row dimensions
+binder used to separate factor variables from their levels
+on or off; whether to bind factor variables and their levels
+delimiter for interaction terms containing the | symbol
+delimiter for interaction terms containing the @ symbol
+delimiter for interaction terms composed in a single cell
+on or off
+split
+name of collection
+
+collect query row after collect style row stack stores the following in s():
+Macros
+s(abbreviate)
+s(truncate)
+s(wrap)
+s(wrapon)
+s(length)
+s(indent)
+s(spacer)
+s(binder)
+s(nobinder)
+s(bardelimiter)
+s(atdelimiter)
+s(delimiter)
+s(nodelimiter)
+s(arrangement)
+s(collection)
+
+on or off
+tail, middle, or head
+# of lines allowed for long headers, 0 if not specified
+word or length
+maximum display length for stacked headers
+on or off; whether stacked headers are to be indented
+on or off; whether a blank line is added between stacked row dimensions
+binder used to separate factor variables from their levels
+on or off; whether to bind factor variables and their levels
+delimiter for interaction terms containing the | symbol
+delimiter for interaction terms containing the @ symbol
+delimiter for interaction terms composed in a single cell
+on or off
+stack
+name of collection
+
+collect query — Query collection style properties 141
+
+collect query column stores the following in s():
+Macros
+s(width)
+s(extraspace)
+s(position)
+s(dups)
+s(binder)
+s(bardelimiter)
+s(atdelimiter)
+s(delimiter)
+s(nodelimiter)
+s(collection)
+
+asis or equal
+# of spaces used to pad columns
+top or bottom
+repeat, first, or center
+binder used to separate factor variables from their levels
+delimiter for interaction terms containing the | symbol
+delimiter for interaction terms containing the @ symbol
+delimiter for interaction terms composed in a single cell
+on or off
+name of collection
+
+collect query table stores the following in s():
+Macros
+s(dimbinder)
+s(dimdelimiter)
+s(binder)
+s(bardelimiter)
+s(atdelimiter)
+s(delimiter)
+s(nodelimiter)
+s(collection)
+
+delimiter used to separate dimensions from their levels
+delimiter for table headers
+binder used to separate factor variables from their levels
+delimiter for interaction terms containing the | symbol
+delimiter for interaction terms containing the @ symbol
+delimiter for interaction terms composed in a single cell
+on or off
+name of collection
+
+collect query header stores the following in s():
+Macros
+s(dimname)
+s(dimlevel)
+s(title)
+s(level)
+s(collection)
+
+name of dimension, if specified
+level of dimension, if specified
+label, name, or hide
+label, value, or hide
+name of collection
+
+collect query html stores the following in s():
+Macros
+s(useth)
+s(bcollapse)
+s(collection)
+
+true or false
+true or false
+name of collection
+
+collect query putdocx stores the following in s():
+Macros
+s(title)
+s(width)
+s(indent)
+s(cellspacing)
+s(halign)
+s(layout)
+s(cellmargin top)
+s(cellmargin bottom)
+s(cellmargin left)
+s(cellmargin right)
+s(note#)
+s(collection)
+
+table title
+table width
+table indentation from left margin
+spacing between adjacent cells and edges of the table
+left, right, or center
+fixed, autofitwindow, or autofitcontents
+margin between text and top cell border
+margin between text and bottom cell border
+margin between text and left cell border
+margin between text and right cell border
+note #
+name of collection
+
+collect query — Query collection style properties 142
+
+collect query putpdf stores the following in s():
+Macros
+s(title)
+s(width)
+s(indent)
+s(halign)
+s(spacing before)
+s(spacing after)
+s(note#)
+s(collection)
+
+table title
+table width
+table indentation from left margin
+left, right, or center
+spacing before table
+spacing after table
+note #
+name of collection
+
+collect query smcl stores the following in s():
+Macros
+s(wrapnotes)
+s(collection)
+
+true or false
+name of collection
+
+collect query tex stores the following in s():
+Macros
+s(centering)
+s(begintable)
+s(collection)
+
+true or false
+true or false
+name of collection
+
+collect query txt stores the following in s():
+Macros
+s(wrapnotes)
+s(collection)
+
+true or false
+name of collection
+
+collect query showbase stores the following in s():
+Macros
+s(showbase)
+s(collection)
+
+off, factor, or all
+name of collection
+
+collect query showempty stores the following in s():
+Macros
+s(showempty)
+s(collection)
+
+on or off
+name of collection
+
+collect query showomit stores the following in s():
+Macros
+s(showomit)
+s(collection)
+
+on or off
+name of collection
+
+collect query — Query collection style properties 143
+
+collect query cell stores the following in s():
+Macros
+s(cridelimiter)
+delimiter for credible intervals
+s(cidelimiter)
+delimiter for confidence intervals
+s(sformat)
+string format
+s(nformat)
+numeric format
+s(valign)
+vertical alignment
+s(halign)
+horizontal alignment
+s(shading pattern)
+fill pattern
+s(shading foreground)
+foreground color
+s(shading background)
+background color
+s(latex)
+LATEX macro
+s(smcl)
+SMCL directive
+s(font underline)
+underline pattern
+s(font strikeout)
+normal or strikeout
+s(font variant)
+allcaps, smallcaps, or normal
+s(font style)
+whether text is formatted as italic
+s(font weight)
+whether text is formatted as bold
+s(font color)
+font color
+s(font size)
+font size
+s(font family)
+font family
+s(dborder color)
+color for diagonal cell borders
+s(dborder pattern)
+pattern for diagonal cell borders
+s(dborder direction)
+down, up, or both
+s(margin left width)
+margin between text and left cell border
+s(margin right width)
+margin between text and right cell border
+s(margin top width)
+margin between text and top cell border
+s(margin bottom width)
+margin between text and bottom cell border
+s(border left color)
+color for left cell borders
+s(border left pattern)
+pattern for left cell borders
+s(border left width)
+width for left cell borders
+s(border right color)
+color for left cell borders
+s(border right pattern) pattern for left cell borders
+s(border right width)
+width for left cell borders
+s(border top color)
+color for left cell borders
+s(border top pattern)
+pattern for left cell borders
+s(border top width)
+width for left cell borders
+s(border bottom color)
+color for left cell borders
+s(border bottom pattern) pattern for left cell borders
+s(border bottom width)
+width for left cell borders
+s(tag)
+tags identifying table cells to which styles were applied
+s(collection)
+name of collection
+
+collect query cons stores the following in s():
+Macros
+s(position)
+s(collection)
+
+first or last
+name of collection
+
+collect query — Query collection style properties 144
+
+collect query stars stores the following in s():
+Macros
+s(type)
+s(results)
+s(attach)
+s(fortags)
+s(value1)
+s(label1)
+s(value2)
+s(label2)
+s(value3)
+s(label3)
+s(value4)
+s(label4)
+s(value5)
+s(label5)
+s(shownote)
+s(pvname)
+s(nformat)
+s(delimiter)
+s(prefix)
+s(suffix)
+s(note)
+s(collection)
+
+result or dimension
+resultID
+attachres
+taglist
+star cutoff value 1
+star label 1
+star cutoff value 2
+star label 2
+star cutoff value 3
+star label 3
+star cutoff value 4
+star label 4
+star cutoff value 5
+star label 5
+on or off; whether to show the stars note after the table
+note 𝑝-value name
+note numeric format
+note delimiter between labels
+note prefix, if specified
+note suffix, if specified
+the stars note
+name of collection
+
+collect query title stores the following in s():
+Macros
+s(shading pattern)
+s(shading foreground)
+s(shading background)
+s(latex)
+s(smcl)
+s(font underline)
+s(font strikeout)
+s(font variant)
+s(font style)
+s(font weight)
+s(font color)
+s(font size)
+s(font family)
+s(title)
+s(collection)
+
+fill pattern
+foreground color
+background color
+LATEX macro
+SMCL directive
+underline pattern
+normal or strikeout
+allcaps, smallcaps, or normal
+whether text is formatted as italic
+whether text is formatted as bold
+font color
+font size
+font family
+custom title
+name of collection
+
+collect query notes stores the following in s():
+Macros
+s(shading pattern)
+s(shading foreground)
+s(shading background)
+s(latex)
+s(smcl)
+s(font underline)
+s(font strikeout)
+s(font variant)
+s(font style)
+s(font weight)
+s(font color)
+s(font size)
+
+fill pattern
+foreground color
+background color
+LATEX macro
+SMCL directive
+underline pattern
+normal or strikeout
+allcaps, smallcaps, or normal
+whether text is formatted as italic
+whether text is formatted as bold
+font color
+font size
+
+collect query — Query collection style properties 145
+s(font family)
+s(note1)
+s(note2)
+s(note3)
+s(note#)
+s(k notes)
+s(tag1 note1)
+s(tag1 note2)
+s(tag1 note#)
+s(k tag1 notes)
+s(tag2 note1)
+s(tag2 note2)
+s(tag2 note#)
+s(k tag2 notes)
+s(tag#𝑡 note#𝑛 )
+s(k tag# notes)
+s(k notes tags)
+s(notes tags)
+s(tag1 notes tag)
+s(tag2 notes tag)
+s(tag#𝑡 notes tag)
+s(collection)
+
+font family
+first note
+second note
+third note
+#th note
+number of notes
+first note for the first tag
+second note for the first tag
+#th note for the first tag
+number of notes for the first tag
+first note for the second tag
+second note for the second tag
+#th note for the second tag
+number of notes for the second tag
+#𝑛 th note for the #𝑡 th tag
+number of notes for the #th tag
+number of notes tags
+tags for notes
+first tag
+second tag
+#𝑡 th tag
+name of collection
+
+collect query composite stores the following in s():
+Macros
+s(levels)
+s(collection)
+
+composite result levels
+name of collection
+
+collect query composite level stores the following in s():
+Macros
+s(override)
+s(trim)
+s(delimiter)
+s(elements)
+s(composite)
+s(collection)
+
+on or off; whether to override trim properties of elements
+on or off; whether to remove extra spaces from numeric format
+delimiter placed between elements
+composite result elements
+composite result level
+name of collection
+
+Also see
+[TABLES] collect layout — Specify table layout for the current collection
+[TABLES] collect style autolevels — Collection styles for automatic dimension levels
+[TABLES] collect style row — Collection styles for row headers
+[TABLES] collect style column — Collection styles for column headers
+
+collect recode — Recode dimension levels in a collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+References
+
+Description
+collect recode recodes dimension levels attached to values in the current collection.
+
+Quick start
+Recode level lev1 to newlevel and level lev2 to newlevel2 in dimension dim1
+collect recode dim1 lev1=newlevel lev2=newlevel2
+Same as above, but apply the recoded levels only to values in the collection tagged with dim2[lev3]
+collect recode dim1 lev1=newlevel lev2=newlevel2, fortags(dim2[lev3])
+Recode levels 2.catvar and 3.catvar in dimension dim2
+collect recode dim2 2.catvar=catvar2 3.catvar=catvar3
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+Syntax
+collect recode dim oldlevel = newlevel [oldlevel = newlevel ...]
+
+[ , name(cname) fortags(taglist) ]
+where dim is the name of a dimension in the collection, oldlevel is the name of an existing level in the
+dimension, and newlevel is the name of the level to which oldlevel is to be set.
+Levels r ci and r cri of dimension result are not allowed in oldlevel.
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection in which to recode the levels of the dimension. If this option is
+not specified, the change is made in the current collection.
+
+146
+
+collect recode — Recode dimension levels in a collection 147
+
+
+
+
+
+Options
+
+fortags(taglist) specifies conditions for selecting the values to which the recoded levels will be applied.
+Values with tags in taglist will have their levels recoded.
+
+Within the taglist, if tags are joined by #, values having all of these tags are selected; if tags are
+separated by a space, values with any of these tags are selected.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+levels are levels of the corresponding dimension.
+Levels r ci and r cri of dimension result are not allowed in taglist.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+Remarks and examples
+After collecting results, we occasionally need to recode levels of a dimension to lay out the table that
+we wish to create. collect recode replaces the existing levels of a dimension with newly specified
+levels.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). With the table command, we create a table with two regression
+results as well as the means for each dependent variable.
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly table (result colname) (statcmd),
+>
+command(regress bpsystol age weight)
+>
+command(regress bpdiast age weight)
+>
+statistic(mean bpsystol bpdiast) nformat(%6.3f)
+. collect style header statcmd, level(value)
+. collect preview
+1
+Mean
+Systolic blood pressure
+Diastolic blood pressure
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+2
+
+3
+130.882
+81.715
+
+0.638
+0.407
+71.271
+
+0.188
+0.312
+50.376
+
+collect recode — Recode dimension levels in a collection 148
+
+The statcmd dimension is used to identify the columns of the table. The regression results are tagged
+with statcmd[1] and statcmd[2] for bpsystol and bpdiast, respectively. The means of the dependent variables are tagged with statcmd[3]. We can use collect recode to recode the levels of
+statcmd so that the mean of each dependent variable has the same level as the corresponding regression
+results.
+. collect recode statcmd 3 = 1, fortags(var[bpsystol])
+(1 items recoded in collection Table)
+. collect recode statcmd 3 = 2, fortags(var[bpdiast])
+(1 items recoded in collection Table)
+. collect preview
+1
+Mean
+Systolic blood pressure
+Diastolic blood pressure
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+130.882
+0.638
+0.407
+71.271
+
+2
+
+81.715
+0.188
+0.312
+50.376
+
+Because we wanted to recode only statcmd[3] to statcmd[1] for the mean value of bpsystol,
+we specify fortags(var[bpsystol]), which indicates that the recode will be performed only for
+values with this tag. Likewise, we recode statcmd[3] to statcmd[2] only for values with the tag
+var[bpdiast]. This produced a table with only two columns, one for each dependent variable.
+Our rows are identified by the result and colname dimensions. Because our means have different
+levels of colname, they appear on separate rows. We can place them on the same row by recoding the
+separate bpsystol and bpdiast levels to one level, say, mean.
+. collect recode colname bpsystol = mean
+(1 items recoded in collection Table)
+. collect recode colname bpdiast = mean
+(1 items recoded in collection Table)
+. collect preview
+
+Mean
+mean
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+1
+
+2
+
+130.882
+
+81.715
+
+0.638
+0.407
+71.271
+
+0.188
+0.312
+50.376
+
+Now, we have the values arranged where we would like them in our table. We can clean up the row
+and column headers of our table by typing
+. collect label levels statcmd 1 ”Systolic BP” 2 ”Diastolic BP”, modify
+. collect style header statcmd, level(label)
+. collect label levels result mean ”Mean of dependent variable”
+> _r_b ”Coefficients”, modify
+. collect style header colname[mean], level(hide)
+
+collect recode — Recode dimension levels in a collection 149
+
+. collect preview
+
+Mean of dependent variable
+Coefficients
+Age (years)
+Weight (kg)
+Intercept
+
+Systolic BP
+
+Diastolic BP
+
+130.882
+
+81.715
+
+0.638
+0.407
+71.271
+
+0.188
+0.312
+50.376
+
+See [TABLES] collect label and [TABLES] collect style header for more information on these commands.
+
+Stored results
+collect recode stores the following in s():
+Macros
+s(collection)
+s(dimname)
+s(k recoded)
+
+name of collection
+name of dimension
+number of recoded items
+
+References
+Huber, C. 2021. Customizable tables in Stata 17, part 3: The classic table 1. The Stata Blog: Not Elsewhere Classified.
+https://blog.stata.com/2021/06/24/customizable-tables-in-stata-17-part-3-the-classic-table-1/.
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect addtags — Add tags to items in a collection
+[TABLES] collect remap — Remap tags in a collection
+
+collect remap — Remap tags in a collection
+Description
+Options
+Also see
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Reference
+
+Description
+collect remap remaps tags associated with values in a collection. Remapping tags can be useful
+when you need to specify a table layout but the original tags do not allow you to place values from
+different commands that are tagged differently into the same rows, columns, or tables.
+
+With collect remap, you can remap tags for levels of an existing dimension to a new dimension
+with the same levels, remap tags for levels of an existing dimension to a new dimension with new levels,
+or remap tags for levels of an existing dimension to new levels within the existing dimension.
+
+Quick start
+Remap all tags with dimension olddim to new dimension newdim, with the level unchanged
+collect remap olddim = newdim
+Remap tags with levels lev1 and lev2 in dimension olddim to newdim, with the level unchanged
+collect remap olddim[lev1 lev2] = newdim
+Same as above, but remap tags to the specified levels of the new dimension
+collect remap olddim[lev1 lev2] = newdim[lev4 lev3]
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+150
+
+collect remap — Remap tags in a collection 151
+
+Syntax
+Remap tags from an existing dimension to a new dimension, with the level unchanged
+collect remap olddim = newdim [ , name(cname) fortags(taglist) ]
+
+Remap tags with specified levels of an existing dimension to a new dimension, with the level unchanged
+collect remap olddim[oldlevels] = newdim [ , name(cname) fortags(taglist) ]
+
+Remap tags with specified levels of an existing dimension to new levels of a new dimension
+collect remap olddim[oldlevels] = newdim[newlevels]
+
+[ , name(cname) fortags(taglist) ]
+where olddim is the name of an existing dimension in the collection, newdim is the name of a dimension
+into which levels of oldim are to be mapped, oldlevels are the names of existing levels in the dimension,
+and newlevels are the names of the levels to which oldlevels are to be set.
+Levels r ci and r cri of dimension result are not allowed in oldlevels.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection in which to remap items. If this option is not specified, the change
+is made in the current collection.
+
+
+
+
+
+Options
+
+fortags(taglist) specifies conditions for selecting the values to which remapped tags will be applied.
+Values with tags in taglist will have their tags remapped.
+
+Within the taglist, if tags are joined by #, values having all of these tags are selected; if tags are
+separated by a space, values with any of these tags are selected.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+
+collect remap — Remap tags in a collection 152
+
+levels are levels of the corresponding dimension.
+Levels r ci and r cri of dimension result are not allowed in taglist.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+
+Remarks and examples
+After collecting results, we occasionally need to remap tags to lay out the table that we wish to create.
+collect remap allows you to remap tags from the existing levels of an existing dimension to new tags,
+possibly with new dimensions and new levels.
+To demonstrate, we use data from the Second National Health and Nutrition Examination Survey
+(NHANES II) (McDowell et al. 1981). With the table command, we create a table with two regression
+results as well as the means for each dependent variable.
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly table (result colname) (statcmd),
+>
+command(regress bpsystol age weight)
+>
+command(regress bpdiast age weight)
+>
+statistic(mean bpsystol bpdiast) nformat(%6.3f)
+. collect style header statcmd, level(value)
+. collect preview
+1
+Mean
+Systolic blood pressure
+Diastolic blood pressure
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+2
+
+3
+130.882
+81.715
+
+0.638
+0.407
+71.271
+
+0.188
+0.312
+50.376
+
+The statcmd dimension is used to identify the columns of the table. The regression results are tagged
+with statcmd[1] and statcmd[2] for bpsystol and bpdiast, respectively. The means of the dependent variables are tagged with statcmd[3]. We can use collect remap to remap the statcmd[3] tags
+so that the mean of each dependent variable has the same level as the corresponding regression results.
+. collect remap statcmd[3]=statcmd[1], fortags(var[bpsystol])
+(1 items remapped in collection Table)
+. collect remap statcmd[3]=statcmd[2], fortags(var[bpdiast])
+(1 items remapped in collection Table)
+. collect preview
+1
+Mean
+Systolic blood pressure
+Diastolic blood pressure
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+130.882
+0.638
+0.407
+71.271
+
+2
+
+81.715
+0.188
+0.312
+50.376
+
+collect remap — Remap tags in a collection 153
+
+Because we wanted to remap only statcmd[3] to statcmd[1] for the mean value of bpsystol, we
+specify fortags(var[bpsystol]), which indicates that the remapping will be performed only for
+values with this tag. Likewise, we remap statcmd[3] to statcmd[2] only for values with the tag
+var[bpdiast]. This produced a table with only two columns, one for each dependent variable.
+Our rows are identified by the result and colname dimensions. Because our means have different
+levels of colname, they appear on separate rows. We can place them on the same row by remapping the
+separate bpsystol and bpdiast levels to one level, say, mean.
+. collect remap colname[bpsystol bpdiast] = colname[mean mean]
+(2 items remapped in collection Table)
+. collect preview
+
+Mean
+mean
+Coefficient
+Age (years)
+Weight (kg)
+Intercept
+
+1
+
+2
+
+130.882
+
+81.715
+
+0.638
+0.407
+71.271
+
+0.188
+0.312
+50.376
+
+Now, we have the values arranged where we would like them in our table. We can clean up the row
+and column headers of our table by typing
+. collect label levels statcmd 1 ”Systolic BP” 2 ”Diastolic BP”, modify
+. collect style header statcmd, level(label)
+. collect label levels result mean ”Mean of dependent variable”
+>
+_r_b ”Coefficients”, modify
+. collect style header colname[mean], level(hide)
+. collect preview
+
+Mean of dependent variable
+Coefficients
+Age (years)
+Weight (kg)
+Intercept
+
+Systolic BP
+
+Diastolic BP
+
+130.882
+
+81.715
+
+0.638
+0.407
+71.271
+
+0.188
+0.312
+50.376
+
+See [TABLES] collect label and [TABLES] collect style header for more information on these commands.
+In the examples above, we remapped tags to new levels within the same dimension. We could have
+performed these same remappings using collect recode. However, collect remap can do more. We
+could, for instance, type
+. collect remap colname[bpsystol bpdiast] = mycol
+
+to remap the existing tags to tags with new dimension mycol but with the existing level names. We could
+also type
+. collect remap colname[bpsystol bpdiast] = mycol[mean mean]
+
+and remap the existing tags to tags with new dimension mycol and level mean.
+
+collect remap — Remap tags in a collection 154
+
+Stored results
+collect remap stores the following in s():
+Macros
+s(collection)
+s(k remapped)
+
+name of collection
+number of remapped items
+
+Reference
+McDowell, A., A. Engel, J. T. Massey, and K. Maurer. 1981. “Plan and operation of the Second National Health and
+Nutrition Examination Survey, 1976–1980”. In Vital and Health Statistics, ser. 1, no. 15. Hyattsville, MD: National
+Center for Health Statistics.
+
+Also see
+[TABLES] collect addtags — Add tags to items in a collection
+[TABLES] collect recode — Recode dimension levels in a collection
+
+collect rename — Rename a collection
+Description
+Option
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Also see
+
+Description
+collect rename changes the name associated with a collection.
+
+Quick start
+Change name of existing collection c1 to collection1
+collect rename c1 collection1
+Same as above, but overwrite collection1 if it exists
+collect rename c1 collection1, replace
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Rename collection
+
+Syntax
+collect rename cname newcname [ , replace ]
+
+where cname is the name of an existing collection and newcname is the new name for the existing collection.
+
+Option
+replace permits collect rename to overwrite an existing collection.
+
+Remarks and examples
+collect rename changes the name associated with a collection. This is useful when you have
+multiple collections in memory. For example, you may be collecting results into the collection named
+default. You may want to give this collection a more descriptive name, based on the results you have
+collected. For example, you might call this collection means:
+. collect rename default means
+
+Now it is clear that the collection means contains means.
+
+Stored results
+collect rename stores the following in s():
+Macros
+s(current)
+
+name of current collection
+
+155
+
+collect rename — Rename a collection 156
+
+Also see
+[TABLES] collect create — Create a new collection
+[TABLES] collect copy — Copy a collection
+
+collect save — Save a collection to disk
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Also see
+
+Description
+collect save saves a collection to a file.
+
+Quick start
+Save current collection to a file, with the filename constructed using the collection name with the
+.stjson extension
+collect save
+Same as above, but save collection to myfile.stjson
+collect save myfile
+Save collection c1 to c1.stjson, replacing it if it exists
+collect save, name(c1) replace
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Save collection
+
+Syntax
+collect save [ filename ] [ , replace name(cname) ]
+
+If filename is specified without an extension, .stjson is assumed. If filename contains embedded spaces,
+enclose it in double quotes.
+
+Options
+replace permits collect save to overwrite an existing file.
+name(cname) specifies the name of the collection to be saved. By default, the current collection is saved.
+
+Remarks and examples
+With collect save, you can save your collection to a file. This might be useful if, for example, you
+have collected the results you want and you are about to exit Stata but you plan to continue working with
+this collection in a future session. Suppose your current collection is named default and you simply
+type
+. collect save
+
+157
+
+collect save — Save a collection to disk 158
+
+Your collection will be stored in a file called default.stjson. You might instead specify a more
+descriptive filename, as follows:
+. collect save means
+
+The default behavior is to save the current collection. If you have multiple collections in memory and
+you wish to save a collection other than the current collection, specify the collection name with name().
+Whenever you are ready to resume working with the collection means, you can type
+. collect use means
+
+to load the collection from that file into memory; see [TABLES] collect use.
+
+Stored results
+collect save stores the following in s():
+Macros
+s(collection)
+s(filename)
+
+name of saved collection
+name of the file
+
+Also see
+[TABLES] collect use — Use a collection from disk
+
+collect set — Set the current (active) collection
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+Also see
+
+Syntax
+
+Description
+collect set identifies a collection to be the current (active) collection.
+
+Quick start
+Set c1 as the current collection
+collect set c1
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Set current collection
+
+Syntax
+collect set cname
+
+where cname is the name of an existing collection.
+
+Remarks and examples
+collect set identifies a collection to be the current collection. This means that any results collected
+with the collect prefix or the collect get command will be stored in this collection, by default. Also,
+any style specifications and labels will apply to this collection. And any exported tables will be based on
+this collection as well.
+
+When you start Stata, you will have a single collection called default. This will be the current
+collection until you specify another collection to be the current one or until you issue a table, dtable,
+or etable command. These commands all create tables and automatically create a collection with their
+results.
+If you want to set another collection to be the current collection but cannot remember the collection
+name, you can list all the collections in memory by typing
+. collect dir
+
+You can then specify your selected collection name in collect set.
+If you would instead like to create a new collection and make it the current one, you can use collect
+create.
+
+159
+
+collect set — Set the current (active) collection 160
+
+Stored results
+collect set stores the following in s():
+Macros
+s(current)
+
+name of current collection
+
+Also see
+[TABLES] collect create — Create a new collection
+
+collect stars — Add stars for significant results in a collection
+Description
+Options
+
+Quick start
+Remarks and examples
+
+Menu
+Stored results
+
+Syntax
+Also see
+
+Description
+collect stars manages the creation of stars for indicating the significance of results in a collection.
+You can also add a note to the table to explain the significance represented by the stars.
+
+Quick start
+Specify three levels of stars based on 𝑝-values in r p in the result dimension
+collect stars _r_p 0.01 ”***” 0.05 ”**” 0.1 ”*”
+Same as above, and attach the stars to coefficients stored in r b
+collect stars _r_p 0.01 ”***” 0.05 ”**” 0.1 ”*”, attach(_r_b)
+Same as above, and display a note explaining what the stars represent
+collect stars _r_p 0.01 ”***” 0.05 ”**” 0.1 ”*”, attach(_r_b) shownote
+Clear the current stars specification
+collect stars, clear
+
+Menu
+Statistics > Summaries, tables, and tests > Tables and collections > Build and style table
+
+161
+
+collect stars — Add stars for significant results in a collection 162
+
+Syntax
+collect stars resultIDs [ #1 ”label1”
+
+[ #2 ”label2”
+[ #3 ”label3”
+[ #4 ”label4”
+[ #5 ”label5” ] ] ] ] ] [ , options ]
+resultIDs are levels in the result dimension whose values determine the stars to be applied.
+Value-label pairs are rearranged such that #1 < #2 < #3 < #4 < #5.
+For value v corresponding to one of the results in resultIDs,
+if v ≥ #5, no new stars value is created
+if v < #5, the new stars value is set to “label5”
+if v < #4, the new stars value is set to “label4”
+if v < #3, the new stars value is set to “label3”
+if v < #2, the new stars value is set to “label2”
+if v < #1, the new stars value is set to “label1”
+options
+
+Description
+
+Main
+
+name(cname)
+clear
+attach(attachres)
+fortags(taglist)
+result
+dimension
+
+specify stars for collection cname
+remove previous style properties
+specify that stars be appended to items in attachres
+specify tags identifying items for which to generate
+new star items
+tag new items with result[stars]
+tag new items using stars[label]
+
+Options
+
+[ no ]shownote
+increasing
+decreasing
+pvname(string)
+delimiter(string)
+nformat(% fmt )
+prefix(string)
+suffix(string)
+
+specify whether to display the stars note
+compose stars note with increasing 𝑝-values; the default
+compose stars note with decreasing 𝑝-values
+specify a name for 𝑝-value in the stars note
+specify label delimiter in the stars note
+specify numeric format for cutoff values in the stars note
+specify a prefix for the stars note
+specify a suffix for the stars note
+
+collect stars — Add stars for significant results in a collection 163
+
+Options
+
+
+
+
+Main
+
+name(cname) specifies the collection to which stars are to be applied. By default, stars are applied to
+the current collection.
+clear removes existing collect stars properties.
+attach(attachres) specifies that items with result levels in attachres be appended with the associated
+star label when rendered to a table.
+fortags(taglist) specifies conditions for selecting which values are to be used to create stars. Values
+with tags in taglist will be used to generate new stars.
+
+Within the taglist, if tags are joined by #, values having all of these tags are selected; if tags are
+separated by a space, values with any of these tags are selected.
+taglist contains
+tagspec
+tagspec taglist
+tagspec contains
+tag
+tag #tag[#tag[. . .]]
+tag contains
+dimension
+dimension[ levels]
+dimension is a dimension in the collection.
+levels are levels of the corresponding dimension.
+Distinguish between [ ], which are to be typed, and [ ], which indicate optional arguments.
+result and dimension control how collect stars adds items when labeling significant results. These
+options are mutually exclusive.
+result specifies the factory default behavior, and this option is necessary only if the following
+dimension behavior is in effect and you want to change back to the result behavior.
+dimension specifies that dimension stars be added to the collection. Items will be tagged with
+stars[value], and the labels will be tagged with stars[label]. Use this option for layouts
+where results are to be stacked within columns, and use new dimension stars in the column
+specification of the layout.
+
+
+
+
+
+Options
+
+noshownote and shownote control whether to show the stars note.
+noshownote suppresses the stars note. This is the default.
+shownote specifies to show the stars note.
+
+collect stars — Add stars for significant results in a collection 164
+
+increasing and decreasing control the order of 𝑝-values in the stars note.
+increasing specifies that the stars note be composed with increasing 𝑝-values. This is the default.
+decreasing specifies that the stars note be composed with decreasing 𝑝-values.
+pvname(string) specifies a name for 𝑝-value in the stars note. The default is pvname(p).
+delimiter(string) specifies the delimiter between labels in the stars note.
+delimiter(”,”).
+
+The default is
+
+nformat(% fmt ) specifies the numeric format for the cutoff values in the stars note. The default is
+nformat(%9.0g).
+prefix(string) specifies the prefix for the stars note. The prefix is empty by default.
+suffix(string) specifies the suffix for the stars note. The suffix is empty by default.
+
+Remarks and examples
+Stars are often used in tables to denote significance. collect stars allows you to include stars in
+your table based on other values, typically 𝑝-values that are already in your collection. You can attach
+the stars to a statistic, typically coefficients, or present them separately. Whichever style you choose,
+you will likely want to use the shownote option to add a note to your table explaining the significance
+level that the stars represent.
+collect stars stores its specification among the collection’s style properties. This means that the
+creation of stars for significant results can be made before collecting results, can be saved to disk via
+collect style save, and can be applied to other collections via collect style use. Additionally,
+you can check the current stars specification with collect query stars.
+
+To demonstrate, we first create a table of regression results displaying coefficients and 𝑝-values.
+. use https://www.stata-press.com/data/r19/nhanes2
+. quietly: collect: regress bpsystol bmi i.region age
+. collect style showbase off
+. collect layout (colname) (result[_r_b _r_p])
+Collection: default
+Rows: colname
+Columns: result[_r_b _r_p]
+Table 1: 6 x 2
+Coefficient p-value
+Body mass index (BMI)
+MW
+S
+W
+Age (years)
+Intercept
+
+1.303719
+-.0659707
+-.5170085
+-.6045511
+.5887217
+69.89029
+
+0.000
+0.907
+0.356
+0.289
+0.000
+0.000
+
+Rather than showing the 𝑝-values, we can use collect stars to define the levels of the 𝑝-values
+stored in r p for which stars should be shown. Here we will use three stars for values less than 0.01,
+two stars for values less than 0.05, and one star for values less than 0.1. A new stars level in the result
+dimension is created and can be used in our table layout.
+
+collect stars — Add stars for significant results in a collection 165
+. collect stars _r_p 0.01 ”***”
+
+0.05 ”**” 0.1 ”*”
+
+. collect layout (colname) (result[_r_b stars])
+Collection: default
+Rows: colname
+Columns: result[_r_b stars]
+Table 1: 6 x 2
+Coefficient stars
+Body mass index (BMI)
+MW
+S
+W
+Age (years)
+Intercept
+
+1.303719
+-.0659707
+-.5170085
+-.6045511
+.5887217
+69.89029
+
+***
+
+***
+***
+
+It is unlikely that we want the level name stars to show in the column header. It would also be
+helpful to left-align the stars to be closer to the reported coefficients. We can do this with collect
+style header and collect style cell.
+. collect style header result[stars], level(hide)
+. collect style cell result[stars], halign(left)
+. collect preview
+Coefficient
+Body mass index (BMI)
+MW
+S
+W
+Age (years)
+Intercept
+
+1.303719 ***
+-.0659707
+-.5170085
+-.6045511
+.5887217 ***
+69.89029 ***
+
+Alternatively, we can directly attach the stars to the coefficient by specifying the attach() option
+and naming the result ( r b) that we want the stars attached to.
+. collect stars _r_p 0.01 ”***”
+
+0.05 ”** ” 0.1 ”*
+
+. collect layout (colname) (result[_r_b])
+Collection: default
+Rows: colname
+Columns: result[_r_b]
+Table 1: 6 x 1
+Coefficient
+Body mass index (BMI)
+MW
+S
+W
+Age (years)
+Intercept
+
+1.303719***
+-.0659707
+-.5170085
+-.6045511
+.5887217***
+69.89029***
+
+” 1 ”
+
+”, attach(_r_b)
+
+collect stars — Add stars for significant results in a collection 166
+
+Here we added extra spaces to force three characters following the number in each cell. This gives nice
+alignment when we are looking at the results in formats such as plain text and the Stata Markup and
+Control Language format. However, if you are exporting your table to other formats, you may prefer to
+leave the stars in a separate column and apply alignment and margin styles to achieve your desired look.
+It is common to want to stack coefficients and their standard errors in a single column of an estimation
+table. While the default collect stars behavior tends to yield ugly tables for this layout, the solution
+is to use option dimension and put the new stars dimension in the column specification of the layout.
+. collect stars _r_p 0.01 ”***”
+
+0.05 ”**” 0.1 ”*”, attach(_r_b) dimension
+
+. collect layout (colname#result[_r_b _r_se]) (stars)
+Collection: default
+Rows: colname#result[_r_b _r_se]
+Columns: stars
+Table 1: 18 x 2
+Body mass index (BMI)
+Coefficient
+Std. error
+MW
+Coefficient
+Std. error
+S
+Coefficient
+Std. error
+W
+Coefficient
+Std. error
+Age (years)
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+1.303719 ***
+.0395032
+-.0659707
+.5633352
+-.5170085
+.559805
+-.6045511
+.5698782
+.5887217 ***
+.0112852
+69.89029 ***
+1.142773
+
+collect stars — Add stars for significant results in a collection 167
+
+Although the stars we have chosen to represent the 𝑝-values may be common in practice, to be clear,
+we add an explanatory note below. Note that we do not have to respecify our labels; we are simply adding
+on to our current stars specification:
+. collect stars, shownote
+. collect preview
+Body mass index (BMI)
+Coefficient
+Std. error
+MW
+Coefficient
+Std. error
+S
+Coefficient
+Std. error
+W
+Coefficient
+Std. error
+Age (years)
+Coefficient
+Std. error
+Intercept
+Coefficient
+Std. error
+
+1.303719 ***
+.0395032
+-.0659707
+.5633352
+-.5170085
+.559805
+-.6045511
+.5698782
+.5887217 ***
+.0112852
+69.89029 ***
+1.142773
+
+*** p<.01, ** p<.05, * p<.1
+
+Stored results
+collect stars stores the following in s():
+Macros
+s(collection)
+s(value1)
+s(label1)
+s(value2)
+s(label2)
+s(value3)
+s(label3)
+s(value4)
+s(label4)
+s(value5)
+s(label5)
+
+name of collection
+star cutoff value 1
+star label 1
+star cutoff value 2
+star label 2
+star cutoff value 3
+star label 3
+star cutoff value 4
+star label 4
+star cutoff value 5
+star label 5
+
+Also see
+[TABLES] collect clear — Clear all collections in memory
+[TABLES] collect drop — Drop collections from memory
+[TABLES] collect query — Query collection style properties
+
+

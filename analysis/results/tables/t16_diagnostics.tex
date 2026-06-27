@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Round-2 multicollinearity diagnostics and post-selection inference (KEY spec)}
+\label{tab:diagnostics}
+\begin{tabularx}{\linewidth}{@{}lC@{}}
+
+\toprule
+&{(1)} \tabularnewline \midrule
+{Diagnostic}&{Value} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+VIF: catholic\\_share&1.07
+VIF: french\\_share&1.36
+VIF: vineyard\\_per\\_cap&1.42
+BKW condition number (sqrt(\$\\lambda\_\{max\}/\\lambda\_\{min\}\$) of scaled X'X)&2.39
+PDS-LASSO: vineyard\\_per\\_cap (post-selection)&275.2 (SE 312.7; p=0.379)
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Multicollinearity diagnostics and post-selection inference for the headline KEY specification (yes\\_pct on vineyard\\_per\\_cap + french\\_share + catholic\\_share, HC3 robust standard errors, N=25 cantons). Variance inflation factors (Panel A) computed from auxiliary regressions of each covariate on the others; values < 10 indicate weak collinearity (Wooldridge 2010). The Belsley-Kuh-Welsch condition number (Panel B) is sqrt(lambda\\_max / lambda\\_min) of the column-scaled X'X (each column scaled to unit Euclidean norm); values < 30 indicate well-conditioned design matrix (Belsley, Kuh, and Welsch 1980). Panel C reports the post-double-selection LASSO coefficient on vineyard\\_per\\_cap (Belloni, Chernozhukov, and Hansen 2014) from a candidate control set including french\\_share, catholic\\_share, protestant\\_share\\_total, lang\\_italian (binary), ln\\_pop, agland\\_1000ha, avg\\_parcel\\_area\\_1905, parcels\\_per\\_farm\\_1905, net\\_migration\\_per\\_cap. Notes on covariate construction: protestant\\_share\\_total is constructed as 1 - catholic\\_share\\_total because the HSSO Catholic+Protestant religion data does not separately report Protestant counts; in 1900 Switzerland Catholic+Protestant constituted 99.4 percent of the population, making the construction a tight approximation. Italian share is represented by a binary indicator (lang\\_italian) because continuous Italian population shares are not available for our HSSO subset. Urban share is omitted because canton-level urbanization data are not in our HSSO extracts; ln\\_pop partially captures urban-rural variation.}
+\end{table}
+\end{document}

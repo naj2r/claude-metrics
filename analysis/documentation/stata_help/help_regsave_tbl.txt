@@ -1,0 +1,67 @@
+
+help regsave_tbl
+-----------------------------------------------------------------------------------------------------------------------------------
+Title
+
+    regsave_tbl -- Convert results saved by regsave from wide format to table format.
+
+Syntax
+
+        regsave_tbl [if] [in], name(name) [order(string) format(%fmt) sigfig(#) parentheses(statlist) brackets(statlist)
+              asterisk(numlist)]
+
+
+Description
+
+    regsave allows you to save regression results in either a "wide" format or a "table" format. In some cases, you may want to
+    first save results in the wide format, and then later convert those results to table format. regsave_tbl performs this
+    conversion. See example 2 below.
+
+    regsave_tbl is a helper command designed only for use with unaltered datasets created by regsave. Using it outside of this
+    context may generate errors.
+
+
+Options
+
+    See table() suboptions in the regsave help file.
+
+
+Examples
+
+    1. Save regression results in table format using regsave:
+
+       . sysuse auto.dta, clear
+
+       . regress price mpg trunk headroom length
+
+       . regsave, tstat pval table(regression_1, parentheses(stderr) brackets(tstat pval))
+
+       . list
+
+
+    2. Save regression results in wide format using regsave, and then convert to table format using regsave_tbl:
+
+       . sysuse auto.dta, clear
+
+       . regress price mpg trunk headroom length
+
+       . regsave, tstat pval
+
+       . list
+
+       . regsave_tbl, name(regression_1) parentheses(stderr) brackets(tstat pval)
+
+       . list
+
+
+Author
+
+    Julian Reif, University of Illinois
+
+    jreif@illinois.edu
+
+
+Also see
+
+    regsave
+

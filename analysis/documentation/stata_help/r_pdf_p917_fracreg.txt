@@ -1,0 +1,1514 @@
+fp — Fractional polynomial regression 906
+
+Stored results
+In addition to the results that est cmd stores, fp stores the following in e():
+Scalars
+e(fp dimension)
+e(fp center mean)
+e(fp scale a)
+e(fp scale b)
+e(fp compare df2)
+
+degree of fractional polynomial
+value used for centering or .
+value used for scaling or .
+value used for scaling or .
+denominator degree of freedom in 𝐹 test
+
+Macros
+e(fp cmd)
+e(fp cmdline)
+e(fp variable)
+e(fp terms)
+e(fp gen cmdline)
+e(fp catzero)
+e(fp zero)
+e(fp compare type)
+
+fp, search(): or fp, powers():
+full fp command as typed
+fractional polynomial variable
+generated fp variables
+fp generate command to re-create e(fp terms) variables
+catzero, if specified
+zero, if specified
+F or chi2
+
+Matrices
+e(fp fp)
+e(fp compare)
+e(fp compare stat)
+e(fp compare df1)
+e(fp compare fp)
+e(fp compare length)
+e(fp powers)
+
+powers used in fractional polynomial
+results of model comparisons
+𝐹 test statistics
+chi2 degrees of freedom or numerator degrees of freedom of 𝐹 test
+powers of comparison models
+encoded string for display of row titles
+powers that are searched
+
+fp generate stores the following in r():
+Scalars
+r(fp center mean)
+r(fp scale a)
+r(fp scale b)
+
+value used for centering or .
+value used for scaling or .
+value used for scaling or .
+
+Macros
+r(fp cmdline)
+r(fp variable)
+r(fp terms)
+r(fp catzero)
+r(fp zero)
+
+full fp generate command as typed
+fractional polynomial variable
+generated fp variables
+catzero, if specified
+zero, if specified
+
+Matrices
+r(fp fp)
+
+powers used in fractional polynomial
+
+Methods and formulas
+The general definition of a fractional polynomial, accommodating possible repeated powers, may be
+written for functions 𝐻1 (𝑥), . . . , 𝐻𝑚 (𝑥) of 𝑥 > 0 as
+𝑚
+
+𝛽0 + ∑ 𝛽𝑗 𝐻𝑗 (𝑥)
+𝑗=1
+
+where 𝐻1 (𝑥) = 𝑥(𝑝1 ) and for 𝑗 = 2, . . . , 𝑚,
+𝐻𝑗 (𝑥) = {
+
+𝑥(𝑝𝑗 )
+𝐻𝑗−1 (𝑥) ln(𝑥)
+
+if 𝑝𝑗 ≠ 𝑝𝑗−1
+if 𝑝𝑗 = 𝑝𝑗−1
+
+fp — Fractional polynomial regression 907
+
+For example, a fractional polynomial of degree 3 with powers (1, 3, 3) has 𝐻1 (𝑥) = 𝑥, 𝐻2 (𝑥) = 𝑥3 ,
+and 𝐻3 (𝑥) = 𝑥3 ln(𝑥) and equals 𝛽0 + 𝛽1 𝑥 + 𝛽2 𝑥3 + 𝛽3 𝑥3 ln(𝑥).
+We can express a fractional polynomial in vector notation by using H(𝑥) = [𝐻1 (𝑥), . . . , 𝐻𝑑 (𝑥)]′ .
+We define 𝑥(𝑝1 ,𝑝2 ,...,𝑝𝑚 ) = [H(𝑥)′ , 1]′ . Under this notation, we can write
+𝑥(1,3,3)′ β = 𝛽0 + 𝛽1 𝑥 + 𝛽2 𝑥3 + 𝛽3 𝑥3 ln(𝑥)
+The fractional polynomial may be centered so that the intercept can be more easily interpreted.
+When centering the fractional polynomial of 𝑥 at 𝑐, we subtract 𝑐(𝑝1 ,𝑝2 ,...,𝑝𝑚 ) from 𝑥(𝑝1 ,𝑝2 ,...,𝑝𝑚 ) , where
+𝑐(𝑝1 ,𝑝2 ,...,𝑝𝑑 ) = [H(𝑥)′ , 0]′ . The centered fractional polynomial is
+(𝑥(𝑝1 ,...,𝑝𝑑 ) − 𝑐(𝑝1 ,...,𝑝𝑑 ) ) ′ β
+The definition may be extended to allow 𝑥 ≤ 0 values. For these values, the fractional polynomial is
+equal to the intercept 𝛽0 or equal to a zero-offset term 𝛼0 plus the intercept 𝛽0 .
+The deviance 𝐷 of a model is defined as −2 times its maximized log likelihood. For normal error
+models, we use the formula
+2𝜋RSS
+𝐷 = 𝑛(1 − 𝑙 + ln
+)
+𝑛
+where 𝑛 is the sample size, 𝑙 is the mean of the lognormalized weights (𝑙 = 0 if the weights are all equal),
+and RSS is the residual sum of squares as fit by regress.
+When fp is used to search for the best combination of powers, it reports a table comparing fractional
+polynomial models of degree 𝑘 < 𝑚 with the degree 𝑚 fractional polynomial model, which will have
+the lowest deviance. The comparison table also includes the linear model, in which <term> is not raised
+to a power, and the null model, in which <term> is omitted.
+The Test df column of the model comparison table does not correspond to the model degrees of
+freedom for the individual models but rather to the degrees of freedom of a test comparing that model
+with the model with the lowest deviance. For normal error models, this is the numerator degrees of
+freedom of a partial 𝐹 test; for other models, it is the degrees of freedom of the likelihood-ratio 𝜒2 test.
+When calculating the test degrees of freedom, the command accounts for the two types of parameters that
+are being estimated by fp: coefficients (𝛽𝑗 ) and powers. Because the powers in a fractional polynomial
+are chosen from a finite set rather than from the entire real line, the degrees of freedom defined in this
+way are approximate and generally yield somewhat conservative tests (Royston and Altman 1994).
+The 𝑝-values reported by fp are calculated differently for normal error models than for other models.
+Let 𝐷𝑘 and 𝐷𝑚 be the deviances of the models with degrees 𝑘 and 𝑚, respectively. For normal error
+models, a variance ratio 𝐹 is calculated as
+𝐹 =
+
+𝑑2
+𝐷 − 𝐷𝑚
+{ exp( 𝑘
+) − 1}
+𝑑1
+𝑛
+
+where 𝑑1 is the numerator df, the number of additional parameters estimated by the degree 𝑚 model
+over the degree 𝑘 model. 𝑑2 is the denominator degrees of freedom and equals the residual degrees of
+freedom of the degree 𝑚 model minus the number of powers estimated, 𝑚. The 𝑝-value is obtained by
+referring 𝐹 to an 𝐹 distribution on (𝑑1 , 𝑑2 ) df.
+For nonnormal models, the 𝑝-value is obtained by referring 𝐷𝑘 − 𝐷𝑚 to a 𝜒2 distribution on 𝑑1
+degrees of freedom, with 𝑑1 defined as above.
+
+fp — Fractional polynomial regression 908
+
+Acknowledgment
+We thank Patrick Royston of the MRC Clinical Trials Unit, London, and coauthor of the Stata Press
+book Flexible Parametric Survival Analysis Using Stata: Beyond the Cox Model for writing fracpoly
+and fracgen, the commands on which fp and fp generate are based. We also thank Professor Royston
+for his advice on and review of the new fp commands.
+
+References
+Isaacs, D., D. G. Altman, C. E. Tidmarsh, H. B. Valman, and A. D. Webster. 1983. Serum immunoglobulin concentrations in preschool children measured by laser nephelometry: Reference ranges for IgG, IgA, IgM. Journal of Clinical
+Pathology 36: 1193–1196. https://doi.org/10.1136/jcp.36.10.1193.
+Libois, F., and V. Verardi. 2013. Semiparametric fixed-effects estimator. Stata Journal 13: 329–336.
+Royston, P., and D. G. Altman. 1994. Regression using fractional polynomials of continuous covariates: Parsimonious
+parametric modelling. Journal of the Royal Statistical Society, C ser., 43: 429–467. https://doi.org/10.2307/2986270.
+Royston, P., and W. Sauerbrei. 2008. Multivariable Model-Building: A Pragmatic Approach to Regression Analysis Based
+on Fractional Polynomials for Modelling Continuous Variables. Chichester, UK: Wiley.
+Smith, J. M., C. J. Dore, A. Charlett, and J. D. Lewis. 1992. A randomized trial of Biofilm dressing for venous leg ulcers.
+Phlebology 7: 108–113. https://doi.org/10.1177/026835559200700307.
+
+Also see
+[R] fp postestimation — Postestimation tools for fp
+[R] mfp — Multivariable fractional polynomial models
+[U] 20 Estimation and postestimation commands
+
+fp postestimation — Postestimation tools for fp
+Postestimation commands
+Remarks and examples
+Also see
+
+predict
+Methods and formulas
+
+margins
+Acknowledgment
+
+fp plot and fp predict
+Reference
+
+Postestimation commands
+The following postestimation commands are of special interest after fp:
+Command
+
+Description
+
+fp plot
+fp predict
+
+component-plus-residual plot from most recently fit fractional polynomial model
+create variable containing prediction or SEs of fractional polynomials
+
+The following standard postestimation commands are also available if available after est cmd:
+Command
+
+Description
+
+contrast
+estat ic
+
+contrasts and ANOVA-style joint tests of parameters
+Akaike’s, consistent Akaike’s, corrected Akaike’s, and Schwarz’s Bayesian information criteria (AIC, CAIC, AICc, and BIC, respectively)
+estat summarize summary statistics for the estimation sample
+estat vce
+variance–covariance matrix of the estimators (VCE)
+estimates
+cataloging estimation results
+etable
+table of estimation results
+forecast
+dynamic forecasts and simulations
+hausman
+Hausman’s specification test
+lincom
+point estimates, standard errors, testing, and inference for linear combinations of
+parameters
+linktest
+link test for model specification
+lrtest
+likelihood-ratio test
+margins
+marginal means, predictive margins, marginal effects, and average marginal effects
+marginsplot
+graph the results from margins (profile plots, interaction plots, etc.)
+nlcom
+point estimates, standard errors, testing, and inference for nonlinear combinations
+of parameters
+predict
+predictions, residuals, influence statistics, and other diagnostic measures
+predictnl
+point estimates, standard errors, testing, and inference for generalized predictions
+pwcompare
+pairwise comparisons of parameters
+suest
+seemingly unrelated estimation
+test
+Wald tests of simple and composite linear hypotheses
+testnl
+Wald tests of nonlinear hypotheses
+
+909
+
+fp postestimation — Postestimation tools for fp 910
+
+predict
+The behavior of predict following fp is determined by est cmd. See the corresponding est cmd
+postestimation entry for available predict options.
+Also see information on fp predict below.
+
+margins
+The behavior of margins following fp is determined by est cmd. See the corresponding est cmd
+postestimation entry for available margins options.
+
+fp plot and fp predict
+Description for fp plot and fp predict
+fp plot produces a component-plus-residual plot. The fractional polynomial comprises the component, and the residual is specified by the user in residuals(). The component-plus-residuals are plotted
+against the fractional polynomial variable. If you only want to plot the component fit, without residuals,
+you would specify residuals(none).
+fp predict generates the fractional polynomial or the standard error of the fractional polynomial.
+The fractional polynomial prediction is equivalent to the fitted values prediction given by predict, xb,
+with the covariates other than the fractional polynomial variable set to zero. The standard error may be
+quite large if the range of the other covariates is far from zero. In this situation, the covariates would be
+centered and their range would include, or come close to including, zero.
+
+These postestimation commands can be used only when the fractional polynomial variables do not
+interact with other variables in the specification of est cmd. See [U] 11.4.3 Factor variables for more
+information about interactions.
+
+Menu for fp plot and fp predict
+fp plot
+Statistics > Linear models and related > Fractional polynomials > Component-plus-residual plot
+
+fp predict
+Statistics > Linear models and related > Fractional polynomials > Fractional polynomial prediction
+
+Syntax for fp plot and fp predict
+Component-plus-residual plot for most recently fit fractional polynomial model
+fp plot [ if ] [ in ], residuals(res option) [ graph options ]
+
+Create variable containing the prediction or SEs of fractional polynomials
+fp predict [ type ] newvar [ if ] [ in ] [ , predict options ]
+
+fp postestimation — Postestimation tools for fp 911
+
+graph options
+
+Description
+
+Main
+∗
+residuals(res
+
+option)
+
+equation(eqspec)
+level(#)
+
+residual option name to use in predict after est cmd, or
+residuals(none) if residuals are not to be graphed
+specify equation
+set confidence level; default is level(95)
+
+Plot
+
+plotopts(scatter options) affect rendition of the component-plus-residual scatter points
+Fitted line
+
+lineopts(cline options)
+
+affect rendition of the fitted line
+
+CI plot
+
+ciopts(area options)
+
+affect rendition of the confidence bands
+
+Add plots
+
+addplot(plot )
+
+add other plots to the generated graph
+
+Y axis, X axis, Titles, Legend, Overall
+
+twoway options
+∗ residuals(res
+
+any options other than by() documented in [G-3] twoway options
+
+option) is required.
+
+predict options
+
+Description
+
+Main
+
+fp
+stdp
+equation(eqspec)
+
+calculate the fractional polynomial; the default
+calculate the standard error of the fractional polynomial
+specify equation
+
+Options for fp plot
+
+
+
+
+Main
+
+residuals(res option) specifies what type of residuals to plot in the component-plus-residual plot.
+res option is the same option that would be specified to predict after est cmd. Residuals can be
+omitted from the plot by specifying residuals(none). residuals() is required.
+equation(eqspec) is relevant only when you have previously fit a multiple-equation model in est cmd.
+It specifies to which equation you are referring. eqspec can be an equation number or an equation
+name. For example, if eqspec is a number, then equation(#1) would mean that the calculation is to
+be made for the first equation (that is, for the first dependent variable), equation(#2) would mean
+the second, and so on. If eqspec is a name, then equation(income) would refer to the equation
+named income, and equation(hours) would refer to the equation named hours.
+
+If you do not specify equation(), results are the same as if you had specified equation(#1).
+level(#); see [R] Estimation options.
+
+fp postestimation — Postestimation tools for fp 912
+
+
+
+
+
+Plot
+
+plotopts(scatter options) affects the rendition of the component-plus-residual scatter points; see
+[G-2] graph twoway scatter.
+
+
+
+
+
+Fitted line
+
+lineopts(cline options) affects the rendition of the fitted line; see [G-3] cline options.
+
+
+
+
+
+CI plot
+
+ciopts(area options) affects the rendition of the confidence bands; see [G-3] area options.
+
+
+
+
+
+Add plots
+
+addplot(plot) provides a way to add other plots to the generated graph. See [G-3] addplot option.
+
+
+
+
+
+Y axis, X axis, Titles, Legend, Overall
+
+twoway options are any of the options documented in [G-3] twoway options, excluding by(). These
+include options for titling the graph (see [G-3] title options) and for saving the graph to disk (see
+[G-3] saving option).
+
+Options for fp predict
+
+
+
+
+Main
+
+fp calculates the fractional polynomial, the linear prediction with other variables set to zero. This is the
+default.
+stdp calculates the standard error of the fractional polynomial.
+equation(eqspec) is relevant only when you have previously fit a multiple-equation model in est cmd.
+It specifies to which equation you are referring. eqspec can be an equation number or an equation
+name. For example, if eqspec is a number, then equation(#1) would mean that the calculation is to
+be made for the first equation (that is, for the first dependent variable), equation(#2) would mean
+the second, and so on. If eqspec is a name, then equation(income) would refer to the equation
+named income, and equation(hours) would refer to the equation named hours.
+
+If you do not specify equation(), results are the same as if you had specified equation(#1).
+
+Remarks and examples
+After a model is fit using fp, the estimated fractional polynomial may be of interest. This is the linear
+combination of the fractional polynomial terms and the constant intercept using the model coefficients
+estimated by fp. It is equivalent to the fitted values prediction given by predict,xb, with the covariates
+and the fractional polynomial variable set to zero. When these other covariates have been centered, the
+prediction is made at the centering values of the covariates.
+A component-plus-residual plot is generated by fp plot. The fractional polynomial comprises the
+component, and the residual is specified by the user in residuals(). The residuals() option takes the
+same argument that would be supplied to predict after est cmd to obtain the desired type of residuals.
+If you only want to plot the component fit, without residuals, you would specify residuals(none).
+
+fp postestimation — Postestimation tools for fp 913
+
+fp predict generates the fractional polynomial. If the stdp option is specified, the standard error
+of the fractional polynomial is generated instead. This standard error may be quite large if the range of
+the other covariates is far from zero. In this situation, the covariates would be centered and their range
+would include, or come close to including, zero.
+
+These postestimation commands can be used only when the fractional polynomial terms do not interact with other variables in the specification of est cmd. See [U] 11.4.3 Factor variables for more
+information about interactions.
+
+Examples
+Example 1: fp plot after linear regression
+In example 1 of [R] fp, we modeled the mean of the square root of a child’s serum immunoglobulin
+G (IgG) level as a fractional polynomial function of the child’s age. An FP2 model with powers (−2, 2)
+is chosen.
+We load the data and then fit the model with fp. Then, we use fp plot to draw the component-plusresidual plot. A 95% confidence interval is produced for the fractional polynomial in age (the component).
+The residuals prediction option for regress is specified in the residuals() option in fp plot so
+that the residuals are rendered.
+. use https://www.stata-press.com/data/r19/igg
+(Immunoglobulin in children)
+. fp <age>, scale center: regress sqrtigg <age>
+(output omitted )
+. fp plot, residuals(residuals)
+
+Component+residual of sqrtigg
+
+4
+
+3
+
+2
+
+1
+0
+
+2
+
+4
+Age (years)
+
+6
+
+fp postestimation — Postestimation tools for fp 914
+
+Example 2: fp plot after Cox regression
+In example 2 of [R] fp, we modeled the time to complete healing of leg ulcers for 192 elderly patients
+using a Cox regression. A one-degree fractional polynomial in mthson, the number of months since
+the onset of the ulcer, is used as a predictor in the regression. The power −0.5 is used for mthson.
+Other covariates are age (age), ulcer area (ulcarea), treatment type, and a binary indicator of deep vein
+involvement (deepppg).
+We load the data and then demean ulcer area and age. Then, we fit the model with fp and draw the
+component-plus-residual plot with fp plot. mgale is specified in the residuals() option to obtain
+martingale residuals. See [ST] stcox postestimation for more details.
+. use https://www.stata-press.com/data/r19/legulcer2, clear
+(Leg ulcer clinical trial)
+. quietly stset ttevent, failure(healed)
+. quietly summarize age
+. replace age = age - r(mean)
+variable age was byte now float
+(192 real changes made)
+. quietly summarize ulcarea
+. replace ulcarea = ulcarea - r(mean)
+variable ulcarea was int now float
+(192 real changes made)
+. fp <mthson>, replace center scale nohr fp(-.5): stcox <mthson> age ulcarea
+> deepppg treat
+(output omitted )
+. fp plot, residuals(mgale)
+3
+
+Component+residual of _t
+
+2
+
+1
+
+0
+
+-1
+
+-2
+0
+
+100
+
+200
+Months since onset
+
+300
+
+400
+
+Example 3: fp plot and fp predict after logistic regression
+In example 3 of [R] fp, we used logistic regression to model the odds of death for male civil servants in
+Britain conditional on cigarette consumption. The dependent variable all10 is an indicator of whether
+the individual passed away in the 10 years under study.
+
+fp postestimation — Postestimation tools for fp 915
+
+Nonsmokers may be qualitatively different from smokers, so the effect of smoking (regarded as a
+continuous variable) may not be continuous between zero cigarettes and one cigarette. To allow for this
+possibility, we model the risk as constant intercept for the nonsmokers and as a fractional polynomial
+function of the number of cigarettes for the smokers, cigs, adjusted for age. An FP1 model with power
+0 is chosen.
+We load the data and demean age. Then, we fit the model using fp and graph the fit of the
+model and 95% confidence interval using fp plot. Only the component fit is graphed by specifying
+residuals(none).
+. use https://www.stata-press.com/data/r19/smoking, clear
+(Smoking and mortality data)
+. quietly summarize age
+. replace age = age - r(mean)
+variable age was byte now float
+(17,260 real changes made)
+. fp <cigs>, catzero replace fp(0): logit all10 <cigs> age
+-> logit all10 cigs_0 cigs_1 age
+Logistic regression
+
+Number of obs = 17,260
+LR chi2(3)
+= 1027.13
+Prob > chi2
+= 0.0000
+Pseudo R2
+= 0.0936
+
+Log likelihood = -4973.3016
+all10
+
+Coefficient
+
+Std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+cigs_0
+cigs_1
+age
+_cons
+
+.1883732
+.3469842
+.1194976
+-3.003767
+
+.1553093
+.0543552
+.0045818
+.1514909
+
+1.21
+6.38
+26.08
+-19.83
+
+0.225
+0.000
+0.000
+0.000
+
+-.1160274
+.2404499
+.1105174
+-3.300683
+
+.4927738
+.4535185
+.1284778
+-2.70685
+
+. fp plot, residuals(none)
+-1.5
+
+Component
+
+-2
+
+-2.5
+
+-3
+
+-3.5
+0
+
+20
+
+40
+
+60
+
+Daily cigarette consumption
+
+We see a small spike at zero for cigs because of the effect of cigs 0 on the fractional polynomial;
+however, the high 𝑝-value for cigs 0 in the model output indicates that we cannot reject that there is no
+extra effect at zero for nonsmokers.
+
+fp postestimation — Postestimation tools for fp 916
+
+We can also use fp predict to predict the fractional polynomial for nonsmokers and the mean of
+age. This is the value at the spike. We store the result in fp0. We see it is equivalent to the sum of the
+constant intercept estimate and the estimate of the cigs 0 coefficient.
+. fp predict fp0 if cigs == 0
+(7,157 missing values generated)
+. summarize fp0
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+fp0
+
+10,103
+
+-2.815393
+
+0
+
+-2.815393
+
+-2.815393
+
+. display _b[cigs_0]+_b[_cons]
+-2.8153935
+
+Methods and formulas
+Let the data consist of triplets (𝑦𝑖 , 𝑥𝑖 , z𝑖 ), 𝑖 = 1, . . . , 𝑛, where z𝑖 is the vector of covariates for the 𝑖th
+observation and 𝑥𝑖 is the fractional polynomial variable.
+fp predict calculates the fractional polynomial at the centering value 𝑥0 , 𝜂𝑖̂ = (𝑥𝑖 (𝑝1 ,...,𝑝𝑑 ) −
+̂ This is equivalent to the linear predictor of the model at z𝑖 = 0. The standard er𝑥0 (𝑝1 ,...,𝑝𝑚 ) )′ β.
+̂ ignoring estimation of the powers. When
+ror is calculated from the variance–covariance matrix of β,
+(𝑝1 ,...,𝑝𝑚 )
+𝑥𝑖 ≤ 0, H(𝑥𝑖 ), and thus 𝑥𝑖
+, is either undefined or zero. A zero offset term, 𝛼0 , may be added
+to 𝜂𝑖̂ for these nonpositive 𝑥𝑖 values.
+
+The values 𝜂𝑖̂ represent the behavior of the fractional polynomial model for 𝑥 at fixed values z = 0 of
+the (centered) covariates. The 𝑖th component-plus-residual is defined as 𝜂𝑖̂ + 𝑑𝑖 , where 𝑑𝑖 is the residual
+for the 𝑖th observation. The definition of 𝑑𝑖 will change according to the type of model used and the
+preference of the user. fp plot plots 𝜂𝑖̂ + 𝑑𝑖 versus 𝑥𝑖 , overlaying 𝜂𝑖̂ and its confidence interval.
+
+Acknowledgment
+We thank Patrick Royston of the MRC Clinical Trials Unit, London, and coauthor of the Stata Press
+book Flexible Parametric Survival Analysis Using Stata: Beyond the Cox Model for writing fracplot
+and fracpred, the commands on which fp plot and fp predict are based. We also thank Professor
+Royston for his advice on and review of fp plot and fp predict.
+
+Reference
+Royston, P. 2017. Model selection for univariable fractional polynomials. Stata Journal 17: 619–629.
+
+Also see
+[R] fp — Fractional polynomial regression
+[U] 20 Estimation and postestimation commands
+
+fracreg — Fractional response regression
+Description
+Remarks and examples
+
+Quick start
+Stored results
+
+Menu
+Methods and formulas
+
+Syntax
+References
+
+Options
+Also see
+
+Description
+fracreg fits a fractional response model for a dependent variable that is greater than or equal to 0
+and less than or equal to 1. It uses a probit, logit, or heteroskedastic probit model for the conditional
+mean. These models are often used for outcomes such as rates, proportions, and fractional data.
+
+Quick start
+Fractional probit model for y with values between 0 and 1 on continuous variable x1
+fracreg probit y x1
+Same as above, but use logit distribution
+fracreg logit y x1
+Fractional probit model for y on x1 and use x2 to model the variance of y
+fracreg probit y x1, het(x2)
+
+Menu
+Statistics > Fractional outcomes > Fractional regression
+
+917
+
+fracreg — Fractional response regression 918
+
+Syntax
+Syntax for fractional probit regression
+fracreg probit depvar [ indepvars ] [ if ] [ in ] [ weight ] [ , options ]
+
+Syntax for fractional logistic regression
+fracreg logit depvar [ indepvars ] [ if ] [ in ] [ weight ] [ , options ]
+
+Syntax for fractional heteroskedastic probit regression
+fracreg probit depvar [ indepvars ] [ if ] [ in ] [ weight ],
+het(varlist[ , offset(varname𝑜 ) ]) [ options ]
+
+options
+
+Description
+
+Model
+
+noconstant
+offset(varname)
+constraints(constraints)
+∗
+het(varlist[ , offset(varname𝑜 ) ]
+
+suppress constant term
+include varname in model with coefficient constrained to 1
+apply specified linear constraints
+independent variables to model the variance and optional
+offset variable with fracreg probit
+
+SE/Robust
+
+vce(vcetype)
+
+vcetype may be robust, cluster clustvar, bootstrap, or
+jackknife
+
+Reporting
+
+level(#)
+or
+nocnsreport
+display options
+
+set confidence level; default is level(95)
+report odds ratios; only valid with fracreg logit
+do not display constraints
+control columns and column formats, row spacing, line width,
+display of omitted variables and base and empty cells, and
+factor-variable labeling
+
+Maximization
+
+maximize options
+
+control the maximization process; seldom used
+
+nocoef
+collinear
+coeflegend
+
+do not display the coefficient table; seldom used
+keep collinear variables
+display legend instead of statistics
+
+fracreg — Fractional response regression 919
+∗ het() may be used only with fracreg probit to compute fractional heteroskedastic probit regression.
+
+indepvars may contain factor variables; see [U] 11.4.3 Factor variables.
+depvar and indepvars may contain time-series operators; see [U] 11.4.4 Time-series varlists.
+bayes, bayesboot, bootstrap, by, collect, fp, jackknife, mi estimate, rolling, statsby, and svy are allowed;
+see [U] 11.1.10 Prefix commands. For more details, see [BAYES] bayes: fracreg.
+vce(bootstrap) and vce(jackknife) are not allowed with the mi estimate prefix; see [MI] mi estimate.
+Weights are not allowed with the bootstrap prefix; see [R] bootstrap.
+vce(), nocoef, and weights are not allowed with the svy prefix; see [SVY] svy.
+fweights, iweights, and pweights are allowed; see [U] 11.1.6 weight.
+nocoef, collinear, and coeflegend do not appear in the dialog box.
+See [U] 20 Estimation and postestimation commands for more capabilities of estimation commands.
+
+Options
+
+
+
+
+Model
+
+noconstant, offset(varname), constraints(constraints); see [R] Estimation options.
+het(varlist[ , offset(varname𝑜 ) ]) specifies the independent variables and, optionally, the offset variable in the variance function. het() may only be used with fracreg probit to compute fractional
+heteroskedastic probit regression.
+offset(varname𝑜 ) specifies that selection offset varname𝑜 be included in the model with the coefficient constrained to be 1.
+
+
+
+
+
+SE/Robust
+
+vce(vcetype) specifies the type of standard error reported, which includes types that are robust to some
+kinds of misspecification (robust), that allow for intragroup correlation (cluster clustvar), and that
+use bootstrap or jackknife methods (bootstrap, jackknife); see [R] vce option.
+
+
+
+
+
+Reporting
+
+level(#); see [R] Estimation options.
+or reports the estimated coefficients transformed to odds ratios, that is, 𝑒𝑏 rather than 𝑏. Standard errors
+and confidence intervals are similarly transformed. This option affects how results are displayed, not
+how they are estimated. or may be specified at estimation or when replaying previously estimated
+results. This option may only be used with fracreg logit.
+nocnsreport; see [R] Estimation options.
+
+display options: noci, nopvalues, noomitted, vsquish, noemptycells, baselevels,
+allbaselevels, nofvlabel, fvwrap(#), fvwrapon(style), cformat(% fmt ), pformat(% fmt ),
+sformat(% fmt ), and nolstretch; see [R] Estimation options.
+
+
+
+
+
+Maximization
+
+maximize options: difficult, technique(algorithm spec), iterate(#), [no]log, trace,
+gradient, showstep, hessian, showtolerance, tolerance(#), ltolerance(#),
+nrtolerance(#), nonrtolerance, and from(init specs); see [R] Maximize. These options are
+seldom used.
+
+fracreg — Fractional response regression 920
+
+The following options are available with fracreg but are not shown in the dialog box:
+nocoef specifies that the coefficient table not be displayed. This option is sometimes used by programmers but is of no use interactively.
+collinear, coeflegend; see [R] Estimation options.
+
+Remarks and examples
+Fractional response data may occur when the outcome of interest is measured as a fraction, for example, a patient’s oxygen saturation or Gini coefficient values. These data are also often observed when
+proportions are generated from aggregated binary outcomes. For example, rather than having data on
+whether individual students passed an exam, we might simply have data on the proportion of students in
+each school that passed.
+These models are appropriate when you have a dependent variable that takes values between 0 and 1
+and may also be equal to 0 or 1, denoted for conciseness with the notation [0, 1]. If the dependent variable takes only values between 0 and 1, betareg might be a valid alternative. betareg provides more
+flexibility in the distribution of the mean of the dependent variable but is misspecified if the dependent
+variable is equal to 0 or 1. See [R] betareg for more information.
+These models have been applied to various topics. For example, Papke and Wooldridge (1996) studied
+the participation rates of employees in firms’ 401(k) retirement plans. Papke and Wooldridge (2008)
+also evaluated an education policy by studying the pass rates for an exam administered to fourth grade
+Michigan students over time.
+The models fit by fracreg are quasilikelihood estimators like the generalized linear models described
+in [R] glm. Fractional regression is a model of the mean of the dependent variable 𝑦 conditional on
+covariates x, which we denote by 𝜇x . Because 𝑦 is in [0, 1], we must ensure that 𝜇x is also in [0, 1]. We
+do this by using a probit, logit, or heteroskedastic probit model for 𝜇x .
+The key insight from quasilikelihood estimation is that you do not need to know the true distribution
+of the entire model to obtain consistent parameter estimates. In fact, the only information that you need
+is the correct specification of the conditional mean.
+This means that the true model does not need to be, for example, a probit. If the true model is a
+probit, then fitting a probit regression via maximum likelihood gives you consistent parameter estimates
+and asymptotically efficient standard errors.
+By contrast, if the conditional mean of the model is the same as the conditional mean of a probit but
+the model is not a probit, the point estimates are consistent, but the standard errors are not asymptotically
+efficient. The standard errors are not efficient, because no assumptions about the distribution of the
+unobserved components in the model are made. Thus fracreg uses robust standard errors by default.
+For further discussion on quasilikelihood estimation in the context of fractional regression, please see
+Papke and Wooldridge (1996) and Wooldridge (2010).
+
+fracreg — Fractional response regression 921
+
+Example 1: Fractional probit model of rates
+In this example, we look at the expected participation rate in 401(k) plans for a cross-section of firms.
+Participation rate (prate) is defined as the fraction of eligible employees in a firm that participate in a
+401(k) plan. We use summarize to see the range of the participation rate.
+. use https://www.stata-press.com/data/r19/401k
+(Firm-level data on 401k participation)
+. summarize prate
+Variable
+
+Obs
+
+Mean
+
+Std. dev.
+
+Min
+
+Max
+
+prate
+
+4,075
+
+.840607
+
+.1874841
+
+.0036364
+
+1
+
+The variable has values between 0 and 1 but also has at least 1 firm for which the participation rate is
+exactly 1.
+As in Papke and Wooldridge (1996), we surmise that the expected participation rate depends on the
+matching rate of employee 401(k) contributions (mrate), the natural log of the total number of employees
+(ltotemp), the age of the plan (age), and whether the 401(k) plan is the only retirement plan offered by
+the employer (sole). We include ltotemp and age, along with their squares, using factor-variable
+notation; see [U] 11.4.3 Factor variables.
+If we believe that the functional form of the expected participation rate is a cumulative normal density,
+we may use fracreg probit.
+. fracreg probit prate mrate c.ltotemp##c.ltotemp c.age##c.age i.sole
+Iteration 0:
+Iteration 1:
+Iteration 2:
+Iteration 3:
+Iteration 4:
+
+Log pseudolikelihood = -1769.6832
+Log pseudolikelihood = -1675.2763
+Log pseudolikelihood = -1674.6234
+Log pseudolikelihood = -1674.6232
+Log pseudolikelihood = -1674.6232
+
+Fractional probit regression
+
+Number of obs = 4,075
+Wald chi2(6) = 815.88
+Prob > chi2
+= 0.0000
+Pseudo R2
+= 0.0632
+
+Log pseudolikelihood = -1674.6232
+prate
+
+Coefficient
+
+Robust
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+mrate
+ltotemp
+
+.5859715
+-.6102767
+
+.0387616
+.0615052
+
+15.12
+-9.92
+
+0.000
+0.000
+
+.5100002
+-.7308246
+
+.6619429
+-.4897288
+
+c.ltotemp#
+c.ltotemp
+
+.0313576
+
+.003975
+
+7.89
+
+0.000
+
+.0235667
+
+.0391484
+
+age
+
+.0273266
+
+.0031926
+
+8.56
+
+0.000
+
+.0210691
+
+.033584
+
+c.age#c.age
+
+-.0003159
+
+.0000875
+
+-3.61
+
+0.000
+
+-.0004874
+
+-.0001443
+
+sole
+Only plan
+_cons
+
+.0683196
+3.25991
+
+.0272091
+.2323929
+
+2.51
+14.03
+
+0.012
+0.000
+
+.0149908
+2.804429
+
+.1216484
+3.715392
+
+fracreg — Fractional response regression 922
+
+Like those obtained from probit, the parameters provide the sign of the marginal effect of the covariates on the outcome, but the magnitude is difficult to interpret. We can use margins to estimate
+conditional or population-averaged effects; see example 2. The standard errors are robust by default
+because the true data-generating process need not be a probit, even though we use the probit likelihood
+to obtain our parameter estimates.
+
+Example 2: Changing the distribution of the conditional mean
+Continuing with example 1, we may instead believe that the expected participation rate follows a
+fractional logistic response. In this case, we should use fractional logistic regression instead of fractional
+probit regression to obtain consistent estimates of the parameters of the conditional mean.
+. fracreg logit prate mrate c.ltotemp##c.ltotemp c.age##c.age i.sole
+Iteration 0:
+Iteration 1:
+Iteration 2:
+Iteration 3:
+Iteration 4:
+
+Log pseudolikelihood = -1983.8372
+Log pseudolikelihood = -1682.4496
+Log pseudolikelihood = -1673.6458
+Log pseudolikelihood = -1673.5566
+Log pseudolikelihood = -1673.5566
+
+Fractional logistic regression
+
+Number of obs = 4,075
+Wald chi2(6) = 817.73
+Prob > chi2
+= 0.0000
+Pseudo R2
+= 0.0638
+
+Log pseudolikelihood = -1673.5566
+prate
+
+Coefficient
+
+Robust
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+mrate
+ltotemp
+
+1.143516
+-1.103275
+
+.074748
+.1130667
+
+15.30
+-9.76
+
+0.000
+0.000
+
+.9970125
+-1.324882
+
+1.290019
+-.8816687
+
+c.ltotemp#
+c.ltotemp
+
+.0565782
+
+.0072883
+
+7.76
+
+0.000
+
+.0422934
+
+.070863
+
+age
+
+.0512643
+
+.0059399
+
+8.63
+
+0.000
+
+.0396223
+
+.0629064
+
+c.age#c.age
+
+-.0005891
+
+.0001645
+
+-3.58
+
+0.000
+
+-.0009114
+
+-.0002667
+
+sole
+Only plan
+_cons
+
+.1137479
+5.747761
+
+.0507762
+.4294386
+
+2.24
+13.38
+
+0.025
+0.000
+
+.0142284
+4.906077
+
+.2132674
+6.589445
+
+Like those obtained from logit, the parameters provide the sign of the marginal effect of the covariates on the outcome, but the magnitude is again difficult to interpret. As with fracreg probit in
+example 1, we would use margins to obtain the marginal effects or other predictions of interest.
+
+fracreg — Fractional response regression 923
+
+Example 3: Odds ratios from a fractional logit model
+When the conditional mean of our outcome is interpretable as a probability, it is possible to adopt an
+odds-ratio interpretation of the results of a fractional logit model. In example 2, this is plausible because
+expected participation rates can be viewed as estimates of the probability of participation. We obtain the
+odds ratios by specifying the option or.
+. fracreg logit prate mrate c.ltotemp##c.ltotemp c.age##c.age i.sole, or
+Iteration 0:
+Iteration 1:
+Iteration 2:
+Iteration 3:
+Iteration 4:
+
+Log pseudolikelihood = -1983.8372
+Log pseudolikelihood = -1682.4496
+Log pseudolikelihood = -1673.6458
+Log pseudolikelihood = -1673.5566
+Log pseudolikelihood = -1673.5566
+
+Fractional logistic regression
+
+Number of obs = 4,075
+Wald chi2(6) = 817.73
+Prob > chi2
+= 0.0000
+Pseudo R2
+= 0.0638
+
+Log pseudolikelihood = -1673.5566
+prate
+
+Odds ratio
+
+Robust
+std. err.
+
+z
+
+P>|z|
+
+[95% conf. interval]
+
+mrate
+ltotemp
+
+3.137781
+.3317826
+
+.2345429
+.0375136
+
+15.30
+-9.76
+
+0.000
+0.000
+
+2.710173
+.2658343
+
+3.632857
+.4140913
+
+c.ltotemp#
+c.ltotemp
+
+1.058209
+
+.0077125
+
+7.76
+
+0.000
+
+1.043201
+
+1.073434
+
+age
+
+1.052601
+
+.0062524
+
+8.63
+
+0.000
+
+1.040418
+
+1.064927
+
+c.age#c.age
+
+.9994111
+
+.0001644
+
+-3.58
+
+0.000
+
+.999089
+
+.9997333
+
+sole
+Only plan
+_cons
+
+1.12047
+313.4879
+
+.0568932
+134.6238
+
+2.24
+13.38
+
+0.025
+0.000
+
+1.01433
+135.1083
+
+1.237716
+727.3771
+
+Note: _cons estimates baseline odds.
+
+Among other things, we see that if the 401(k) is the only plan offered by the employer, then the odds
+of an employee participating increase by a factor of 1.12. We can also see that if the matching rate
+goes from 0 to 1:1 (exactly matching employee contributions) or from 1:1 to 2:1 (doubling employee
+contributions), then the odds of participating increase by 3.1.
+The use of an odds-ratio interpretation is not appropriate if the conditional mean cannot be viewed
+as a probability. For example, if the fractional outcome were a Gini coefficient, we could not interpret
+the expected values of our outcomes as probabilities. The Gini coefficient is a measure of inequality
+between zero and one and cannot be interpreted as a probability. In this case, using the odds-ratio option
+would not be sensible.
+
+fracreg — Fractional response regression 924
+
+Stored results
+fracreg stores the following in e():
+Scalars
+e(N)
+e(k)
+e(k eq)
+e(k eq model)
+e(k dv)
+e(df m)
+e(r2 p)
+e(ll)
+e(ll 0)
+e(N clust)
+e(chi2)
+e(p)
+e(rank)
+e(ic)
+e(rc)
+e(converged)
+
+number of observations
+number of parameters
+number of equations in e(b)
+number of equations in overall model test
+number of dependent variables
+model degrees of freedom
+pseudo-𝑅2
+log likelihood
+log likelihood, constant-only model
+number of clusters
+𝜒2
+𝑝-value for model test
+rank of e(V)
+number of iterations
+return code
+1 if converged, 0 otherwise
+
+Macros
+e(cmd)
+e(cmdline)
+e(estimator)
+e(depvar)
+e(wtype)
+e(wexp)
+e(title)
+e(clustvar)
+e(offset)
+e(chi2type)
+e(vce)
+e(vcetype)
+e(opt)
+e(which)
+e(ml method)
+e(user)
+e(technique)
+e(properties)
+e(estat cmd)
+e(predict)
+e(marginsnotok)
+e(asbalanced)
+e(asobserved)
+
+fracreg
+command as typed
+model for conditional mean; logit, probit, or hetprobit
+name of dependent variable
+weight type
+weight expression
+title in estimation output
+name of cluster variable
+offset
+Wald; type of model 𝜒2 test
+vcetype specified in vce()
+title used to label Std. err.
+type of optimization
+max or min; whether optimizer is to perform maximization or minimization
+type of ml method
+name of likelihood-evaluator program
+maximization technique
+b V
+program used to implement estat
+program used to implement predict
+predictions disallowed by margins
+factor variables fvset as asbalanced
+factor variables fvset as asobserved
+
+Matrices
+e(b)
+e(mns)
+e(Cns)
+e(ilog)
+e(gradient)
+e(V)
+e(V modelbased)
+
+coefficient vector
+vector of means of the independent variables
+constraints matrix
+iteration log (up to 20 iterations)
+gradient vector
+variance–covariance matrix of the estimators
+model-based variance
+
+Functions
+e(sample)
+
+marks estimation sample
+
+fracreg — Fractional response regression 925
+
+In addition to the above, the following is stored in r():
+Matrices
+r(table)
+
+matrix containing the coefficients with their standard errors, test statistics, 𝑝-values, and
+confidence intervals
+
+Note that results stored in r() are updated when the command is replayed and will be replaced when any
+r-class command is run after the estimation command.
+
+Methods and formulas
+The log-likelihood function for fractional models is of the form
+𝑁
+
+ln𝐿 = ∑ 𝑤𝑗 𝑦𝑗 ln{𝐺 (x′𝑗 β)} + 𝑤𝑗 (1 − 𝑦𝑗 ) ln{1 − 𝐺 (x′𝑗 β)}
+𝑗=1
+
+where 𝑁 is the sample size, 𝑦𝑗 is the dependent variable, 𝑤𝑗 denotes the optional weights, ln𝐿 is maximized, as described in [R] Maximize, and 𝐺(⋅) can be
+Model
+
+Functional form for 𝐺 (x′𝑗 β)
+
+probit
+
+Φ (x′𝑗 β)
+′
+exp(x𝑗 β)/{1 + exp(x′𝑗 β)}
+Φ {x′𝑗 β/ exp (z′𝑗 𝛄)}
+
+logit
+hetprobit
+
+where x𝑗 are the covariates for individual 𝑗, z𝑗 are the covariates used to model the variance of the
+outcome for the heteroskedastic probit model, and Φ is the standard normal cumulative density function.
+
+References
+Gray, L. A., and M. Hernández-Alava. 2018. A command for fitting mixture regression models for bounded dependent
+variables using the beta distribution. Stata Journal 18: 51–75.
+Papke, L. E., and J. M. Wooldridge. 1996. Econometric methods for fractional response variables with an application
+to 401(k) plan participation rates. Journal of Applied Econometrics 11: 619–632. https://doi.org/10.1002/(SICI)10991255(199611)11:6<619::AID-JAE418>3.0.CO;2-1.
+———. 2008. Panel data methods for fractional response variables with an application to test pass rates. Journal of
+Econometrics 145: 121–133. https://doi.org/10.1016/j.jeconom.2008.05.009.
+Wooldridge, J. M. 2010. Econometric Analysis of Cross Section and Panel Data. 2nd ed. Cambridge, MA: MIT Press.
+Wulff, J. N. 2019. Generalized two-part fractional regression with cmp. Stata Journal 19: 375–389.
+Xu, J., and J. S. Long. 2005. Confidence intervals for predicted outcomes in regression models for categorical outcomes.
+Stata Journal 5: 537–559.
+
+

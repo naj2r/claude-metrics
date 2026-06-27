@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+\begin{table}[tbp] \centering
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\caption{Mobilization-deviation summary across 15 federal votes 1900-1910 (Phase C.6b Phase B)}
+\label{tab:t24_mobilization_dev_by_vote}
+\begin{tabularx}{\linewidth}{@{}lCCCCCCC@{}}
+
+\toprule
+&{(1)}&{(2)}&{(3)}&{(4)}&{(5)}&{(6)}&{(7)} \tabularnewline \midrule
+{Vote no.}&{Year}&{Title (short)}&{Mean dev}&{SD}&{Min}&{Max}&{} \tabularnewline
+\midrule \addlinespace[\belowrulesep]
+56&1900&Gesetz zur Kranken-, Unfall- und Militärversicher&12.09&6.33&--1.11&23.18&
+57&1900&Initiative «für die Proporzwahl des Nationalrate&2.86&4.76&--7.56&11.74&
+58&1900&Initiative für die Volkswahl des Bundesrates&3.02&4.93&--7.66&11.74&
+59&1902&Unterstützung der Primarschule durch den Bund&--6.79&9.37&--24.38&7.37&
+60&1903&Zolltarifgesetz&18.15&8.09&1.66&33.45&
+61&1903&Bundesstrafrecht (Anstiftung Militärpflichtiger z&--2.25&3.42&--14.54&3.65&
+62&1903&Initiative «für die Wahl des Nationalrates aufgr&--1.71&3.52&--14.50&3.65&
+63&1903&Artikel über die Regulierung des Alkoholhandels&--2.20&3.40&--14.49&3.65&
+64&1905&Ausdehnung des Erfinderschutzes&--16.87&13.17&--36.96&16.01&
+65&1906&Lebensmittelgesetz&--3.66&4.37&--12.51&3.44&
+66&1907&Militärorganisation der schweizerischen Eidgenoss&20.54&9.11&2.78&36.80&
+67&1908&Verfassungsartikel zur Gesetzgebung über das Gewe&--8.82&11.78&--27.19&18.10&
+68&1908&Initiative «für ein Absinthverbot»&--6.18&9.73&--21.19&18.10&TREAT
+69&1908&Verfassungsartikel über die Wasserkraft und Elekt&--8.72&8.86&--24.10&10.98&
+70&1910&Initiative «für die Proporzwahl des Nationalrate&7.36&7.29&--15.51&23.78&
+\bottomrule \addlinespace[\belowrulesep]
+
+\end{tabularx}
+\\ \parbox{\linewidth}{\footnotesize Notes: Phase C.6b Phase B (verify\\_reconstruct\\_expand handoff): per-vote summary of mobilization deviation across the 15 federal referenda 1900-1910. Mobilization deviation = turnout - canton's median turnout across the 14 placebo referenda from 1907 to 1910. The SAME canton-level baseline is applied to ALL 15 votes; mean(mob\\_dev) for the placebo votes is therefore close to zero by construction, and the substantive comparison across votes is the within-vote HETEROGENEITY (SD, range) and the AGGREGATE mean's sign (whether the vote drew above- or below-baseline turnout nationally). Substantive finding for vote \\#68: mean mob\\_dev = -6.18 pp (turnout drew slightly below the canton-level 1907-1910 placebo baseline in aggregate); SD =  9.73 pp, range = (-21.19, 18.10). The canton-level decomposition reveals a directional pattern -- French cantons mobilized above their baseline (+3.5 pp average) while German cantons demobilized below it (-8.6 pp average) per dispersion\\_descriptive\\_stats.md A.8.3 -- yielding the +12-pp swing in the French-German turnout gap documented in T25 (Phase C.6c). Table\~\ref\{tab:mobil\\_lang\\_relig\} (T20b, Phase B.1) decomposes this canton-level variation into language and religion components in regression form. Caveat on cross-vote SD comparability: the SAME canton-level baseline (1907-1910 placebo median) is applied to all 15 votes; pre-1907 votes' high SDs partly reflect temporal turnout drift between the vote year and the baseline window, not just within-vote cleavage heterogeneity. The most natural contemporary comparators for \\#68 are the same-day 1908 votes \\#67 (Gewerbewesen) and \\#69 (Wasserkraft), which have SD = 11.78 and 8.86 respectively. Companion: T25 (C.6c French-German gap-collapse paper-ready table); T13 + T14b (cross-referendum falsification with vineyard coefficient + RI); F09 (scatter visualization of the same panel data). N=25 cantons per vote. The treatment vote (\\#68, 1908 absinthe ban) is marked TREAT.}
+\end{table}
+\end{document}
