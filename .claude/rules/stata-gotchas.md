@@ -80,9 +80,11 @@ Stata's parser treats any `/*` substring inside an open block comment as a neste
 - Bad inside `/* ... */`: `analysis/scripts/*.do`
 - Good inside `/* ... */`: `analysis/scripts/NN_slug.do`
 
-Or use line comments (`*` or `//`) for the entire docstring — they don't have nesting behavior. Add a `MAINTAINER NOTE` to any docstring that's been bitten by this so future editors know not to reintroduce the glob.
+Switching the docstring to line comments (`*` or `//`) does **NOT** make it safe. A `/*` embedded *inside* a `*`- or `//`-line comment still opens a block comment that runs until the next `*/` — Stata processes `/* */` before line-comment rules, so a leading `*`/`//` does not protect the rest of the line (or the file) from an embedded `/*`. The only reliable defense is: **never let a `/` sit immediately before a `*` in ANY comment.** Watch especially for trailing-directory globs like `dir/*`, `results/intermediate/*`, `scripts/libraries/*`. Rephrase to a placeholder, drop the glob, or space it out. Add a `MAINTAINER NOTE` to any docstring bitten by this.
 
 Found during `stata_absinthe_init.do` session-init helper development, May 2026 (silent rc=0 failure consumed 4+ debug cycles before the `/*` glob was identified as the trigger).
+
+**Second instance — 2026-06-19, `redrafts/redraft_08_setup_cohort_1908.do`:** a `*`-LINE comment containing `results/intermediate/*` opened an unclosed block comment that silently ate the entire next section (the wine merge + two `save`s) at rc=0. Caught only because an expected output (the checkpoint `.dta`) never updated — the script "ran fine," it just skipped a whole section. Confirms line comments are NOT immune; the `dir/*` trailing glob is the trigger, and the failure is invisible until a downstream output is missing.
 
 ## `subinstr` with literal backslash: `"\"` is parsed as escaped quote (.do-file only)
 

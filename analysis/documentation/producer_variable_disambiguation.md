@@ -5,7 +5,8 @@
 
 ## TL;DR
 - **Headline producer-coalition treatment = `abs_producer`** in `cohort_1908_workshop.dta`
-  (`cov2_total_share > 0` = "any Milliet-listed absinthe purchase"; **8 cantons**).
+  (**firm-register membership**: canton has ≥1 Milliet-listed absinthe firm; **8 cantons**;
+  numerically identical to `cov2_total_share > 0`, but defined by identification, not quantity).
   It is an **absinthe-trade-interest** set (handled/sold absinthe per excise records),
   **not** a strict manufacturer set. Feeds `T_producer_cascade` **[FINAL]**, `fr_x_producer`,
   and the inference battery (scripts 09/22/23). This is what the deck / EEH manuscript mean by "producer."
@@ -18,12 +19,14 @@
 | | `abs_producer` (CANONICAL / headline) | `absinthe_dummy*` (robustness only) |
 |---|---|---|
 | Dataset | `cohort_1908_workshop.dta` | `absinthe_analysis.dta` |
-| Definition | `cov2_total_share > 0` (any Milliet absinthe purchase) | hardcoded canton lists |
+| Definition | **firm-register membership** (≥1 Milliet-listed firm; redraft §4 builds it as the merge-match `_merge==3`) — numerically `cov2_total_share > 0`, same 8 | hardcoded canton lists |
 | Construct | absinthe **trade interest** (handles/sells) | absinthe **manufacturing heartland** |
 | Realized set | **8 cantons: BS, FR, GE, NE, SZ, VD, VS, ZG** (5 French + 3 German) | `absinthe_dummy`=NE (1); `_broad`=NE+VD (2); `_any`=NE+VD+GE (3) |
 | Defined in | `09_canton_reg1.do:413`, `09_canton_reg1_workshop.do:411` | `02_clean.do:266–268` |
 | Feeds | `T_producer_cascade` [FINAL], `fr_x_producer`, scripts 22/23 | `t12_absinthe_tier.tex` (+ t02/t03 robustness cols) |
 | Role | **headline** | robustness / superseded |
+
+**Definition reconciliation (2026-06-25, redraft §4).** `abs_producer`'s operative definition is **firm-register membership** — the canton appears in Milliet's annex (≥1 listed absinthe firm) — **not** a quantity threshold on `cov2_total_share`. The two coincide exactly (a canton has positive Milliet purchases iff it has a listed firm), so the realized set is unchanged (the same 8: NE GE BS VD SZ ZG FR VS). The shift matters because Milliet vouches for firm *identification* but flags purchase *quantities* as unreliable (BBl 1907 VI 361); defining the headline dummy by membership keeps it independent of the noisy quantity column. The redraft (`redraft_08_setup_cohort_1908.do` §4.2) builds it as the merge-match (`_merge==3`) and cross-checks that it equals `cov2_total_share > 0 & !missing(...)`. The label was updated to drop the old "Milliet any-purchase" (quantity) wording.
 
 ## Source & proxy construction (what `cov2_total_share` measures) — grounded in Milliet's text
 
